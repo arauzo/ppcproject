@@ -37,7 +37,7 @@
 	  <child>
 	    <widget class="GtkMenuItem" id="mnArchivo">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">_Archivo</property>
+	      <property name="label" translatable="yes">_File</property>
 	      <property name="use_underline">True</property>
 
 	      <child>
@@ -62,11 +62,23 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkMenuItem" id="mnAbrirPSPLIB">
+		    <widget class="GtkImageMenuItem" id="mnAbrirPSPLIB">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Abrir_PSPLIB</property>
+		      <property name="label" translatable="yes">Import _PSPLIB</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnAbrirPSPLIB_activate" last_modification_time="Mon, 18 Jun 2007 14:36:13 GMT"/>
+
+		      <child internal-child="image">
+			<widget class="GtkImage" id="image1">
+			  <property name="visible">True</property>
+			  <property name="stock">gtk-open</property>
+			  <property name="icon_size">1</property>
+			  <property name="xalign">0.5</property>
+			  <property name="yalign">0.5</property>
+			  <property name="xpad">0</property>
+			  <property name="ypad">0</property>
+			</widget>
+		      </child>
 		    </widget>
 		  </child>
 
@@ -119,7 +131,7 @@
 	  <child>
 	    <widget class="GtkMenuItem" id="mnVer">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">_Ver</property>
+	      <property name="label" translatable="yes">_View</property>
 	      <property name="use_underline">True</property>
 
 	      <child>
@@ -128,7 +140,7 @@
 		  <child>
 		    <widget class="GtkCheckMenuItem" id="bHerramientas">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Barra de herramientas</property>
+		      <property name="label" translatable="yes">Toolbar</property>
 		      <property name="use_underline">True</property>
 		      <property name="active">False</property>
 		      <signal name="activate" handler="on_bHerramientas_activate" last_modification_time="Wed, 30 May 2007 14:51:19 GMT"/>
@@ -160,7 +172,7 @@
 	  <child>
 	    <widget class="GtkMenuItem" id="mnAccion">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">_Acción</property>
+	      <property name="label" translatable="yes">_Action</property>
 	      <property name="use_underline">True</property>
 	      <signal name="activate" handler="on_mnAcción_activate" last_modification_time="Wed, 30 May 2007 14:51:19 GMT"/>
 
@@ -170,7 +182,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mnCrearRecursos">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Crear recursos</property>
+		      <property name="label" translatable="yes">_Create resources</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnCrearRecursos_activate" last_modification_time="Thu, 07 Jun 2007 08:18:53 GMT"/>
 		    </widget>
@@ -179,7 +191,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mnCalcularCaminos">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Calcular caminos</property>
+		      <property name="label" translatable="yes">_Calculate paths</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnCalcularCaminos_activate" last_modification_time="Thu, 19 Jul 2007 10:41:08 GMT"/>
 		    </widget>
@@ -188,7 +200,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="grafoRoy">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Dibujar grafo ROY</property>
+		      <property name="label" translatable="yes">Draw _ROY graph</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnGrafoRoy_activate" last_modification_time="Thu, 09 Aug 2007 09:50:23 GMT"/>
 		    </widget>
@@ -197,7 +209,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="grafoPert">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Dibujar grafo PERT</property>
+		      <property name="label" translatable="yes">Draw _PERT graph</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnGrafoPert_activate" last_modification_time="Thu, 09 Aug 2007 09:50:23 GMT"/>
 		    </widget>
@@ -206,7 +218,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mnActividades">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Actividades grafo PERT</property>
+		      <property name="label" translatable="yes">PERT graph _Activities</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnActividades_activate" last_modification_time="Tue, 15 May 2007 14:28:00 GMT"/>
 		    </widget>
@@ -233,7 +245,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mnSimulacion">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Simulación duraciones</property>
+		      <property name="label" translatable="yes">Durations _simulation</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnSimulacion_activate" last_modification_time="Tue, 15 May 2007 14:36:55 GMT"/>
 		    </widget>
@@ -246,7 +258,7 @@
 	  <child>
 	    <widget class="GtkMenuItem" id="mnAyuda">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">A_yuda</property>
+	      <property name="label" translatable="yes">_Help</property>
 	      <property name="use_underline">True</property>
 
 	      <child>
@@ -412,7 +424,7 @@
 </widget>
 
 <widget class="GtkWindow" id="wndZaderenko">
-  <property name="title" translatable="yes">Zaderenko y caminos del proyecto</property>
+  <property name="title" translatable="yes">Zaderenko and project paths</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -525,8 +537,7 @@
 		      <property name="sensitive">False</property>
 		      <property name="tooltip" translatable="yes">Calcular probabilidad del camino selccionado</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">   Calcular
-Probabilidad</property>
+		      <property name="label" translatable="yes">Calculate Probabilities</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -560,7 +571,7 @@ Probabilidad</property>
 		  <child>
 		    <widget class="GtkLabel" id="lblCZad">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Información sobre los caminos del proyecto</property>
+		      <property name="label" translatable="yes">Information about Zaderenko paths</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -659,7 +670,7 @@ Probabilidad</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Ver información sobre las holguras</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Ver Holguras</property>
+		  <property name="label" translatable="yes">See Slacks</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -690,7 +701,7 @@ Probabilidad</property>
 </widget>
 
 <widget class="GtkWindow" id="wndHolguras">
-  <property name="title" translatable="yes">Holguras</property>
+  <property name="title" translatable="yes">Slacks</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -773,7 +784,7 @@ Probabilidad</property>
 	      <property name="visible">True</property>
 	      <property name="tooltip" translatable="yes">Ver información sobre Zaderenko y caminos del proyecto</property>
 	      <property name="can_focus">True</property>
-	      <property name="label" translatable="yes">Ver Zaderenko</property>
+	      <property name="label" translatable="yes">See Zaderenko</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
@@ -797,7 +808,7 @@ Probabilidad</property>
 </widget>
 
 <widget class="GtkWindow" id="wndSimulacion">
-  <property name="title" translatable="yes">Simulación de duraciones</property>
+  <property name="title" translatable="yes">Durations Simulation</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -861,7 +872,7 @@ Probabilidad</property>
 		      <child>
 			<widget class="GtkLabel" id="lblMediaSim">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Media</property>
+			  <property name="label" translatable="yes">Average</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -889,8 +900,7 @@ Probabilidad</property>
 		      <child>
 			<widget class="GtkLabel" id="lblIterTotalesSim">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Iteraciones
- Totales</property>
+			  <property name="label" translatable="yes">Total Iterations</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -918,8 +928,7 @@ Probabilidad</property>
 		      <child>
 			<widget class="GtkLabel" id="lblDesvSim">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Desviación 
-Típica</property>
+			  <property name="label" translatable="yes">Typical Deviation</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1052,7 +1061,7 @@ Típica</property>
 	      <child>
 		<widget class="GtkLabel" id="label25">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">&lt;b&gt;RESUMEN DATOS&lt;/b&gt;</property>
+		  <property name="label" translatable="yes">&lt;b&gt;DATA SUMMARY&lt;/b&gt;</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">True</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1140,7 +1149,7 @@ Típica</property>
 	      <child>
 		<widget class="GtkLabel" id="lblIteracionSim">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Iteración</property>
+		  <property name="label" translatable="yes">Iteration</property>
 		  <property name="use_underline">True</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1188,7 +1197,7 @@ Típica</property>
 		  <property name="visible">True</property>
 		  <property name="tooltip" translatable="yes">Continuar iterando</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Continuar</property>
+		  <property name="label" translatable="yes">Contine</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -1263,7 +1272,7 @@ Típica</property>
 	      <property name="visible">True</property>
 	      <property name="tooltip" translatable="yes">Cálcular probabilidad</property>
 	      <property name="can_focus">True</property>
-	      <property name="label" translatable="yes">Probabilidad</property>
+	      <property name="label" translatable="yes">Probability</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
@@ -1320,7 +1329,7 @@ Típica</property>
 </widget>
 
 <widget class="GtkWindow" id="wndRecursos">
-  <property name="title" translatable="yes">Recursos</property>
+  <property name="title" translatable="yes">Resources</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -1421,7 +1430,7 @@ Típica</property>
 	      <property name="visible">True</property>
 	      <property name="tooltip" translatable="yes">Recursos necesarios por actividad</property>
 	      <property name="can_focus">True</property>
-	      <property name="label" translatable="yes">Recursos necesarios por actividad</property>
+	      <property name="label" translatable="yes">Needed resources per activity</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
@@ -1445,6 +1454,7 @@ Típica</property>
 </widget>
 
 <widget class="GtkAboutDialog" id="dAyuda">
+  <property name="border_width">5</property>
   <property name="tooltip" translatable="yes">Información acerca de la aplicación</property>
   <property name="destroy_with_parent">False</property>
   <property name="name" translatable="yes">
@@ -1480,7 +1490,7 @@ NOVIEMBRE 2007</property>
 </widget>
 
 <widget class="GtkWindow" id="wndActividades">
-  <property name="title" translatable="yes">Actividades grafo Pert</property>
+  <property name="title" translatable="yes">PERT Graph Activities</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -1564,7 +1574,7 @@ NOVIEMBRE 2007</property>
 		  <child>
 		    <widget class="GtkLabel" id="lblActTotales">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">TOTAL ACTIVIDADES</property>
+		      <property name="label" translatable="yes">TOTAL ACTIVITIES</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1592,7 +1602,7 @@ NOVIEMBRE 2007</property>
 		  <child>
 		    <widget class="GtkLabel" id="lblFicticias">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">FICTICIAS</property>
+		      <property name="label" translatable="yes">DUMMY</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_CENTER</property>
@@ -1620,7 +1630,7 @@ NOVIEMBRE 2007</property>
 		  <child>
 		    <widget class="GtkLabel" id="lblNodos">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">NODOS</property>
+		      <property name="label" translatable="yes">NODES</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1772,7 +1782,7 @@ NOVIEMBRE 2007</property>
 	  <child>
 	    <widget class="GtkLabel" id="label35">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;b&gt;RESUMEN&lt;/b&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;SUMMARY&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1835,7 +1845,7 @@ NOVIEMBRE 2007</property>
 </widget>
 
 <widget class="GtkWindow" id="wndAsignarRec">
-  <property name="title" translatable="yes">Recursos necesarios por actividad</property>
+  <property name="title" translatable="yes">Needed Resources per Activity</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -1953,7 +1963,7 @@ NOVIEMBRE 2007</property>
 </widget>
 
 <widget class="GtkWindow" id="wndCaminos">
-  <property name="title" translatable="yes">Caminos del grafo</property>
+  <property name="title" translatable="yes">Graph Paths</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -2042,7 +2052,7 @@ NOVIEMBRE 2007</property>
 	      <property name="visible">True</property>
 	      <property name="tooltip" translatable="yes">Exportar caminos a formato CSV</property>
 	      <property name="can_focus">True</property>
-	      <property name="label" translatable="yes">Exportar a formato CSV</property>
+	      <property name="label" translatable="yes">Export to CSV Format</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
@@ -2066,7 +2076,7 @@ NOVIEMBRE 2007</property>
 </widget>
 
 <widget class="GtkWindow" id="wndGrafoRoy">
-  <property name="title" translatable="yes">Grafo Roy</property>
+  <property name="title" translatable="yes">ROY Graph</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -2113,7 +2123,7 @@ NOVIEMBRE 2007</property>
 </widget>
 
 <widget class="GtkWindow" id="wndGrafoPert">
-  <property name="title" translatable="yes">Grafo Pert</property>
+  <property name="title" translatable="yes">PERT Graph</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -2162,7 +2172,7 @@ NOVIEMBRE 2007</property>
 <widget class="GtkWindow" id="wndProbabilidades">
   <property name="width_request">1005</property>
   <property name="height_request">600</property>
-  <property name="title" translatable="yes">Probabilidad</property>
+  <property name="title" translatable="yes">Probability</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -2212,7 +2222,7 @@ NOVIEMBRE 2007</property>
 		  <child>
 		    <widget class="GtkLabel" id="label36">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Desviación Típica</property>
+		      <property name="label" translatable="yes">Typical Deviation</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2240,7 +2250,7 @@ NOVIEMBRE 2007</property>
 		  <child>
 		    <widget class="GtkLabel" id="label37">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Media</property>
+		      <property name="label" translatable="yes">Average</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2427,7 +2437,7 @@ NOVIEMBRE 2007</property>
 		      <child>
 			<widget class="GtkLabel" id="label39">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes"> &lt; Proyecto &lt; </property>
+			  <property name="label" translatable="yes"> &lt; Project &lt; </property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2530,7 +2540,7 @@ NOVIEMBRE 2007</property>
 		      <child>
 			<widget class="GtkLabel" id="label41">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">P ( Proyecto &lt; </property>
+			  <property name="label" translatable="yes">P ( Project &lt; </property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
