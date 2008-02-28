@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #PPC-PROJECT. HERRAMIENTA MULTIPLATAFORMA PARA LA 
@@ -25,6 +25,9 @@ import gobject
 import gtk
 import gtk.glade
 
+#Internationalization
+import gettext
+
 import pert, graph
 
 import pickle
@@ -44,11 +47,17 @@ from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
 
 class Proyecto:
      def __init__(self):
+        #Internationalization
+        APP='PPC-Project' #Program name
+        DIR='po' #Directory containing translations, usually /usr/share/locale
+        gtk.glade.bindtextdomain(APP, DIR)
+        gtk.glade.textdomain(APP)
+
         self._widgets = gtk.glade.XML('proyecto.glade')
         self._widgets.signal_autoconnect(self)
 
         self.bufer=gtk.TextBuffer()
-        self.directorio='Sin nombre -PPC-Project'
+        self.directorio= gettext.gettext('Unnamed -PPC-Project')
         self.control=0
         self.vBoxProb=self._widgets.get_widget('vbProb')
         self.grafica=gtk.Image()
@@ -107,16 +116,16 @@ class Proyecto:
         self.orden=gtk.TreeModelSort(self.modelo)
         self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaLista.columna=[None]*11
-        self.vistaLista.columna[0] = gtk.TreeViewColumn('No')
-        self.vistaLista.columna[1] = gtk.TreeViewColumn('Actividades')
-        self.vistaLista.columna[2] = gtk.TreeViewColumn('Siguientes')
-        self.vistaLista.columna[3] = gtk.TreeViewColumn('D.Optimista')
-        self.vistaLista.columna[4] = gtk.TreeViewColumn('D.M.Probable')
-        self.vistaLista.columna[5] = gtk.TreeViewColumn('D.Pesimista')
-        self.vistaLista.columna[6] = gtk.TreeViewColumn('D.Media')
-        self.vistaLista.columna[7] = gtk.TreeViewColumn('D.Desv.T.')
-        self.vistaLista.columna[8] = gtk.TreeViewColumn('Recursos')
-        self.vistaLista.columna[9] = gtk.TreeViewColumn('Distribución')
+        self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('ID'))
+        self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activities'))
+        self.vistaLista.columna[2] = gtk.TreeViewColumn(gettext.gettext('Following Act.'))
+        self.vistaLista.columna[3] = gtk.TreeViewColumn(gettext.gettext('Optimistic Dur.'))
+        self.vistaLista.columna[4] = gtk.TreeViewColumn(gettext.gettext('Most Probable Dur.'))
+        self.vistaLista.columna[5] = gtk.TreeViewColumn(gettext.gettext('Pessimistic Dur.'))
+        self.vistaLista.columna[6] = gtk.TreeViewColumn(gettext.gettext('Average Dur.'))
+        self.vistaLista.columna[7] = gtk.TreeViewColumn(gettext.gettext('Typical Desv.'))
+        self.vistaLista.columna[8] = gtk.TreeViewColumn(gettext.gettext('Resources'))
+        self.vistaLista.columna[9] = gtk.TreeViewColumn(gettext.gettext('Distribution'))
         self.vistaLista.renderer=[None]*10 
            
         self.columnaNoEditableColor(0)
@@ -131,10 +140,10 @@ class Proyecto:
         self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9)  
         
         # Se añaden los tipos de distribución
-        self.modeloComboD.append(['Normal'])
-        self.modeloComboD.append(['Triangular'])
-        self.modeloComboD.append(['Beta'])
-        self.modeloComboD.append(['Uniforme'])
+        self.modeloComboD.append([gettext.gettext('Normal')])
+        self.modeloComboD.append([gettext.gettext('Triangular')])
+        self.modeloComboD.append([gettext.gettext('Beta')])
+        self.modeloComboD.append([gettext.gettext('Uniform')])
 
         # Se ocultan algunas columnas 
         self.vistaLista.columna[3].set_visible(False) 
@@ -159,15 +168,15 @@ class Proyecto:
         self.vistaLista.columna[10].connect('clicked', self.columna_press, self.menu) 
         self.vistaLista.columna[10].set_expand(False)
         self.checkColum=[None]*9
-        self.checkColum[0] = gtk.CheckMenuItem('Actividades', True)
-        self.checkColum[1] = gtk.CheckMenuItem('Siguientes', True)
-        self.checkColum[2] = gtk.CheckMenuItem('D.Optimista', True)
-        self.checkColum[3] = gtk.CheckMenuItem('D.M.Probable', True)
-        self.checkColum[4] = gtk.CheckMenuItem('D.Pesimista', True)
-        self.checkColum[5] = gtk.CheckMenuItem('D.Media', True)
-        self.checkColum[6] = gtk.CheckMenuItem('D.Desv.T.', True)
-        self.checkColum[7] = gtk.CheckMenuItem('Recursos', True)
-        self.checkColum[8] = gtk.CheckMenuItem('Distribución', True)
+        self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activities'), True)
+        self.checkColum[1] = gtk.CheckMenuItem(gettext.gettext('Following Act.'), True)
+        self.checkColum[2] = gtk.CheckMenuItem(gettext.gettext('Optimistic Dur.'), True)
+        self.checkColum[3] = gtk.CheckMenuItem(gettext.gettext('Most Probable Dur.'), True)
+        self.checkColum[4] = gtk.CheckMenuItem(gettext.gettext('Pessimistic Dur.'), True)
+        self.checkColum[5] = gtk.CheckMenuItem(gettext.gettext('Average Dur.'), True)
+        self.checkColum[6] = gtk.CheckMenuItem(gettext.gettext('Typical Dev.'), True)
+        self.checkColum[7] = gtk.CheckMenuItem(gettext.gettext('Resources'), True)
+        self.checkColum[8] = gtk.CheckMenuItem(gettext.gettext('Distribution'), True)
         for n in range(9):
             self.menu.add(self.checkColum[n])
             self.checkColum[n].set_active(True)
@@ -187,9 +196,9 @@ class Proyecto:
         self.ordenZ=gtk.TreeModelSort(self.modeloZ)
         self.ordenZ.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaZ.columna=[None]*3
-        self.vistaListaZ.columna[0] = gtk.TreeViewColumn('Duración')
-        self.vistaListaZ.columna[1] = gtk.TreeViewColumn('Desv.T.')
-        self.vistaListaZ.columna[2] = gtk.TreeViewColumn('Camino')
+        self.vistaListaZ.columna[0] = gtk.TreeViewColumn(gettext.gettext('Duration'))
+        self.vistaListaZ.columna[1] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
+        self.vistaListaZ.columna[2] = gtk.TreeViewColumn(gettext.gettext('Path'))
         self.vistaListaZ.renderer=[None]*3
         
         self.columnaNoEditable(self.vistaListaZ, 0)
@@ -207,9 +216,9 @@ class Proyecto:
         self.ordenA=gtk.TreeModelSort(self.modeloA)
         self.ordenA.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaA.columna=[None]*3
-        self.vistaListaA.columna[0] = gtk.TreeViewColumn('Actividad')
-        self.vistaListaA.columna[1] = gtk.TreeViewColumn('Nodo Inicial')
-        self.vistaListaA.columna[2] = gtk.TreeViewColumn('Nodo Final')
+        self.vistaListaA.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
+        self.vistaListaA.columna[1] = gtk.TreeViewColumn(gettext.gettext('First Node'))
+        self.vistaListaA.columna[2] = gtk.TreeViewColumn(gettext.gettext('Last Node'))
         self.vistaListaA.renderer=[None]*3
 
         self.columnaNoEditable(self.vistaListaA, 0)
@@ -224,10 +233,10 @@ class Proyecto:
         self.ordenH=gtk.TreeModelSort(self.modeloH)
         self.ordenH.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaH.columna=[None]*4
-        self.vistaListaH.columna[0] = gtk.TreeViewColumn('Actividades')
-        self.vistaListaH.columna[1] = gtk.TreeViewColumn('H.Total')
-        self.vistaListaH.columna[2] = gtk.TreeViewColumn('H.Libre')
-        self.vistaListaH.columna[3] = gtk.TreeViewColumn('H.Independiente')
+        self.vistaListaH.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activities'))
+        self.vistaListaH.columna[1] = gtk.TreeViewColumn(gettext.gettext('Total Sl.'))
+        self.vistaListaH.columna[2] = gtk.TreeViewColumn(gettext.gettext('Free Sl.'))
+        self.vistaListaH.columna[3] = gtk.TreeViewColumn(gettext.gettext('Independent Sl.'))
         self.vistaListaH.renderer=[None]*4
 
         self.columnaNoEditable(self.vistaListaH, 0)
@@ -243,10 +252,10 @@ class Proyecto:
         self.ordenR=gtk.TreeModelSort(self.modeloR)
         self.ordenR.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaR.columna=[None]*4
-        self.vistaListaR.columna[0] = gtk.TreeViewColumn('Nombre')
-        self.vistaListaR.columna[1] = gtk.TreeViewColumn('Tipo')
-        self.vistaListaR.columna[2] = gtk.TreeViewColumn('Unid.D.Proyecto')
-        self.vistaListaR.columna[3] = gtk.TreeViewColumn('Unid.D.Periodo')
+        self.vistaListaR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Name'))
+        self.vistaListaR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Kind'))
+        self.vistaListaR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Project Dur. Unit'))
+        self.vistaListaR.columna[3] = gtk.TreeViewColumn(gettext.gettext('Period Dur. Unit'))
         self.vistaListaR.renderer=[None]*4
       
         self.columnaEditable(self.vistaListaR, self.modeloR, 0)
@@ -255,10 +264,10 @@ class Proyecto:
         self.columnaEditable(self.vistaListaR, self.modeloR, 3)
 
         # Se añaden los tipos de recursos
-        self.modeloComboR.append(['Renovable'])
-        self.modeloComboR.append(['No renovable'])
-        self.modeloComboR.append(['Doblemente restringido'])
-        self.modeloComboR.append(['Ilimitado'])
+        self.modeloComboR.append([gettext.gettext('Renewable')])
+        self.modeloComboR.append([gettext.gettext('Non renewable')])
+        self.modeloComboR.append([gettext.gettext('Double restricted')])
+        self.modeloComboR.append([gettext.gettext('Unlimited')])
 
   
      # TREEVIEW para los RECURSOS NECESARIOS POR ACTIVIDAD
@@ -268,9 +277,9 @@ class Proyecto:
         self.ordenAR=gtk.TreeModelSort(self.modeloAR)
         self.ordenAR.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaAR.columna=[None]*3
-        self.vistaListaAR.columna[0] = gtk.TreeViewColumn('Actividad')
-        self.vistaListaAR.columna[1] = gtk.TreeViewColumn('Recurso')
-        self.vistaListaAR.columna[2] = gtk.TreeViewColumn('Unid.Necesarias')
+        self.vistaListaAR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Actividad'))
+        self.vistaListaAR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Resource'))
+        self.vistaListaAR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Needed Units'))
         self.vistaListaAR.renderer=[None]*3
 
         self.columnaEditable(self.vistaListaAR, self.modeloAR, 0)
@@ -285,9 +294,9 @@ class Proyecto:
         self.ordenC=gtk.TreeModelSort(self.modeloC)
         self.ordenC.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vLCriticidad.columna=[None]*3
-        self.vLCriticidad.columna[0] = gtk.TreeViewColumn('N')
-        self.vLCriticidad.columna[1] = gtk.TreeViewColumn('I.Criticidad')
-        self.vLCriticidad.columna[2] = gtk.TreeViewColumn('Caminos')
+        self.vLCriticidad.columna[0] = gtk.TreeViewColumn(gettext.gettext('N'))
+        self.vLCriticidad.columna[1] = gtk.TreeViewColumn(gettext.gettext('I.Criticidad'))
+        self.vLCriticidad.columna[2] = gtk.TreeViewColumn(gettext.gettext('Paths'))
         self.vLCriticidad.renderer=[None]*3
         
         self.columnaNoEditable(self.vLCriticidad, 0)
@@ -457,7 +466,7 @@ class Proyecto:
 #-----------------------------------------------------------
 
      def introduccionDatos(self):
-        self.directorio='Sin nombre -PPC-Project' #nombre del proyecto
+        self.directorio=gettext.gettext('Unnamed -PPC-Project') #nombre del proyecto
         self.vPrincipal.set_title(self.directorio)
         # Se limpian las listas y la interfaz para la introducción de nuevos datos
         self.modelo.clear()   
@@ -469,7 +478,7 @@ class Proyecto:
         self.asignacion=[]
         self.tabla=[]
         cont=1
-        self.modelo.append([cont, '', '', '', '', '', '', '', '', 'Beta'])  # Se inserta una fila vacia
+        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])  # Se inserta una fila vacia
         
              
 
@@ -533,11 +542,11 @@ class Proyecto:
             # Actividades
             if modelo==self.modelo:                
                 if len(modelo)!=len(self.actividad): #siempre debe existir un elemento más en modelo que en actividades     
-                    modelo.append([cont, '', '', '', '', '', '', '', '', 'Beta'])     
-                    fila=['', '', [], '', '', '', '', '', '', 'Beta']
+                    modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])     
+                    fila=['', '', [], '', '', '', '', '', '', gettext.gettext('Beta')]
                     self.actividad.append(fila) 
                 else:
-                    modelo.append([cont, '', '', '', '', '', '', '', '', 'Beta'])
+                    modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])
                 #print self.actividad 
                 
             # Recursos
@@ -593,8 +602,8 @@ class Proyecto:
                              self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                             
                         else:  #se emite un mensaje de error
-                            dialogo=gtk.Dialog("¡¡ Error !!", None, gtk.MESSAGE_ERROR, (gtk.STOCK_OK, gtk.RESPONSE_OK))
-                            label=gtk.Label('Alguna de las duraciones introducidas es errónea')
+                            dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_ERROR, (gtk.STOCK_OK, gtk.RESPONSE_OK))
+                            label=gtk.Label(gettext.gettext('Wrong durations introduced.'))
                             dialogo.vbox.pack_start(label,True,True,10)
                             label.show()
                             respuesta=dialogo.run()
@@ -640,20 +649,20 @@ class Proyecto:
         # Recursos 
         elif modelo==self.modeloR:   
             # Si el recurso es Renovable    
-            if self.modeloR[path][1]=='Renovable':
+            if self.modeloR[path][1]==gettext.gettext('Renewable'):
                 self.recurso[int(path)][n]=self.modeloR[path][n]
                 if self.modeloR[path][n]==self.modeloR[path][2]:
                     self.recurso[int(path)][2]=self.modeloR[path][2]=''
-                    self.dialogoRec('Renovable')
+                    self.dialogoRec(gettext.gettext('Renewable'))
                 else:
                     self.recurso[int(path)][2]=self.modeloR[path][2]=''
 
             # Si el recurso es No Renovable    
-            elif self.modeloR[path][1]=='No renovable':
+            elif self.modeloR[path][1]==gettext.gettext('Non renewable'):
                 self.recurso[int(path)][n]=self.modeloR[path][n]
                 if self.modeloR[path][n]==self.modeloR[path][3]:
                     self.recurso[int(path)][3]=self.modeloR[path][3]=''
-                    self.dialogoRec('No renovable')
+                    self.dialogoRec(gettext.gettext('Non renewable'))
                 else:
                     self.recurso[int(path)][3]=self.modeloR[path][3]=''
 
@@ -687,7 +696,7 @@ class Proyecto:
 
      def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
          # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
-         if modelo[path][9]=='Normal':  
+         if modelo[path][9]==gettext.gettext('Normal'):  
              modelo[path][6]=actividad[int(path)][6]=''
              modelo[path][7]=actividad[int(path)][7]=''
 
@@ -793,10 +802,10 @@ class Proyecto:
       for linea in tabla:
          sig=self.lista2Cadena2(linea[1])
          if linea[1]==['']:
-            fila=[cont, linea[0], [], linea[2], linea[3], linea[4], '', '', '', 'Beta']
+            fila=[cont, linea[0], [], linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
          else:
-            fila=[cont, linea[0], linea[1], linea[2], linea[3], linea[4], '', '', '', 'Beta']
-         fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', 'Beta']
+            fila=[cont, linea[0], linea[1], linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
+         fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
          self.actividad.append(fila)
          self.modelo.append(fila1)
          cont+=1
@@ -1024,11 +1033,11 @@ class Proyecto:
          for prelacion in prelaciones:   
              if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:  
                  if prelacion[1]==[str(longitud)]:  #controlamos las actividades cuya siguiente es la última  
-                     fila=[cont, prelacion[0], [], '', '', '', '', '', '', 'Beta']  #fila para lista actividad
-                     fila1=[cont, prelacion[0], '', '', '', '', '', '', '', 'Beta'] #fila para interfaz
+                     fila=[cont, prelacion[0], [], '', '', '', '', '', '', gettext.gettext('Beta')]  #fila para lista actividad
+                     fila1=[cont, prelacion[0], '', '', '', '', '', '', '', gettext.gettext('Beta')] #fila para interfaz
                  else:
-                     fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', 'Beta']   #fila para lista actividad
-                     fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', 'Beta']  #fila para interfaz
+                     fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta')]   #fila para lista actividad
+                     fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta')]  #fila para interfaz
                  
                  self.actividad.append(fila)
                  self.modelo.append(fila1)
@@ -1055,10 +1064,10 @@ class Proyecto:
              # Si el recurso es Renovable
              if rec[0][m]=='R' or rec[0][m][0]=='R':
                  if rec[0][m]=='R':
-                     filaR=[rec[0][m]+rec[0][i], 'Renovable', '', rec[1][n]] 
+                     filaR=[rec[0][m]+rec[0][i], gettext.gettext('Renewable'), '', rec[1][n]] 
                      m+=2
                  else:
-                     filaR=[rec[0][m], 'Renovable', '', rec[1][n]] 
+                     filaR=[rec[0][m], gettext.gettext('Renewable'), '', rec[1][n]] 
                      m+=1
                  self.recurso.append(filaR)
                  self.modeloR.append(filaR)
@@ -1068,10 +1077,10 @@ class Proyecto:
              # Si el recurso es No Renovable
              elif rec[0][m]=='N' or rec[0][m][0]=='N':
                  if rec[0][m]=='N':
-                     filaR=[rec[0][m]+rec[0][i], 'No renovable', rec[1][n], '']
+                     filaR=[rec[0][m]+rec[0][i], gettext.gettext('Non renewable'), rec[1][n], '']
                      m+=2
                  else:
-                     filaR=[rec[0][m], 'No renovable', rec[1][n], ''] 
+                     filaR=[rec[0][m], gettext.gettext('Non renewable'), rec[1][n], ''] 
                      m+=1
                
                  self.recurso.append(filaR)
@@ -1081,10 +1090,10 @@ class Proyecto:
              # Si el recurso es Doblemente restringido
              elif rec[0][m]=='D' or rec[0][m][0]=='D':
                  if rec[0][m]=='D':
-                     filaR=[rec[0][m]+rec[0][i], 'Doblemente restringido', rec[1][n], rec[1][n]]
+                     filaR=[rec[0][m]+rec[0][i], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]]
                      m+=2
                  else:
-                     filaR=[rec[0][m], 'Doblemente restringido', rec[1][n], rec[1][n]] 
+                     filaR=[rec[0][m], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]] 
                      m+=1
                  
                  self.recurso.append(filaR)
@@ -1213,7 +1222,7 @@ class Proyecto:
 
          # Se imprime un mensaje de error con las actividades erróneas
          if actividadesErroneas!=[]:
-             self.errorRecNecAct(actividadesErroneas, 'La actividad')  
+             self.errorRecNecAct(actividadesErroneas, gettext.gettext('Activity'))  
    
          return error
 
@@ -1245,7 +1254,7 @@ class Proyecto:
 
          # Se imprime un mensaje de error con las actividades erróneas
          if recursosErroneos!=[]:
-             self.errorRecNecAct(recursosErroneos, 'El recurso')
+             self.errorRecNecAct(recursosErroneos, gettext.gettext('Resource'))
 
          return error
 
@@ -1269,7 +1278,7 @@ class Proyecto:
      def sumarUnidadesRec(self, asignacion):
          unidadesRec=[]
          for n in range(len(self.recurso)): 
-             if self.recurso[n][1]=='No renovable' or self.recurso[n][1]=='Doblemente restringido':
+             if self.recurso[n][1]==gettext.gettext('Non renewable') or self.recurso[n][1]==gettext.gettext('Double restricted'):
                 cont=0
                 recurso=self.recurso[n][0]
                 for m in range(len(asignacion)):
@@ -1460,13 +1469,13 @@ class Proyecto:
      
      def calcularMediaYDTipica(self, distribucion, a, b, m):
          # Si el tipo de distribución es Beta
-         if distribucion=='Beta':
+         if distribucion==gettext.gettext('Beta'):
                  #print 'beta'
                  media=(a+b+4.0*m)/6.0
                  dTipica=(b-a)/6.0
 
          # Si el tipo de distribución es Triangular
-         elif distribucion=='Triangular':
+         elif distribucion==gettext.gettext('Triangular'):
                  #print 'triangular'
                  media=(a+b+m)/3.0
                  dTipica=(a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0
@@ -2406,7 +2415,7 @@ class Proyecto:
      def calcularCaminos(self):
         # Se comprueba que exista algún grafo
         if self.actividad==[]:
-           self.dialogoError('No existe ningún grafo al que calcular los caminos')
+           self.dialogoError(gettext.gettext('A graph is needed to calculate its paths'))
 
         else:
            successors = self.tablaSucesoras(self.actividad)
@@ -2418,7 +2427,7 @@ class Proyecto:
 
            # Se preparan los caminos para mostrarlos en el interfaz
            numeroCaminos=len(caminosSinBeginEnd) 
-           camino='Número de caminos: ' + (str(numeroCaminos)) + '\n' 
+           camino=gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
            for n in range(len(caminosSinBeginEnd)):
                cadena=self.lista2Cadena(caminosSinBeginEnd, n)
                camino+=cadena
@@ -2472,11 +2481,11 @@ class Proyecto:
      def asignarRecursos(self):
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
-            self.dialogoError('No hay actividades introducidas')
+            self.dialogoError(gettext.gettext('No activities introduced'))
  
         # Se comprueba que se hayan introducido recursos
         elif self.recurso == []:
-            self.dialogoError('No hay recursos introducidos')
+            self.dialogoError(gettext.gettext('No resources introduced'))
            
         # Si todo es correcto, se accede a la ventana con normalidad
         else:
@@ -2509,18 +2518,18 @@ class Proyecto:
                 distribucion=self.actividad[m][9]
                 #print distribucion, 'dist'
                 # Si la actividad tiene una distribución 'uniforme'
-                if distribucion=='Uniforme':
+                if distribucion==gettext.gettext('Uniform'):
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
          if self.actividad[m][3]!=self.actividad[m][5]:
                              valor=self.generaAleatoriosUniforme(float(self.actividad[m][3]), float(self.actividad[m][5]))
          else: # Si d.optimista=d.pesimista
             valor=self.actividad[m][3]
                     else:
-                       self.dialogoError('Debe introducir las duraciones optimista, pesimista y más probable para esta actividad') 
+                       self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
              return
  
                 # Si la actividad tiene una distribución 'beta'
-                elif distribucion=='Beta':
+                elif distribucion==gettext.gettext('Beta'):
                      if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
          if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
                              mean, stdev, shape_a, shape_b=self.datosBeta(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
@@ -2530,18 +2539,18 @@ class Proyecto:
          else:  # Si d.optimista=d.pesimista=d.mas probable
             valor=self.actividad[m][3]
                      else:
-                         self.dialogoError('Debe introducir las duraciones optimista, pesimista y más probable para esta actividad')
+                       self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
           return
 
                 # Si la actividad tiene una distribución 'triangular'
-                elif distribucion=='Triangular':
+                elif distribucion==gettext.gettext('Triangular'):
                     if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
          if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
                              valor=self.generaAleatoriosTriangular(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
          else:   # Si d.optimista=d.pesimista=d.mas probable
             valor=self.actividad[m][3]
                     else:
-                       self.dialogoError('Debe introducir las duraciones optimista, pesimista y más probable para esta actividad')
+                       self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
              return
                 # Si la actividad tiene una distribución 'normal'
                 else:
@@ -2551,7 +2560,7 @@ class Proyecto:
          else:   # Si d.tipica=0
             valor=self.actividad[m][6]
                     else:
-                       self.dialogoError('Debe introducir la duración media y la desviación típica para esta actividad') 
+                       self.dialogoError(gettext.gettext('The average duration and the typical deviation of this activity must be introduced')) 
              return
                 sim.append(float(valor))
                 #print sim, 'sim'
@@ -2757,7 +2766,7 @@ class Proyecto:
      def mostrarFrecuencias(self, intervalos, Fa, Fr):
         lineas=''
         l='___________________'
-        lineas+='Duraciones'
+        lineas+=gettext.gettext('Durations')
         lineas+='\t'
         for n in intervalos:
           lineas+=n
@@ -2766,7 +2775,7 @@ class Proyecto:
         lineas+=l*len(intervalos)
         lineas+='\n'
         lineas+='\n'
-        lineas+='F. Absoluta'
+        lineas+=gettext.gettext('Absolute Freq.')
         lineas+='\t'
         for a in Fa:
            lineas+='\t'
@@ -2774,7 +2783,7 @@ class Proyecto:
            lineas+='\t'+'\t'+'\t'
         lineas+='\n'
         lineas+='\n'
-        lineas+='F. Relativa'
+        lineas+=gettext.gettext('Relative Freq.')
         lineas+='\t'
         for r in Fr:
            lineas+='\t'
@@ -2862,27 +2871,27 @@ class Proyecto:
 
      def datosSimulacion2csv(self, duraciones, iteraciones, media, dTipica, modeloCriticidad): 
         s=''
-        s+='DATOS SIMULACIÓN'
+        s+=gettext.gettext('SIMULATION DATA')
         s+='\n'
         s+='\n'
-        s+='N, I.CRITICIDAD, CAMINO'
+        s+=gettext.gettext('N, I.CRITICIDAD, PATH')
         s+='\n'
         for n in range(len(modeloCriticidad)):
            s+= modeloCriticidad[n][0]+','+ modeloCriticidad[n][1]+','+'"'+modeloCriticidad[n][2]+'"'
            s+='\n'
         s+='\n'
         s+='\n'
-        s+='MEDIA, DESV.TÍPICA'
+        s+=gettext.gettext('AVERAGE, TYPICAL DEV.')
         s+='\n'
         s+= media+','+dTipica
         s+='\n'
         s+='\n'
-        s+='SIMULACIONES TOTALES'
+        s+=gettext.gettext('TOTAL SIMULATIONS')
         s+='\n'
         s+= iteraciones
         s+='\n'
         s+='\n'
-        s+='DURACIONES'
+        s+=gettext.gettext('DURATIONS')
         s+='\n'
         for d in duraciones:
            s+= str(d)
@@ -2970,7 +2979,7 @@ class Proyecto:
 
          else: # Si se introducen los dos datos
             if float(dato1)>float(dato2):
-               self.dialogoError('El primer dato debe ser menor que el segundo')
+               self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
             else:
                   x1=(float(dato1)-float(media))/float(dTipica)
                   p1=float(scipy.stats.distributions.norm.cdf(x1))
@@ -3029,7 +3038,7 @@ class Proyecto:
 
         else:
       if float(dato1)>float(dato2):
-                     self.dialogoError('El primer dato debe ser menor que el segundo')
+                     self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
            else:
                         x=0
                         for n in range(len(intervalos)):
@@ -3119,7 +3128,7 @@ class Proyecto:
 #-----------------------------------------------------------
      
      def abrir(self):
-        dialogoFicheros = gtk.FileChooserDialog("Abrir archivo",None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
+        dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
         # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.prj'
         filtro=gtk.FileFilter()
         filtro.add_pattern('*.prj')
@@ -3143,7 +3152,7 @@ class Proyecto:
                     self.cargarTxt(tabla)
 
             except IOError :
-                self.dialogoError('El fichero que intenta abrir no existe')
+                self.dialogoError(gettext.gettext('The selected file does not exist'))
     
             flectura.close()
         #elif resultado == gtk.RESPONSE_CANCEL:
@@ -3164,7 +3173,7 @@ class Proyecto:
 #-----------------------------------------------------------
      
      def abrirPSPLIB(self):
-        dialogoFicheros = gtk.FileChooserDialog("Abrir archivo PSPLIB",None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
+        dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Import PSPLIB file"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
         # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.sm'
         filtro=gtk.FileFilter()
         filtro.add_pattern('*.sm')
@@ -3183,7 +3192,7 @@ class Proyecto:
                 self.cargarPSPLIB(prelaciones, rec, asig)         
 
             except IOError :
-                self.dialogoError('El fichero que intenta abrir no existe')   
+                self.dialogoError(gettext.gettext('The selected file does not exist'))  
  
             flectura.close()
         #elif resultado == gtk.RESPONSE_CANCEL:
@@ -3210,11 +3219,11 @@ class Proyecto:
      def guardar(self, g):
         #print self.directorio
         if g==1:
-           dialogoGuardar = gtk.FileChooserDialog ("Guardar archivo",None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+           dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
               dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
            resultado = dialogoGuardar.run()
         else:
-               dialogoGuardar = gtk.FileChooserDialog ("Guardar como",None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+               dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save as..."),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
            dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
            resultado = dialogoGuardar.run()
         if resultado == gtk.RESPONSE_OK:
@@ -3246,7 +3255,7 @@ class Proyecto:
                 pickle.dump(tabla, fescritura)
 
             except IOError :
-                self.dialogoError('Error al guardar el fichero')    
+                self.dialogoError(gettext.gettext('Error saving the file'))    
             fescritura.close()
         #elif resultado == gtk.RESPONSE_CANCEL:  
             #print "No hay elementos seleccionados"
@@ -3280,7 +3289,7 @@ class Proyecto:
              pickle.dump(tabla, fescritura)
                  
         except IOError :
-             self.dialogoError('Error al guardar el fichero')    
+             self.dialogoError(gettext.gettext('Error saving the file'))    
         fescritura.close()    
     
 
@@ -3294,7 +3303,7 @@ class Proyecto:
 #-----------------------------------------------------------   
 
      def guardarCsv(self, texto):
-        dialogoGuardar = gtk.FileChooserDialog ("Guardar archivo",None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+        dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
         dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
         resultado = dialogoGuardar.run()
         if resultado == gtk.RESPONSE_OK:
@@ -3307,7 +3316,7 @@ class Proyecto:
                 fescritura.write(texto)
 
             except IOError :
-                self.dialogoError('Error al guardar el fichero')    
+                self.dialogoError(gettext.gettext('Error saving the file'))    
             fescritura.close()
         #elif resultado == gtk.RESPONSE_CANCEL:  
             #print "No hay elementos seleccionados"
@@ -3330,8 +3339,8 @@ class Proyecto:
 #-----------------------------------------------------------
          
      def dialogoSalir(self):
-        dialogo=gtk.Dialog("¡¡ Atención !!", None, gtk.MESSAGE_QUESTION, ("NO", gtk.RESPONSE_CANCEL, "SI", gtk.RESPONSE_OK ))
-        label=gtk.Label('¿Desea salir de la aplicación?')
+        dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
+        label=gtk.Label(gettext.gettext('Are you sure you want to quit PPC-Project?'))
         dialogo.vbox.pack_start(label,True,True,10)
         label.show()
         respuesta=dialogo.run()
@@ -3355,8 +3364,8 @@ class Proyecto:
 #-----------------------------------------------------------
          
      def dialogoProyectoAbierto(self, c):
-        dialogo=gtk.Dialog("¡¡ Atención !!", None, gtk.MESSAGE_QUESTION, ("NO", gtk.RESPONSE_CANCEL, "SI", gtk.RESPONSE_OK ))
-        label=gtk.Label('El proyecto actual ha sido modificado, ¿desea guardar los cambios?')
+        dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
+        label=gtk.Label(gettext.gettext('The actual project has been modified. Do you want to save the changes?'))
         dialogo.vbox.pack_start(label,True,True,10)
         label.show()
         respuesta=dialogo.run()
@@ -3364,7 +3373,7 @@ class Proyecto:
             self.guardar(1)
  
         elif respuesta==gtk.RESPONSE_CANCEL:
-            if c=='salir':
+            if c==gettext.gettext('exit'):
                self.dialogoSalir()
             else:
                # Se limpian todas las estructuras de datos
@@ -3374,7 +3383,7 @@ class Proyecto:
            self.recurso=[]
            self.modeloAR.clear()
            self.asignacion=[]
-           self.vPrincipal.set_title('PPC-Project')
+           self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
 
         dialogo.destroy()
 
@@ -3390,13 +3399,13 @@ class Proyecto:
 #-----------------------------------------------------------
      
      def dialogoRec(self, tipo):
-        dialogo=gtk.Dialog("¡¡ Error !!", None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
-        if tipo=='Renovable':
-            label=gtk.Label('Recuerde que el recurso es "Renovable"')
+        if tipo==gettext.gettext('Renewable'):
+            label=gtk.Label(gettext.gettext('Renember that the resource is "Renewable"'))
         # Si el recurso es No Renovable, las unidades deben ser 'por proyecto'
         else:
-            label=gtk.Label('Recuerde que el recurso es "No renovable"')
+            label=gtk.Label(gettext.gettext('Renember that the resource is "Non renewable"'))
         dialogo.vbox.pack_start(label,True,True,10)
         label.show()
         respuesta=dialogo.run()
@@ -3413,7 +3422,7 @@ class Proyecto:
 #-----------------------------------------------------------
      
      def dialogoError(self, cadena):
-        dialogo=gtk.Dialog("¡¡ Error !!", None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         label=gtk.Label(cadena)
         dialogo.vbox.pack_start(label,True,True,10)
         label.show()
@@ -3433,9 +3442,9 @@ class Proyecto:
 #-----------------------------------------------------------
 
      def errorActividadesRepetidas(self, repetidas):
-        dialogo=gtk.Dialog("¡¡ Error !!", None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
-            label=gtk.Label('La actividad '+' "'+actividad+'"'+' está repetida\n')
+            label=gtk.Label(gettext.gettext('The activity ')+' "'+actividad+'"'+gettext.gettext(' is repeated\n'))
             dialogo.vbox.pack_start(label,True,True,5)
             label.show()
         respuesta=dialogo.run()
@@ -3456,9 +3465,9 @@ class Proyecto:
 #-----------------------------------------------------------
 
      def errorRecNecAct(self, datosErroneos, cadena):
-        dialogo=gtk.Dialog("¡¡ Error !!", None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
-            label=gtk.Label(cadena+' "'+dato+'"'+' no existe\n')
+            label=gtk.Label(cadena+' "'+dato+'"'+ gettext.gettext(' does not exist\n'))
             dialogo.vbox.pack_start(label,True,True,5)
             label.show()
         respuesta=dialogo.run()
@@ -3512,7 +3521,7 @@ class Proyecto:
                 fichero.close()
 
             except IOError:
-                self.dialogoError('El fichero que intenta abrir no existe')
+                self.dialogoError(gettext.gettext('The selected file does not exist'))
                 gtk.main_quit()
     
         else:
@@ -3593,7 +3602,7 @@ class Proyecto:
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
              # Si no se ha guardado anteriormente, abrimos el cuadro de diálogo
-             if self.directorio=='Sin nombre -PPC-Project':
+             if self.directorio==gettext.gettext('Unnamed -PPC-Project'):
                  self.guardar(1)
              # Si ya ha sido guardado antes, se modifica
              else:
@@ -3644,10 +3653,10 @@ class Proyecto:
            self.recurso=[]
            self.modeloAR.clear()
            self.asignacion=[]
-           self.vPrincipal.set_title('PPC-Project')
+           self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
        
         else:                 # El proyecto actual aún no se ha guardado
-                self.dialogoProyectoAbierto('cerrar')
+                self.dialogoProyectoAbierto(gettext.gettext('close'))
 
 #-----------------------------------------------------------
 # Función: Acción usuario para salir de la aplicación
@@ -3661,7 +3670,7 @@ class Proyecto:
         if self.control==0:   # El proyecto actual ha sido guardado
             self.dialogoSalir()
         else:                 # El proyecto actual aún no se ha guardado
-            self.dialogoProyectoAbierto('salir')
+            self.dialogoProyectoAbierto(gettext.gettext('exit'))
 
 
 #******************************************************************************************************************  
@@ -3814,7 +3823,7 @@ class Proyecto:
                     s+=1
                     
           if s>0:
-               self.dialogoError('Hay actividades incompletas')
+               self.dialogoError(gettext.gettext('There are uncomplete activities'))
           else:
                self.ventanaZaderenko()
 
@@ -3834,7 +3843,7 @@ class Proyecto:
                     s+=1
                     
           if s>0:
-               self.dialogoError('Hay actividades incompletas')
+               self.dialogoError(gettext.gettext('There are uncomplete activities'))
           else:
                self.ventanaHolguras()
 
@@ -3852,7 +3861,7 @@ class Proyecto:
         s=0
         m=0
         for a in self.actividad:
-             if a[9]=='Uniforme' or a[9]=='Beta' or a[9]=='Triangular':
+             if a[9]==gettext.gettext('Uniform') or a[9]==gettext.gettext('Beta') or a[9]==gettext.gettext('Triangular'):
                   if a[3]=='' or a[4]=='' or a[5]=='':
                        s+=1
              else:
@@ -3860,11 +3869,11 @@ class Proyecto:
                        m=+1
 
         if s>0 and m==0:
-             self.dialogoError('Debe introducir las duraciones: '+'\n'+'\t'+'- Optimista'+'\n'+'\t'+'- Mas probable'+'\n'+'\t'+'- Pesimista')
+             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic'))
         elif s==0 and m>0:
-             self.dialogoError('Debe introducir la duraciones: '+'\n'+'\t'+'- Media'+'\n'+'\t'+'- Desv.Tipica')
+             self.dialogoError(gettext.gettext('You must introduce the durations: '+'\n'+'\t'+gettext.gettext('- Average'+'\n'+'\t'+gettext.gettext('- Typical Dev.')
         elif s>0 and m>0:
-             self.dialogoError('Debe introducir las duraciones: '+'\n'+'\t'+'- Optimista'+'\n'+'\t'+'- Mas probable'+'\n'+'\t'+'- Pesimista'+'\n'+'\t'+'- Media'+'\n'+'\t'+'- Desv.Tipica')
+             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic'+'\n'+'\t'+gettext.gettext('- Most probable'+'\n'+'\t'+gettext.gettext('- Pessimistic'+'\n'+'\t'+gettext.gettext('- Average'+'\n'+'\t'+gettext.gettext('- Typical Dev.')
         else:          
              self.vSimulacion.show()
              self.simTotales=[] # Lista con las simulaciones totales
@@ -3946,7 +3955,7 @@ class Proyecto:
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
              # Si no se ha guardado anteriormente, abrimos el cuadro de diálogo
-             if self.directorio=='Sin nombre -PPC-Project':
+             if self.directorio==gettext.gettext('Unnamed -PPC-Project'):
                  self.guardar(1)
              # Si ya ha sido guardado antes, se modifica
              else:
@@ -3976,10 +3985,10 @@ class Proyecto:
            self.recurso=[]
            self.modeloAR.clear()
            self.asignacion=[]
-           self.vPrincipal.set_title('PPC-Project')
+           self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
        
         else:                 # El proyecto actual aún no se ha guardado
-                self.dialogoProyectoAbierto('cerrar')
+                self.dialogoProyectoAbierto(gettext.gettext('close'))
 
 #-----------------------------------------------------------
 # Función: Acción usuario para acceder salir de la aplicación
@@ -4110,11 +4119,11 @@ class Proyecto:
          media, dTipica=self.extraerMediaYDTipica()
 
          if float(dTipica)==0.00:
-      texto='La duración del camino es de '+'%5.2f'%(float(media))+' u.d.t. con una probabilidad del 100%'
+      texto=gettext.gettext('Path duration is ') +'%5.2f'%(float(media))+' t.u. with 100% probability'
       self.dialogoError(texto)
     else:
             # Se asigna tí­tulo y gráfica a la ventana de probabilidad
-            self.vProbabilidades.set_title('Probabilidad respecto al camino')
+            self.vProbabilidades.set_title(gettext.gettext('Probability related to the path'))
             #imagen=self._widgets.get_widget('graficaProb')
        if len(self.vBoxProb)>1:
          self.vBoxProb.remove(self.grafica)
@@ -4170,7 +4179,7 @@ class Proyecto:
                     s+=1
                     
           if s>0:
-               self.dialogoError('Hay actividades incompletas')
+               self.dialogoError(gettext.gettext('There are uncomplete activities'))
           else:
                self.ventanaHolguras()
     
@@ -4224,7 +4233,7 @@ class Proyecto:
                     s+=1
                     
           if s>0:
-               self.dialogoError('Hay actividades incompletas')
+               self.dialogoError(gettext.gettext('There are uncomplete activities'))
           else:
                self.ventanaZaderenko()
 
@@ -4267,7 +4276,7 @@ class Proyecto:
          dato2=valor2.get_text()
 
          titulo=self.vProbabilidades.get_title()
-         if titulo=='Probabilidad respecto al camino':
+         if titulo==gettext.gettext('Probability related to the path'):
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
             media=widgetMedia.get_text()
@@ -4298,11 +4307,11 @@ class Proyecto:
 
          # Se muestra el resultado completo en el textView
          if dato2=='':
-             mostrarDato='P ( '+str(dato1)+' < Proyecto ) = '+str('%3.3f'%(x))+' ('+prob+')'
+             mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project ) = ')+str('%3.3f'%(x))+' ('+prob+')'
          elif dato1=='':
-             mostrarDato='P ( Proyecto < '+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+             mostrarDato=gettext.gettext('P ( Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
          else:
-             mostrarDato='P ( '+str(dato1)+' < Proyecto > '+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+             mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project > ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
          self.escribirProb(mostrarDato)
 
 
@@ -4323,7 +4332,7 @@ class Proyecto:
          dato2=valor2.get_text()
 
          titulo=self.vProbabilidades.get_title()
-         if titulo=='Probabilidad respecto al camino':
+         if titulo==gettext.gettext('Probability related to the path'):
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
            media=widgetMedia.get_text()
@@ -4354,11 +4363,11 @@ class Proyecto:
 
          # Se muestra el resultado completo en el textView
          if dato1=='':
-             mostrarDato='P ( Proyecto < '+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+             mostrarDato=gettext.gettext('P ( Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
          elif dato2=='':
-             mostrarDato='P ( '+str(dato1)+' < Proyecto ) = '+str('%3.3f'%(x))+' ('+prob+')'
+             mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project ) = ')+str('%3.3f'%(x))+' ('+prob+')'
          else:
-             mostrarDato='P ( '+str(dato1)+' < Proyecto < '+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+             mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
          self.escribirProb(mostrarDato)
          
 
@@ -4381,7 +4390,7 @@ class Proyecto:
 
          x=0
          titulo=self.vProbabilidades.get_title()
-         if titulo=='Probabilidad respecto al camino':         
+         if titulo==gettext.gettext('Probability related to the path'):         
        # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
            media=widgetMedia.get_text()
@@ -4422,7 +4431,7 @@ class Proyecto:
 
          # Se muestra el resultado completo en el textView
          prob='%5.2f'%(float(dato3)*100)
-         mostrarDato='P ( Proyecto < '+tiempo+' ) = '+str(prob)+' %'
+         mostrarDato=gettext.gettext('P ( Project < ')+tiempo+' ) = '+str(prob)+' %'
          
          self.escribirProb(mostrarDato)
                 
@@ -4438,7 +4447,7 @@ class Proyecto:
 
      def on_btAceptarProb_clicked(self, boton):
    titulo=self.vProbabilidades.get_title()
-        if titulo=='Probabilidad respecto al camino':
+        if titulo==gettext.gettext('Probability related to the path'):
            self.limpiarVentanaProb(0)
    else:
       self.limpiarVentanaProb(1)
@@ -4457,7 +4466,7 @@ class Proyecto:
 
      def on_wndProbabilidades_delete_event(self, ventana, evento):
         titulo=self.vProbabilidades.get_title()
-        if titulo=='Probabilidad respecto al camino':
+        if titulo==gettext.gettext('Probability related to the path'):
            self.limpiarVentanaProb(0)
    else:
       self.limpiarVentanaProb(1)
@@ -4487,7 +4496,7 @@ class Proyecto:
         it=iteracion.get_text()
         #print it, 'iteraciones'
         if it[:1]=='-':  # Nº iteraciones negativo
-           self.dialogoError('El número de iteraciones debe ser positivo')
+           self.dialogoError(gettext.gettext('The number of iterations must be positive'))
         else: # Nº iteraciones positivo
             # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
               totales=self._widgets.get_widget('iteracionesTotales')
@@ -4598,7 +4607,7 @@ class Proyecto:
 
      def on_btProbSim_clicked(self, boton):
        # Se asigna tí­tulo 
-         self.vProbabilidades.set_title('Probabilidad respecto a la simulación')
+         self.vProbabilidades.set_title(gettext.gettext('Probability related to the simulation'))
          
          # Extraigo los valores de la media y la desviación típica
          media=self._widgets.get_widget('mediaSim')
