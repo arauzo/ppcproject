@@ -236,7 +236,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mnHolguras">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">_Holguras</property>
+		      <property name="label" translatable="yes">_Slacks</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="on_mnHolguras_activate" last_modification_time="Tue, 15 May 2007 14:30:40 GMT"/>
 		    </widget>
