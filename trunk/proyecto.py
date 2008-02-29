@@ -42,17 +42,18 @@ from matplotlib.axes import Subplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
 
+#Internationalization
+APP='PPC-Project' #Program name
+DIR='po' #Directory containing translations, usually /usr/share/locale
+gettext.bindtextdomain(APP, DIR)
+gettext.textdomain(APP)
+gtk.glade.bindtextdomain(APP, DIR)
+gtk.glade.textdomain(APP)
 
 # Se crea la clase Proyecto, que englobará toda la aplicación
 
 class Proyecto:
    def __init__(self):
-      #Internationalization
-      APP='PPC-Project' #Program name
-      DIR='po' #Directory containing translations, usually /usr/share/locale
-      gtk.glade.bindtextdomain(APP, DIR)
-      gtk.glade.textdomain(APP)
-
       self._widgets = gtk.glade.XML('proyecto.glade')
       self._widgets.signal_autoconnect(self)
 
@@ -123,7 +124,7 @@ class Proyecto:
       self.vistaLista.columna[4] = gtk.TreeViewColumn(gettext.gettext('Most Probable Dur.'))
       self.vistaLista.columna[5] = gtk.TreeViewColumn(gettext.gettext('Pessimistic Dur.'))
       self.vistaLista.columna[6] = gtk.TreeViewColumn(gettext.gettext('Average Dur.'))
-      self.vistaLista.columna[7] = gtk.TreeViewColumn(gettext.gettext('Typical Desv.'))
+      self.vistaLista.columna[7] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
       self.vistaLista.columna[8] = gtk.TreeViewColumn(gettext.gettext('Resources'))
       self.vistaLista.columna[9] = gtk.TreeViewColumn(gettext.gettext('Distribution'))
       self.vistaLista.renderer=[None]*10 
@@ -275,7 +276,7 @@ class Proyecto:
       self.ordenAR=gtk.TreeModelSort(self.modeloAR)
       self.ordenAR.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaAR.columna=[None]*3
-      self.vistaListaAR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Actividad'))
+      self.vistaListaAR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaListaAR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Resource'))
       self.vistaListaAR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Needed Units'))
       self.vistaListaAR.renderer=[None]*3
