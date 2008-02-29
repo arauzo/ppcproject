@@ -517,7 +517,7 @@ class Proyecto:
                      #print 'actividad repetida'
                      #self.dialogoError('Actividad repetida')
                          
-                    else:  # Se inserta normalmente
+                  else:  # Se inserta normalmente
                        modelo[path][1] = new_text
                        self.modeloComboS.append([modelo[path][1]])
 
@@ -574,7 +574,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def actualizacion(self, modelo, path, n):
+   def actualizacion(self, modelo, path, n):
          # Actividades
         if modelo==self.modelo:  
             if self.modelo[path][n]=='':
@@ -690,7 +690,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------    
 
-     def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
+   def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
          # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
          if modelo[path][9]==gettext.gettext('Normal'):  
              modelo[path][6]=actividad[int(path)][6]=''
@@ -716,7 +716,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------       
      
-     def cargaDatos(self, tabla):     
+   def cargaDatos(self, tabla):     
         cont=1
         self._widgets.get_widget('vistaListaDatos').show()
         self.modelo.clear()
@@ -767,7 +767,7 @@ class Proyecto:
 # Valor de retorno: tabla (datos leidos)
 #-----------------------------------------------------------
 
-     def leerTxt(self, f):
+   def leerTxt(self, f):
          tabla=[]
          l=f.readline()
          while l:
@@ -792,7 +792,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def cargarTxt(self, tabla):
+   def cargarTxt(self, tabla):
       cont=1
       self._widgets.get_widget('vistaListaDatos').show()
       for linea in tabla:
@@ -818,7 +818,7 @@ class Proyecto:
 # Valor de retorno: modelo (interfaz)
 #-----------------------------------------------------------
 
-     def comprobarSig(self, modelo, path, new_text):
+   def comprobarSig(self, modelo, path, new_text):
         # Se introducen en una lista las etiquetas de las actividades
         actividades=self.actividades2Lista()
 
@@ -842,7 +842,7 @@ class Proyecto:
 
                       else: # Si se encontraba anteriormente, lo más probable es que se intenten borrar todas las siguientes excepto esa
                           modelo[path][2] = modificacion[0]
-                     self.actividad[int(path)][2]=modelo[path][2]
+                          self.actividad[int(path)][2]=modelo[path][2]
            
             else:  # Al intentar introducir más de un elemento, estoy añadiendo manualmente o intentando borrar
                 c=0  # Controla condiciones erróneas
@@ -855,7 +855,7 @@ class Proyecto:
                             c+=1
                         else:
                             if n in anterior:  # Si se encuentra ya introducida como siguiente
-                d+=1
+                               d+=1
                 
                 if c==0: # Si no se da ninguno de los dos primeros casos
                     cadena=self.lista2Cadena2(modificacion) # Pasamos la lista a cadena para mostrarla en la interfaz
@@ -879,7 +879,7 @@ class Proyecto:
 # Valor de retorno: modelo (interfaz modificada)
 #-----------------------------------------------------------
 
-     def modificarSig(self, modelo, original, nuevo):
+   def modificarSig(self, modelo, original, nuevo):
          for a in range(len(self.actividad)):
              if original in self.actividad[a][2]: # Si original está como siguiente de alguna actividad
                  #print '1'
@@ -910,7 +910,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def actualizarColSig(self, datos):
+   def actualizarColSig(self, datos):
           for m in range(len(self.modelo)):
              if datos[m][2]==[]:
                 self.modelo[m][2]=''
@@ -937,7 +937,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------      
      
-     def actualizarColR(self, columnaRec):
+   def actualizarColR(self, columnaRec):
         # Se actualiza la lista de actividades
         for n in range(len(self.actividad)):
             self.actividad[n][8]=columnaRec[n]
@@ -968,7 +968,7 @@ class Proyecto:
 #                         unid. de recurso necesarias por cada actividad)
 #----------------------------------------------------------- 
      
-     def leerPSPLIB(self, f):
+   def leerPSPLIB(self, f):
          prelaciones=[]
          asig=[]
          rec=[]
@@ -1018,7 +1018,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
      
-     def cargarPSPLIB(self, prelaciones, rec, asig):
+   def cargarPSPLIB(self, prelaciones, rec, asig):
          # Se actualizan las actividades
          self.modelo.clear()
          self.actividad=[]
@@ -1131,7 +1131,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
      
-     def actualizarColSigPSPLIB(self, prelacion):
+   def actualizarColSigPSPLIB(self, prelacion):
           longitud=len(prelacion)
           for m in range(len(self.modelo)):
               if prelacion[m]!=prelacion[0] and prelacion[m]!=prelacion[longitud-1]:
@@ -1160,7 +1160,7 @@ class Proyecto:
 #                   1 (valores correctos)
 #----------------------------------------------------------- 
      
-     def comprobarDuraciones(self, a, b, m):
+   def comprobarDuraciones(self, a, b, m):
          if ( (a<b and m<=b and m>=a) or (a==b and b==m)):
              return 1 
          else:
@@ -1177,7 +1177,7 @@ class Proyecto:
 #                   repetidas (lista de actividades repetidas)
 #-----------------------------------------------------------
 
-     def actividadesRepetidas(self, actividad):
+   def actividadesRepetidas(self, actividad):
         error=0
         actividades=[]
         repetidas=[]
@@ -1203,7 +1203,7 @@ class Proyecto:
 #                          1 si hay error) 
 #----------------------------------------------------------- 
 
-     def comprobarActExisten(self, actividad):
+   def comprobarActExisten(self, actividad):
          error=0
          actividades=[]
          for n in range(len(actividad)):
@@ -1235,7 +1235,7 @@ class Proyecto:
 #                          1 si hay error) 
 #-----------------------------------------------------------  
 
-     def comprobarRecExisten(self, recurso):
+   def comprobarRecExisten(self, recurso):
          error=0
          recursos=[]
          for n in range(len(recurso)):
@@ -1271,7 +1271,7 @@ class Proyecto:
 #                               por proyecto usadas por las actividades)
 #-----------------------------------------------------------  
  
-     def sumarUnidadesRec(self, asignacion):
+   def sumarUnidadesRec(self, asignacion):
          unidadesRec=[]
          for n in range(len(self.recurso)): 
              if self.recurso[n][1]==gettext.gettext('Non renewable') or self.recurso[n][1]==gettext.gettext('Double restricted'):
@@ -1302,7 +1302,7 @@ class Proyecto:
 #                  actividad-recurso-unidad necesaria)
 #-----------------------------------------------------------    
      
-     def mostrarRec(self, asignacion, num): 
+   def mostrarRec(self, asignacion, num): 
         mostrarR=[]
         i=asignacion.index(asignacion[0])
         # Si el archivo tiene extensión '.sm' (PSPLIB)
@@ -1335,7 +1335,7 @@ class Proyecto:
 #                   actividad-recurso-unidad necesaria)
 #-----------------------------------------------------------    
      
-     def colR(self, m, asignacion, num):
+   def colR(self, m, asignacion, num):
         mostrar=[]
         for n in range(len(asignacion)): 
             # Si el archivo tiene extensión '.sm' (PSPLIB)   
@@ -1365,7 +1365,7 @@ class Proyecto:
 # Valor de retorno: -
 #------------------------------------------------------------
 
-     def insertamosSiguiente(self, modelo, path, texto):
+   def insertamosSiguiente(self, modelo, path, texto):
          if self.actividad[int(path)][2]!=[]:  # Si hay alguna siguiente colocada
                 modelo[path][2] = modelo[path][2] + ', ' + texto
                 self.actividad[int(path)][2]=modelo[path][2] 
@@ -1384,7 +1384,7 @@ class Proyecto:
 # Valor de retorno: cadena (cadena resultado)
 #----------------------------------------------------------- 
 
-     def lista2Cadena(self, listaCadenas, m):
+   def lista2Cadena(self, listaCadenas, m):
             cadena=''
             for n in listaCadenas[m]:
                 if cadena!='':
@@ -1403,7 +1403,7 @@ class Proyecto:
 # Valor de retorno: cadena (cadena resultado)
 #----------------------------------------------------------- 
 
-     def lista2Cadena2(self, lista):
+   def lista2Cadena2(self, lista):
           cadena=''
           for n in lista:
                 if cadena!='':
@@ -1423,7 +1423,7 @@ class Proyecto:
 # Valor de retorno: lista (lista resultado)
 #----------------------------------------------------------- 
    
-     def texto2Lista(self, texto):
+   def texto2Lista(self, texto):
          lista = []
          if texto!='':
             for a in texto.split(','):
@@ -1441,7 +1441,7 @@ class Proyecto:
 # Valor de retorno: listaAct (lista de actividades)
 #-----------------------------------------------------------
 
-     def actividades2Lista(self):
+   def actividades2Lista(self):
         listaAct=[]
         for n in self.actividad:
              listaAct.append(n[1])
@@ -1463,7 +1463,7 @@ class Proyecto:
 #                   dTipica (desviación típica calculada)
 #----------------------------------------------------------- 
      
-     def calcularMediaYDTipica(self, distribucion, a, b, m):
+   def calcularMediaYDTipica(self, distribucion, a, b, m):
          # Si el tipo de distribución es Beta
          if distribucion==gettext.gettext('Beta'):
                  #print 'beta'
@@ -1497,7 +1497,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def mostrarTextView(self, widget, valor):
+   def mostrarTextView(self, widget, valor):
         bufer=gtk.TextBuffer()
         widget.set_buffer(bufer)
         iterator=bufer.get_iter_at_line(0)
@@ -1513,7 +1513,7 @@ class Proyecto:
 # Valor de retorno: - 
 #----------------------------------------------------------- 
       
-     def asignarTitulo(self, directorio):
+   def asignarTitulo(self, directorio):
          titulo=basename(directorio)
          ubicacion=directorio[:-(len(titulo)+1)]
          if ubicacion=='': 
@@ -1538,7 +1538,7 @@ class Proyecto:
 # Valor de retorno: grafoRenumerado (grafo final)
 #-----------------------------------------------------------  
 
-     def pertFinal(self):
+   def pertFinal(self):
         # Se genera el grafo Pert
         successors = self.tablaSucesoras(self.actividad)
         grafo = pert.Pert()
@@ -1567,7 +1567,7 @@ class Proyecto:
 # Valor de retorno: successors(diccionario con las actividades y sus sucesoras)
 #-----------------------------------------------------------             
     
-     def tablaSucesoras(self, actividades):
+   def tablaSucesoras(self, actividades):
          successors={}
          for n in range(len(actividades)):
              successors[actividades[n][1]]=actividades[n][2]
@@ -1582,7 +1582,7 @@ class Proyecto:
 # Valor de retorno: nodos (lista de nodos)
 #-----------------------------------------------------------  
 
-     def listaNodos(self, actividadesGrafo):
+   def listaNodos(self, actividadesGrafo):
         # Se crea una lista con los nodos del grafo
         nodos=[]
         for g in actividadesGrafo:
@@ -1614,7 +1614,7 @@ class Proyecto:
 # Valor de retorno: dPrelaciones (diccionario con las prelaciones)
 #-----------------------------------------------------------
 
-     def tablaPrelaciones(self, actividadesGrafo, nodos):
+   def tablaPrelaciones(self, actividadesGrafo, nodos):
         dPrelaciones={}
         for n in nodos:
            #print n, 'n'
@@ -1641,7 +1641,7 @@ class Proyecto:
 # Valor de retorno: reordenado (diccionario con los niveles del grafo)
 #-----------------------------------------------------------
 
-     def demoucron(self, actividadesGrafo, nodos):
+   def demoucron(self, actividadesGrafo, nodos):
          # Se obtiene un diccionario con las prelaciones
          tPrelaciones=self.tablaPrelaciones(actividadesGrafo, nodos)
  
@@ -1658,7 +1658,7 @@ class Proyecto:
          #print v, 'v'
 
          # Se van realizando los respectivos cálculos del algoritmo 
-    num=1
+         num=1
          nivel={}
          valor=c=0
          for d in nodos:
@@ -1670,7 +1670,7 @@ class Proyecto:
                      for a in n:
                        #print a, 'a'
                        #print v[m], tPrelaciones[m,n], 'antes'
-                  v[m]=v[m]-tPrelaciones[m,a]
+                       v[m]=v[m]-tPrelaciones[m,a]
                        #print v[m], 'despues'
             valor+=1
 
@@ -1709,18 +1709,18 @@ class Proyecto:
 # Valor de retorno: nuevoGrafo (grafo renumerardo)
 #-----------------------------------------------------------
            
-     def renumerar(self, grafo, niveles):
+   def renumerar(self, grafo, niveles):
          # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
          s=1
          nuevosNodos={}
-    for m in niveles:
-        if len(niveles[m])==1:
+         for m in niveles:
+            if len(niveles[m])==1:
                 nuevosNodos[niveles[m][0]]=s
-               s+=1
-          else:
-                 for a in niveles[m]:
+                s+=1
+            else:
+               for a in niveles[m]:
                   nuevosNodos[a]=s            
-         s+=1
+               s+=1
 
          # Se crea un nuevo grafo
          nuevoGrafo = pert.Pert()
@@ -1783,7 +1783,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def ventanaZaderenko(self):
+   def ventanaZaderenko(self):
         informacionCaminos=[]
 
         # Se crea el grafo Pert y se renumera
@@ -1852,7 +1852,7 @@ class Proyecto:
 # Valor de retorno: mZad (matriz de Zaderenko)
 #-----------------------------------------------------------  
     
-     def mZad(self, actividadesGrafo, nodos, control, duracionSim): 
+   def mZad(self, actividadesGrafo, nodos, control, duracionSim): 
         mZad=[]
         fila=[]
 
@@ -1900,7 +1900,7 @@ class Proyecto:
 # Valor de retorno: early (lista con los tiempos early)
 #----------------------------------------------------------- 
 
-     def early(self, nodos, mZad):  
+   def early(self, nodos, mZad):  
         # Se crea una la lista de tiempos early y se inicializa a 0
         early=[]
         for n in range(len(nodos)):
@@ -1919,7 +1919,7 @@ class Proyecto:
                         mayor=aux
                     aux=0 
                     #print mayor
-       early[n]=mayor
+            early[n]=mayor
             #print early
         for e in range(len(early)):
             early[e]=float('%5.2f'%(float(early[e])))
@@ -1937,7 +1937,7 @@ class Proyecto:
 # Valor de retorno: last (lista con los tiempos last)
 #----------------------------------------------------------- 
 
-     def last(self, nodos, early, mZad): 
+   def last(self, nodos, early, mZad): 
         #Se cambian filas por columnas en mZad para usarla en el calculo de los tiempos last
         for n in range(len(nodos)):
             for m in range(len(nodos)):
@@ -1989,7 +1989,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
   
-     def zaderenko(self, early, last, nodos, mZad):
+   def zaderenko(self, early, last, nodos, mZad):
         # Se prepara la matriz de Zaderenko y los tiempos early y last para mostrarlos en la interfaz
         linea='______________'
         filas=''
@@ -2052,7 +2052,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def mostrarCaminosZad(self, modelo, criticos, informacionCaminos):
+   def mostrarCaminosZad(self, modelo, criticos, informacionCaminos):
         #Se cambia el formato de los caminos para mostrarlos en la interfaz
         camino=[]
         for n in range(len(informacionCaminos)):
@@ -2095,7 +2095,7 @@ class Proyecto:
 #----------------------------------------------------------- 
 #LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
       
-     def actCriticas(self, holguras, actividadesGrafo):  
+   def actCriticas(self, holguras, actividadesGrafo):  
          actividades=actividadesGrafo.values()         
          nuevas=[]
          for n in range(len(actividadesGrafo)):
@@ -2122,7 +2122,7 @@ class Proyecto:
 # Valor de retorno: caminosCriticos (lista de caminos crí­ticos)
 #-----------------------------------------------------------  
 
-     def grafoCriticas(self, actCriticas):
+   def grafoCriticas(self, actCriticas):
           # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
           sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
           #print sucesorasCriticas, 'suc criticas'
@@ -2148,7 +2148,7 @@ class Proyecto:
 #                   las actividades críticas y sus sucesoras)
 #-----------------------------------------------------------       
 
-     def tablaSucesorasCriticas(self, criticas):
+   def tablaSucesorasCriticas(self, criticas):
          cr=[]
          for n in criticas:
              cr.append(n[0])
@@ -2185,7 +2185,7 @@ class Proyecto:
 # Valor de retorno: criticos (lista con los caminos marcados)
 #-----------------------------------------------------------  
 
-     def caminosCriticos(self, caminos, caminosCriticos):
+   def caminosCriticos(self, caminos, caminosCriticos):
         # Se buscan los caminos criticos entre todos los caminos y se marca en la lista con un 1
         # Esta lista de 0 y 1 nos servirá para saber cuáles son los criticos a la hora de mostrarlos
 
@@ -2216,7 +2216,7 @@ class Proyecto:
 #                   t (desviación tí­pica)
 #----------------------------------------------------------- 
       
-     def mediaYdTipica(self, camino):
+   def mediaYdTipica(self, camino):
 
          # Se calcula la duración de cada camino. Se suman las duraciones de
          # todas las actividades que forman dicho camino.
@@ -2261,7 +2261,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
     
-     def mostrarActividades(self, modelo, actividadesGrafo, grafo):
+   def mostrarActividades(self, modelo, actividadesGrafo, grafo):
         self.vActividades.show()         
 
         # Se muestran las actividades y sus nodos inicio y fin
@@ -2305,7 +2305,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def ventanaHolguras(self):
+   def ventanaHolguras(self):
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
     
@@ -2339,7 +2339,7 @@ class Proyecto:
 #                              tipos de holguras)
 #-----------------------------------------------------------
     
-     def holguras(self, grafo, early, last, duraciones):  
+   def holguras(self, grafo, early, last, duraciones):  
         holguras=[]
         #print grafo
         for g in grafo:
@@ -2355,12 +2355,12 @@ class Proyecto:
             if grafo[inicio+1, fin+1][0] in actividades and self.actividad[n][6]!='':
                  for n in range(len(self.actividad)):
                     if grafo[inicio+1, fin+1][0]==self.actividad[n][1]:
-         if duraciones==[]: # Es llamada desde cualquier sitio excepto desde simulación
+                       if duraciones==[]: # Es llamada desde cualquier sitio excepto desde simulación
                            t=last[fin] - early[inicio] - float(self.actividad[n][6])
                            l=early[fin] - early[inicio] - float(self.actividad[n][6])
                            i=early[fin] - last[inicio] - float(self.actividad[n][6])
-         else:   # Es llamada desde simulación
-            t=last[fin] - early[inicio] - float('%5.2f'%(duraciones[n]))
+                       else:   # Es llamada desde simulación
+                           t=last[fin] - early[inicio] - float('%5.2f'%(duraciones[n]))
                            l=early[fin] - early[inicio] - float('%5.2f'%(duraciones[n]))
                            i=early[fin] - last[inicio] - float('%5.2f'%(duraciones[n]))
 
@@ -2386,7 +2386,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def mostrarHolguras(self, modelo, holguras):
+   def mostrarHolguras(self, modelo, holguras):
         self.vHolguras.show()  
 
         modelo.clear()
@@ -2408,7 +2408,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def calcularCaminos(self):
+   def calcularCaminos(self):
         # Se comprueba que exista algún grafo
         if self.actividad==[]:
            self.dialogoError(gettext.gettext('A graph is needed to calculate its paths'))
@@ -2444,7 +2444,7 @@ class Proyecto:
 # Valor de retorno: caminosSinBeginEnd (lista con todos los caminos del grafo)
 #-----------------------------------------------------------  
 
-     def buscarCaminos(self, grafo):  
+   def buscarCaminos(self, grafo):  
         caminos=[]
         caminos=graph.findAllPaths(grafo, 'Begin', 'End')
 
@@ -2474,7 +2474,7 @@ class Proyecto:
 
 # Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
 
-     def asignarRecursos(self):
+   def asignarRecursos(self):
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
             self.dialogoError(gettext.gettext('No activities introduced'))
@@ -2505,7 +2505,7 @@ class Proyecto:
 # Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
 #----------------------------------------------------------- 
 
-     def simulacion(self, n):
+   def simulacion(self, n):
         simulacion=[]
         for i in range(n):
             #print i+1, 'nº iteracion'
@@ -2516,48 +2516,48 @@ class Proyecto:
                 # Si la actividad tiene una distribución 'uniforme'
                 if distribucion==gettext.gettext('Uniform'):
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
-         if self.actividad[m][3]!=self.actividad[m][5]:
+                       if self.actividad[m][3]!=self.actividad[m][5]:
                              valor=self.generaAleatoriosUniforme(float(self.actividad[m][3]), float(self.actividad[m][5]))
-         else: # Si d.optimista=d.pesimista
-            valor=self.actividad[m][3]
+                       else: # Si d.optimista=d.pesimista
+                          valor=self.actividad[m][3]
                     else:
                        self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
-             return
+                       return
  
                 # Si la actividad tiene una distribución 'beta'
                 elif distribucion==gettext.gettext('Beta'):
                      if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
-         if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
+                        if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
                              mean, stdev, shape_a, shape_b=self.datosBeta(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
                         #print "Mean=", mean, "Stdev=", stdev
                         #print "shape_a=", shape_a, "shape_b=", shape_b
                              valor=self.generaAleatoriosBeta(float(self.actividad[m][3]), float(self.actividad[m][5]), float(shape_a), float(shape_b))
-         else:  # Si d.optimista=d.pesimista=d.mas probable
-            valor=self.actividad[m][3]
+                        else:  # Si d.optimista=d.pesimista=d.mas probable
+                           valor=self.actividad[m][3]
                      else:
                        self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
-          return
+                       return
 
                 # Si la actividad tiene una distribución 'triangular'
                 elif distribucion==gettext.gettext('Triangular'):
                     if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
-         if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
+                       if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
                              valor=self.generaAleatoriosTriangular(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
-         else:   # Si d.optimista=d.pesimista=d.mas probable
-            valor=self.actividad[m][3]
+                       else:   # Si d.optimista=d.pesimista=d.mas probable
+                          valor=self.actividad[m][3]
                     else:
                        self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
-             return
+                       return
                 # Si la actividad tiene una distribución 'normal'
                 else:
                     if self.actividad[m][6]!='' and self.actividad[m][7]!='':
-         if float(self.actividad[m][7])!=0.00:
+                       if float(self.actividad[m][7])!=0.00:
                              valor=self.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
-         else:   # Si d.tipica=0
-            valor=self.actividad[m][6]
+                       else:   # Si d.tipica=0
+                          valor=self.actividad[m][6]
                     else:
                        self.dialogoError(gettext.gettext('The average duration and the typical deviation of this activity must be introduced')) 
-             return
+                       return
                 sim.append(float(valor))
                 #print sim, 'sim'
             simulacion.append(sim)
@@ -2576,7 +2576,7 @@ class Proyecto:
 # Valor de retorno: unif (número aleatorio)
 #----------------------------------------------------------- 
 
-     def generaAleatoriosUniforme(self, op, pes):
+   def generaAleatoriosUniforme(self, op, pes):
         #print "\n *** Uniform(",op,pes,")"
         unif=random.uniform(op,pes)
         return unif
@@ -2595,13 +2595,13 @@ class Proyecto:
 # Valor de retorno: beta (número aleatorio)
 #----------------------------------------------------------- 
 
-     def generaAleatoriosBeta(self, op, pes, shape_a, shape_b):
+   def generaAleatoriosBeta(self, op, pes, shape_a, shape_b):
         #mean, stdev, shape_a, shape_b=self.datosBeta(op, mode, pes)
    #print "Mean=", mean, "Stdev=", stdev
    #print "shape_a=", shape_a, "shape_b=", shape_b
    #for i in range(n):
-   beta=random.betavariate(shape_a,shape_b)*(pes-op) + op
-        return beta
+      beta=random.betavariate(shape_a,shape_b)*(pes-op) + op
+      return beta
 
 
 #*******************************************************************
@@ -2619,14 +2619,14 @@ class Proyecto:
 #                    shape_b (shape factor)
 #----------------------------------------------------------- 
 
-     def datosBeta(self, op, mode, pes):
+   def datosBeta(self, op, mode, pes):
         #print "\n *** Beta(",op,mode,pes,")"
-        mean  = (op + 4*mode + pes) / 6.0
-   stdev = (pes - op) / 6.0
-   shape_a = ((mean - op) / (pes-op)) * ((mean-op)*(pes-mean)/stdev**2 - 1)
-   shape_b = ((pes-mean)/(mean-op)) * shape_a
+      mean  = (op + 4*mode + pes) / 6.0
+      stdev = (pes - op) / 6.0
+      shape_a = ((mean - op) / (pes-op)) * ((mean-op)*(pes-mean)/stdev**2 - 1)
+      shape_b = ((pes-mean)/(mean-op)) * shape_a
 
-        return mean, stdev, shape_a, shape_b
+      return mean, stdev, shape_a, shape_b
 
 
 #******************************************************************
@@ -2641,23 +2641,23 @@ class Proyecto:
 # Valor de retorno: triang (número aleatorio)
 #----------------------------------------------------------- 
    
-     def generaAleatoriosTriangular(self, op, mode, pes):
-   #print "\n *** Triangle(",op,mode,pes,")"
-        """
-   Generates a random number in a triangular distribution in [op, pes]
-   with mode
-   """
-   unif = random.random()  #[0,1]
+   def generaAleatoriosTriangular(self, op, mode, pes):
+      #print "\n *** Triangle(",op,mode,pes,")"
+      """
+      Generates a random number in a triangular distribution in [op, pes]
+      with mode
+      """
+      unif = random.random()  #[0,1]
         
       if unif <= (mode-op) / (pes-op):
          aux = unif * (pes-op) * (mode-op)
          triang = op + math.sqrt(aux)
-        else:
-               aux = (pes-op) * (pes-mode) * (1-unif)
+      else:
+         aux = (pes-op) * (pes-mode) * (1-unif)
          triang = pes - math.sqrt(aux)
 
-   #triang=self.trianglevariate(op,mode,pes) Función no usada
-        return triang
+      #triang=self.trianglevariate(op,mode,pes) Función no usada
+      return triang
 
 
 #*******************************************************************
@@ -2671,10 +2671,10 @@ class Proyecto:
 # Valor de retorno: norm (número aleatorio)
 #----------------------------------------------------------- 
 
-     def generaAleatoriosNormal(self, mean, stdev):
+   def generaAleatoriosNormal(self, mean, stdev):
          #print "\n *** Normal(",mean,stdev,")"
-    norm=random.gauss(mean,stdev)
-         return norm
+      norm=random.gauss(mean,stdev)
+      return norm
 
 
 #*******************************************************************
@@ -2690,7 +2690,7 @@ class Proyecto:
 #                   Fr (frecuencias relativas)
 #----------------------------------------------------------- 
 
-     def calcularFrecuencias(self, dMax, dMin, itTotales, N):
+   def calcularFrecuencias(self, dMax, dMin, itTotales, N):
         Fa=[]
         Fr=[]
         # Se inicializa el vector de F.Absolutas
@@ -2724,7 +2724,7 @@ class Proyecto:
 # Valor de retorno: x (posición)
 #----------------------------------------------------------- 
 
-     def posicion(self, d, dMax, dMin, N):
+   def posicion(self, d, dMax, dMin, N):
         x = int ( ((d-dMin)/(dMax-dMin)) * N )
         return x
 
@@ -2742,7 +2742,7 @@ class Proyecto:
 # Valor de retorno: d (duración)
 #----------------------------------------------------------- 
 
-     def duracion(self, x, dMax, dMin, N):
+   def duracion(self, x, dMax, dMin, N):
         d = ( x*(dMax-dMin)/N ) + dMin
         return d
 
@@ -2759,7 +2759,7 @@ class Proyecto:
 # Valor de retorno: - 
 #-----------------------------------------------------------
 
-     def mostrarFrecuencias(self, intervalos, Fa, Fr):
+   def mostrarFrecuencias(self, intervalos, Fa, Fr):
         lineas=''
         l='___________________'
         lineas+=gettext.gettext('Durations')
@@ -2804,51 +2804,51 @@ class Proyecto:
 # Valor de retorno: - 
 #-----------------------------------------------------------
 
-     def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
-        #Se extraen los caminos crí­ticos
-        holguras=self.holguras(grafo.activities, early, last, duraciones)  # Holguras de cada actividad
-        actCriticas=self.actCriticas(holguras, grafo.activities)  # Se extraen las act. crí­ticas
-        criticos=self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
+   def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
+      #Se extraen los caminos crí­ticos
+      holguras=self.holguras(grafo.activities, early, last, duraciones)  # Holguras de cada actividad
+      actCriticas=self.actCriticas(holguras, grafo.activities)  # Se extraen las act. crí­ticas
+      criticos=self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
 
-   # Se extraen todos los caminos (crí­ticos o no) del grafo original
-        successors = self.tablaSucesoras(self.actividad)
-        g=graph.roy(successors)
-        caminos=self.buscarCaminos(g) 
+      # Se extraen todos los caminos (crí­ticos o no) del grafo original
+      successors = self.tablaSucesoras(self.actividad)
+      g=graph.roy(successors)
+      caminos=self.buscarCaminos(g) 
    
-   # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
-   caminosCriticos=[]
-   for c in criticos:
-      if c in caminos:
-      caminosCriticos.append(c)
-   #print caminosCriticos, 'caminos criticos'
+      # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
+      caminosCriticos=[]
+      for c in criticos:
+         if c in caminos:
+            caminosCriticos.append(c)
+      #print caminosCriticos, 'caminos criticos'
 
-        # Se pasan todos los caminos a formato cadena
-        nuevosCaminos=[]
-        for c in caminosCriticos:
-          s=''
-          for m in c:
-             if s!='':
-                 s+=' -> '
-                 s+=str(m)
-             else:
-                 s+=str(m)
-             nuevo=[s]
-          nuevosCaminos.append(nuevo)
-        #print nuevosCaminos, 'formato'
+      # Se pasan todos los caminos a formato cadena
+      nuevosCaminos=[]
+      for c in caminosCriticos:
+         s=''
+         for m in c:
+            if s!='':
+               s+=' -> '
+               s+=str(m)
+            else:
+               s+=str(m)
+         nuevo=[s]
+         nuevosCaminos.append(nuevo)
+         #print nuevosCaminos, 'formato'
 
-        # Se establece la criticidad de cada camino
-        for c in nuevosCaminos:
-           if c[0] not in self.criticidad:
-              self.criticidad[c[0]]=1
-           else:
-              self.criticidad[c[0]]+=1
+      # Se establece la criticidad de cada camino
+      for c in nuevosCaminos:
+         if c[0] not in self.criticidad:
+            self.criticidad[c[0]]=1
+         else:
+            self.criticidad[c[0]]+=1
         #print self.criticidad
 
-        # Se muestran los caminos y el í­ndice de criticidad en la interfaz
-        self.modeloC.clear()
-        for c in self.criticidad:
-           n=self.criticidad[c]
-           self.modeloC.append([n, str('%3.2f'%((float(n)/itTotales)*100))+'%', c])
+      # Se muestran los caminos y el í­ndice de criticidad en la interfaz
+      self.modeloC.clear()
+      for c in self.criticidad:
+         n=self.criticidad[c]
+         self.modeloC.append([n, str('%3.2f'%((float(n)/itTotales)*100))+'%', c])
 
 
 #*******************************************************************
@@ -2865,7 +2865,7 @@ class Proyecto:
 # Valor de retorno: s (texto a mostrar en formato CSV) 
 #-----------------------------------------------------------
 
-     def datosSimulacion2csv(self, duraciones, iteraciones, media, dTipica, modeloCriticidad): 
+   def datosSimulacion2csv(self, duraciones, iteraciones, media, dTipica, modeloCriticidad): 
         s=''
         s+=gettext.gettext('SIMULATION DATA')
         s+='\n'
@@ -2906,7 +2906,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def limpiarVentanaSim(self):
+   def limpiarVentanaSim(self):
         # Se limpian los datos
         iteracion=self._widgets.get_widget('iteracion')
         iteracion.set_text('')
@@ -2919,8 +2919,8 @@ class Proyecto:
         frecuencias=self._widgets.get_widget('vistaFrecuencias')
         self.mostrarTextView(frecuencias, '')
         self.modeloC.clear()
-   if len(self.boxS)>0:
-      self.hBoxSim.remove(self.boxS)
+        if len(self.boxS)>0:
+           self.hBoxSim.remove(self.boxS)
 
 
 #*******************************************************************************************************************
@@ -2938,7 +2938,7 @@ class Proyecto:
 #                   dTipica (desviación tí­pica)
 #-----------------------------------------------------------  
 
-     def extraerMediaYDTipica(self):
+   def extraerMediaYDTipica(self):
          vistaListaZ = self._widgets.get_widget('vistaListaZad')
          sel = vistaListaZ.get_selection()
          modo= sel.get_mode()
@@ -2961,7 +2961,7 @@ class Proyecto:
 # Valor de retorno: p (probabilidad calculada)
 #-----------------------------------------------------------  
 
-     def calcularProb(self, dato1, dato2, media, dTipica):
+   def calcularProb(self, dato1, dato2, media, dTipica):
          # Se hacen los cálculos
          if dato1=='': # Si no se introduce el dato1
               x=(float(dato2)-float(media))/float(dTipica)
@@ -2977,11 +2977,11 @@ class Proyecto:
             if float(dato1)>float(dato2):
                self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
             else:
-                  x1=(float(dato1)-float(media))/float(dTipica)
-                  p1=float(scipy.stats.distributions.norm.cdf(x1))
-                 x2=(float(dato2)-float(media))/float(dTipica)
-                 p2=float(scipy.stats.distributions.norm.cdf(x2))
-                 p=p2-p1
+               x1=(float(dato1)-float(media))/float(dTipica)
+               p1=float(scipy.stats.distributions.norm.cdf(x1))
+               x2=(float(dato2)-float(media))/float(dTipica)
+               p2=float(scipy.stats.distributions.norm.cdf(x2))
+               p=p2-p1
       
 
          #print p
@@ -3000,52 +3000,52 @@ class Proyecto:
 # Valor de retorno: x (probabilidad calculada)
 #-----------------------------------------------------------
 
-     def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
-   if dato1=='':
+   def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
+      if dato1=='':
            x=0
            for n in range(len(intervalos)):
       #print intervalos[n][0], intervalos[n][1], dato2
                 if float(intervalos[n][0])<float(dato2):
-        if float(intervalos[n][0])<float(dato2)<float(intervalos[n][1]):
-                     #print 'entre'
-           s=self.Fa[n]/float(itTotales)
-                     #print s, 's'
-                     x+=s
-                  else:
-                s=self.Fa[n]/float(itTotales)
-                     #print s, 's'
-                     x+=s
+                   if float(intervalos[n][0])<float(dato2)<float(intervalos[n][1]):
+                      #print 'entre'
+                      s=self.Fa[n]/float(itTotales)
+                      #print s, 's'
+                      x+=s
+                   else:
+                      s=self.Fa[n]/float(itTotales)
+                      #print s, 's'
+                      x+=s
            #print x, 'suma'
 
-   elif dato2=='':
+      elif dato2=='':
            x=0
            for n in range(len(intervalos)):
       #print intervalos[n][0], intervalos[n][1], dato1
                 if float(intervalos[n][1])>float(dato1):
-        if float(intervalos[n][0])<float(dato1)<float(intervalos[n][1]):
-           s=self.Fa[n]/float(itTotales)
-                     #print s, 's'
-                     x+=s
-        else:
-                  s=self.Fa[n]/float(itTotales)
-                     #print s, 's'
-                     x+=s
+                   if float(intervalos[n][0])<float(dato1)<float(intervalos[n][1]):
+                      s=self.Fa[n]/float(itTotales)
+                      #print s, 's'
+                      x+=s
+                   else:
+                      s=self.Fa[n]/float(itTotales)
+                      #print s, 's'
+                      x+=s
            #print x, 'suma'
 
-        else:
-      if float(dato1)>float(dato2):
-                     self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
-           else:
-                        x=0
-                        for n in range(len(intervalos)):
-               #print intervalos[n][0], dato2, intervalos[n][1], dato1
-                      if float(intervalos[n][1])>float(dato1) and float(intervalos[n][0])<float(dato2):
-                                  #print 'entra'
-              s=self.Fa[n]/float(itTotales)
-                              #print s, 's'
-                              x+=s
-                      #print x, 'suma'
-        return x           
+      else:
+         if float(dato1)>float(dato2):
+            self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
+         else:
+            x=0
+            for n in range(len(intervalos)):
+            #print intervalos[n][0], dato2, intervalos[n][1], dato1
+               if float(intervalos[n][1])>float(dato1) and float(intervalos[n][0])<float(dato2):
+                  #print 'entra'
+                  s=self.Fa[n]/float(itTotales)
+                  #print s, 's'
+                  x+=s
+                  #print x, 'suma'
+      return x           
 
 #************************************************************************
 #-----------------------------------------------------------
@@ -3056,7 +3056,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
          
-     def escribirProb(self, dato):
+   def escribirProb(self, dato):
          prob=self._widgets.get_widget('tvProbabilidades')
          prob.set_buffer(self.bufer)
          it1=self.bufer.get_start_iter()
@@ -3078,7 +3078,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def limpiarVentanaProb(self, c):
+   def limpiarVentanaProb(self, c):
         # Se limpia el bufer
         probabilidades=self._widgets.get_widget('tvProbabilidades')
         probabilidades.set_buffer(self.bufer)
@@ -3099,12 +3099,12 @@ class Proyecto:
         resultado2.set_text('')
          
         # Se elimina el grafico
-   if c==0 and len(self.vBoxProb)>1:
-      self.vBoxProb.remove(self.grafica)
-      self.grafica=gtk.Image()
-   elif len(self.box)>0:
-      self.vBoxProb.remove(self.box)
-      self.box=gtk.VBox()
+        if c==0 and len(self.vBoxProb)>1:
+           self.vBoxProb.remove(self.grafica)
+           self.grafica=gtk.Image()
+        elif len(self.box)>0:
+           self.vBoxProb.remove(self.box)
+           self.box=gtk.VBox()
 
 
 #####################################################################################################################
@@ -3123,12 +3123,12 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def abrir(self):
+   def abrir(self):
         dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
         # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.prj'
         filtro=gtk.FileFilter()
         filtro.add_pattern('*.prj')
-   filtro.add_pattern('*.txt')
+        filtro.add_pattern('*.txt')
         dialogoFicheros.add_filter(filtro)
         dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
         resultado = dialogoFicheros.run()
@@ -3140,11 +3140,11 @@ class Proyecto:
                 self.asignarTitulo(self.directorio)
                 # Se cargan los datos del fichero 
                 tabla=[]
-      if self.directorio[-4:] == '.prj':  
-          tabla=pickle.load(flectura)
+                if self.directorio[-4:] == '.prj':  
+                    tabla=pickle.load(flectura)
                     self.cargaDatos(tabla) 
-      else: # Fichero de texto
-          tabla=self.leerTxt(flectura)
+                else: # Fichero de texto
+                    tabla=self.leerTxt(flectura)
                     self.cargarTxt(tabla)
 
             except IOError :
@@ -3168,7 +3168,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def abrirPSPLIB(self):
+   def abrirPSPLIB(self):
         dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Import PSPLIB file"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
         # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.sm'
         filtro=gtk.FileFilter()
@@ -3212,14 +3212,14 @@ class Proyecto:
 #-----------------------------------------------------------
 
      
-     def guardar(self, g):
+   def guardar(self, g):
         #print self.directorio
         if g==1:
            dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-              dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
+           dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
            resultado = dialogoGuardar.run()
         else:
-               dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save as..."),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+           dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save as..."),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
            dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
            resultado = dialogoGuardar.run()
         if resultado == gtk.RESPONSE_OK:
@@ -3227,17 +3227,17 @@ class Proyecto:
                 # Se abre el fichero en modo escritura, se añade la extensión '.prj' al final del nombre
                 # asignado al proyecto y se coloca el nombre del fichero como tí­tulo del proyecto 
                 self.directorio=dialogoGuardar.get_filename()
-      print self.directorio[-4:], self.directorio[:-4]
+                print self.directorio[-4:], self.directorio[:-4]
                 if self.directorio[-4:] == '.prj':
                     #print '1'
                     fescritura=open(self.directorio,'w')
                     titulo=basename(self.directorio)
                     ubicacion=self.directorio[:-(len(titulo)+1)]
                 elif self.directorio[-4:] == '.txt':
-          fescritura=open(self.directorio[:-4]+'.prj','w')
+                    fescritura=open(self.directorio[:-4]+'.prj','w')
                     titulo=basename(self.directorio+'.prj')
                     ubicacion=self.directorio[:-(len(titulo)-3)]
-      else:
+                else:
                     #print '2', self.directorio
                     fescritura=open(self.directorio+'.prj','w')
                     titulo=basename(self.directorio+'.prj')
@@ -3267,11 +3267,11 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------       
      
-     def guardado(self, nombre):
+   def guardado(self, nombre):
         if nombre[-4:] != '.prj':
-      if nombre[-4:]=='.txt':
-      nombre=nombre[:-4]+'.prj'
-      else:
+           if nombre[-4:]=='.txt':
+              nombre=nombre[:-4]+'.prj'
+           else:
               nombre=nombre+'.prj'
         try:
              # Se abre el fichero en modo escritura y se coloca el nombre del fichero como tí­tulo del proyecto 
@@ -3298,7 +3298,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------   
 
-     def guardarCsv(self, texto):
+   def guardarCsv(self, texto):
         dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
         dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
         resultado = dialogoGuardar.run()
@@ -3334,7 +3334,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
          
-     def dialogoSalir(self):
+   def dialogoSalir(self):
         dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
         label=gtk.Label(gettext.gettext('Are you sure you want to quit PPC-Project?'))
         dialogo.vbox.pack_start(label,True,True,10)
@@ -3359,7 +3359,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
          
-     def dialogoProyectoAbierto(self, c):
+   def dialogoProyectoAbierto(self, c):
         dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
         label=gtk.Label(gettext.gettext('The actual project has been modified. Do you want to save the changes?'))
         dialogo.vbox.pack_start(label,True,True,10)
@@ -3373,13 +3373,13 @@ class Proyecto:
                self.dialogoSalir()
             else:
                # Se limpian todas las estructuras de datos
-             self.modelo.clear()
-                self.actividad=[]
-           self.modeloR.clear()
-           self.recurso=[]
-           self.modeloAR.clear()
-           self.asignacion=[]
-           self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
+               self.modelo.clear()
+               self.actividad=[]
+               self.modeloR.clear()
+               self.recurso=[]
+               self.modeloAR.clear()
+               self.asignacion=[]
+               self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
 
         dialogo.destroy()
 
@@ -3394,7 +3394,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def dialogoRec(self, tipo):
+   def dialogoRec(self, tipo):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
         if tipo==gettext.gettext('Renewable'):
@@ -3417,7 +3417,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def dialogoError(self, cadena):
+   def dialogoError(self, cadena):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         label=gtk.Label(cadena)
         dialogo.vbox.pack_start(label,True,True,10)
@@ -3437,7 +3437,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def errorActividadesRepetidas(self, repetidas):
+   def errorActividadesRepetidas(self, repetidas):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
             label=gtk.Label(gettext.gettext('The activity ')+' "'+actividad+'"'+gettext.gettext(' is repeated\n'))
@@ -3460,7 +3460,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def errorRecNecAct(self, datosErroneos, cadena):
+   def errorRecNecAct(self, datosErroneos, cadena):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
             label=gtk.Label(cadena+' "'+dato+'"'+ gettext.gettext(' does not exist\n'))
@@ -3483,7 +3483,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def run(self):
+   def run(self):
         self.ejecutarAplicacion()
         gtk.main()
  
@@ -3500,7 +3500,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def ejecutarAplicacion(self):
+   def ejecutarAplicacion(self):
         if len(sys.argv)>1:
             nombre=sys.argv[1]
             try:
@@ -3539,7 +3539,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_wndPrincipal_destroy(self, ventana):
+   def on_wndPrincipal_destroy(self, ventana):
         gtk.main_quit()
    
      
@@ -3559,7 +3559,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def on_mnNuevo_activate(self, menu_item):
+   def on_mnNuevo_activate(self, menu_item):
         self.introduccionDatos()
 
 #-----------------------------------------------------------
@@ -3570,7 +3570,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnAbrir_activate(self, menu_item):
+   def on_mnAbrir_activate(self, menu_item):
         self.abrir()
 
 #-----------------------------------------------------------
@@ -3582,7 +3582,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnAbrirPSPLIB_activate(self, menu_item):
+   def on_mnAbrirPSPLIB_activate(self, menu_item):
         self.abrirPSPLIB()
  
 #-----------------------------------------------------------
@@ -3593,7 +3593,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def  on_mnGuardar_activate(self, menu_item):
+   def  on_mnGuardar_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
@@ -3619,7 +3619,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnGuardarComo_activate(self, menu_item):
+   def on_mnGuardarComo_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
@@ -3640,11 +3640,11 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnCerrar_activate(self, menu_item):
+   def on_mnCerrar_activate(self, menu_item):
         if self.control==0:   # El proyecto actual ha sido guardado
            # Se limpian todas las listas de datos
-             self.modelo.clear()
-                self.actividad=[]
+           self.modelo.clear()
+           self.actividad=[]
            self.modeloR.clear()
            self.recurso=[]
            self.modeloAR.clear()
@@ -3652,7 +3652,7 @@ class Proyecto:
            self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
        
         else:                 # El proyecto actual aún no se ha guardado
-                self.dialogoProyectoAbierto(gettext.gettext('close'))
+           self.dialogoProyectoAbierto(gettext.gettext('close'))
 
 #-----------------------------------------------------------
 # Función: Acción usuario para salir de la aplicación
@@ -3662,7 +3662,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnSalir_activate(self, *args):
+   def on_mnSalir_activate(self, *args):
         if self.control==0:   # El proyecto actual ha sido guardado
             self.dialogoSalir()
         else:                 # El proyecto actual aún no se ha guardado
@@ -3683,7 +3683,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_bHerramientas_activate(self, checkMenuItem):
+   def on_bHerramientas_activate(self, checkMenuItem):
         checkMenuItem==self.bHerramientas
         if checkMenuItem.get_active():
             self.bHerramientas.show()
@@ -3699,7 +3699,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnPantallaComp_activate(self, menu_item):
+   def on_mnPantallaComp_activate(self, menu_item):
         self.vPrincipal.fullscreen()
 
 #-----------------------------------------------------------
@@ -3711,7 +3711,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnSalirPantComp_activate(self, menu_item):
+   def on_mnSalirPantComp_activate(self, menu_item):
         self.vPrincipal.unfullscreen()
 
 
@@ -3730,7 +3730,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnCrearRecursos_activate(self, menu_item):
+   def on_mnCrearRecursos_activate(self, menu_item):
         if self.recurso==[]:
             self.modeloR.append()
         self.vRecursos.show()
@@ -3745,7 +3745,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnGrafoRoy_activate(self, menu_item):
+   def on_mnGrafoRoy_activate(self, menu_item):
         # Se calcula el grafo ROY a través de la tabla de sucesoras
         successors = self.tablaSucesoras(self.actividad)
         roy = graph.roy(successors)
@@ -3770,7 +3770,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnGrafoPert_activate(self, menu_item):
+   def on_mnGrafoPert_activate(self, menu_item):
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
 
@@ -3795,7 +3795,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnActividades_activate(self, menu_item):
+   def on_mnActividades_activate(self, menu_item):
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
 
@@ -3812,7 +3812,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnZaderenko_activate(self, menu_item):
+   def on_mnZaderenko_activate(self, menu_item):
           s=0
           for a in self.actividad:
                if a[6]=='' or a[7]=='':
@@ -3832,7 +3832,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_mnHolguras_activate(self, menu_item):
+   def on_mnHolguras_activate(self, menu_item):
           s=0
           for a in self.actividad:
                if a[6]=='' or a[7]=='':
@@ -3853,7 +3853,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnSimulacion_activate(self, menu_item):
+   def on_mnSimulacion_activate(self, menu_item):
         s=0
         m=0
         for a in self.actividad:
@@ -3888,7 +3888,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
 
-     def on_mnCalcularCaminos_activate(self, menu_item):
+   def on_mnCalcularCaminos_activate(self, menu_item):
         self.calcularCaminos()
 
 
@@ -3907,7 +3907,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------
      
-     def on_mnAyuda_activate(self, menu_item):
+   def on_mnAyuda_activate(self, menu_item):
         dialogoAyuda = self.dAyuda
         dialogoAyuda.show()
 
@@ -3924,7 +3924,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------                               
 
-     def on_tbNuevo_clicked(self, boton_her):
+   def on_tbNuevo_clicked(self, boton_her):
        self.introduccionDatos()
 
 #-----------------------------------------------------------
@@ -3935,7 +3935,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------        
 
-     def on_tbAbrir_clicked(self, boton_her):
+   def on_tbAbrir_clicked(self, boton_her):
         self.abrir()
 
 #-----------------------------------------------------------
@@ -3946,7 +3946,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------        
 
-     def on_tbGuardar_clicked(self, boton_her):
+   def on_tbGuardar_clicked(self, boton_her):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
@@ -3972,11 +3972,11 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_tbCerrar_clicked(self, boton_her):
+   def on_tbCerrar_clicked(self, boton_her):
         if self.control==0:   # El proyecto actual ha sido guardado
            # Se limpian todas las listas de datos
-             self.modelo.clear()
-                self.actividad=[]
+           self.modelo.clear()
+           self.actividad=[]
            self.modeloR.clear()
            self.recurso=[]
            self.modeloAR.clear()
@@ -3994,7 +3994,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------   
      
-     def on_tbSalir_clicked(self, boton_her):  
+   def on_tbSalir_clicked(self, boton_her):  
         self.dialogoSalir()
 
 
@@ -4016,7 +4016,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndGrafoPert_delete_event(self, ventana, evento):
+   def on_wndGrafoPert_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
@@ -4037,7 +4037,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndGrafoRoy_delete_event(self, ventana, evento):
+   def on_wndGrafoRoy_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
@@ -4057,7 +4057,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
  
-     def on_btAceptarAct_clicked(self, boton):
+   def on_btAceptarAct_clicked(self, boton):
         self.vActividades.hide()
 
 #-----------------------------------------------------------
@@ -4069,7 +4069,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndActividades_delete_event(self, ventana, evento):
+   def on_wndActividades_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
@@ -4090,7 +4090,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_vistaListaZad_cursor_changed(self, vistaListaZ):
+   def on_vistaListaZad_cursor_changed(self, vistaListaZ):
         vistaListaZ = self._widgets.get_widget('vistaListaZad')
         cursor, columna = vistaListaZ.get_cursor()
         if cursor:
@@ -4109,25 +4109,25 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_btCalcularProb_clicked(self, boton):
+   def on_btCalcularProb_clicked(self, boton):
     # Extraigo los valores de la media y la desviación típica del camino que va a ser objeto del
          # cálculo de probabilidades
          media, dTipica=self.extraerMediaYDTipica()
 
          if float(dTipica)==0.00:
-      texto=gettext.gettext('Path duration is ') +'%5.2f'%(float(media))+' t.u. with 100% probability'
-      self.dialogoError(texto)
-    else:
+            texto=gettext.gettext('Path duration is ') +'%5.2f'%(float(media))+' t.u. with 100% probability'
+            self.dialogoError(texto)
+         else:
             # Se asigna tí­tulo y gráfica a la ventana de probabilidad
             self.vProbabilidades.set_title(gettext.gettext('Probability related to the path'))
             #imagen=self._widgets.get_widget('graficaProb')
-       if len(self.vBoxProb)>1:
-         self.vBoxProb.remove(self.grafica)
-          self.grafica=gtk.Image()
+         if len(self.vBoxProb)>1:
+            self.vBoxProb.remove(self.grafica)
+            self.grafica=gtk.Image()
 
             self.grafica.set_from_file('graficaNormal.gif')
             self.vBoxProb.add(self.grafica)
-       self.vBoxProb.show_all()
+            self.vBoxProb.show_all()
          
             # Se muestran la media y desviación típica en la ventana de probabilidades
             widgetMedia=self._widgets.get_widget('mediaProb')
@@ -4137,10 +4137,10 @@ class Proyecto:
             widgetdTipica.set_text(dTipica)
             widgetdTipica.set_sensitive(False)
 
-      # Se insensibilizan las casillas resultado
-      resultado1=self._widgets.get_widget('resultado1Prob')
+            # Se insensibilizan las casillas resultado
+            resultado1=self._widgets.get_widget('resultado1Prob')
             resultado1.set_sensitive(False)
-      resultado2=self._widgets.get_widget('resultado2Prob')
+            resultado2=self._widgets.get_widget('resultado2Prob')
             resultado2.set_sensitive(False)
 
             self.vProbabilidades.show()
@@ -4155,7 +4155,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_btAceptarZad_clicked(self, boton):
+   def on_btAceptarZad_clicked(self, boton):
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         self.vZaderenko.hide()
 
@@ -4168,7 +4168,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_btHolgZad_clicked(self, boton):
+   def on_btHolgZad_clicked(self, boton):
           s=0
           for a in self.actividad:
                if a[6]=='' or a[7]=='':
@@ -4189,7 +4189,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndZaderenko_delete_event(self, ventana, evento):
+   def on_wndZaderenko_delete_event(self, ventana, evento):
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         ventana.hide()
         return True
@@ -4211,7 +4211,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_btAceptarHolg_clicked(self, boton):
+   def on_btAceptarHolg_clicked(self, boton):
         self.vHolguras.hide()
 
 #-----------------------------------------------------------
@@ -4222,7 +4222,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_btZadHolg_clicked(self, boton):
+   def on_btZadHolg_clicked(self, boton):
           s=0
           for a in self.actividad:
                if a[6]=='' or a[7]=='':
@@ -4244,7 +4244,7 @@ class Proyecto:
 #-----------------------------------------------------------  
 
 
-     def on_wndHolguras_delete_event(self, ventana, evento):
+   def on_wndHolguras_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
@@ -4264,7 +4264,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_valor1Prob_activate(self, entry):
+   def on_valor1Prob_activate(self, entry):
          # Se extraen los valores de las u.d.t. de la interfaz
          valor1=self._widgets.get_widget('valor1Prob')   
          dato1=valor1.get_text()
@@ -4276,7 +4276,7 @@ class Proyecto:
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
             media=widgetMedia.get_text()
-           widgetdTipica=self._widgets.get_widget('dTipicaProb')
+            widgetdTipica=self._widgets.get_widget('dTipicaProb')
             dTipica=widgetdTipica.get_text()
          
             # Se calcula la probabilidad
@@ -4320,7 +4320,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_valor2Prob_activate(self, entry):
+   def on_valor2Prob_activate(self, entry):
          # Se extraen los valores de las u.d.t. de la interfaz
          valor1=self._widgets.get_widget('valor1Prob')   
          dato1=valor1.get_text()
@@ -4331,7 +4331,7 @@ class Proyecto:
          if titulo==gettext.gettext('Probability related to the path'):
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
-           media=widgetMedia.get_text()
+            media=widgetMedia.get_text()
             widgetdTipica=self._widgets.get_widget('dTipicaProb')
             dTipica=widgetdTipica.get_text()
          
@@ -4376,7 +4376,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_valor3Prob_activate(self, entry):
+   def on_valor3Prob_activate(self, entry):
          # Se extrae el valor de probabilidad de la interfaz
          valor3=self._widgets.get_widget('valor3Prob')   
          dato3=valor3.get_text()
@@ -4389,8 +4389,8 @@ class Proyecto:
          if titulo==gettext.gettext('Probability related to the path'):         
        # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
-           media=widgetMedia.get_text()
-           widgetdTipica=self._widgets.get_widget('dTipicaProb')
+            media=widgetMedia.get_text()
+            widgetdTipica=self._widgets.get_widget('dTipicaProb')
             dTipica=widgetdTipica.get_text()
 
             valorTabla=float(scipy.stats.distributions.norm.ppf(float(dato3)))
@@ -4412,14 +4412,14 @@ class Proyecto:
                 # Se calcula la probabilidad
                 suma=0
          for n in range(len(intervalos)):
-                   suma+=self.Fa[n]/float(itTotales)
-         if suma>float(dato3) or suma==float(dato3):
-         x=intervalos[n][1]
-                        print x, 'x'
-                        break
+            suma+=self.Fa[n]/float(itTotales)
+            if suma>float(dato3) or suma==float(dato3):
+               x=intervalos[n][1]
+               print x, 'x'
+               break
                
          if x==0:
-      return             
+            return             
          # Se muestra el resultado en la casilla correspondiente
          tiempo='%5.2f'%(float(x))+' u.d.t.'
          resultado2=self._widgets.get_widget('resultado2Prob')
@@ -4441,14 +4441,13 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btAceptarProb_clicked(self, boton):
-   titulo=self.vProbabilidades.get_title()
-        if titulo==gettext.gettext('Probability related to the path'):
-           self.limpiarVentanaProb(0)
-   else:
-      self.limpiarVentanaProb(1)
-
-        self.vProbabilidades.hide()
+   def on_btAceptarProb_clicked(self, boton):
+      titulo=self.vProbabilidades.get_title()
+      if titulo==gettext.gettext('Probability related to the path'):
+         self.limpiarVentanaProb(0)
+      else:
+         self.limpiarVentanaProb(1)
+         self.vProbabilidades.hide()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para cerrar la ventana de cálculo 
@@ -4460,12 +4459,12 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndProbabilidades_delete_event(self, ventana, evento):
+   def on_wndProbabilidades_delete_event(self, ventana, evento):
         titulo=self.vProbabilidades.get_title()
         if titulo==gettext.gettext('Probability related to the path'):
            self.limpiarVentanaProb(0)
-   else:
-      self.limpiarVentanaProb(1)
+        else:
+           self.limpiarVentanaProb(1)
   
         ventana.hide()
         return True
@@ -4486,7 +4485,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btContinuarIterando_clicked(self, boton):
+   def on_btContinuarIterando_clicked(self, boton):
       # Se extrae el número de iteraciones 
         iteracion=self._widgets.get_widget('iteracion')
         it=iteracion.get_text()
@@ -4521,31 +4520,31 @@ class Proyecto:
               
               # Zaderenko
               if simulacion==None:
-          return
-         else:
-               for s in simulacion: 
-                mZad=self.mZad(grafoRenumerado.activities, nodosN, 0, s)
+                 return
+              else:
+                 for s in simulacion: 
+                    mZad=self.mZad(grafoRenumerado.activities, nodosN, 0, s)
               early=self.early(nodosN, mZad)  
               last=self.last(nodosN, early, mZad)      
               tam=len(early)
               # Se calcula la duración del proyecto para cada simulación
-             duracionProyecto=early[tam-1]
-             #print duracionProyecto, 'duracion proyecto'  
+              duracionProyecto=early[tam-1]
+              #print duracionProyecto, 'duracion proyecto'  
               self.duraciones.append(duracionProyecto) 
-      #print self.duraciones,'duraciones simuladas'
+              #print self.duraciones,'duraciones simuladas'
               # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
               self.indiceCriticidad(grafoRenumerado, s, early, last, itTotales)
 
               # Se añaden la media y la desviación típica a la interfaz
-           duracionMedia=scipy.stats.mean(self.duraciones)
-           media=self._widgets.get_widget('mediaSim')
-             media.set_text(str(duracionMedia))
+              duracionMedia=scipy.stats.mean(self.duraciones)
+              media=self._widgets.get_widget('mediaSim')
+              media.set_text(str(duracionMedia))
 
-           desviacionTipica=scipy.stats.std(self.duraciones)
-           dTipica=self._widgets.get_widget('dTipicaSim')
-           dTipica.set_text(str(desviacionTipica))
-
-             # Se calculan los intervalos
+              desviacionTipica=scipy.stats.std(self.duraciones)
+              dTipica=self._widgets.get_widget('dTipicaSim')
+              dTipica.set_text(str(desviacionTipica))
+ 
+              # Se calculan los intervalos
               interv=[]
               N=20 # Número de intervalos
               dMax=float(max(self.duraciones)+0.00001)  # duración máxima
@@ -4553,30 +4552,30 @@ class Proyecto:
               #print dMax, 'max', dMin, 'min'
               if int(it)==int(itTotales):
                  for n in range(N):
-                      valor='['+str('%5.2f'%(self.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(self.duracion((n+1), dMax, dMin, N)))+'['       
-                      interv.append(valor)
+                    valor='['+str('%5.2f'%(self.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(self.duracion((n+1), dMax, dMin, N)))+'['       
+                    interv.append(valor)
               if self.intervalos==[]:
                  self.intervalos=interv
 
               # Se calculan las frecuencias
               self.Fa, Fr=self.calcularFrecuencias(dMax, dMin, itTotales, N)
 
-            # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
+              # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
               self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
 
-       # Dibuja histograma devolviendo los intervalos (bins) y otros datos
-               fig = Figure(figsize=(5,4), dpi=100)
-         ax = fig.add_subplot(111)
+              # Dibuja histograma devolviendo los intervalos (bins) y otros datos
+              fig = Figure(figsize=(5,4), dpi=100)
+              ax = fig.add_subplot(111)
 
-         n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
+              n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
               canvas = FigureCanvas(fig)  # a gtk.DrawingArea
               if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-      self.hBoxSim.remove(self.boxS)
-      self.boxS=gtk.VBox()
+                 self.hBoxSim.remove(self.boxS)
+                 self.boxS=gtk.VBox()
 
-              self.hBoxSim.add(self.boxS)
-         self.boxS.pack_start(canvas)
-              self.boxS.show_all()
+                 self.hBoxSim.add(self.boxS)
+                 self.boxS.pack_start(canvas)
+                 self.boxS.show_all()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para aceptar la información que
@@ -4588,7 +4587,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btAceptarSim_clicked(self, boton):
+   def on_btAceptarSim_clicked(self, boton):
         self.limpiarVentanaSim()
         self.vSimulacion.hide()
        
@@ -4601,7 +4600,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btProbSim_clicked(self, boton):
+   def on_btProbSim_clicked(self, boton):
        # Se asigna tí­tulo 
          self.vProbabilidades.set_title(gettext.gettext('Probability related to the simulation'))
          
@@ -4619,26 +4618,24 @@ class Proyecto:
          widgetdTipica.set_text(dt)
          widgetdTipica.set_sensitive(False)
 
-    # Se insensibilizan las casillas resultado
-    resultado1=self._widgets.get_widget('resultado1Prob')
+         # Se insensibilizan las casillas resultado
+         resultado1=self._widgets.get_widget('resultado1Prob')
          resultado1.set_sensitive(False)
-    resultado2=self._widgets.get_widget('resultado2Prob')
+         resultado2=self._widgets.get_widget('resultado2Prob')
          resultado2.set_sensitive(False)
 
          # Se muestra la gráfica
          fig = Figure(figsize=(5,4), dpi=100)
-    ax = fig.add_subplot(111)
-    n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
+         ax = fig.add_subplot(111)
+         n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
          canvas = FigureCanvas(fig)  # a gtk.DrawingArea
          if len(self.box)>0:
-      self.vBoxProb.remove(self.box)
-      self.box=gtk.VBox()
-
-    self.vBoxProb.add(self.box)
-    self.box.pack_end(canvas)
-         self.box.show_all()
-
-         self.vProbabilidades.show()
+            self.vBoxProb.remove(self.box)
+            self.box=gtk.VBox()
+            self.vBoxProb.add(self.box)
+            self.box.pack_end(canvas)
+            self.box.show_all()
+            self.vProbabilidades.show()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para salvar la información que
@@ -4650,7 +4647,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btGuardarSim_clicked(self, boton):
+   def on_btGuardarSim_clicked(self, boton):
       # Se extraen los datos de la interfaz
         # Media y desviación tí­pica
         media=self._widgets.get_widget('mediaSim')
@@ -4678,7 +4675,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndSimulacion_delete_event(self, ventana, evento):
+   def on_wndSimulacion_delete_event(self, ventana, evento):
         self.limpiarVentanaSim()
         ventana.hide()
         return True
@@ -4699,7 +4696,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btAceptarRec_clicked(self, boton):
+   def on_btAceptarRec_clicked(self, boton):
         self.vRecursos.hide()
         
 #-----------------------------------------------------------
@@ -4712,7 +4709,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btCancelarRec_clicked(self, boton):
+   def on_btCancelarRec_clicked(self, boton):
         if self.recurso==[]:
             self.modeloR.append()
         self.vRecursos.hide()
@@ -4726,7 +4723,7 @@ class Proyecto:
 # Valor de retorno: -
 #----------------------------------------------------------- 
 
-     def on_btAsignarRec_clicked(self, boton):
+   def on_btAsignarRec_clicked(self, boton):
         self.asignarRecursos()
  
 #-----------------------------------------------------------
@@ -4737,7 +4734,7 @@ class Proyecto:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-     def on_wndRecursos_delete_event(self, ventana, evento):
+   def on_wndRecursos_delete_event(self, ventana, evento):
         ventana.hide()
         return True
  
@@ -4758,7 +4755,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------   
 
-     def on_btAceptarAR_clicked(self, boton):
+   def on_btAceptarAR_clicked(self, boton):
         if self.asignacion==[]: 
             self.vAsignarRec.hide()
 
@@ -4786,7 +4783,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------        
 
-     def on_btCancelarAR_clicked(self, boton):
+   def on_btCancelarAR_clicked(self, boton):
         self.modeloAR.clear()
         self.asignacion=[]
         self.vAsignarRec.hide()
@@ -4801,7 +4798,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndAsignarRec_delete_event(self, ventana, evento):
+   def on_wndAsignarRec_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
@@ -4821,7 +4818,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------   
 
-     def on_btAceptarCaminos_clicked(self, boton):
+   def on_btAceptarCaminos_clicked(self, boton):
         self.vCaminos.hide()
 
 #-----------------------------------------------------------
@@ -4834,7 +4831,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
    
-     def on_btExportarCsv_clicked(self, boton): 
+   def on_btExportarCsv_clicked(self, boton): 
         # Se buscan todos los caminos 
         successors = self.tablaSucesoras(self.actividad)
         g = graph.roy(successors)
@@ -4857,7 +4854,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_wndCaminos_delete_event(self, ventana, evento):
+   def on_wndCaminos_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
@@ -4877,7 +4874,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_dAyuda_response(self, False, boton):
+   def on_dAyuda_response(self, False, boton):
         self.dAyuda.hide()
 
 #-----------------------------------------------------------
@@ -4889,7 +4886,7 @@ class Proyecto:
 # Valor de retorno: -
 #-----------------------------------------------------------  
 
-     def on_dAyuda_delete_event(self, dialogo, evento):
+   def on_dAyuda_delete_event(self, dialogo, evento):
         self.dAyuda.hide()
         return True
 
