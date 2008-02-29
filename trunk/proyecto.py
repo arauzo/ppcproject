@@ -518,9 +518,9 @@ class Proyecto:
                      #print 'actividad repetida'
                      #self.dialogoError('Actividad repetida')
                          
-                  else:  # Se inserta normalmente
-                       modelo[path][1] = new_text
-                       self.modeloComboS.append([modelo[path][1]])
+               else:  # Se inserta normalmente
+                  modelo[path][1] = new_text
+                  self.modeloComboS.append([modelo[path][1]])
 
          elif n==2:  # Columna de las siguientes
             modelo=self.comprobarSig(modelo, path, new_text)
@@ -4633,10 +4633,11 @@ class Proyecto:
          if len(self.box)>0:
             self.vBoxProb.remove(self.box)
             self.box=gtk.VBox()
-            self.vBoxProb.add(self.box)
-            self.box.pack_end(canvas)
-            self.box.show_all()
-            self.vProbabilidades.show()
+            
+         self.vBoxProb.add(self.box)
+         self.box.pack_end(canvas)
+         self.box.show_all()
+         self.vProbabilidades.show()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para salvar la información que
