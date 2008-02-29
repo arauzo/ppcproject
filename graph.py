@@ -226,7 +226,7 @@ def graph2dot(graph):
    for (act,sig) in graph.iteritems():
       for s in sig:
          txt += '"'+str(act)+'"' + '->' + '"'+str(s)+'"' + ';\n'
-         txt += '}\n'
+   txt += '}\n'
    return txt
 
 def graph2image(graph, format='svg'):
