@@ -3867,7 +3867,7 @@ class Proyecto:
         if s>0 and m==0:
              self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic'))
         elif s==0 and m>0:
-             self.dialogoError(gettext.gettext('You must introduce the durations: '+'\n'+'\t'+gettext.gettext('- Average'+'\n'+'\t'+gettext.gettext('- Typical Dev.')
+             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Average')+'\n'+'\t'+gettext.gettext('- Typical Dev.')
         elif s>0 and m>0:
              self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic'+'\n'+'\t'+gettext.gettext('- Most probable'+'\n'+'\t'+gettext.gettext('- Pessimistic'+'\n'+'\t'+gettext.gettext('- Average'+'\n'+'\t'+gettext.gettext('- Typical Dev.')
         else:          
