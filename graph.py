@@ -356,44 +356,45 @@ pygtk.require('2.0')
 import gtk
 
 class HelloWorld:
-    def delete_event(self, widget, event, data=None):
-        return False
 
-    def destroy(self, widget, data=None):
-        gtk.main_quit()
+   def delete_event(self, widget, event, data=None):
+      return False
 
-    def pinta(self, widget, data=None):
-       pixbufloader = gtk.gdk.PixbufLoader()
-       pixbufloader.write( self.images[self.imageIndex] )
-       pixbufloader.close()
-       self.grafoGTK.set_from_pixbuf( pixbufloader.get_pixbuf() )
-       self.imageIndex = (self.imageIndex + 1) % len(self.images)
+   def destroy(self, widget, data=None):
+      gtk.main_quit()
 
-    def __init__(self):
-        self.images = []
-        self.imageIndex = 0
+   def pinta(self, widget, data=None):
+      pixbufloader = gtk.gdk.PixbufLoader()
+      pixbufloader.write( self.images[self.imageIndex] )
+      pixbufloader.close()
+      self.grafoGTK.set_from_pixbuf( pixbufloader.get_pixbuf() )
+      self.imageIndex = (self.imageIndex + 1) % len(self.images)
 
-        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.connect("delete_event", self.delete_event)
-        self.window.connect("destroy", self.destroy)
+   def __init__(self):
+       self.images = []
+       self.imageIndex = 0
 
-        self.grafoGTK = gtk.Image()
+       self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+       self.window.connect("delete_event", self.delete_event)
+       self.window.connect("destroy", self.destroy)
 
-        self.button = gtk.Button("Pintar grafo")
-        self.button.connect("clicked", self.pinta, None)
+       self.grafoGTK = gtk.Image()
+
+       self.button = gtk.Button("Pintar grafo")
+       self.button.connect("clicked", self.pinta, None)
     
-        self.vBox = gtk.VBox(homogeneous=False, spacing=0)
-        self.vBox.pack_start(self.grafoGTK, expand=True, fill=True, padding=0)
-        self.vBox.pack_start(self.button,   expand=False, fill=False, padding=4)
-        self.window.add(self.vBox)
+       self.vBox = gtk.VBox(homogeneous=False, spacing=0)
+       self.vBox.pack_start(self.grafoGTK, expand=True, fill=True, padding=0)
+       self.vBox.pack_start(self.button,   expand=False, fill=False, padding=4)
+       self.window.add(self.vBox)
         
-        self.grafoGTK.show()
-        self.button.show()
-        self.vBox.show()
-        self.window.show()
+       self.grafoGTK.show()
+       self.button.show()
+       self.vBox.show()
+       self.window.show()
 
-    def main(self):
-        gtk.main()
+   def main(self):
+       gtk.main()
 
 # Pruebas:
 window = None
