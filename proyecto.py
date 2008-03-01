@@ -3012,10 +3012,10 @@ class Proyecto:
                       s=self.Fa[n]/float(itTotales)
                       #print s, 's'
                       x+=s
-                   else:
-                      s=self.Fa[n]/float(itTotales)
-                      #print s, 's'
-                      x+=s
+                else:
+                   s=self.Fa[n]/float(itTotales)
+                   #print s, 's'
+                   x+=s
            #print x, 'suma'
 
       elif dato2=='':
@@ -3027,10 +3027,10 @@ class Proyecto:
                       s=self.Fa[n]/float(itTotales)
                       #print s, 's'
                       x+=s
-                   else:
-                      s=self.Fa[n]/float(itTotales)
-                      #print s, 's'
-                      x+=s
+                else:
+                   s=self.Fa[n]/float(itTotales)
+                   #print s, 's'
+                   x+=s
            #print x, 'suma'
 
       else:
@@ -4126,25 +4126,25 @@ class Proyecto:
             self.vBoxProb.remove(self.grafica)
             self.grafica=gtk.Image()
 
-            self.grafica.set_from_file('graficaNormal.gif')
-            self.vBoxProb.add(self.grafica)
-            self.vBoxProb.show_all()
+         self.grafica.set_from_file('graficaNormal.gif')
+         self.vBoxProb.add(self.grafica)
+         self.vBoxProb.show_all()
          
-            # Se muestran la media y desviación típica en la ventana de probabilidades
-            widgetMedia=self._widgets.get_widget('mediaProb')
-            widgetMedia.set_text(media)
-            widgetMedia.set_sensitive(False)
-            widgetdTipica=self._widgets.get_widget('dTipicaProb')
-            widgetdTipica.set_text(dTipica)
-            widgetdTipica.set_sensitive(False)
+         # Se muestran la media y desviación típica en la ventana de probabilidades
+         widgetMedia=self._widgets.get_widget('mediaProb')
+         widgetMedia.set_text(media)
+         widgetMedia.set_sensitive(False)
+         widgetdTipica=self._widgets.get_widget('dTipicaProb')
+         widgetdTipica.set_text(dTipica)
+         widgetdTipica.set_sensitive(False)
 
-            # Se insensibilizan las casillas resultado
-            resultado1=self._widgets.get_widget('resultado1Prob')
-            resultado1.set_sensitive(False)
-            resultado2=self._widgets.get_widget('resultado2Prob')
-            resultado2.set_sensitive(False)
+         # Se insensibilizan las casillas resultado
+         resultado1=self._widgets.get_widget('resultado1Prob')
+         resultado1.set_sensitive(False)
+         resultado2=self._widgets.get_widget('resultado2Prob')
+         resultado2.set_sensitive(False)
 
-            self.vProbabilidades.show()
+         self.vProbabilidades.show()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para aceptar la información 
@@ -4448,7 +4448,8 @@ class Proyecto:
          self.limpiarVentanaProb(0)
       else:
          self.limpiarVentanaProb(1)
-         self.vProbabilidades.hide()
+         
+      self.vProbabilidades.hide()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para cerrar la ventana de cálculo 
@@ -4574,9 +4575,9 @@ class Proyecto:
                  self.hBoxSim.remove(self.boxS)
                  self.boxS=gtk.VBox()
 
-                 self.hBoxSim.add(self.boxS)
-                 self.boxS.pack_start(canvas)
-                 self.boxS.show_all()
+              self.hBoxSim.add(self.boxS)
+              self.boxS.pack_start(canvas)
+              self.boxS.show_all()
 
 #-----------------------------------------------------------
 # Función: Acción usuario para aceptar la información que
