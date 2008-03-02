@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#PPC-PROJECT. HERRAMIENTA MULTIPLATAFORMA PARA LA 
+#PPC-PROJECT. HERRAMIENTA MULTIPLATAFORMA PARA LA
 #DOCENCIA E INVESTIGACIÓN EN GESTIÓN DE PROYECTOS
 #Copyright (C) 2007 UNIVESIDAD DE CÓRDOBA
 #Author: CRISTINA URBANO ROLDÁN
@@ -11,7 +11,7 @@
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
 
- #This program is distributed in the hope that it will be useful,
+#This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
