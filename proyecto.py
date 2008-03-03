@@ -4526,25 +4526,25 @@ class Proyecto:
               else:
                  for s in simulacion: 
                     mZad=self.mZad(grafoRenumerado.activities, nodosN, 0, s)
-              early=self.early(nodosN, mZad)  
-              last=self.last(nodosN, early, mZad)      
-              tam=len(early)
-              # Se calcula la duración del proyecto para cada simulación
-              duracionProyecto=early[tam-1]
-              #print duracionProyecto, 'duracion proyecto'  
-              self.duraciones.append(duracionProyecto) 
-              #print self.duraciones,'duraciones simuladas'
-              # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
-              self.indiceCriticidad(grafoRenumerado, s, early, last, itTotales)
-
-              # Se añaden la media y la desviación típica a la interfaz
-              duracionMedia=scipy.stats.mean(self.duraciones)
-              media=self._widgets.get_widget('mediaSim')
-              media.set_text(str(duracionMedia))
-
-              desviacionTipica=scipy.stats.std(self.duraciones)
-              dTipica=self._widgets.get_widget('dTipicaSim')
-              dTipica.set_text(str(desviacionTipica))
+                    early=self.early(nodosN, mZad)  
+                    last=self.last(nodosN, early, mZad)      
+                    tam=len(early)
+                    # Se calcula la duración del proyecto para cada simulación
+                    duracionProyecto=early[tam-1]
+                    #print duracionProyecto, 'duracion proyecto'  
+                    self.duraciones.append(duracionProyecto) 
+                    #print self.duraciones,'duraciones simuladas'
+                    # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
+                    self.indiceCriticidad(grafoRenumerado, s, early, last, itTotales)
+      
+                    # Se añaden la media y la desviación típica a la interfaz
+                    duracionMedia=scipy.stats.mean(self.duraciones)
+                    media=self._widgets.get_widget('mediaSim')
+                    media.set_text(str(duracionMedia))
+      
+                    desviacionTipica=scipy.stats.std(self.duraciones)
+                    dTipica=self._widgets.get_widget('dTipicaSim')
+                    dTipica.set_text(str(desviacionTipica))
  
               # Se calculan los intervalos
               interv=[]
