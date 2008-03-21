@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Graph functions
+# Test of python random number generators
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
