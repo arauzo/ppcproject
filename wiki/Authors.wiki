@@ -1,9 +1,7 @@
-#summary Authors and contributors
+#summary Authors and contributors to this software
 
-= Introduction =
-
-* Antonio Araúzo Azofra
-* Lorenzo Salas Morera
-* Cristina Urbano Roldan
-* Alejandro Villagran
-* Alfonso Jiménez Vílchez
+ * Antonio Araúzo Azofra
+ * Lorenzo Salas Morera
+ * Cristina Urbano Roldan
+ * Alejandro Villagran
+ * Alfonso Jiménez Vílchez
