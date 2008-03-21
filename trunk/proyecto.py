@@ -19,21 +19,16 @@
 # You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os, math, sys
+import random
+import pickle
+
 import pygtk
 pygtk.require('2.0')
 import gobject
 import gtk
 import gtk.glade
 
-#Internationalization
-import gettext
-
-import pert, graph
-
-import pickle
-import os, math, sys
-from os.path import basename
-import random
 import scipy.stats
 from matplotlib import rcParams
 rcParams['text.fontname'] = 'cmr10'
@@ -42,7 +37,8 @@ from matplotlib.axes import Subplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
 
-#Internationalization
+# Internationalization
+import gettext
 APP='PPC-Project' #Program name
 DIR='po' #Directory containing translations, usually /usr/share/locale
 gettext.bindtextdomain(APP, DIR)
@@ -50,9 +46,11 @@ gettext.textdomain(APP)
 gtk.glade.bindtextdomain(APP, DIR)
 gtk.glade.textdomain(APP)
 
-# Se crea la clase Proyecto, que englobará toda la aplicación
+# Own application modules
+import pert, graph
+
 
-class Proyecto:
+class PPCproject:
    def __init__(self):
       self._widgets = gtk.glade.XML('proyecto.glade')
       self._widgets.signal_autoconnect(self)
@@ -1515,7 +1513,7 @@ class Proyecto:
 #----------------------------------------------------------- 
       
    def asignarTitulo(self, directorio):
-         titulo=basename(directorio)
+         titulo=os.path.basename(directorio)
          ubicacion=directorio[:-(len(titulo)+1)]
          if ubicacion=='': 
               self.vPrincipal.set_title(titulo+' - PPC-Project')
@@ -3232,16 +3230,16 @@ class Proyecto:
                 if self.directorio[-4:] == '.prj':
                     #print '1'
                     fescritura=open(self.directorio,'w')
-                    titulo=basename(self.directorio)
+                    titulo=os.path.basename(self.directorio)
                     ubicacion=self.directorio[:-(len(titulo)+1)]
                 elif self.directorio[-4:] == '.txt':
                     fescritura=open(self.directorio[:-4]+'.prj','w')
-                    titulo=basename(self.directorio+'.prj')
+                    titulo=os.path.basename(self.directorio+'.prj')
                     ubicacion=self.directorio[:-(len(titulo)-3)]
                 else:
                     #print '2', self.directorio
                     fescritura=open(self.directorio+'.prj','w')
-                    titulo=basename(self.directorio+'.prj')
+                    titulo=os.path.basename(self.directorio+'.prj')
                     ubicacion=self.directorio[:-(len(titulo)-3)]
                 self.vPrincipal.set_title(titulo+' ('+ubicacion+') '+ '- PPC-Project')
                 # Se guardan todos los datos en una lista y se escriben en el fichero
@@ -4898,7 +4896,7 @@ class Proyecto:
 
 
 if __name__ == '__main__':
-    app = Proyecto()
+    app = PPCproject()
     app.run()
 
 
