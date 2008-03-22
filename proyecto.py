@@ -70,8 +70,6 @@ class PPCproject:
       self.asignacion=[]
       self.tabla=[]
 
-         
-#####################################################################################################################
 
       self.vPrincipal=self._widgets.get_widget('wndPrincipal')
       self.vIntroduccion=self._widgets.get_widget('wndIntroduccion')
@@ -90,20 +88,17 @@ class PPCproject:
       
         
 
-##############################  CREAMOS TODOS LOS TREEVIEWS DE LA APLICACIÓN  #######################################  
-     
-#-----------------------------------------------------------
-# Función: Creación de todos los TreeViews que se utilizarán
-#          en la aplicación
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
- 
+#########  CREAMOS TODOS LOS TREEVIEWS DE LA APLICACIÓN  ##############
    def crearTreeViews(self):
+      """
+      Creación de todos los TreeViews que se utilizarán
+          en la aplicación
 
-   # TREEVIEW para la INTRODUCCIÓN DE DATOS
+      Parámetros: -
+
+      Valor de retorno: -
+      """
+      # TREEVIEW para la INTRODUCCIÓN DE DATOS
       self.vistaLista=self._widgets.get_widget('vistaListaDatos')
       self.vistaLista.show() 
       self.selec=self.vistaLista.get_selection()
@@ -207,7 +202,7 @@ class PPCproject:
          self.vistaListaZ.columna[n].set_expand(False)
 
                  
-     # TREEVIEW para las ACTIVIDADES y NODOS
+      # TREEVIEW para las ACTIVIDADES y NODOS
       self.vistaListaA = self._widgets.get_widget('vistaListaAct')
       self.modeloA = gtk.ListStore(str, str, str)
       self.vistaListaA.set_model(self.modeloA)
@@ -224,7 +219,7 @@ class PPCproject:
       self.columnaNoEditable(self.vistaListaA, 2)
 
 
-     # TREEVIEW para las HOLGURAS
+      # TREEVIEW para las HOLGURAS
       self.vistaListaH = self._widgets.get_widget('vistaListaHolg')
       self.modeloH = gtk.ListStore(str, str, str, str)
       self.vistaListaH.set_model(self.modeloH)
@@ -305,20 +300,14 @@ class PPCproject:
        
 
 
-#####################################################################################################################
-                                 # FUNCIONES RELACIONADAS CON LOS TREEVIEW #
-#####################################################################################################################
+##################### FUNCIONES RELACIONADAS CON LOS TREEVIEW ###########################
 
-#-----------------------------------------------------------
-# Función: Creación de las columnas no editables y con 
-#          color de celda
-#
-# Parámetros: n (columna)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def columnaNoEditableColor(self, n):  
+      """
+       Creación de las columnas no editables y con color de celda
+       Parámetros: n (columna)
+       Valor de retorno: -
+      """
       self.vistaLista.renderer[n] = gtk.CellRendererText()
       self.vistaLista.renderer[n].set_property('editable', False)
       self.vistaLista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
@@ -330,20 +319,18 @@ class PPCproject:
       self.vistaLista.columna[n].set_expand(True)
       self.vistaLista.columna[0].set_expand(False)
       self.vistaLista.columna[n].set_resizable(True)
-      
 
-#*********************************************************************
-#-----------------------------------------------------------
-# Función: Creación de las columnas no editables y 
-#          sin color de celda 
-#
-# Parámetros: vista (widget que muestra el treeview)
-#             n (columna)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
 
    def columnaNoEditable(self, vista, n):
+      """
+       Función: Creación de las columnas no editables y 
+                sin color de celda 
+
+       Parámetros: vista (widget que muestra el treeview)
+                   n (columna)
+
+       Valor de retorno: -
+      """
       vista.renderer[n] = gtk.CellRendererText()
       vista.append_column(vista.columna[n])
       vista.columna[n].set_sort_column_id(n)
@@ -353,19 +340,19 @@ class PPCproject:
       vista.columna[n].set_expand(True)
       vista.columna[n].set_reorderable(True)
 
-#********************************************************************
-#-----------------------------------------------------------
-# Función: Creación de las columnas editables y con color
-#          de celda
-#
-# Parámetros: vista (widget que muestra el treeview)
-#             modelo (lista) 
-#             n (columna)
-#
-# Valor de retorno: -
 #-----------------------------------------------------------                           
      
    def columnaEditable(self, vista, modelo, n):
+      """
+       Función: Creación de las columnas editables y con color
+                de celda
+
+       Parámetros: vista (widget que muestra el treeview)
+                   modelo (lista) 
+                   n (columna)
+
+       Valor de retorno: -
+      """
       vista.renderer[n] = gtk.CellRendererText()
       vista.renderer[n].set_property('editable', True)
       vista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
@@ -379,18 +366,17 @@ class PPCproject:
       vista.columna[n].set_resizable(True)
       vista.columna[n].set_reorderable(True)
       
-#********************************************************************
-#-----------------------------------------------------------
-# Función: Creación de todas las columnas combo (selector)
-#
-# Parámetros: vista (widget que muestra el treeview)
-#             modelo (lista) 
-#             n (columna)
-#
-# Valor de retorno: modeloCombo (lista para los datos del selector)
-#-----------------------------------------------------------
      
    def columnaCombo(self, vista, modelo, n):
+      """
+       Función: Creación de todas las columnas combo (selector)
+
+       Parámetros: vista (widget que muestra el treeview)
+                   modelo (lista) 
+                   n (columna)
+
+       Valor de retorno: modeloCombo (lista para los datos del selector)
+      """
       modeloCombo=gtk.ListStore(str)
       vista.renderer[n]=gtk.CellRendererCombo()
       vista.renderer[n].set_property('editable', True)
@@ -409,36 +395,32 @@ class PPCproject:
       return modeloCombo
 
 
-#********************************************************************************
-#-----------------------------------------------------------
-# Función: Muestra los items del menu en la última columna del treeview de 
-#          introducción de datos al presionar sobre dicha columna
-#
-# Parámetros: columna (columna presionada)
-#             menu (gtk.Menu)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def columna_press(self, columna, menu): 
+      """
+       Función: Muestra los items del menu en la última columna del treeview de 
+                introducción de datos al presionar sobre dicha columna
+
+       Parámetros: columna (columna presionada)
+                   menu (gtk.Menu)
+
+       Valor de retorno: -
+      """
       menu.show_all()
       menu.popup(None, None, None, 1, 0)
       for n in range(9):
          self.checkColum[n].connect('activate', self.activarItem, n)
 
 
-#*********************************************************** 
-#-----------------------------------------------------------
-# Función: Activación o desactivación de las columnas según el item 
-#          seleccionado en el menu
-#
-# Parámetros: item (item seleccionado)
-#             n (posición en el menu del item seleccionado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-        
    def activarItem(self, item, n):
+      """
+       Función: Activación o desactivación de las columnas según el item 
+                seleccionado en el menu
+
+       Parámetros: item (item seleccionado)
+                   n (posición en el menu del item seleccionado)
+
+       Valor de retorno: -
+      """
       if item==self.checkColum[n]:
          if self.checkColum[n].get_active():
             self.vistaLista.columna[n+1].set_visible(True)
@@ -447,20 +429,16 @@ class PPCproject:
 
 
 
-#####################################################################################################################
-                           # FUNCIONES DE INTRODUCCIÓN, CARGA Y ACTUALIZACIÓN DATOS #
-#####################################################################################################################
-
-#-----------------------------------------------------------
-# Función: Creación de un nuevo proyecto, eliminación de la lista actual y
-#          adicción de una fila vacía a la lista
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+###################### FUNCIONES DE INTRODUCCIÓN, CARGA Y ACTUALIZACIÓN DATOS ############
 
    def introduccionDatos(self):
+      """
+       Función: Creación de un nuevo proyecto, eliminación de la lista actual y
+                adicción de una fila vacía a la lista
+
+       Parámetros: -
+       Valor de retorno: -
+      """
       self.directorio=gettext.gettext('Unnamed -PPC-Project') #nombre del proyecto
       self.vPrincipal.set_title(self.directorio)
       # Se limpian las listas y la interfaz para la introducción de nuevos datos
@@ -477,21 +455,19 @@ class PPCproject:
         
              
 
-#******************************************************************************************************************** 
-#-----------------------------------------------------------
-# Función: Edicción de filas y adicción de una fila vacía  
-#          cuando escribimos sobre la última insertada
-#
-# Parámetros: renderer (celda)
-#             path (fila)
-#             new_text (nuevo texto introducido)
-#             modelo (interfaz)
-#             n (columna)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def col_edited_cb( self, renderer, path, new_text, modelo, n):
+      """
+       Función: Edicción de filas y adicción de una fila vacía  
+                cuando escribimos sobre la última insertada
+
+       Parámetros: renderer (celda)
+                   path (fila)
+                   new_text (nuevo texto introducido)
+                   modelo (interfaz)
+                   n (columna)
+
+       Valor de retorno: -
+      """
       self.control=1   # Controlamos que el proyecto ha cambiado
       cont=int(path)+1
       #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
@@ -561,237 +537,224 @@ class PPCproject:
       return
 
 
-#*****************************************************************
-#-----------------------------------------------------------
-# Función: Actualización de las tres listas con los nuevos datos introducidos 
-#          (lista de actividades, de recursos y de asignacion)
-#
-# Parámetros: modelo (interfaz)
-#             path (fila)
-#             n (columna)
-# 
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def actualizacion(self, modelo, path, n):
-         # Actividades
-        if modelo==self.modelo:  
-            if self.modelo[path][n]=='':
-                if n==2:
-                     self.actividad[int(path)][2]=[]
-                else:
-                     self.actividad[int(path)][n]=self.modelo[path][n]
-            else: # Si hay datos introducidos
-                # Si se introduce la duración optimista, pesimista o mas probable
-                if n in range(3, 6):   
-                    self.actividad[int(path)][n]=float(self.modelo[path][n])
-                    if self.modelo[path][3]!='' and self.modelo[path][4]!='' and self.modelo[path][5]!='':
-                        a=float(self.modelo[path][3]) #d.optimista
-                        b=float(self.modelo[path][5]) #d.pesimista
-                        m=float(self.modelo[path][4]) #d.más probable
-                     
-                        # Se comprueba que las duraciones sean correctas
-                        ok=self.comprobarDuraciones(a, b, m)   
+      """
+       Función: Actualización de las tres listas con los nuevos datos introducidos 
+                (lista de actividades, de recursos y de asignacion)
 
-                        if ok:  #se actualizan la media y la desviación tí­pica
-                             self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
-                            
-                        else:  #se emite un mensaje de error
-                            dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_ERROR, (gtk.STOCK_OK, gtk.RESPONSE_OK))
-                            label=gtk.Label(gettext.gettext('Wrong durations introduced.'))
-                            dialogo.vbox.pack_start(label,True,True,10)
-                            label.show()
-                            respuesta=dialogo.run()
-                            dialogo.destroy()
+       Parámetros: modelo (interfaz)
+                   path (fila)
+                   n (columna)
+       
+       Valor de retorno: -
+      """
+      # Actividades
+      if modelo==self.modelo:  
+         if self.modelo[path][n]=='':
+               if n==2:
+                  self.actividad[int(path)][2]=[]
+               else:
+                  self.actividad[int(path)][n]=self.modelo[path][n]
+         else: # Si hay datos introducidos
+               # Si se introduce la duración optimista, pesimista o mas probable
+               if n in range(3, 6):   
+                  self.actividad[int(path)][n]=float(self.modelo[path][n])
+                  if self.modelo[path][3]!='' and self.modelo[path][4]!='' and self.modelo[path][5]!='':
+                     a=float(self.modelo[path][3]) #d.optimista
+                     b=float(self.modelo[path][5]) #d.pesimista
+                     m=float(self.modelo[path][4]) #d.más probable
+                  
+                     # Se comprueba que las duraciones sean correctas
+                     ok=self.comprobarDuraciones(a, b, m)   
 
-                            self.modelo[path][6]=self.actividad[int(path)][6]=''
+                     if ok:  #se actualizan la media y la desviación tí­pica
+                           self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
+                           
+                     else:  #se emite un mensaje de error
+                           dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_ERROR, (gtk.STOCK_OK, gtk.RESPONSE_OK))
+                           label=gtk.Label(gettext.gettext('Wrong durations introduced.'))
+                           dialogo.vbox.pack_start(label,True,True,10)
+                           label.show()
+                           respuesta=dialogo.run()
+                           dialogo.destroy()
 
-                            
-                # Si se introduce la media, se elimina el resto de duraciones        
-                elif n==6:   
-                    self.actividad[int(path)][n]=float(self.modelo[path][n])
-                    for i in range(3, 6):
-                       self.modelo[path][i]=''
-                       self.actividad[int(path)][i]=''
+                           self.modelo[path][6]=self.actividad[int(path)][6]=''
 
-
-                # Si se modifica el tipo de distribución, se actualizan la media y la desviación tí­pica
-                elif n==9:  
-                    self.actividad[int(path)][9]=self.modelo[path][9]
-                    if self.modelo[path][3]!='' or self.modelo[path][4]!='' or self.modelo[path][5]!='':
-                       a=float(self.modelo[path][3]) #d.optimista
-                       b=float(self.modelo[path][5]) #d.pesimista
-                       m=float(self.modelo[path][4]) #d.más probable
-                       self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
-                   
-
-                # Se controla el valor introducido en las siguientes 
-                elif n==2:  
-                     if self.modelo[path][2]==self.actividad[int(path)][1]:
-                         self.modelo[path][2]==''
-                         self.actividad[int(path)][2]=[]
-                     else: 
-                         self.actividad[int(path)][2] = self.texto2Lista(self.modelo[path][2])
+                           
+               # Si se introduce la media, se elimina el resto de duraciones        
+               elif n==6:   
+                  self.actividad[int(path)][n]=float(self.modelo[path][n])
+                  for i in range(3, 6):
+                     self.modelo[path][i]=''
+                     self.actividad[int(path)][i]=''
 
 
-                # Si no es ningún caso de los anteriores, se actualiza normalmente
-                else:  
-                     self.actividad[int(path)][n]=self.modelo[path][n]
- 
-            #print self.actividad, 'ya modificada'
+               # Si se modifica el tipo de distribución, se actualizan la media y la desviación tí­pica
+               elif n==9:  
+                  self.actividad[int(path)][9]=self.modelo[path][9]
+                  if self.modelo[path][3]!='' or self.modelo[path][4]!='' or self.modelo[path][5]!='':
+                     a=float(self.modelo[path][3]) #d.optimista
+                     b=float(self.modelo[path][5]) #d.pesimista
+                     m=float(self.modelo[path][4]) #d.más probable
+                     self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
+                  
+
+               # Se controla el valor introducido en las siguientes 
+               elif n==2:  
+                  if self.modelo[path][2]==self.actividad[int(path)][1]:
+                        self.modelo[path][2]==''
+                        self.actividad[int(path)][2]=[]
+                  else: 
+                        self.actividad[int(path)][2] = self.texto2Lista(self.modelo[path][2])
 
 
-        # Recursos 
-        elif modelo==self.modeloR:   
-            # Si el recurso es Renovable    
-            if self.modeloR[path][1]==gettext.gettext('Renewable'):
-                self.recurso[int(path)][n]=self.modeloR[path][n]
-                if self.modeloR[path][n]==self.modeloR[path][2]:
-                    self.recurso[int(path)][2]=self.modeloR[path][2]=''
-                    self.dialogoRec(gettext.gettext('Renewable'))
-                else:
-                    self.recurso[int(path)][2]=self.modeloR[path][2]=''
+               # Si no es ningún caso de los anteriores, se actualiza normalmente
+               else:  
+                  self.actividad[int(path)][n]=self.modelo[path][n]
 
-            # Si el recurso es No Renovable    
-            elif self.modeloR[path][1]==gettext.gettext('Non renewable'):
-                self.recurso[int(path)][n]=self.modeloR[path][n]
-                if self.modeloR[path][n]==self.modeloR[path][3]:
-                    self.recurso[int(path)][3]=self.modeloR[path][3]=''
-                    self.dialogoRec(gettext.gettext('Non renewable'))
-                else:
-                    self.recurso[int(path)][3]=self.modeloR[path][3]=''
-
-            # Si el recurso es Doblemente restringido o Ilimitado
-            else:
-                self.recurso[int(path)][n]=self.modeloR[path][n]
-
-            #print self.recurso 
-
- 
-        # Recursos necesarios por actividad
-        else:
-            self.asignacion[int(path)][n]=self.modeloAR[path][n]
-
-            #print self.asignacion
+         #print self.actividad, 'ya modificada'
 
 
-#**************************************************************************************************************
-#-----------------------------------------------------------
-# Función: Actualización de la media y la desviación típica 
-#
-# Parámetros: path (fila)
-#             modelo (interfaz)
-#             actividad (lista de actividades)
-#               a (duración optimista)
-#         b (duración pesimista)
-#         m (duración más probable)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------    
+      # Recursos 
+      elif modelo==self.modeloR:   
+         # Si el recurso es Renovable    
+         if self.modeloR[path][1]==gettext.gettext('Renewable'):
+               self.recurso[int(path)][n]=self.modeloR[path][n]
+               if self.modeloR[path][n]==self.modeloR[path][2]:
+                  self.recurso[int(path)][2]=self.modeloR[path][2]=''
+                  self.dialogoRec(gettext.gettext('Renewable'))
+               else:
+                  self.recurso[int(path)][2]=self.modeloR[path][2]=''
+
+         # Si el recurso es No Renovable    
+         elif self.modeloR[path][1]==gettext.gettext('Non renewable'):
+               self.recurso[int(path)][n]=self.modeloR[path][n]
+               if self.modeloR[path][n]==self.modeloR[path][3]:
+                  self.recurso[int(path)][3]=self.modeloR[path][3]=''
+                  self.dialogoRec(gettext.gettext('Non renewable'))
+               else:
+                  self.recurso[int(path)][3]=self.modeloR[path][3]=''
+
+         # Si el recurso es Doblemente restringido o Ilimitado
+         else:
+               self.recurso[int(path)][n]=self.modeloR[path][n]
+
+         #print self.recurso 
+
+
+      # Recursos necesarios por actividad
+      else:
+         self.asignacion[int(path)][n]=self.modeloAR[path][n]
+
+         #print self.asignacion
+
 
    def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
-         # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
-         if modelo[path][9]==gettext.gettext('Normal'):  
-             modelo[path][6]=actividad[int(path)][6]=''
-             modelo[path][7]=actividad[int(path)][7]=''
+      """
+       Función: Actualización de la media y la desviación típica 
 
-         # Si la distribución no es Normal, se recalculan los valores
-         else:  
-             media, dTipica=self.calcularMediaYDTipica(modelo[path][9], a, b, m)
-             m='%4.3f'%(media)
-             actividad[int(path)][6]=modelo[path][6]=m
-             dT='%4.3f'%(dTipica)
-             actividad[int(path)][7]=modelo[path][7]=dT 
+       Parámetros: path (fila)
+                   modelo (interfaz)
+                   actividad (lista de actividades)
+                     a (duración optimista)
+               b (duración pesimista)
+               m (duración más probable)
+
+       Valor de retorno: -
+      """
+      # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
+      if modelo[path][9]==gettext.gettext('Normal'):  
+            modelo[path][6]=actividad[int(path)][6]=''
+            modelo[path][7]=actividad[int(path)][7]=''
+
+      # Si la distribución no es Normal, se recalculan los valores
+      else:  
+            media, dTipica=self.calcularMediaYDTipica(modelo[path][9], a, b, m)
+            m='%4.3f'%(media)
+            actividad[int(path)][6]=modelo[path][6]=m
+            dT='%4.3f'%(dTipica)
+            actividad[int(path)][7]=modelo[path][7]=dT 
 
  
-#**************************************************************************************************************
-#-----------------------------------------------------------
-# Función: Actualización de los datos con los obtenidos de la   
-#          apertura de un fichero con extensión '.prj'
-#
-# Parámetros: tabla (lista que engloba a las tres listas: 
-#             actividad, recurso y asignacion)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------       
-     
    def cargaDatos(self, tabla):     
-        cont=1
-        self._widgets.get_widget('vistaListaDatos').show()
-        self.modelo.clear()
-        self.modeloComboS.clear()
-        # Se actualiza la interfaz de las actividades
-        for dato in tabla[0]:      
-            dato[0]=cont
-            cont+=1
-            self.modelo.append(dato)
-            self.actualizarColSig(tabla[0])
-            self.modeloComboS.append([dato[1]])
+      """
+       Función: Actualización de los datos con los obtenidos de la   
+                apertura de un fichero con extensión '.prj'
 
-        # Se actualiza la lista de las actividades
-        self.actividad=tabla[0]    
-        for i in range(len(self.actividad)):
-            if self.actividad[i][2]==['']:
-                self.actividad[i][2]=[]   
+       Parámetros: tabla (lista que engloba a las tres listas: 
+                   actividad, recurso y asignacion)
+       Valor de retorno: -
+      """
+      cont=1
+      self._widgets.get_widget('vistaListaDatos').show()
+      self.modelo.clear()
+      self.modeloComboS.clear()
+      # Se actualiza la interfaz de las actividades
+      for dato in tabla[0]:      
+         dato[0]=cont
+         cont+=1
+         self.modelo.append(dato)
+         self.actualizarColSig(tabla[0])
+         self.modeloComboS.append([dato[1]])
 
-        
-        # Se actualizan la interfaz y la lista de los recursos
-        self.modeloR.clear()
-        self.recurso=tabla[1]   
-        for dato in tabla[1]:   
-            self.modeloR.append(dato)
+      # Se actualiza la lista de las actividades
+      self.actividad=tabla[0]    
+      for i in range(len(self.actividad)):
+         if self.actividad[i][2]==['']:
+               self.actividad[i][2]=[]   
 
-         
-        # Se actualizan la interfaz y la lista de los recursos necesarios por actividad
-        self.modeloAR.clear()
-        self.asignacion=tabla[2]   
-        for dato in tabla[2]:      
-             self.modeloAR.append(dato)
+      
+      # Se actualizan la interfaz y la lista de los recursos
+      self.modeloR.clear()
+      self.recurso=tabla[1]   
+      for dato in tabla[1]:   
+         self.modeloR.append(dato)
 
-
-        #Se actualiza la columna de los recursos en la interfaz y en la lista de actividades 
-        if self.asignacion!=[]:
-            mostrarColumnaRes=self.mostrarRec(self.asignacion, 1)
-            self.actualizarColR(mostrarColumnaRes)
-
-        #print "%s" % (tabla)
+      
+      # Se actualizan la interfaz y la lista de los recursos necesarios por actividad
+      self.modeloAR.clear()
+      self.asignacion=tabla[2]   
+      for dato in tabla[2]:      
+            self.modeloAR.append(dato)
 
 
-#**************************************************************************************************************
-#-----------------------------------------------------------
-# Función: Lectura de un fichero con extensión '.txt'
-#
-# Parámetros: f (fichero)
-#
-# Valor de retorno: tabla (datos leidos)
-#-----------------------------------------------------------
+      #Se actualiza la columna de los recursos en la interfaz y en la lista de actividades 
+      if self.asignacion!=[]:
+         mostrarColumnaRes=self.mostrarRec(self.asignacion, 1)
+         self.actualizarColR(mostrarColumnaRes)
 
-   def leerTxt(self, f):
-         tabla=[]
-         l=f.readline()
-         while l:
-             linea=l.split('\t')
-             linea[1]=linea[1].split(',')
-             tabla.append(linea)
-             l=f.readline()
+      #print "%s" % (tabla)
 
-         l=f.readline()
-         
-         return tabla
+   def leerTxt(self, f):
+      """
+       Función: Lectura de un fichero con extensión '.txt'
+
+       Parámetros: f (fichero)
+
+       Valor de retorno: tabla (datos leidos)
+      """
+      tabla=[]
+      l=f.readline()
+      while l:
+            linea=l.split('\t')
+            linea[1]=linea[1].split(',')
+            tabla.append(linea)
+            l=f.readline()
+
+      l=f.readline()
+      
+      return tabla
    
 
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Función: Actualización de los datos con los obtenidos de la   
-#          apertura de un fichero con extensión '.txt'
-#
-# Parámetros: tabla (lista con los datos del fichero)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
    def cargarTxt(self, tabla):
+      """
+       Función: Actualización de los datos con los obtenidos de la   
+                apertura de un fichero con extensión '.txt'
+
+       Parámetros: tabla (lista con los datos del fichero)
+
+       Valor de retorno: -
+      """
       cont=1
       self._widgets.get_widget('vistaListaDatos').show()
       for linea in tabla:
@@ -3470,62 +3433,7 @@ class PPCproject:
         dialogo.destroy() 
 
 
-#####################################################################################################################
-                                   # FUNCIONES EJECUCIÓN DE LA APLICACIÓN
-#####################################################################################################################  
 
-#-----------------------------------------------------------
-# Función: Ejecuta la aplicación
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
-   def run(self):
-        self.ejecutarAplicacion()
-        gtk.main()
- 
-
-#****************************************************************      
-             
-#-----------------------------------------------------------
-# Función: Ejecuta la aplicación recibiendo un archivo '.prj' 
-#          por la lí­nea de órdenes o ejecuta la aplicación 
-#          normalemente (si no recibe ningún archivo)
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
-   def ejecutarAplicacion(self):
-        if len(sys.argv)>1:
-            nombre=sys.argv[1]
-            try:
-                fichero=open(nombre, 'r')
-                # Se crean todos los TreeViews
-                self.crearTreeViews()
-                # Se asigna el nombre como título del proyecto
-                self.directorio=nombre
-                self.asignarTitulo(self.directorio)
-                # Se cargan los datos en la lista 
-                tabla=[]             
-                tabla=pickle.load(fichero)
-                self.cargaDatos(tabla) 
-                fichero.close()
-
-            except IOError:
-                self.dialogoError(gettext.gettext('The selected file does not exist'))
-                gtk.main_quit()
-    
-        else:
-            self.crearTreeViews()
-            #print 'Ejecución de la aplicación normalmente'     
-
-
-
-       
 #####################################################################################################################
                        # MANEJADORES #
 #####################################################################################################################
@@ -4896,7 +4804,29 @@ class PPCproject:
 
 
 if __name__ == '__main__':
-    app = PPCproject()
-    app.run()
+   app = PPCproject()
+   # Se crean todos los TreeViews
+   app.crearTreeViews()
 
+   if   len(sys.argv) == 1:
+      gtk.main()   elif len(sys.argv) == 2:
+      nombre = sys.argv[1]
+      try:
+         fichero = open(nombre, 'r')
+         # Se asigna el nombre como título del proyecto
+         app.directorio = nombre
+         app.asignarTitulo(app.directorio)
+         # Se cargan los datos en la lista 
+         tabla = []             
+         tabla = pickle.load(fichero)
+         app.cargaDatos(tabla) 
+         fichero.close()
+         gtk.main()
+
+      except IOError:
+         print nombre, gettext.gettext('file does not exist')
+
+   else:
+      print gettext.gettext('Syntax is:')
+      print sys.argv[0], '[project_file]'
 
