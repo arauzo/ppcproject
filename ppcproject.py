@@ -52,7 +52,7 @@ import pert, graph
 
 class PPCproject:
    def __init__(self):
-      self._widgets = gtk.glade.XML('proyecto.glade')
+      self._widgets = gtk.glade.XML('ppcproject.glade')
       self._widgets.signal_autoconnect(self)
 
       self.bufer=gtk.TextBuffer()
