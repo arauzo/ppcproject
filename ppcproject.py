@@ -49,7 +49,8 @@ gtk.glade.bindtextdomain(APP, DIR)
 gtk.glade.textdomain(APP)
 
 # Own application modules
-import pert, graph
+import pert
+import graph
 
 
 class PPCproject:
@@ -58,12 +59,12 @@ class PPCproject:
       self._widgets.signal_autoconnect(self)
 
       self.bufer=gtk.TextBuffer()
-      self.directorio= gettext.gettext('Unnamed -PPC-Project')
+      self.directorio = gettext.gettext('Unnamed -PPC-Project')
       self.control=0
-      self.vBoxProb=self._widgets.get_widget('vbProb')
-      self.grafica=gtk.Image()
+      self.vBoxProb = self._widgets.get_widget('vbProb')
+      self.grafica = gtk.Image()
       self.box=gtk.VBox()
-      self.hBoxSim=self._widgets.get_widget('hbSim')
+      self.hBoxSim = self._widgets.get_widget('hbSim')
       self.boxS=gtk.VBox()
       # Adding Gantt Diagram
       self.gantt = GTKgantt.GTKgantt()
@@ -71,10 +72,10 @@ class PPCproject:
       self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
       self.gantt.show_all()
       # Estructuras de datos básicas de la aplicación
-      self.actividad=[]
-      self.recurso=[]
-      self.asignacion=[]
-      self.tabla=[]
+      self.actividad  = []
+      self.recurso    = []
+      self.asignacion = []
+      self.tabla      = []
 
 
       self.vPrincipal=self._widgets.get_widget('wndPrincipal')
@@ -329,7 +330,7 @@ class PPCproject:
 
    def columnaNoEditable(self, vista, n):
       """
-       Función: Creación de las columnas no editables y 
+       Creación de las columnas no editables y 
                 sin color de celda 
 
        Parámetros: vista (widget que muestra el treeview)
@@ -350,7 +351,7 @@ class PPCproject:
      
    def columnaEditable(self, vista, modelo, n):
       """
-       Función: Creación de las columnas editables y con color
+       Creación de las columnas editables y con color
                 de celda
 
        Parámetros: vista (widget que muestra el treeview)
@@ -375,7 +376,7 @@ class PPCproject:
      
    def columnaCombo(self, vista, modelo, n):
       """
-       Función: Creación de todas las columnas combo (selector)
+       Creación de todas las columnas combo (selector)
 
        Parámetros: vista (widget que muestra el treeview)
                    modelo (lista) 
@@ -403,7 +404,7 @@ class PPCproject:
 
    def columna_press(self, columna, menu): 
       """
-       Función: Muestra los items del menu en la última columna del treeview de 
+       Muestra los items del menu en la última columna del treeview de 
                 introducción de datos al presionar sobre dicha columna
 
        Parámetros: columna (columna presionada)
@@ -419,7 +420,7 @@ class PPCproject:
 
    def activarItem(self, item, n):
       """
-       Función: Activación o desactivación de las columnas según el item 
+       Activación o desactivación de las columnas según el item 
                 seleccionado en el menu
 
        Parámetros: item (item seleccionado)
@@ -439,7 +440,7 @@ class PPCproject:
 
    def introduccionDatos(self):
       """
-       Función: Creación de un nuevo proyecto, eliminación de la lista actual y
+       Creación de un nuevo proyecto, eliminación de la lista actual y
                 adicción de una fila vacía a la lista
 
        Parámetros: -
@@ -463,7 +464,7 @@ class PPCproject:
 
    def col_edited_cb( self, renderer, path, new_text, modelo, n):
       """
-       Función: Edicción de filas y adicción de una fila vacía  
+       Edicción de filas y adicción de una fila vacía  
                 cuando escribimos sobre la última insertada
 
        Parámetros: renderer (celda)
@@ -545,7 +546,7 @@ class PPCproject:
 
    def actualizacion(self, modelo, path, n):
       """
-       Función: Actualización de las tres listas con los nuevos datos introducidos 
+       Actualización de las tres listas con los nuevos datos introducidos 
                 (lista de actividades, de recursos y de asignacion)
 
        Parámetros: modelo (interfaz)
@@ -657,7 +658,7 @@ class PPCproject:
 
    def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
       """
-       Función: Actualización de la media y la desviación típica 
+       Actualización de la media y la desviación típica 
 
        Parámetros: path (fila)
                    modelo (interfaz)
@@ -684,7 +685,7 @@ class PPCproject:
  
    def cargaDatos(self, tabla):     
       """
-       Función: Actualización de los datos con los obtenidos de la   
+       Actualización de los datos con los obtenidos de la   
                 apertura de un fichero con extensión '.prj'
 
        Parámetros: tabla (lista que engloba a las tres listas: 
@@ -733,7 +734,7 @@ class PPCproject:
 
    def leerTxt(self, f):
       """
-       Función: Lectura de un fichero con extensión '.txt'
+       Lectura de un fichero con extensión '.txt'
 
        Parámetros: f (fichero)
 
@@ -754,7 +755,7 @@ class PPCproject:
 
    def cargarTxt(self, tabla):
       """
-       Función: Actualización de los datos con los obtenidos de la   
+       Actualización de los datos con los obtenidos de la   
                 apertura de un fichero con extensión '.txt'
 
        Parámetros: tabla (lista con los datos del fichero)
@@ -777,7 +778,7 @@ class PPCproject:
 
 #********************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Control de la introducción de las siguientes  
+# Control de la introducción de las siguientes  
 #
 # Parámetros: modelo (interfaz)
 #             path (fila)
@@ -837,7 +838,7 @@ class PPCproject:
 
 #*************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Al modificar la etiqueta de alguna actividad, se modifica  
+# Al modificar la etiqueta de alguna actividad, se modifica  
 #          también cuando ésta sea siguiente de alguna otra actividad
 #
 # Parámetros: modelo (interfaz) 
@@ -869,7 +870,7 @@ class PPCproject:
 
 #*************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Actualización de la columna de las siguientes en   
+# Actualización de la columna de las siguientes en   
 #          la interfaz para los proyectos con extensión '.prj'
 #
 # Parámetros: datos (lista que almacena los datos de 
@@ -895,7 +896,7 @@ class PPCproject:
 
 #*******************************************************************************************************************   
 #-----------------------------------------------------------
-# Función: Actualización de la columna de recursos en la lista de    
+# Actualización de la columna de recursos en la lista de    
 #          actividades y en la interfaz
 #
 # Parámetros: columnaRec (lista que almacena una lista por
@@ -924,7 +925,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++#
  
 #-----------------------------------------------------------
-# Función: Lectura de un proyecto de la librería de proyectos PSPLIB   
+# Lectura de un proyecto de la librería de proyectos PSPLIB   
 #
 # Parámetros: f (fichero) 
 #
@@ -969,7 +970,7 @@ class PPCproject:
          return (prelaciones, rec, asig)
 
 #-----------------------------------------------------------
-# Función: Actualización de los datos con los obtenidos de la   
+# Actualización de los datos con los obtenidos de la   
 #          lectura de un fichero con extensión '.sm' de la librería 
 #          de proyectos PSPLIB
 #
@@ -1087,7 +1088,7 @@ class PPCproject:
 
 #*****************************************************************************
 #-----------------------------------------------------------
-# Función: Actualización de la columna de las siguientes en   
+# Actualización de la columna de las siguientes en   
 #          la interfaz para los proyectos de la librería PSPLIB
 #
 # Parámetros: prelacion (lista que almacena las actividades 
@@ -1114,7 +1115,7 @@ class PPCproject:
 #####################################################################################################################
 
 #-----------------------------------------------------------
-# Función: Comprobación de que los tiempos optimista, pesimista y
+# Comprobación de que los tiempos optimista, pesimista y
 #          más probable son correctos
 #
 # Parámetros: a (d.optimista)
@@ -1133,7 +1134,7 @@ class PPCproject:
 
 #*************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Comprueba si se han introducido actividades repetidas 
+# Comprueba si se han introducido actividades repetidas 
 #
 # Parámetros: actividad (lista de actividades)
 #
@@ -1158,7 +1159,7 @@ class PPCproject:
 
 #************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Comprobación de que las actividades 
+# Comprobación de que las actividades 
 #           introducidas en la ventana 'recursos necesarios por 
 #           actividad' existen
 #
@@ -1190,7 +1191,7 @@ class PPCproject:
 
 #************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Comprobación de que los recursos
+# Comprobación de que los recursos
 #          introducidos en la ventana 'recursos necesarios por 
 #          actividad' existen
 #
@@ -1225,7 +1226,7 @@ class PPCproject:
 #####################################################################################################################
  
 #-----------------------------------------------------------
-# Función: Suma de las unidades de recurso disponibles
+# Suma de las unidades de recurso disponibles
 #          por proyecto usadas por las actividades
 #
 # Parámetros: asignacion (lista que almacena actividad,
@@ -1253,7 +1254,7 @@ class PPCproject:
 
 #*************************************************************************************************************************     
 #-----------------------------------------------------------
-# Función: Almacenamiento en una lista de listas (filas) las relaciones entre    
+# Almacenamiento en una lista de listas (filas) las relaciones entre    
 #          actividades, recursos y unidades de recurso 
 #          necesarias por actividad
 #
@@ -1285,7 +1286,7 @@ class PPCproject:
 
 #*******************************************************************************************************************   
 #-----------------------------------------------------------
-# Función: Extracción en una lista las relaciones entre    
+# Extracción en una lista las relaciones entre    
 #          actividades, recursos y unidades de recurso 
 #          necesarias por actividad
 #
@@ -1321,7 +1322,7 @@ class PPCproject:
 
 #*************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Se inserta una o varias actividades siguientes  
+# Se inserta una o varias actividades siguientes  
 #
 # Parámetros: modelo (interfaz)
 #             path (fila)
@@ -1341,7 +1342,7 @@ class PPCproject:
 
 #*******************************************************************************************************************   
 #-----------------------------------------------------------
-# Función: Pasa una lista de listas a formato cadena
+# Pasa una lista de listas a formato cadena
 #
 # Parámetros: listaCadenas (lista de listas)
 #             m (posición)
@@ -1361,7 +1362,7 @@ class PPCproject:
  
 #********************************************************************************************************************   
 #-----------------------------------------------------------
-# Función: Pasa una lista a formato cadena
+# Pasa una lista a formato cadena
 #
 # Parámetros: lista (lista)
 #
@@ -1381,7 +1382,7 @@ class PPCproject:
            
 #********************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Pasa un texto a formato lista 
+# Pasa un texto a formato lista 
 #
 # Parámetros: texto (texto)
 #
@@ -1399,7 +1400,7 @@ class PPCproject:
 
 #**********************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Introduce en una lista todas las etiquetas de las actividades  
+# Introduce en una lista todas las etiquetas de las actividades  
 #
 # Parámetros: -
 #
@@ -1416,7 +1417,7 @@ class PPCproject:
 
 #***********************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de la media y la desviación típica a partir de la distribución, 
+# Cálculo de la media y la desviación típica a partir de la distribución, 
 #          del tiempo optimista, pesimista y más probable 
 #
 # Parámetros: distribucion (tipo de distribución)
@@ -1454,7 +1455,7 @@ class PPCproject:
 
 #***********************************************************************************************************************       
 #-----------------------------------------------------------
-# Función: Muestra datos en el Text View correspondiente 
+# Muestra datos en el Text View correspondiente 
 #
 # Parámetros: widget (lugar donde mostrar el dato)
 #             valor (dato a mostrar)
@@ -1471,7 +1472,7 @@ class PPCproject:
 
 #*******************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Asignación de tí­tulo al proyecto actual
+# Asignación de tí­tulo al proyecto actual
 #
 # Parámetros: directorio (tí­tulo+directorio)
 #
@@ -1496,7 +1497,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++#
 
 #-----------------------------------------------------------
-# Función: Creación del grafo Pert y renumeración del mismo 
+# Creación del grafo Pert y renumeración del mismo 
 #
 # Parámetros: - 
 #
@@ -1524,7 +1525,7 @@ class PPCproject:
 
 #**********************************************************************************
 #-----------------------------------------------------------
-# Función: Obtiene un diccionario que contiene las actividades 
+# Obtiene un diccionario que contiene las actividades 
 #          y sus sucesoras  
 #
 # Parámetros: actividades (lista de actividades)
@@ -1540,7 +1541,7 @@ class PPCproject:
  
 #***********************************************************************************
 #-----------------------------------------------------------
-# Función: Creación de una lista que contenga los nodos del grafo
+# Creación de una lista que contenga los nodos del grafo
 #
 # Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
 #
@@ -1570,7 +1571,7 @@ class PPCproject:
 
 #***********************************************************************************
 #-----------------------------------------------------------
-# Función: Creación de un diccionario que representa las prelaciones 
+# Creación de un diccionario que representa las prelaciones 
 #          entre los nodos del grafo Pert  
 #
 # Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
@@ -1597,7 +1598,7 @@ class PPCproject:
         
 #***********************************************************************************
 #-----------------------------------------------------------
-# Función: Calcula el algoritmo de Demoucron, es decir, divide  
+# Calcula el algoritmo de Demoucron, es decir, divide  
 #          el grafo Pert en niveles
 #
 # Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
@@ -1666,7 +1667,7 @@ class PPCproject:
 
 #*************************************************************************************
 #-----------------------------------------------------------
-# Función: Se renumera el grafo Pert 
+# Se renumera el grafo Pert 
 #
 # Parámetros: grafo (grafo Pert)
 #             niveles (niveles de cada nodo del grafo)
@@ -1741,7 +1742,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++#
 
 #-----------------------------------------------------------
-# Función: Acción usuario para calcular todos los datos relacionados con Zaderenko 
+# Acción usuario para calcular todos los datos relacionados con Zaderenko 
 #
 # Parámetros: -
 #
@@ -1806,7 +1807,7 @@ class PPCproject:
 
 #*********************************************************************************
 #-----------------------------------------------------------
-# Función: Creación de la matriz de Zaderenko 
+# Creación de la matriz de Zaderenko 
 #
 # Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
 #             nodos (lista de nodos)
@@ -1857,7 +1858,7 @@ class PPCproject:
 
 #*****************************************************************************        
 #-----------------------------------------------------------
-# Función: Cálculo de los tiempos early de cada nodo 
+# Cálculo de los tiempos early de cada nodo 
 #
 # Parámetros: nodos (lista de nodos)
 #             mZad (matriz de Zaderenko)
@@ -1893,7 +1894,7 @@ class PPCproject:
 
  #*****************************************************************************        
 #-----------------------------------------------------------
-# Función: Cálculo de los tiempos last de cada nodo 
+# Cálculo de los tiempos last de cada nodo 
 #
 # Parámetros: nodos (lista de nodos)
 #             early (lista con los tiempos early)
@@ -1943,7 +1944,7 @@ class PPCproject:
 
 #***************************************************************
 #-----------------------------------------------------------
-# Función: Prepara y muestra en la interfaz la matriz de Zaderenko y  
+# Prepara y muestra en la interfaz la matriz de Zaderenko y  
 #          los tiempos early y last 
 #
 # Parámetros: early (lista con los tiempos early)
@@ -2007,7 +2008,7 @@ class PPCproject:
 
 #******************************************************************************
 #-----------------------------------------------------------
-# Función: Muestra los caminos del grafo en la interfaz (ventana Zaderenko)
+# Muestra los caminos del grafo en la interfaz (ventana Zaderenko)
 #
 # Parámetros: modelo (lista donde se muestran los caminos)
 #             criticos (lista caminos criticos)
@@ -2051,7 +2052,7 @@ class PPCproject:
        
 #**************************************************************************        
 #-----------------------------------------------------------
-# Función: Cálculo de las actividades criticas 
+# Cálculo de las actividades criticas 
 #
 # Parámetros: holguras (lista con las hoguras de cada actividad)
 #             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
@@ -2079,7 +2080,7 @@ class PPCproject:
   
 #*************************************************************************
 #-----------------------------------------------------------
-# Función: Creación de un grafo sólo con actividades crí­ticas y extracción de
+# Creación de un grafo sólo con actividades crí­ticas y extracción de
 #          los caminos de dicho grafo, que serán todos crí­ticos 
 #
 # Parámetros: actCriticas (lista de actividades crí­ticas)
@@ -2104,7 +2105,7 @@ class PPCproject:
 
 #*************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Obtiene un diccionario que contiene las actividades 
+# Obtiene un diccionario que contiene las actividades 
 #          crí­ticas y sus sucesoras  
 #
 # Parámetros: criticas (lista de actividades crí­ticas)
@@ -2140,7 +2141,7 @@ class PPCproject:
 
 #************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Búsqueda de los caminos criticos en todos los caminos
+# Búsqueda de los caminos criticos en todos los caminos
 #          del grafo. Se marca con un 1 los crí­ticos y con un 0
 #          los no crí­ticos
 #
@@ -2172,7 +2173,7 @@ class PPCproject:
 
 #************************************************************************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de la duración media y la desviación tí­pica
+# Cálculo de la duración media y la desviación tí­pica
 #          de un camino del grafo
 #
 # Parámetros: camino (camino del grafo)
@@ -2216,7 +2217,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++# 
 
 #-----------------------------------------------------------
-# Función: Acción usuario para mostrar la etiqueta de cada actividad con su
+# Acción usuario para mostrar la etiqueta de cada actividad con su
 #          nodo inicio y fin en la interfaz
 #
 # Parámetros: modelo (interfaz)
@@ -2262,7 +2263,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++#      
   
 #-----------------------------------------------------------
-# Función: Acción usuario para mostrar los tres tipos de
+# Acción usuario para mostrar los tres tipos de
 #          holguras: total, libre e independiente
 #
 # Parámetros: -
@@ -2293,7 +2294,7 @@ class PPCproject:
 
 #*****************************************************************        
 #-----------------------------------------------------------
-# Función: Cálculo de los tres tipos de holguras
+# Cálculo de los tres tipos de holguras
 #
 # Parámetros: grafo (grafo Pert)
 #             early (lista con los tiempos early)
@@ -2343,7 +2344,7 @@ class PPCproject:
       
 #********************************************************************         
 #-----------------------------------------------------------
-# Función: Muestra las hoguras en la interfaz
+# Muestra las hoguras en la interfaz
 #
 # Parámetros: modelo (lista de actividades)
 #             hoguras (lista con los tres tipos de holguras de cada actividad)
@@ -2365,7 +2366,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++# 
 
 #-----------------------------------------------------------
-# Función: Acción usuario para calcular y mostrar todos los 
+# Acción usuario para calcular y mostrar todos los 
 #          caminos de un grafo 
 #
 # Parámetros: -
@@ -2402,7 +2403,7 @@ class PPCproject:
 
 #*****************************************************************************
 #-----------------------------------------------------------
-# Función: Búsqueda de los caminos del grafo (crí­ticos o no)
+# Búsqueda de los caminos del grafo (crí­ticos o no)
 #
 # Parámetros: grafo (grafo Pert)
 #
@@ -2429,7 +2430,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++# 
 
 #-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana de 
+# Acción usuario para acceder a la ventana de 
 #          'recursos necesarios por actividad'
 #
 # Parámetros: -
@@ -2462,7 +2463,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++# 
 
 #-----------------------------------------------------------
-# Función: Simulación de duraciones de cada actividad según  
+# Simulación de duraciones de cada actividad según  
 #          su tipo de distribución
 #
 # Parámetros: n (número de iteraciones)
@@ -2532,7 +2533,7 @@ class PPCproject:
 
 #***************************************************************
 #-----------------------------------------------------------
-# Función: Generación de un número aleatorio para una 
+# Generación de un número aleatorio para una 
 #          distribución uniforme
 #
 # Parámetros: op (duración optimista)
@@ -2549,7 +2550,7 @@ class PPCproject:
 
 #******************************************************************
 #-----------------------------------------------------------
-# Función: Generación de un número aleatorio para una 
+# Generación de un número aleatorio para una 
 #          distribución beta
 #
 # Parámetros: op (duración optimista)
@@ -2571,7 +2572,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Obtención de datos necesarios para la generación de 
+# Obtención de datos necesarios para la generación de 
 #          números aleatorios para una distribución beta
 #
 # Parámetros: op (duración optimista)
@@ -2596,7 +2597,7 @@ class PPCproject:
 
 #******************************************************************
 #-----------------------------------------------------------
-# Función: Generación de un número aleatorio para una 
+# Generación de un número aleatorio para una 
 #          distribución triangular
 #
 # Parámetros: op (duración optimista)
@@ -2627,7 +2628,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Generación de un número aleatorio para una 
+# Generación de un número aleatorio para una 
 #          distribución normal
 #
 # Parámetros: mean (duración media)
@@ -2644,7 +2645,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de las F.Absolutas y F.Relativas 
+# Cálculo de las F.Absolutas y F.Relativas 
 #
 # Parámetros: dMax (duración máxima)
 #             dMin (duración mímima)
@@ -2678,7 +2679,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de la posición de una duración dentro del 
+# Cálculo de la posición de una duración dentro del 
 #          vector de F.Absolutas
 #
 # Parámetros: d (duración)
@@ -2696,7 +2697,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de la duración correspondiente a una posición 
+# Cálculo de la duración correspondiente a una posición 
 #          (inversa de la Función anterior)
 #
 # Parámetros: x (posición)
@@ -2714,7 +2715,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Prepara la tabla de frecuencias para ser mostrada en  
+# Prepara la tabla de frecuencias para ser mostrada en  
 #          la interfaz
 #
 # Parámetros: intervalos (intervalos)
@@ -2757,7 +2758,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Extrae los caminos crí­ticos, calcula su í­ndice de
+# Extrae los caminos crí­ticos, calcula su í­ndice de
 #          criticidad y muestra el resultado en la interfaz
 #
 # Parámetros: grafo (grafo Pert)
@@ -2818,7 +2819,7 @@ class PPCproject:
 
 #*******************************************************************
 #-----------------------------------------------------------
-# Función: Prepara los datos de la simulación para ser mostrados
+# Prepara los datos de la simulación para ser mostrados
 #          en formato CSV
 #
 # Parámetros: duraciones (lista con las duraciones de la simulación)
@@ -2864,7 +2865,7 @@ class PPCproject:
 
 #********************************************************************
 #-----------------------------------------------------------
-# Función: Limpia los datos de la ventana de simulación 
+# Limpia los datos de la ventana de simulación 
 #
 # Parámetros: -
 #
@@ -2894,7 +2895,7 @@ class PPCproject:
       #++++++++++++++++++++++++++++++++++++++++++++++++++# 
 
 #-----------------------------------------------------------
-# Función: Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
+# Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
 #          cálculo de probabilidades, es decir, el camino seleccionado
 #
 # Parámetros: -
@@ -2916,7 +2917,7 @@ class PPCproject:
 
 #************************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de probabilidades       
+# Cálculo de probabilidades       
 #
 # Parámetros: dato1 (dato primer Entry)
 #             dato2 (dato segundo Entry)
@@ -2955,7 +2956,7 @@ class PPCproject:
 
 #************************************************************************
 #-----------------------------------------------------------
-# Función: Cálculo de probabilidades para la simulación      
+# Cálculo de probabilidades para la simulación      
 #
 # Parámetros: dato1 (dato primer Entry)
 #             dato2 (dato segundo Entry)
@@ -3014,7 +3015,7 @@ class PPCproject:
 
 #************************************************************************
 #-----------------------------------------------------------
-# Función: Escribe en el TextView las probabilidades calculadas        
+# Escribe en el TextView las probabilidades calculadas        
 #
 # Parámetros: dato (probabilidad a escribir)
 #
@@ -3035,7 +3036,7 @@ class PPCproject:
 
 #***********************************************************************
 #-----------------------------------------------------------
-# Función: Limpia los datos de la ventana de probabilidades 
+# Limpia los datos de la ventana de probabilidades 
 #
 # Parámetros: c (0: llamada desde la ventana Zaderenko
 #       1: llamada desde la ventana Simulación)
@@ -3074,8 +3075,6 @@ class PPCproject:
 
 # --- FUNCIONES DIALOGOS ABRIR, GUARDAR Y ADVERTENCIA/ERRORES #
 
-# --- DIÁLOGOS ABRIR 
-
    def abrir(self):
       """
       Abre un proyecto (con extensión '.prj' guardado)
@@ -3111,6 +3110,11 @@ class PPCproject:
                if self.directorio[-4:] == '.prj':  
                   tabla=pickle.load(flectura)
                   self.cargaDatos(tabla) 
+               elif self.directorio[-3:] == '.sm':  
+                  # Se lee el fichero y se extraen los datos necesarios 
+                  prelaciones, rec, asig=self.leerPSPLIB(flectura)   
+                  # Se cargan los datos extraidos en las listas correspondientes
+                  self.cargarPSPLIB(prelaciones, rec, asig)         
                else: # Fichero de texto
                   tabla=self.leerTxt(flectura)
                   self.cargarTxt(tabla)
@@ -3124,42 +3128,11 @@ class PPCproject:
 
       dialogoFicheros.destroy() 
 
-   def abrirPSPLIB(self):
-      """
-      Abre un fichero de la librería de proyectos PSPLIB con extensión '.sm'
-      """
-      dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Import PSPLIB file"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
-      # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.sm'
-      filtro=gtk.FileFilter()
-      filtro.add_pattern('*.sm')
-      dialogoFicheros.add_filter(filtro)
-      dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-      resultado = dialogoFicheros.run()
-      if resultado == gtk.RESPONSE_OK:
-         try: 
-               # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
-               self.directorio=dialogoFicheros.get_filename()
-               flectura=open(self.directorio,'r')
-               self.asignarTitulo(self.directorio)
-               # Se lee el fichero y se extraen los datos necesarios 
-               prelaciones, rec, asig=self.leerPSPLIB(flectura)   
-               # Se cargan los datos extraidos en las listas correspondientes
-               self.cargarPSPLIB(prelaciones, rec, asig)         
-
-         except IOError :
-               self.dialogoError(gettext.gettext('The selected file does not exist'))  
-
-         flectura.close()
-      #elif resultado == gtk.RESPONSE_CANCEL:
-         #print "No hay elementos seleccionados"
-
-      dialogoFicheros.destroy() 
-
 
 # --- DIÁLOGOS GUARDAR
 
 #-----------------------------------------------------------
-# Función: Salva un proyecto con extensión '.prj'
+# Salva un proyecto con extensión '.prj'
 #
 # Parámetros: -
 #
@@ -3215,7 +3188,7 @@ class PPCproject:
 
 #********************************************************************************************************************  
 #-----------------------------------------------------------
-# Función: Salva un proyecto con extensión '.prj' guardado anteriormente
+# Salva un proyecto con extensión '.prj' guardado anteriormente
 #
 # Parámetros: -
 #
@@ -3246,7 +3219,7 @@ class PPCproject:
 
 #********************************************************************************************************************  
 #-----------------------------------------------------------
-# Función: Salva texto en formato CSV
+# Salva texto en formato CSV
 #
 # Parámetros: texto (texto a guardar)
 #
@@ -3275,37 +3248,35 @@ class PPCproject:
         dialogoGuardar.destroy() 
         
 
-#********************************************************************************************************************         
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #   DIÁLOGOS DE ADVERTENCIA Y ERRORES          #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
 
-#-----------------------------------------------------------
-# Función: Muestra un mensaje de advertencia al intentar salir
-#          de la aplicación
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-         
+
+# --- DIÁLOGOS DE ADVERTENCIA Y ERRORES       
+
    def dialogoSalir(self):
-        dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
-        label=gtk.Label(gettext.gettext('Are you sure you want to quit PPC-Project?'))
-        dialogo.vbox.pack_start(label,True,True,10)
-        label.show()
-        respuesta=dialogo.run()
-        if respuesta==gtk.RESPONSE_OK:
-            self.vPrincipal.destroy()
- 
-        #elif respuesta==gtk.RESPONSE_CANCEL:
-            #print "No desea salir de la aplicacion"
+      """
+      Muestra un mensaje de advertencia al intentar salir
+      de la aplicación
+      """
+   
+      # Creates dialog for confirmation
+      dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
+      label=gtk.Label(gettext.gettext('Are you sure you want to quit PPC-Project?'))
+      dialogo.vbox.pack_start(label,True,True,10)
+      label.show()
 
-        dialogo.destroy()
+      respuesta=dialogo.run()
+      if respuesta==gtk.RESPONSE_OK:
+         print "DBG: dialogoSalir OK"
+         self.vPrincipal.destroy()
+         gtk.main_quit()
+      elif respuesta==gtk.RESPONSE_CANCEL:
+         print "DBG: dialogoSalir CANCEL"
+
+      dialogo.destroy()
 
 #********************************************************************************************************************         
 #-----------------------------------------------------------
-# Función: Muestra un mensaje de advertencia si se intenta cerrar
+# Muestra un mensaje de advertencia si se intenta cerrar
 #          un proyecto abierto no guardado
 #
 # Parámetros: c ('cerrar': cerrar proyecto
@@ -3313,7 +3284,6 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------
-         
    def dialogoProyectoAbierto(self, c):
         dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
         label=gtk.Label(gettext.gettext('The actual project has been modified. Do you want to save the changes?'))
@@ -3339,16 +3309,14 @@ class PPCproject:
         dialogo.destroy()
 
 
-#********************************************************************************************************************         
 #-----------------------------------------------------------
-# Función: Muestra un mensaje de advertencia si no se han
+# Muestra un mensaje de advertencia si no se han
 #          introducido bien las unidades de recurso
 #
 # Parámetros: tipo (tipo de recurso)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------
-     
    def dialogoRec(self, tipo):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
@@ -3363,9 +3331,8 @@ class PPCproject:
 
         dialogo.destroy()   
 
-#********************************************************************************************************************         
 #-----------------------------------------------------------
-# Función: Muestra un mensaje de error en la apertura del fichero
+# Muestra un mensaje de error en la apertura del fichero
 #
 # Parámetros: -
 #
@@ -3382,16 +3349,14 @@ class PPCproject:
         dialogo.destroy()   
 
 
-#********************************************************************************************************************         
 #-----------------------------------------------------------
-# Función: Muestra un mensaje de error si en la introducción
+# Muestra un mensaje de error si en la introducción
 #          de datos hay alguna actividad repetida
 #
 # Parámetros: repetidas (lista con las actividades repetidas)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------
-
    def errorActividadesRepetidas(self, repetidas):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
@@ -3403,9 +3368,8 @@ class PPCproject:
         dialogo.destroy() 
 
 
-#********************************************************************************************************************         
 #-----------------------------------------------------------
-# Función: Muestra un mensaje de error si en la ventana
+# Muestra un mensaje de error si en la ventana
 #          'recursos necesarios por actividad' hay alguna
 #          actividad o algun recurso inexistente
 #
@@ -3414,7 +3378,6 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------
-
    def errorRecNecAct(self, datosErroneos, cadena):
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
@@ -3427,73 +3390,20 @@ class PPCproject:
 
 
 
-#####################################################################################################################
-                       # MANEJADORES #
-#####################################################################################################################
 
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la aplicación
-#
-# Parámetros: ventana (ventana principal)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+# MANEJADORES #
+# --- Menu actions
 
-   def on_wndPrincipal_destroy(self, ventana):
-        gtk.main_quit()
-   
-     
-#************************************************************************************************************
-                  # MENÚ #
-#************************************************************************************************************ 
-                               
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                   MENÚ ARCHIVO                     #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#    
+# File menu actions
+   def on_New_activate(self, item):
+      """ User ask for new file (from menu or toolbar) """
+      self.introduccionDatos()
 
-#-----------------------------------------------------------
-# Función: Acción usuario para abrir un proyecto nuevo
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
-   def on_mnNuevo_activate(self, menu_item):
-        self.introduccionDatos()
+   def on_Open_activate(self, item):
+      """ User ask for open file (from menu or toolbar) """
+      self.abrir()
 
-#-----------------------------------------------------------
-# Función: Acción usuario para abrir un proyecto guardado
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
-   def on_mnAbrir_activate(self, menu_item):
-        self.abrir()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para abrir un proyecto de la 
-#          librería de proyectos PSPLIB
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
-   def on_mnAbrirPSPLIB_activate(self, menu_item):
-        self.abrirPSPLIB()
- 
-#-----------------------------------------------------------
-# Función: Acción usuario para salvar un proyecto abierto
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
-   def  on_mnGuardar_activate(self, menu_item):
+   def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
@@ -3510,15 +3420,6 @@ class PPCproject:
 
         self.control=0
 
-#-----------------------------------------------------------
-# Función: Acción usuario para salvar un proyecto guardado anteriormente
-#          con propiedades diferentes (nombre, extensión, ...)
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
    def on_mnGuardarComo_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
@@ -3532,15 +3433,7 @@ class PPCproject:
        
         self.control=0
 
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar un proyecto abierto
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
-   def on_mnCerrar_activate(self, menu_item):
+   def on_Close_activate(self, menu_item):
         if self.control==0:   # El proyecto actual ha sido guardado
            # Se limpian todas las listas de datos
            self.modelo.clear()
@@ -3554,96 +3447,38 @@ class PPCproject:
         else:                 # El proyecto actual aún no se ha guardado
            self.dialogoProyectoAbierto(gettext.gettext('close'))
 
-#-----------------------------------------------------------
-# Función: Acción usuario para salir de la aplicación
-#
-# Parámetros: *args (argumentos) 
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+   def on_Exit_activate(self, *args):
+      if self.control==0:   # El proyecto actual ha sido guardado
+         self.dialogoSalir()
+      else:                 # El proyecto actual aún no se ha guardado
+         self.dialogoProyectoAbierto(gettext.gettext('exit'))
 
-   def on_mnSalir_activate(self, *args):
-        if self.control==0:   # El proyecto actual ha sido guardado
-            self.dialogoSalir()
-        else:                 # El proyecto actual aún no se ha guardado
-            self.dialogoProyectoAbierto(gettext.gettext('exit'))
-
-
-#******************************************************************************************************************  
-               
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                   MENÚ VER                         #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-#-----------------------------------------------------------
-# Función: Acción usuario para activar o desactivar la barra
-#          de herramientas, inicialmente inactiva
-#
-# Parámetros: checkMenuItem (item a activar o desactivar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+# View menu actions
 
    def on_bHerramientas_activate(self, checkMenuItem):
-        checkMenuItem==self.bHerramientas
-        if checkMenuItem.get_active():
-            self.bHerramientas.show()
-        else:
-            self.bHerramientas.hide()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para que la aplicación ocupe toda
-#          la pantalla 
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+      """
+      Acción usuario para activar o desactivar la barra
+      de herramientas, inicialmente inactiva
+      """
+      checkMenuItem==self.bHerramientas
+      if checkMenuItem.get_active():
+         self.bHerramientas.show()
+      else:
+         self.bHerramientas.hide()
 
    def on_mnPantallaComp_activate(self, menu_item):
         self.vPrincipal.fullscreen()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para que la aplicación vuelva a su
-#          estado original
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
 
    def on_mnSalirPantComp_activate(self, menu_item):
         self.vPrincipal.unfullscreen()
 
 
-#*****************************************************************************************************************
-                 
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                   MENÚ ACCIÓN                      #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana de 
-#          introducción de recursos
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+# Action menu actions                 
 
    def on_mnCrearRecursos_activate(self, menu_item):
         if self.recurso==[]:
             self.modeloR.append()
         self.vRecursos.show()
-
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que 
-#          muestra el grafo Roy
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
 
    def on_mnGrafoRoy_activate(self, menu_item):
         # Se calcula el grafo ROY a través de la tabla de sucesoras
@@ -3660,328 +3495,132 @@ class PPCproject:
         # Se muestra la ventana
         self.vRoy.show()
 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que 
-#          muestra el grafo Pert
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
    def on_mnGrafoPert_activate(self, menu_item):
-        # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal()
+      # Se crea el grafo Pert y se renumera
+      grafoRenumerado=self.pertFinal()
 
-        # Se dibuja el grafo Pert y se carga la imagen en la ventana
-        self.grafoPert = self._widgets.get_widget('imagenGrafoPert')
-        pixbufloader = gtk.gdk.PixbufLoader()
-        pixbufloader.write( graph.pert2image(grafoRenumerado) )
-        pixbufloader.close()
-        self.grafoPert.set_from_pixbuf( pixbufloader.get_pixbuf() )
-        
-        # Se muestra la ventana
-        self.vPert.show()
-
-
-     
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que 
-#          muestra las actividades y su nodo inicio y fí­n
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+      # Se dibuja el grafo Pert y se carga la imagen en la ventana
+      self.grafoPert = self._widgets.get_widget('imagenGrafoPert')
+      pixbufloader = gtk.gdk.PixbufLoader()
+      pixbufloader.write( graph.pert2image(grafoRenumerado) )
+      pixbufloader.close()
+      self.grafoPert.set_from_pixbuf( pixbufloader.get_pixbuf() )
+      
+      # Se muestra la ventana
+      self.vPert.show()
 
    def on_mnActividades_activate(self, menu_item):
-        # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal()
+      """ User ask for activities in PERT graph """
+      # Se crea el grafo Pert y se renumera
+      grafoRenumerado=self.pertFinal()
 
-        # Se muestran las actividades y su nodo inicio y fí­n  
-        self.mostrarActividades(self.modeloA, grafoRenumerado.activities, grafoRenumerado.graph)
+      # Se muestran las actividades y su nodo inicio y fí­n  
+      self.mostrarActividades(self.modeloA, grafoRenumerado.activities, grafoRenumerado.graph)
      
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que muestra
-#          la matriz de Zaderenko con sus tiempos early y last y
-#          todos los caminos del grafo, su duración y desviación tí­pica
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-
    def on_mnZaderenko_activate(self, menu_item):
-          s=0
-          for a in self.actividad:
-               if a[6]=='' or a[7]=='':
-                    s+=1
-                    
-          if s>0:
-               self.dialogoError(gettext.gettext('There are uncomplete activities'))
-          else:
-               self.ventanaZaderenko()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que
-#          muestra las holguras de cada actividad
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
+      s=0
+      for a in self.actividad:
+         if a[6]=='' or a[7]=='':
+               s+=1
+               
+      if s>0:
+         self.dialogoError(gettext.gettext('There are uncomplete activities'))
+      else:
+         self.ventanaZaderenko()
 
    def on_mnHolguras_activate(self, menu_item):
-          s=0
-          for a in self.actividad:
-               if a[6]=='' or a[7]=='':
-                    s+=1
-                    
-          if s>0:
-               self.dialogoError(gettext.gettext('There are uncomplete activities'))
-          else:
-               self.ventanaHolguras()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que muestra
-#          los resultados de la simulación de duraciones (tabla
-#          de frecuencias, gráfica, ...)
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+      """ User ask for slacks """
+      s=0
+      for a in self.actividad:
+         if a[6]=='' or a[7]=='':
+               s+=1
+               
+      if s>0:
+         self.dialogoError(gettext.gettext('There are uncomplete activities'))
+      else:
+         self.ventanaHolguras()
 
    def on_mnSimulacion_activate(self, menu_item):
-        s=0
-        m=0
-        for a in self.actividad:
-             if a[9]==gettext.gettext('Uniform') or a[9]==gettext.gettext('Beta') or a[9]==gettext.gettext('Triangular'):
-                  if a[3]=='' or a[4]=='' or a[5]=='':
-                       s+=1
-             else:
-                  if a[6]=='' or a[7]=='':
-                       m=+1
+      """Acción usuario para acceder a la ventana que muestra
+      los resultados de la simulación de duraciones (tabla
+      de frecuencias, gráfica, ...)
+      """
+      s=0
+      m=0
+      for a in self.actividad:
+            if a[9]==gettext.gettext('Uniform') or a[9]==gettext.gettext('Beta') or a[9]==gettext.gettext('Triangular'):
+               if a[3]=='' or a[4]=='' or a[5]=='':
+                     s+=1
+            else:
+               if a[6]=='' or a[7]=='':
+                     m=+1
 
-        if s>0 and m==0:
-             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic'))
-        elif s==0 and m>0:
-             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Average')+'\n'+'\t'+gettext.gettext('- Typical Dev.'))
-        elif s>0 and m>0:
-             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic')+'\n'+'\t'+gettext.gettext('- Average')+'\n'+'\t'+gettext.gettext('- Typical Dev.'))
-        else:          
-             self.vSimulacion.show()
-             self.simTotales=[] # Lista con las simulaciones totales
-             self.duraciones=[] # Lista con las duraciones de las simulaciones
-             self.criticidad={} # Diccionario con los caminos y su í­ndice de criticidad
-             self.intervalos=[] # Lista con los intervalos de las duraciones
-               
-      
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que 
-#          muestra todos los caminos de un grafo
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+      if s>0 and m==0:
+            self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic'))
+      elif s==0 and m>0:
+            self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Average')+'\n'+'\t'+gettext.gettext('- Typical Dev.'))
+      elif s>0 and m>0:
+            self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic')+'\n'+'\t'+gettext.gettext('- Average')+'\n'+'\t'+gettext.gettext('- Typical Dev.'))
+      else:          
+            self.vSimulacion.show()
+            self.simTotales=[] # Lista con las simulaciones totales
+            self.duraciones=[] # Lista con las duraciones de las simulaciones
+            self.criticidad={} # Diccionario con los caminos y su í­ndice de criticidad
+            self.intervalos=[] # Lista con los intervalos de las duraciones
 
    def on_mnCalcularCaminos_activate(self, menu_item):
-        self.calcularCaminos()
+      """ User ask for paths in project """
+      self.calcularCaminos()
 
 
-#************************************************************************************************************               
+# Help menu actions
 
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                   MENÚ AYUDA                       #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que muestra
-#          el diálogo de ayuda 
-#
-# Parámetros: menu_item (item activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def on_mnAyuda_activate(self, menu_item):
         dialogoAyuda = self.dAyuda
         dialogoAyuda.show()
 
 
-#************************************************************************************************************
-               # BARRA DE HERRAMIENTAS #
-#************************************************************************************************************ 
+# --- Window actions
 
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder abrir un proyecto nuevo
-#
-# Parámetros: boton_her (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------                               
+   def on_wndGrafoPert_delete_event(self, window, event):
+        window.hide()
+        return True
 
-   def on_tbNuevo_clicked(self, boton_her):
-       self.introduccionDatos()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder abrir un proyecto guardado
-#
-# Parámetros: boton_her (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------        
-
-   def on_tbAbrir_clicked(self, boton_her):
-        self.abrir()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder salvar un proyecto abierto
-#
-# Parámetros: boton_her (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------        
-
-   def on_tbGuardar_clicked(self, boton_her):
-        # Se comprueba que no haya actividades repetidas
-        errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
-        if errorActRepetidas==0:
-             # Si no se ha guardado anteriormente, abrimos el cuadro de diálogo
-             if self.directorio==gettext.gettext('Unnamed -PPC-Project'):
-                 self.guardar(1)
-             # Si ya ha sido guardado antes, se modifica
-             else:
-                 self.guardado(self.directorio)
-        
-        # Si hay actividades repetidas, se muestra un mensaje de error
-        else:
-            #print actividadesRepetidas
-            self.errorActividadesRepetidas(actividadesRepetidas) 
-
-        self.control=0
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder cerrar un proyecto abierto
-#
-# Parámetros: boton_her (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-
-   def on_tbCerrar_clicked(self, boton_her):
-        if self.control==0:   # El proyecto actual ha sido guardado
-           # Se limpian todas las listas de datos
-           self.modelo.clear()
-           self.actividad=[]
-           self.modeloR.clear()
-           self.recurso=[]
-           self.modeloAR.clear()
-           self.asignacion=[]
-           self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
-       
-        else:                 # El proyecto actual aún no se ha guardado
-                self.dialogoProyectoAbierto(gettext.gettext('close'))
-
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder salir de la aplicación
-#
-# Parámetros: boton_her (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------   
-     
-   def on_tbSalir_clicked(self, boton_her):  
-        self.dialogoSalir()
-
-
-#************************************************************************************************************
-                  # VENTANAS #
-#************************************************************************************************************ 
-
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                    GRAFO PERT                      #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
- 
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana que muestra
-#          el grafo Pert
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-
-   def on_wndGrafoPert_delete_event(self, ventana, evento):
-        ventana.hide()
+   def on_wndGrafoRoy_delete_event(self, window, event):
+        window.hide()
         return True
 
 
-#************************************************************************************************************       
-
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                     GRAFO ROY                      #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
- 
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana que muestra
-#          el grafo Roy
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-
-   def on_wndGrafoRoy_delete_event(self, ventana, evento):
-        ventana.hide()
-        return True
-
-
-#************************************************************************************************************       
-                                             
-          #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                    ACTIVIDADES                     #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+# ACTIVIDADES window
 
 #-----------------------------------------------------------
-# Función: Acción usuario para acceder aceptar los datos
+# Acción usuario para acceder aceptar los datos
 #          que aparecen en la ventana de actividades
 #
 # Parámetros: boton (botón clickeado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
- 
    def on_btAceptarAct_clicked(self, boton):
         self.vActividades.hide()
 
 #-----------------------------------------------------------
-# Función: Acción usuario para acceder cerrar la ventana de actividades
+# Acción usuario para acceder cerrar la ventana de actividades
 #
 # Parámetros: ventana (ventana actual)
 #             evento (evento cerrar)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_wndActividades_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
 
-#*********************************************************************************************************       
-
-        #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                     ZADERENKO                      #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+# ZADERENKO window
 
 #-----------------------------------------------------------
-# Función: Al seleccionar uno de los caminos del grafo que se muestran
+# Al seleccionar uno de los caminos del grafo que se muestran
 #          en la ventana de Zaderenko, se activa el botón 
 #          'calcular probabilidad' que aparací­a inactivo inicialmente          
 #
@@ -3989,7 +3628,6 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_vistaListaZad_cursor_changed(self, vistaListaZ):
         vistaListaZ = self._widgets.get_widget('vistaListaZad')
         cursor, columna = vistaListaZ.get_cursor()
@@ -4001,14 +3639,13 @@ class PPCproject:
             self._widgets.get_widget('btCalcularProb').set_sensitive(False)
 
 #-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que muestra
+# Acción usuario para acceder a la ventana que muestra
 #          el cálculo de probabilidades
 #
 # Parámetros: boton (botón clickeado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_btCalcularProb_clicked(self, boton):
     # Extraigo los valores de la media y la desviación típica del camino que va a ser objeto del
          # cálculo de probabilidades
@@ -4046,7 +3683,7 @@ class PPCproject:
          self.vProbabilidades.show()
 
 #-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información 
+# Acción usuario para aceptar la información 
 #          que aparece en la ventana de Zaderenko: matriz de
 #          Zaderenko, tiempos early y last, caminos del grafo, ...
 #
@@ -4054,20 +3691,18 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_btAceptarZad_clicked(self, boton):
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         self.vZaderenko.hide()
 
 #-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana que muestra 
+# Acción usuario para acceder a la ventana que muestra 
 #          las holguras de cada actividad
 #
 # Parámetros: boton (botón clickeado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_btHolgZad_clicked(self, boton):
           s=0
           for a in self.actividad:
@@ -4079,30 +3714,24 @@ class PPCproject:
           else:
                self.ventanaHolguras()
     
-
 #-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de Zaderenko
+# Acción usuario para cerrar la ventana de Zaderenko
 #
 # Parámetros: ventana (ventana actual)
 #             evento (evento cerrar)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_wndZaderenko_delete_event(self, ventana, evento):
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         ventana.hide()
         return True
 
 
-#****************************************************************************************************************       
-
-          #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                   HOLGURAS                       #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+# HOLGURAS window
 
 #-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información 
+# Acción usuario para aceptar la información 
 #          que aparece en la ventana de holguras: los tres
 #          tipos de holgura para cada actividad
 #
@@ -4110,18 +3739,16 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_btAceptarHolg_clicked(self, boton):
         self.vHolguras.hide()
 
 #-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana de Zaderenko
+# Acción usuario para acceder a la ventana de Zaderenko
 #
 # Parámetros: boton (botón clickeado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_btZadHolg_clicked(self, boton):
           s=0
           for a in self.actividad:
@@ -4135,35 +3762,28 @@ class PPCproject:
 
 
 #-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de holguras
+# Acción usuario para cerrar la ventana de holguras
 #
 # Parámetros: ventana (ventana actual)
 #             evento (evento cerrar)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
-
    def on_wndHolguras_delete_event(self, ventana, evento):
         ventana.hide()
         return True
 
 
-#************************************************************************************************************       
-
-           #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                 PROBABILIDADES                   #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+# PROBABILIDADES window
 
 #-----------------------------------------------------------
-# Función: Acción usuario al activar el valor introducido en 
+# Acción usuario al activar el valor introducido en 
 #          el primer gtk.Entry de la ventana de probabilidades          
 #
 # Parámetros: entry (entry activado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_valor1Prob_activate(self, entry):
          # Se extraen los valores de las u.d.t. de la interfaz
          valor1=self._widgets.get_widget('valor1Prob')   
@@ -4212,14 +3832,13 @@ class PPCproject:
 
 
 #-----------------------------------------------------------
-# Función: Acción usuario al activar el valor introducido en 
+# Acción usuario al activar el valor introducido en 
 #          el segundo gtk.Entry de la ventana de probabilidades          
 #
 # Parámetros: entry (entry activado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_valor2Prob_activate(self, entry):
          # Se extraen los valores de las u.d.t. de la interfaz
          valor1=self._widgets.get_widget('valor1Prob')   
@@ -4268,14 +3887,13 @@ class PPCproject:
          
 
 #-----------------------------------------------------------
-# Función: Acción usuario al activar el valor introducido en 
+# Acción usuario al activar el valor introducido en 
 #          el tercer gtk.Entry de la ventana de probabilidades          
 #
 # Parámetros: entry (entry activado)
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_valor3Prob_activate(self, entry):
          # Se extrae el valor de probabilidad de la interfaz
          valor3=self._widgets.get_widget('valor3Prob')   
@@ -4333,14 +3951,13 @@ class PPCproject:
                 
 
 #-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información que
+# Acción usuario para aceptar la información que
 #          muestra la ventana de cálculo de probabilidades
 #
 # Parámetros: boton (botón clickeado)
 #
 # Valor de retorno: -
 #----------------------------------------------------------- 
-
    def on_btAceptarProb_clicked(self, boton):
       titulo=self.vProbabilidades.get_title()
       if titulo==gettext.gettext('Probability related to the path'):
@@ -4351,7 +3968,7 @@ class PPCproject:
       self.vProbabilidades.hide()
 
 #-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de cálculo 
+# Acción usuario para cerrar la ventana de cálculo 
 #          de probabilidades
 #
 # Parámetros: ventana (ventana actual)
@@ -4359,7 +3976,6 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-
    def on_wndProbabilidades_delete_event(self, ventana, evento):
         titulo=self.vProbabilidades.get_title()
         if titulo==gettext.gettext('Probability related to the path'):
@@ -4372,11 +3988,11 @@ class PPCproject:
 
 
 
-# --- Simulation
+# --- Simulation window
 
    def on_btContinuarIterando_clicked(self, boton):
       """
-      Función: -
+      -
 
       Parámetros: boton (botón clickeado)
 
@@ -4476,7 +4092,7 @@ class PPCproject:
 
    def on_btAceptarSim_clicked(self, boton):
       """
-      Función: Acción usuario para aceptar la información que
+      Acción usuario para aceptar la información que
                muestra la ventana de simulación de duraciones:
                tabla, gráfica, ....
 
@@ -4489,7 +4105,7 @@ class PPCproject:
        
    def on_btProbSim_clicked(self, boton):
       """
-      Función: Acción usuario para acceder a la ventana de 
+      Acción usuario para acceder a la ventana de 
                cálculo de probabilidades
 
       Parámetros: boton (botón clickeado)
@@ -4535,7 +4151,7 @@ class PPCproject:
 
    def on_btGuardarSim_clicked(self, boton):
       """
-      Función: Acción usuario para salvar la información que
+      Acción usuario para salvar la información que
                muestra la ventana de simulación de duraciones
                tabla, gráfica, ....
 
@@ -4562,7 +4178,7 @@ class PPCproject:
 
    def on_wndSimulacion_delete_event(self, ventana, evento):
       """
-      Función: Acción usuario para cerrar la ventana de simulación 
+      Acción usuario para cerrar la ventana de simulación 
                de duraciones
 
       Parámetros: ventana (ventana actual)
@@ -4579,7 +4195,7 @@ class PPCproject:
 
    def on_btAceptarRec_clicked(self, boton):
       """
-      Función: Acción usuario para aceptar la información que
+      Acción usuario para aceptar la información que
                muestra la ventana de recursos: nombre, tipo, unidad disponible 
 
       Parámetros: boton (botón clickeado)
@@ -4590,7 +4206,7 @@ class PPCproject:
         
    def on_btCancelarRec_clicked(self, boton):
       """
-      Función: Acción usuario para cancelar la información que
+      Acción usuario para cancelar la información que
                muestra la ventana de recursos: nombre, tipo, unidad disponible. 
                Si se cancelan los datos, se borran definitivamente
 
@@ -4604,7 +4220,7 @@ class PPCproject:
 
    def on_btAsignarRec_clicked(self, boton):
       """
-      Función: Acción usuario para acceder a la ventana de recursos
+      Acción usuario para acceder a la ventana de recursos
                necesarios por actividad 
 
       Parámetros: boton (botón clickeado)
@@ -4615,7 +4231,7 @@ class PPCproject:
  
    def on_wndRecursos_delete_event(self, ventana, evento):
       """
-      Función: Acción usuario para cerrar la ventana de recursos
+      Acción usuario para cerrar la ventana de recursos
 
       Parámetros: ventana (ventana actual)
                   evento (evento cerrar)
@@ -4631,7 +4247,7 @@ class PPCproject:
 
    def on_btAceptarAR_clicked(self, boton):
       """
-      Función: Acción usuario para aceptar la información que
+      Acción usuario para aceptar la información que
                muestra la ventana de recursos necesarios por
                actividad: actividad, recurso, unidad necesaria
 
@@ -4656,7 +4272,7 @@ class PPCproject:
                 
    def on_btCancelarAR_clicked(self, boton):
       """
-      Función: Acción usuario para cancelar la información que
+      Acción usuario para cancelar la información que
                muestra la ventana de recursos necesarios por
                actividad: actividad, recurso, unidad necesaria. 
                Si se cancelan los datos, se borran definitivamente
@@ -4671,7 +4287,7 @@ class PPCproject:
  
    def on_wndAsignarRec_delete_event(self, ventana, evento):
       """
-      Función: Acción usuario para cerrar la ventana de recursos
+      Acción usuario para cerrar la ventana de recursos
                necesarios por actividad 
 
       Parámetros: ventana (ventana actual)
@@ -4687,7 +4303,7 @@ class PPCproject:
 
    def on_btAceptarCaminos_clicked(self, boton):
       """
-      Función: Acción usuario para aceptar la información que
+      Acción usuario para aceptar la información que
                muestra la ventana de calcular caminos
 
       Parámetros: boton (botón clickeado)
@@ -4698,7 +4314,7 @@ class PPCproject:
 
    def on_btExportarCsv_clicked(self, boton): 
       """
-      Función: Acción usuario para exportar los caminos que se
+      Acción usuario para exportar los caminos que se
                muestran en la ventana a formato CSV para 
                hoja de cálculo
 
@@ -4720,7 +4336,7 @@ class PPCproject:
 
    def on_wndCaminos_delete_event(self, ventana, evento):
       """
-      Función: Acción usuario para cerrar la ventana de calcular
+      Acción usuario para cerrar la ventana de calcular
                caminos
 
       Parámetros: ventana (ventana actual)
@@ -4736,7 +4352,7 @@ class PPCproject:
 
    def on_dAyuda_response(self, False, boton):
       """
-      Función: Acción usuario para aceptar la información que
+      Acción usuario para aceptar la información que
                muestra el diálodo de ayuda
 
       Parámetros: boton (botón clickeado)
@@ -4747,7 +4363,7 @@ class PPCproject:
 
    def on_dAyuda_delete_event(self, dialogo, evento):
       """
-      Función: Acción usuario para cerrar el diálogo de ayuda 
+      Acción usuario para cerrar el diálogo de ayuda 
 
       Parámetros: ventana (ventana actual)
                   evento (evento cerrar)
