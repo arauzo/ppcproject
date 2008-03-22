@@ -29,6 +29,8 @@ import gobject
 import gtk
 import gtk.glade
 
+import GTKgantt
+
 import scipy.stats
 from matplotlib import rcParams
 rcParams['text.fontname'] = 'cmr10'
@@ -63,7 +65,11 @@ class PPCproject:
       self.box=gtk.VBox()
       self.hBoxSim=self._widgets.get_widget('hbSim')
       self.boxS=gtk.VBox()
-        
+      # Adding Gantt Diagram
+      self.gantt = GTKgantt.GTKgantt()
+      self._widgets.get_widget("hpnPanel").add2(self.gantt)
+      self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
+      self.gantt.show_all()
       # Estructuras de datos básicas de la aplicación
       self.actividad=[]
       self.recurso=[]

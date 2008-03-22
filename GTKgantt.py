@@ -31,7 +31,7 @@ class GTKgantt(gtk.VBox):
       self.scrolled_window = gtk.ScrolledWindow(self.diagram.get_hadjustment(), self.diagram.get_vadjustment())
       self.pack_start(self.header, False, False, 0)
       self.pack_start(self.scrolled_window, True, True, 0)
-      self.scrolled_window.set_policy(gtk.POLICY_AUTOMATIC,gtk.POLICY_AUTOMATIC)
+      self.scrolled_window.set_policy(gtk.POLICY_ALWAYS,gtk.POLICY_AUTOMATIC)
       self.scrolled_window.add(self.diagram)
       self.set_size_request(40, 40)
    def set_vadjustment(self, adjustment):
