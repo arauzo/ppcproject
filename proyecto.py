@@ -962,9 +962,6 @@ class PPCproject:
          
          return (prelaciones, rec, asig)
 
-
-
-#***************************************************************************
 #-----------------------------------------------------------
 # Función: Actualización de los datos con los obtenidos de la   
 #          lectura de un fichero con extensión '.sm' de la librería 
@@ -3069,101 +3066,91 @@ class PPCproject:
            self.box=gtk.VBox()
 
 
-#####################################################################################################################
-                            # FUNCIONES DIALOGOS ABRIR, GUARDAR Y ADVERTENCIA/ERRORES #
-#####################################################################################################################          
+# --- FUNCIONES DIALOGOS ABRIR, GUARDAR Y ADVERTENCIA/ERRORES #
 
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #            DIÁLOGOS ABRIR                    #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+# --- DIÁLOGOS ABRIR 
 
-#-----------------------------------------------------------
-# Función: Abre un proyecto con extensión '.prj' guardado
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def abrir(self):
-        dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
-        # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.prj'
-        filtro=gtk.FileFilter()
-        filtro.add_pattern('*.prj')
-        filtro.add_pattern('*.txt')
-        dialogoFicheros.add_filter(filtro)
-        dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-        resultado = dialogoFicheros.run()
-        if resultado == gtk.RESPONSE_OK:
-            try: 
-                # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
-                self.directorio=dialogoFicheros.get_filename()
-                flectura=open(self.directorio,'r') 
-                self.asignarTitulo(self.directorio)
-                # Se cargan los datos del fichero 
-                tabla=[]
-                if self.directorio[-4:] == '.prj':  
-                    tabla=pickle.load(flectura)
-                    self.cargaDatos(tabla) 
-                else: # Fichero de texto
-                    tabla=self.leerTxt(flectura)
-                    self.cargarTxt(tabla)
+      """
+      Abre un proyecto (con extensión '.prj' guardado)
+      
+      Debería abrir cualquier fichero desde una opción
+      """
 
-            except IOError :
-                self.dialogoError(gettext.gettext('The selected file does not exist'))
-    
-            flectura.close()
-        #elif resultado == gtk.RESPONSE_CANCEL:
-            #print "No hay elementos seleccionados"
+      # Debería comprobar si hay moficaciones y, si las hay, preguntar si guardar antes de cargar otro machacandolas.
+      # XXX
+      
+      # Open dialog asking for file to open
+      dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
+                                              None,
+                                              gtk.FILE_CHOOSER_ACTION_OPEN,
+                                              (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+                                              )
+      filtro=gtk.FileFilter()
+      filtro.add_pattern('*.prj')
+      filtro.add_pattern('*.txt')
+      filtro.add_pattern('*.sm')
+      dialogoFicheros.add_filter(filtro)
+      dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
+      resultado = dialogoFicheros.run()
 
-        dialogoFicheros.destroy() 
+      if resultado == gtk.RESPONSE_OK:
+         try: 
+               # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
+               self.directorio=dialogoFicheros.get_filename()
+               flectura=open(self.directorio,'r') 
+               self.asignarTitulo(self.directorio)
+               # Se cargan los datos del fichero 
+               tabla=[]
+               if self.directorio[-4:] == '.prj':  
+                  tabla=pickle.load(flectura)
+                  self.cargaDatos(tabla) 
+               else: # Fichero de texto
+                  tabla=self.leerTxt(flectura)
+                  self.cargarTxt(tabla)
 
+         except IOError :
+               self.dialogoError(gettext.gettext('The selected file does not exist'))
+   
+         flectura.close()
+      elif resultado == gtk.RESPONSE_CANCEL:
+         pass 
 
+      dialogoFicheros.destroy() 
 
-#********************************************************************************************************************         
-#-----------------------------------------------------------
-# Función: Abre un fichero de la librería de proyectos 
-#          PSPLIB con extensión '.sm'
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-     
    def abrirPSPLIB(self):
-        dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Import PSPLIB file"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
-        # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.sm'
-        filtro=gtk.FileFilter()
-        filtro.add_pattern('*.sm')
-        dialogoFicheros.add_filter(filtro)
-        dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-        resultado = dialogoFicheros.run()
-        if resultado == gtk.RESPONSE_OK:
-            try: 
-                # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
-                self.directorio=dialogoFicheros.get_filename()
-                flectura=open(self.directorio,'r')
-                self.asignarTitulo(self.directorio)
-                # Se lee el fichero y se extraen los datos necesarios 
-                prelaciones, rec, asig=self.leerPSPLIB(flectura)   
-                # Se cargan los datos extraidos en las listas correspondientes
-                self.cargarPSPLIB(prelaciones, rec, asig)         
+      """
+      Abre un fichero de la librería de proyectos PSPLIB con extensión '.sm'
+      """
+      dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Import PSPLIB file"),None,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK ))
+      # Se añade un filtro para que el diálogo me muestre sólo los archivos con la extensión '.sm'
+      filtro=gtk.FileFilter()
+      filtro.add_pattern('*.sm')
+      dialogoFicheros.add_filter(filtro)
+      dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
+      resultado = dialogoFicheros.run()
+      if resultado == gtk.RESPONSE_OK:
+         try: 
+               # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
+               self.directorio=dialogoFicheros.get_filename()
+               flectura=open(self.directorio,'r')
+               self.asignarTitulo(self.directorio)
+               # Se lee el fichero y se extraen los datos necesarios 
+               prelaciones, rec, asig=self.leerPSPLIB(flectura)   
+               # Se cargan los datos extraidos en las listas correspondientes
+               self.cargarPSPLIB(prelaciones, rec, asig)         
 
-            except IOError :
-                self.dialogoError(gettext.gettext('The selected file does not exist'))  
- 
-            flectura.close()
-        #elif resultado == gtk.RESPONSE_CANCEL:
-            #print "No hay elementos seleccionados"
+         except IOError :
+               self.dialogoError(gettext.gettext('The selected file does not exist'))  
 
-        dialogoFicheros.destroy() 
+         flectura.close()
+      #elif resultado == gtk.RESPONSE_CANCEL:
+         #print "No hay elementos seleccionados"
+
+      dialogoFicheros.destroy() 
 
 
-#******************************************************************************************************************** 
-  
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #            DIÁLOGOS GUARDAR                  #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+# --- DIÁLOGOS GUARDAR
 
 #-----------------------------------------------------------
 # Función: Salva un proyecto con extensión '.prj'
@@ -4379,429 +4366,393 @@ class PPCproject:
 
 
 
-#****************************************************************************************************************       
-
-               #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                  SIMULACIÓN                       #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: -
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
+# --- Simulation
 
    def on_btContinuarIterando_clicked(self, boton):
+      """
+      Función: -
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
       # Se extrae el número de iteraciones 
-        iteracion=self._widgets.get_widget('iteracion')
-        it=iteracion.get_text()
-        #print it, 'iteraciones'
-        if it[:1]=='-':  # Nº iteraciones negativo
-           self.dialogoError(gettext.gettext('The number of iterations must be positive'))
-        else: # Nº iteraciones positivo
-            # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
-              totales=self._widgets.get_widget('iteracionesTotales')
-              interfaz=totales.get_text()
-              if interfaz!='':
-                 itTotales=int(it)+int(interfaz)
-              else:
-                 itTotales=int(it)
-              #print itTotales, 'iteraciones totales'
-              totales.set_text(str(itTotales))
+      iteracion=self._widgets.get_widget('iteracion')
+      it=iteracion.get_text()
+      #print it, 'iteraciones'
 
-            # Se realiza la simulación
-              simulacion=self.simulacion(int(it))
-              self.simTotales.append(simulacion)
-              #print len(self.simTotales), 'simulaciones'
-              #for s in self.simTotales:
-                 #print s
+      if it[:1]=='-':  # Nº iteraciones negativo
+         self.dialogoError(gettext.gettext('The number of iterations must be positive'))
+      else: # Nº iteraciones positivo
+         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
+         totales=self._widgets.get_widget('iteracionesTotales')
+         interfaz=totales.get_text()
+         if interfaz!='':
+            itTotales=int(it)+int(interfaz)
+         else:
+            itTotales=int(it)
+         #print itTotales, 'iteraciones totales'
+         totales.set_text(str(itTotales))
 
-              # Se crea el grafo Pert y se renumera
-              grafoRenumerado=self.pertFinal()
+         # Se realiza la simulación
+         simulacion=self.simulacion(int(it))
+         self.simTotales.append(simulacion)
+         #print len(self.simTotales), 'simulaciones'
+         #for s in self.simTotales:
+            #print s
 
-              # Nuevos nodos
-              nodosN=[]
-              for n in range(len(grafoRenumerado.graph)):
-                  nodosN.append(n+1)
-              
-              # Zaderenko
-              if simulacion==None:
-                 return
-              else:
-                 for s in simulacion: 
-                    mZad=self.mZad(grafoRenumerado.activities, nodosN, 0, s)
-                    early=self.early(nodosN, mZad)  
-                    last=self.last(nodosN, early, mZad)      
-                    tam=len(early)
-                    # Se calcula la duración del proyecto para cada simulación
-                    duracionProyecto=early[tam-1]
-                    #print duracionProyecto, 'duracion proyecto'  
-                    self.duraciones.append(duracionProyecto) 
-                    #print self.duraciones,'duraciones simuladas'
-                    # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
-                    self.indiceCriticidad(grafoRenumerado, s, early, last, itTotales)
-      
-                    # Se añaden la media y la desviación típica a la interfaz
-                    duracionMedia=scipy.stats.mean(self.duraciones)
-                    media=self._widgets.get_widget('mediaSim')
-                    media.set_text(str(duracionMedia))
-      
-                    desviacionTipica=scipy.stats.std(self.duraciones)
-                    dTipica=self._widgets.get_widget('dTipicaSim')
-                    dTipica.set_text(str(desviacionTipica))
- 
-              # Se calculan los intervalos
-              interv=[]
-              N=20 # Número de intervalos
-              dMax=float(max(self.duraciones)+0.00001)  # duración máxima
-              dMin=float(min(self.duraciones))   # duración mí­nima
-              #print dMax, 'max', dMin, 'min'
-              if int(it)==int(itTotales):
-                 for n in range(N):
-                    valor='['+str('%5.2f'%(self.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(self.duracion((n+1), dMax, dMin, N)))+'['       
-                    interv.append(valor)
-              if self.intervalos==[]:
-                 self.intervalos=interv
+         # Se crea el grafo Pert y se renumera
+         grafoRenumerado=self.pertFinal()
 
-              # Se calculan las frecuencias
-              self.Fa, Fr=self.calcularFrecuencias(dMax, dMin, itTotales, N)
-
-              # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
-              self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
-
-              # Dibuja histograma devolviendo los intervalos (bins) y otros datos
-              fig = Figure(figsize=(5,4), dpi=100)
-              ax = fig.add_subplot(111)
-
-              n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
-              canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-              if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-                 self.hBoxSim.remove(self.boxS)
-                 self.boxS=gtk.VBox()
-
-              self.hBoxSim.add(self.boxS)
-              self.boxS.pack_start(canvas)
-              self.boxS.show_all()
-
-#-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información que
-#          muestra la ventana de simulación de duraciones:
-#          tabla, gráfica, ....
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
-
-   def on_btAceptarSim_clicked(self, boton):
-        self.limpiarVentanaSim()
-        self.vSimulacion.hide()
-       
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana de 
-#          cálculo de probabilidades
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
-
-   def on_btProbSim_clicked(self, boton):
-       # Se asigna tí­tulo 
-         self.vProbabilidades.set_title(gettext.gettext('Probability related to the simulation'))
+         # Nuevos nodos
+         nodosN=[]
+         for n in range(len(grafoRenumerado.graph)):
+            nodosN.append(n+1)
          
-         # Extraigo los valores de la media y la desviación típica
-         media=self._widgets.get_widget('mediaSim')
-         m=media.get_text()
-         dTipica=self._widgets.get_widget('dTipicaSim')
-         dt=dTipica.get_text()
+         # Zaderenko
+         if simulacion==None:
+            return
+         else:
+            for s in simulacion: 
+               mZad=self.mZad(grafoRenumerado.activities, nodosN, 0, s)
+               early=self.early(nodosN, mZad)  
+               last=self.last(nodosN, early, mZad)      
+               tam=len(early)
+               # Se calcula la duración del proyecto para cada simulación
+               duracionProyecto=early[tam-1]
+               #print duracionProyecto, 'duracion proyecto'  
+               self.duraciones.append(duracionProyecto) 
+               #print self.duraciones,'duraciones simuladas'
+               # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
+               self.indiceCriticidad(grafoRenumerado, s, early, last, itTotales)
 
-         # Se muestran la media y desviación típica en la ventana de probabilidades
-         widgetMedia=self._widgets.get_widget('mediaProb')
-         widgetMedia.set_text(m)
-         widgetMedia.set_sensitive(False)
-         widgetdTipica=self._widgets.get_widget('dTipicaProb')
-         widgetdTipica.set_text(dt)
-         widgetdTipica.set_sensitive(False)
+               # Se añaden la media y la desviación típica a la interfaz
+               duracionMedia=scipy.stats.mean(self.duraciones)
+               media=self._widgets.get_widget('mediaSim')
+               media.set_text(str(duracionMedia))
 
-         # Se insensibilizan las casillas resultado
-         resultado1=self._widgets.get_widget('resultado1Prob')
-         resultado1.set_sensitive(False)
-         resultado2=self._widgets.get_widget('resultado2Prob')
-         resultado2.set_sensitive(False)
+               desviacionTipica=scipy.stats.std(self.duraciones)
+               dTipica=self._widgets.get_widget('dTipicaSim')
+               dTipica.set_text(str(desviacionTipica))
 
-         # Se muestra la gráfica
+         # Se calculan los intervalos
+         interv=[]
+         N=20 # Número de intervalos
+         dMax=float(max(self.duraciones)+0.00001)  # duración máxima
+         dMin=float(min(self.duraciones))   # duración mí­nima
+         #print dMax, 'max', dMin, 'min'
+         if int(it)==int(itTotales):
+            for n in range(N):
+               valor='['+str('%5.2f'%(self.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(self.duracion((n+1), dMax, dMin, N)))+'['       
+               interv.append(valor)
+         if self.intervalos==[]:
+            self.intervalos=interv
+
+         # Se calculan las frecuencias
+         self.Fa, Fr=self.calcularFrecuencias(dMax, dMin, itTotales, N)
+
+         # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
+         self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
+
+         # Dibuja histograma devolviendo los intervalos (bins) y otros datos
          fig = Figure(figsize=(5,4), dpi=100)
          ax = fig.add_subplot(111)
+
          n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
          canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-         if len(self.box)>0:
-            self.vBoxProb.remove(self.box)
-            self.box=gtk.VBox()
-            
-         self.vBoxProb.add(self.box)
-         self.box.pack_end(canvas)
-         self.box.show_all()
-         self.vProbabilidades.show()
+         if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
+            self.hBoxSim.remove(self.boxS)
+            self.boxS=gtk.VBox()
 
-#-----------------------------------------------------------
-# Función: Acción usuario para salvar la información que
-#          muestra la ventana de simulación de duraciones
-#          tabla, gráfica, ....
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
+         self.hBoxSim.add(self.boxS)
+         self.boxS.pack_start(canvas)
+         self.boxS.show_all()
+
+   def on_btAceptarSim_clicked(self, boton):
+      """
+      Función: Acción usuario para aceptar la información que
+               muestra la ventana de simulación de duraciones:
+               tabla, gráfica, ....
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      self.limpiarVentanaSim()
+      self.vSimulacion.hide()
+       
+   def on_btProbSim_clicked(self, boton):
+      """
+      Función: Acción usuario para acceder a la ventana de 
+               cálculo de probabilidades
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      # Se asigna tí­tulo 
+      self.vProbabilidades.set_title(gettext.gettext('Probability related to the simulation'))
+      
+      # Extraigo los valores de la media y la desviación típica
+      media=self._widgets.get_widget('mediaSim')
+      m=media.get_text()
+      dTipica=self._widgets.get_widget('dTipicaSim')
+      dt=dTipica.get_text()
+
+      # Se muestran la media y desviación típica en la ventana de probabilidades
+      widgetMedia=self._widgets.get_widget('mediaProb')
+      widgetMedia.set_text(m)
+      widgetMedia.set_sensitive(False)
+      widgetdTipica=self._widgets.get_widget('dTipicaProb')
+      widgetdTipica.set_text(dt)
+      widgetdTipica.set_sensitive(False)
+
+      # Se insensibilizan las casillas resultado
+      resultado1=self._widgets.get_widget('resultado1Prob')
+      resultado1.set_sensitive(False)
+      resultado2=self._widgets.get_widget('resultado2Prob')
+      resultado2.set_sensitive(False)
+
+      # Se muestra la gráfica
+      fig = Figure(figsize=(5,4), dpi=100)
+      ax = fig.add_subplot(111)
+      n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
+      canvas = FigureCanvas(fig)  # a gtk.DrawingArea
+      if len(self.box)>0:
+         self.vBoxProb.remove(self.box)
+         self.box=gtk.VBox()
+         
+      self.vBoxProb.add(self.box)
+      self.box.pack_end(canvas)
+      self.box.show_all()
+      self.vProbabilidades.show()
 
    def on_btGuardarSim_clicked(self, boton):
+      """
+      Función: Acción usuario para salvar la información que
+               muestra la ventana de simulación de duraciones
+               tabla, gráfica, ....
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
       # Se extraen los datos de la interfaz
-        # Media y desviación tí­pica
-        media=self._widgets.get_widget('mediaSim')
-        m=media.get_text()
-        dTipica=self._widgets.get_widget('dTipicaSim')
-        dt=dTipica.get_text()
-        # Iteraciones
-        totales=self._widgets.get_widget('iteracionesTotales')
-        iteraciones=totales.get_text()
+      # Media y desviación tí­pica
+      media=self._widgets.get_widget('mediaSim')
+      m=media.get_text()
+      dTipica=self._widgets.get_widget('dTipicaSim')
+      dt=dTipica.get_text()
+      # Iteraciones
+      totales=self._widgets.get_widget('iteracionesTotales')
+      iteraciones=totales.get_text()
 
       # Se pasan los datos de la simulación a formato CSV
-        simulacionCsv = self.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
-        
+      simulacionCsv = self.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
+      
       # Se muestra el diálogo para salvar el archivo
-        self.guardarCsv(simulacionCsv)
+      self.guardarCsv(simulacionCsv)
 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de simulación 
-#          de duraciones
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
 
    def on_wndSimulacion_delete_event(self, ventana, evento):
-        self.limpiarVentanaSim()
-        ventana.hide()
-        return True
+      """
+      Función: Acción usuario para cerrar la ventana de simulación 
+               de duraciones
+
+      Parámetros: ventana (ventana actual)
+                  evento (evento cerrar)
+
+      Valor de retorno: -
+      """
+      self.limpiarVentanaSim()
+      ventana.hide()
+      return True
 
 
-#*************************************************************************************************************       
-
-           #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                     RECURSOS                       #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información que
-#          muestra la ventana de recursos: nombre, tipo, unidad disponible 
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
+# --- Resources
 
    def on_btAceptarRec_clicked(self, boton):
-        self.vRecursos.hide()
+      """
+      Función: Acción usuario para aceptar la información que
+               muestra la ventana de recursos: nombre, tipo, unidad disponible 
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      self.vRecursos.hide()
         
-#-----------------------------------------------------------
-# Función: Acción usuario para cancelar la información que
-#          muestra la ventana de recursos: nombre, tipo, unidad disponible. 
-#          Si se cancelan los datos, se borran definitivamente
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
-
    def on_btCancelarRec_clicked(self, boton):
-        if self.recurso==[]:
-            self.modeloR.append()
-        self.vRecursos.hide()
+      """
+      Función: Acción usuario para cancelar la información que
+               muestra la ventana de recursos: nombre, tipo, unidad disponible. 
+               Si se cancelan los datos, se borran definitivamente
 
-#-----------------------------------------------------------
-# Función: Acción usuario para acceder a la ventana de recursos
-#          necesarios por actividad 
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      if self.recurso==[]:
+         self.modeloR.append()
+      self.vRecursos.hide()
 
    def on_btAsignarRec_clicked(self, boton):
-        self.asignarRecursos()
+      """
+      Función: Acción usuario para acceder a la ventana de recursos
+               necesarios por actividad 
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      self.asignarRecursos()
  
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de recursos
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_wndRecursos_delete_event(self, ventana, evento):
-        ventana.hide()
-        return True
+      """
+      Función: Acción usuario para cerrar la ventana de recursos
+
+      Parámetros: ventana (ventana actual)
+                  evento (evento cerrar)
+
+      Valor de retorno: -
+      """
+      ventana.hide()
+      return True
  
  
-#***************************************************************************************************************       
 
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #         RECURSOS NECESARIOS POR ACTIVIDAD        #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información que
-#          muestra la ventana de recursos necesarios por
-#          actividad: actividad, recurso, unidad necesaria
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------   
+# --- Necessary resources per activity
 
    def on_btAceptarAR_clicked(self, boton):
-        if self.asignacion==[]: 
-            self.vAsignarRec.hide()
+      """
+      Función: Acción usuario para aceptar la información que
+               muestra la ventana de recursos necesarios por
+               actividad: actividad, recurso, unidad necesaria
 
-        else:
-            # Se comprueba que las actividades y los recursos introducidos existen
-            errorAct=self.comprobarActExisten(self.actividad)
-            errorRec=self.comprobarRecExisten(self.recurso)
+      Parámetros: boton (botón clickeado)
 
-            if errorAct==0 and errorRec==0:
-                # Se actualiza la columna de recursos en la introducción de las actividades
-                mostrarColumnaRec=self.mostrarRec(self.asignacion, 1)
-                self.actualizarColR(mostrarColumnaRec)
-                self.vAsignarRec.hide()
+      Valor de retorno: -
+      """
+      if self.asignacion==[]: 
+         self.vAsignarRec.hide()
+
+      else:
+         # Se comprueba que las actividades y los recursos introducidos existen
+         errorAct=self.comprobarActExisten(self.actividad)
+         errorRec=self.comprobarRecExisten(self.recurso)
+
+         if errorAct==0 and errorRec==0:
+               # Se actualiza la columna de recursos en la introducción de las actividades
+               mostrarColumnaRec=self.mostrarRec(self.asignacion, 1)
+               self.actualizarColR(mostrarColumnaRec)
+               self.vAsignarRec.hide()
 
                 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para cancelar la información que
-#          muestra la ventana de recursos necesarios por
-#          actividad: actividad, recurso, unidad necesaria. 
-#          Si se cancelan los datos, se borran definitivamente
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------        
-
    def on_btCancelarAR_clicked(self, boton):
-        self.modeloAR.clear()
-        self.asignacion=[]
-        self.vAsignarRec.hide()
+      """
+      Función: Acción usuario para cancelar la información que
+               muestra la ventana de recursos necesarios por
+               actividad: actividad, recurso, unidad necesaria. 
+               Si se cancelan los datos, se borran definitivamente
+
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      self.modeloAR.clear()
+      self.asignacion=[]
+      self.vAsignarRec.hide()
  
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de recursos
-#          necesarios por actividad 
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-
    def on_wndAsignarRec_delete_event(self, ventana, evento):
-        ventana.hide()
-        return True
+      """
+      Función: Acción usuario para cerrar la ventana de recursos
+               necesarios por actividad 
+
+      Parámetros: ventana (ventana actual)
+                  evento (evento cerrar)
+
+      Valor de retorno: -
+      """
+      ventana.hide()
+      return True
 
 
-#******************************************************************************************************************
-
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #               CALCULAR CAMINOS                   #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información que
-#          muestra la ventana de calcular caminos
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------   
+# --- Calculate paths
 
    def on_btAceptarCaminos_clicked(self, boton):
-        self.vCaminos.hide()
+      """
+      Función: Acción usuario para aceptar la información que
+               muestra la ventana de calcular caminos
 
-#-----------------------------------------------------------
-# Función: Acción usuario para exportar los caminos que se
-#          muestran en la ventana a formato CSV para 
-#          hoja de cálculo
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-   
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      self.vCaminos.hide()
+
    def on_btExportarCsv_clicked(self, boton): 
-        # Se buscan todos los caminos 
-        successors = self.tablaSucesoras(self.actividad)
-        g = graph.roy(successors)
-        todosCaminos = graph.findAllPaths(g, 'Begin', 'End')
+      """
+      Función: Acción usuario para exportar los caminos que se
+               muestran en la ventana a formato CSV para 
+               hoja de cálculo
 
-        # Se pasan a formato CSV
-        #pathsInCSV = graph.royPaths2csv2(g)
-        pathsInCSV = graph.royPaths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
-        
-        # Se muestra el diálogo para salvar el archivo
-        self.guardarCsv(pathsInCSV) 
-        
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar la ventana de calcular
-#          caminos
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      # Se buscan todos los caminos 
+      successors = self.tablaSucesoras(self.actividad)
+      g = graph.roy(successors)
+      todosCaminos = graph.findAllPaths(g, 'Begin', 'End')
+
+      # Se pasan a formato CSV
+      #pathsInCSV = graph.royPaths2csv2(g)
+      pathsInCSV = graph.royPaths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
+      
+      # Se muestra el diálogo para salvar el archivo
+      self.guardarCsv(pathsInCSV) 
 
    def on_wndCaminos_delete_event(self, ventana, evento):
-        ventana.hide()
-        return True
+      """
+      Función: Acción usuario para cerrar la ventana de calcular
+               caminos
+
+      Parámetros: ventana (ventana actual)
+                  evento (evento cerrar)
+
+      Valor de retorno: -
+      """
+      ventana.hide()
+      return True
 
 
-#********************************************************************************************************************       
-     
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                      AYUDA                       #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Función: Acción usuario para aceptar la información que
-#          muestra el diálodo de ayuda
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
+# --- Help ---
 
    def on_dAyuda_response(self, False, boton):
-        self.dAyuda.hide()
+      """
+      Función: Acción usuario para aceptar la información que
+               muestra el diálodo de ayuda
 
-#-----------------------------------------------------------
-# Función: Acción usuario para cerrar el diálogo de ayuda 
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
+      Parámetros: boton (botón clickeado)
+
+      Valor de retorno: -
+      """
+      self.dAyuda.hide()
 
    def on_dAyuda_delete_event(self, dialogo, evento):
-        self.dAyuda.hide()
-        return True
+      """
+      Función: Acción usuario para cerrar el diálogo de ayuda 
+
+      Parámetros: ventana (ventana actual)
+                  evento (evento cerrar)
+
+      Valor de retorno: -
+      """
+      self.dAyuda.hide()
+      return True
 
 
-#***************************************************************************************************************            
-
+# --- Start running as a program
 
 if __name__ == '__main__':
    app = PPCproject()
