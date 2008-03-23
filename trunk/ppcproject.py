@@ -60,7 +60,7 @@ class PPCproject:
 
       self.bufer=gtk.TextBuffer()
       self.directorio = gettext.gettext('Unnamed -PPC-Project')
-      self.control=0
+      self.modified=0
       self.vBoxProb = self._widgets.get_widget('vbProb')
       self.grafica = gtk.Image()
       self.box=gtk.VBox()
@@ -475,7 +475,7 @@ class PPCproject:
 
        Valor de retorno: -
       """
-      self.control=1   # Controlamos que el proyecto ha cambiado
+      self.modified=1   # Controlamos que el proyecto ha cambiado
       cont=int(path)+1
       #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
         
@@ -3081,140 +3081,93 @@ class PPCproject:
       
       Debería abrir cualquier fichero desde una opción
       """
+      # Close open project if any
+      closed = self.closeProject()
 
-      # Debería comprobar si hay moficaciones y, si las hay, preguntar si guardar antes de cargar otro machacandolas.
-      # XXX
+      if closed:      
+         # Open dialog asking for file to open
+         dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
+                                                 None,
+                                                 gtk.FILE_CHOOSER_ACTION_OPEN,
+                                                 (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+                                                 )
+         filtro=gtk.FileFilter()
+         filtro.add_pattern('*.prj')
+         filtro.add_pattern('*.txt')
+         filtro.add_pattern('*.sm')
+         dialogoFicheros.add_filter(filtro)
+         dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
+         resultado = dialogoFicheros.run()
+
+         if resultado == gtk.RESPONSE_OK:
+            try: 
+                  # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
+                  self.directorio=dialogoFicheros.get_filename()
+                  flectura=open(self.directorio,'r') 
+                  self.asignarTitulo(self.directorio)
+                  # Se cargan los datos del fichero 
+                  tabla=[]
+                  if self.directorio[-4:] == '.prj':  
+                     tabla=pickle.load(flectura)
+                     self.cargaDatos(tabla) 
+                  elif self.directorio[-3:] == '.sm':  
+                     # Se lee el fichero y se extraen los datos necesarios 
+                     prelaciones, rec, asig=self.leerPSPLIB(flectura)   
+                     # Se cargan los datos extraidos en las listas correspondientes
+                     self.cargarPSPLIB(prelaciones, rec, asig)         
+                  else: # Fichero de texto
+                     tabla=self.leerTxt(flectura)
+                     self.cargarTxt(tabla)
+
+            except IOError :
+                  self.dialogoError(gettext.gettext('The selected file does not exist'))
       
-      # Open dialog asking for file to open
-      dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
-                                              None,
-                                              gtk.FILE_CHOOSER_ACTION_OPEN,
-                                              (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
-                                              )
-      filtro=gtk.FileFilter()
-      filtro.add_pattern('*.prj')
-      filtro.add_pattern('*.txt')
-      filtro.add_pattern('*.sm')
-      dialogoFicheros.add_filter(filtro)
-      dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-      resultado = dialogoFicheros.run()
+            flectura.close()
+         elif resultado == gtk.RESPONSE_CANCEL:
+            pass 
 
-      if resultado == gtk.RESPONSE_OK:
-         try: 
-               # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
-               self.directorio=dialogoFicheros.get_filename()
-               flectura=open(self.directorio,'r') 
-               self.asignarTitulo(self.directorio)
-               # Se cargan los datos del fichero 
-               tabla=[]
-               if self.directorio[-4:] == '.prj':  
-                  tabla=pickle.load(flectura)
-                  self.cargaDatos(tabla) 
-               elif self.directorio[-3:] == '.sm':  
-                  # Se lee el fichero y se extraen los datos necesarios 
-                  prelaciones, rec, asig=self.leerPSPLIB(flectura)   
-                  # Se cargan los datos extraidos en las listas correspondientes
-                  self.cargarPSPLIB(prelaciones, rec, asig)         
-               else: # Fichero de texto
-                  tabla=self.leerTxt(flectura)
-                  self.cargarTxt(tabla)
-
-         except IOError :
-               self.dialogoError(gettext.gettext('The selected file does not exist'))
-   
-         flectura.close()
-      elif resultado == gtk.RESPONSE_CANCEL:
-         pass 
-
-      dialogoFicheros.destroy() 
+         dialogoFicheros.destroy() 
 
 
 # --- DIÁLOGOS GUARDAR
 
-#-----------------------------------------------------------
-# Salva un proyecto con extensión '.prj'
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+   def guardar(self, saveAs=False):
+      if saveAs or self.directorio==gettext.gettext('Unnamed -PPC-Project'):
+         dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save"),
+                                                None,
+                                                gtk.FILE_CHOOSER_ACTION_SAVE,
+                                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                                gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+         dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
+         resultado = dialogoGuardar.run()
 
-     
-   def guardar(self, g):
-        #print self.directorio
-        if g==1:
-           dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-           dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-           resultado = dialogoGuardar.run()
-        else:
-           dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save as..."),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-           dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-           resultado = dialogoGuardar.run()
-        if resultado == gtk.RESPONSE_OK:
-            try:
-                # Se abre el fichero en modo escritura, se añade la extensión '.prj' al final del nombre
-                # asignado al proyecto y se coloca el nombre del fichero como tí­tulo del proyecto 
-                self.directorio=dialogoGuardar.get_filename()
-                print self.directorio[-4:], self.directorio[:-4]
-                if self.directorio[-4:] == '.prj':
-                    #print '1'
-                    fescritura=open(self.directorio,'w')
-                    titulo=os.path.basename(self.directorio)
-                    ubicacion=self.directorio[:-(len(titulo)+1)]
-                elif self.directorio[-4:] == '.txt':
-                    fescritura=open(self.directorio[:-4]+'.prj','w')
-                    titulo=os.path.basename(self.directorio+'.prj')
-                    ubicacion=self.directorio[:-(len(titulo)-3)]
-                else:
-                    #print '2', self.directorio
-                    fescritura=open(self.directorio+'.prj','w')
-                    titulo=os.path.basename(self.directorio+'.prj')
-                    ubicacion=self.directorio[:-(len(titulo)-3)]
-                self.vPrincipal.set_title(titulo+' ('+ubicacion+') '+ '- PPC-Project')
-                # Se guardan todos los datos en una lista y se escriben en el fichero
-                tabla=[]
-                tabla.append(self.actividad)
-                tabla.append(self.recurso)
-                tabla.append(self.asignacion)
-                pickle.dump(tabla, fescritura)
+         if resultado == gtk.RESPONSE_OK:
+            self.directorio=dialogoGuardar.get_filename()
+            self.saveProject(self.directorio)
+            self.asignarTitulo(self.directorio)
 
-            except IOError :
-                self.dialogoError(gettext.gettext('Error saving the file'))    
-            fescritura.close()
-        #elif resultado == gtk.RESPONSE_CANCEL:  
-            #print "No hay elementos seleccionados"
+         dialogoGuardar.destroy() 
+      else:
+         self.saveProject(self.directorio)
+         
+   def saveProject(self, nombre):
+      """
+      Saves a project in ppcproject format '.prj'
+      """
+      if nombre[-4:] != '.prj':
+         nombre = nombre + '.prj'
 
-        dialogoGuardar.destroy() 
-
-#********************************************************************************************************************  
-#-----------------------------------------------------------
-# Salva un proyecto con extensión '.prj' guardado anteriormente
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------       
-     
-   def guardado(self, nombre):
-        if nombre[-4:] != '.prj':
-           if nombre[-4:]=='.txt':
-              nombre=nombre[:-4]+'.prj'
-           else:
-              nombre=nombre+'.prj'
-        try:
-             # Se abre el fichero en modo escritura y se coloca el nombre del fichero como tí­tulo del proyecto 
-             fescritura=open(nombre,'w')
-             self.asignarTitulo(nombre)
-             # Se guardan todos los datos en una lista y se escriben en el fichero  
-             tabla=[]
-             tabla.append(self.actividad)
-             tabla.append(self.recurso)
-             tabla.append(self.asignacion)
-             pickle.dump(tabla, fescritura)
-                 
-        except IOError :
-             self.dialogoError(gettext.gettext('Error saving the file'))    
-        fescritura.close()    
+      # Se guardan todos los datos en una lista y se escriben en el fichero  
+      tabla=[]
+      tabla.append(self.actividad)
+      tabla.append(self.recurso)
+      tabla.append(self.asignacion)
+      try:
+         fescritura=open(nombre,'w')
+         pickle.dump(tabla, fescritura)
+      except IOError :
+         self.dialogoError(gettext.gettext('Error saving the file'))    
+      fescritura.close()    
     
 
 #********************************************************************************************************************  
@@ -3252,62 +3205,50 @@ class PPCproject:
 
 # --- DIÁLOGOS DE ADVERTENCIA Y ERRORES       
 
-   def dialogoSalir(self):
+   def closeProject(self):
       """
-      Muestra un mensaje de advertencia al intentar salir
-      de la aplicación
+      Close the project checking if it has been modified. 
+      If it has been modified, show a dialog: Save-Discard-Cancel
+
+      Return: True if closed
+              False if canceled
       """
-   
-      # Creates dialog for confirmation
-      dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
-      label=gtk.Label(gettext.gettext('Are you sure you want to quit PPC-Project?'))
-      dialogo.vbox.pack_start(label,True,True,10)
-      label.show()
+      if self.modified==0:   # El proyecto actual ha sido guardado
+         close = True
+      else:                 # El proyecto actual aún no se ha guardado
+         dialogo = gtk.Dialog(gettext.gettext("Attention!!"), 
+                              None, 
+                              gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
+                              (gettext.gettext('Discard'), gtk.RESPONSE_CLOSE,
+                               gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
+                               gtk.STOCK_SAVE, gtk.RESPONSE_OK )
+                              )
+         label = gtk.Label(gettext.gettext('Project has been modified. Do you want to save the changes?'))
+         dialogo.vbox.pack_start(label,True,True,10)
+         label.show()
+         respuesta=dialogo.run()
+        
+         if respuesta==gtk.RESPONSE_OK:
+            self.guardar()
+            close = True
+         elif respuesta==gtk.RESPONSE_CLOSE:
+            close = True
+         else:
+            close = False
 
-      respuesta=dialogo.run()
-      if respuesta==gtk.RESPONSE_OK:
-         print "DBG: dialogoSalir OK"
-         self.vPrincipal.destroy()
-         gtk.main_quit()
-      elif respuesta==gtk.RESPONSE_CANCEL:
-         print "DBG: dialogoSalir CANCEL"
+         dialogo.destroy()
 
-      dialogo.destroy()
+      if close:
+         # Se limpian todas las listas de datos
+         self.modelo.clear()
+         self.actividad=[]
+         self.modeloR.clear()
+         self.recurso=[]
+         self.modeloAR.clear()
+         self.asignacion=[]
+         self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
 
-#********************************************************************************************************************         
-#-----------------------------------------------------------
-# Muestra un mensaje de advertencia si se intenta cerrar
-#          un proyecto abierto no guardado
-#
-# Parámetros: c ('cerrar': cerrar proyecto
-#                'salir': salir de la aplicación)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
-   def dialogoProyectoAbierto(self, c):
-        dialogo=gtk.Dialog(gettext.gettext("Attention!!"), None, gtk.MESSAGE_QUESTION, (gettext.gettext("NO"), gtk.RESPONSE_CANCEL, gettext.gettext("YES"), gtk.RESPONSE_OK ))
-        label=gtk.Label(gettext.gettext('The actual project has been modified. Do you want to save the changes?'))
-        dialogo.vbox.pack_start(label,True,True,10)
-        label.show()
-        respuesta=dialogo.run()
-        if respuesta==gtk.RESPONSE_OK:
-            self.guardar(1)
- 
-        elif respuesta==gtk.RESPONSE_CANCEL:
-            if c==gettext.gettext('exit'):
-               self.dialogoSalir()
-            else:
-               # Se limpian todas las estructuras de datos
-               self.modelo.clear()
-               self.actividad=[]
-               self.modeloR.clear()
-               self.recurso=[]
-               self.modeloAR.clear()
-               self.asignacion=[]
-               self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
-
-        dialogo.destroy()
-
+      return close
 
 #-----------------------------------------------------------
 # Muestra un mensaje de advertencia si no se han
@@ -3407,51 +3348,35 @@ class PPCproject:
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
-             # Si no se ha guardado anteriormente, abrimos el cuadro de diálogo
-             if self.directorio==gettext.gettext('Unnamed -PPC-Project'):
-                 self.guardar(1)
-             # Si ya ha sido guardado antes, se modifica
-             else:
-                 self.guardado(self.directorio)
+           self.guardar()
         # Si hay actividades repetidas, se muestra un mensaje de error
         else:
             #print actividadesRepetidas
             self.errorActividadesRepetidas(actividadesRepetidas) 
 
-        self.control=0
+        self.modified=0
 
    def on_mnGuardarComo_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
-              self.guardar(2)
+            self.guardar(saveAs=True)
              
         # Si hay actividades repetidas, se muestra un mensaje de error
         else:
             #print actividadesRepetidas
             self.errorActividadesRepetidas(actividadesRepetidas) 
        
-        self.control=0
+        self.modified=0
 
    def on_Close_activate(self, menu_item):
-        if self.control==0:   # El proyecto actual ha sido guardado
-           # Se limpian todas las listas de datos
-           self.modelo.clear()
-           self.actividad=[]
-           self.modeloR.clear()
-           self.recurso=[]
-           self.modeloAR.clear()
-           self.asignacion=[]
-           self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
-       
-        else:                 # El proyecto actual aún no se ha guardado
-           self.dialogoProyectoAbierto(gettext.gettext('close'))
+      self.closeProject()
 
    def on_Exit_activate(self, *args):
-      if self.control==0:   # El proyecto actual ha sido guardado
-         self.dialogoSalir()
-      else:                 # El proyecto actual aún no se ha guardado
-         self.dialogoProyectoAbierto(gettext.gettext('exit'))
+      closed = self.closeProject()
+      if closed:
+         #XXX Salir propiamente??
+         gtk.main_quit()
 
 # View menu actions
 
