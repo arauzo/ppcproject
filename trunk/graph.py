@@ -22,6 +22,70 @@
 import math, os, sys
 from pert import *
 
+# Prototype of new class Graph
+class Grafo:
+
+    def __init__(self):
+        """ Creates an empty graph
+        Efficiency: O(1)
+        """
+        self.successors = {}
+        self.predecessors = {}
+        self.arcs = {}
+        
+    def suc(self,nodo):
+        successors = self.successors[nodo]
+        return successors
+
+    def pre(self,nodo):
+        predecessors=self.predecessors[nodo]
+        return predecessors
+        
+    def addNode(self,nodo):
+        self.successors[nodo] = []
+        self.predecessors[nodo] = []
+        
+    def addArc(self,arc,label):
+        a,c=arc
+        self.successors[a].append(c)
+        self.predecessors[c].append(a)
+        self.arcs[(a,c)]= [label]
+        
+    def removeNode(self,nodo):
+        if nodo in self.successors:
+            del self.successors[nodo]
+        if nodo in self.predecessors:
+            del self.predecessors[nodo]
+        
+        for i in self.successors:
+            if nodo in self.successors[i]:
+                self.successors[i].remove(nodo)
+        for i in self.predecessors:
+            if nodo in self.predecessors[i]:
+                self.predecessors[i].remove(nodo)
+        listaBorrar=[]
+        for (i,j) in self.arcs:
+            if i==nodo:
+                listaBorrar.append((i,j))
+            if j==nodo:
+                listaBorrar.append((i,j))
+        for i,j in listaBorrar:
+            del self.arcs[(i,j)]
+
+    def removeArc(self, arco):
+        i,j=arco
+        self.successors[i].remove(j)
+        self.predecessors[j].remove(i)
+        del self.arcs[arco]
+
+    def numNodes(self):
+        return len(self.successors)
+
+    def numArcs(self):
+        return len(self.arcs)
+
+
+
 # ----------------
 # Data structures:
 # ----------------
@@ -355,7 +419,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-class HelloWorld:
+class Test:
 
    def delete_event(self, widget, event, data=None):
       return False
@@ -400,7 +464,7 @@ class HelloWorld:
 window = None
 
 if __name__ == "__main__":
-   window = HelloWorld()
+   window = Test()
 
 ##   print reversedGraph(pert2[0])
 ##   for n in range(1,6):
