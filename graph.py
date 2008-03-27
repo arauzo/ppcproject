@@ -7,7 +7,7 @@
 #   Multiplatform software tool for education and research in 
 #   project management
 #
-# Copyright 2007-8 Universidad de Córdoba
+# Copyright 2007-8 Universidad de CÃ³rdoba
 # This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License,
@@ -34,6 +34,8 @@ class Grafo:
         self.arcs = {}
         
     def suc(self,nodo):
+        """
+        """
         successors = self.successors[nodo]
         return successors
 
