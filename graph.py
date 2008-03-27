@@ -40,6 +40,8 @@ class Grafo:
         return successors
 
     def pre(self,nodo):
+        """
+        """
         predecessors=self.predecessors[nodo]
         return predecessors
         
