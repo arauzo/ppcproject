@@ -92,8 +92,21 @@ class PPCproject:
       self.vPert=self._widgets.get_widget('wndGrafoPert')
       self.dAyuda=self._widgets.get_widget('dAyuda')
       self.bHerramientas=self._widgets.get_widget('bHerramientas')
-      
-        
+
+      self._widgets.get_widget('mnSalirPantComp').hide()
+      self.disableProjectControls()
+
+   def enableProjectControls(self):
+      self._widgets.get_widget('mnGuardar').set_sensitive(True)
+      self._widgets.get_widget('mnGuardarComo').set_sensitive(True)
+      self._widgets.get_widget('mnCerrar').set_sensitive(True)
+      self._widgets.get_widget('mnAccion').set_sensitive(True)
+
+   def disableProjectControls(self):
+      self._widgets.get_widget('mnGuardar').set_sensitive(False)
+      self._widgets.get_widget('mnGuardarComo').set_sensitive(False)
+      self._widgets.get_widget('mnCerrar').set_sensitive(False)
+      self._widgets.get_widget('mnAccion').set_sensitive(False)
 
 #########  CREAMOS TODOS LOS TREEVIEWS DE LA APLICACIÓN  ##############
    def crearTreeViews(self):
@@ -3109,24 +3122,26 @@ class PPCproject:
                   tabla=[]
                   if self.directorio[-4:] == '.prj':  
                      tabla=pickle.load(flectura)
-                     self.cargaDatos(tabla) 
+                     self.cargaDatos(tabla)
                   elif self.directorio[-3:] == '.sm':  
                      # Se lee el fichero y se extraen los datos necesarios 
                      prelaciones, rec, asig=self.leerPSPLIB(flectura)   
                      # Se cargan los datos extraidos en las listas correspondientes
-                     self.cargarPSPLIB(prelaciones, rec, asig)         
+                     self.cargarPSPLIB(prelaciones, rec, asig)       
                   else: # Fichero de texto
                      tabla=self.leerTxt(flectura)
                      self.cargarTxt(tabla)
-
+                  response = True
+                  flectura.close()
             except IOError :
                   self.dialogoError(gettext.gettext('The selected file does not exist'))
+                  response = False
       
-            flectura.close()
          elif resultado == gtk.RESPONSE_CANCEL:
-            pass 
+            response = False
 
-         dialogoFicheros.destroy() 
+         dialogoFicheros.destroy()
+         return (response) 
 
 
 # --- DIÁLOGOS GUARDAR
@@ -3339,10 +3354,12 @@ class PPCproject:
    def on_New_activate(self, item):
       """ User ask for new file (from menu or toolbar) """
       self.introduccionDatos()
+      self.enableProjectControls()
 
    def on_Open_activate(self, item):
       """ User ask for open file (from menu or toolbar) """
-      self.abrir()
+      if self.abrir():
+         self.enableProjectControls()
 
    def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
@@ -3371,6 +3388,7 @@ class PPCproject:
 
    def on_Close_activate(self, menu_item):
       self.closeProject()
+      self.disableProjectControls()
 
    def on_Exit_activate(self, *args):
       closed = self.closeProject()
@@ -3392,11 +3410,14 @@ class PPCproject:
          self.bHerramientas.hide()
 
    def on_mnPantallaComp_activate(self, menu_item):
-        self.vPrincipal.fullscreen()
+      self.vPrincipal.fullscreen()
+      self._widgets.get_widget('mnSalirPantComp').show()
+      self._widgets.get_widget('mnPantallaComp').hide()
 
    def on_mnSalirPantComp_activate(self, menu_item):
-        self.vPrincipal.unfullscreen()
-
+      self.vPrincipal.unfullscreen()
+      self._widgets.get_widget('mnSalirPantComp').hide()
+      self._widgets.get_widget('mnPantallaComp').show()
 
 # Action menu actions                 
 
