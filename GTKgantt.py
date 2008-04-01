@@ -49,7 +49,8 @@ class GTKgantt(gtk.VBox):
       self.header.set_duration(duration)
       self.diagram.set_duration(duration)
    def rename_activity(self,old,new):
-      self.diagram.set_activity_name(old,new)
+      if (old != new):
+         self.diagram.set_activity_name(old,new)
    def set_activity_duration(self, activity, duration):
       self.diagram.set_activity_duration(activity,duration)
    def set_activity_prelations(self,activity,prelations):
@@ -156,7 +157,11 @@ class GanttDrawing(gtk.Layout):
          self.graph.start_time[name] = start_time
 
    def set_activity_name(self,activity,name):
-      pass
+      for act in self.graph.activities:
+         if activity in self.graph.prelations[act]:
+            self.graph.prelations[act].remove(activity)
+            self.graph.prelations[act].append(name)
+      self.graph.activities[self.graph.activities.index(activity)] = name
 
    def set_activity_duration(self, activity, duration):
       self.graph.durations[activity] = duration
@@ -168,7 +173,11 @@ class GanttDrawing(gtk.Layout):
       self.graph.start_time[activity] = time
 
    def remove_activity(self, activity):
-      pass
+      if activity in self.graph.activities:
+         for act in self.graph.activities:
+            if activity in self.graph.prelations[act]:
+               self.graph.prelations[act].remove(activity)
+         self.graph.activities.remove(activity)
 
    def reorder(self,activities):
       self.graph.activities = activities
