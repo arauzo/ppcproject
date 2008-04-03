@@ -12,10 +12,11 @@ Ideas:
  * Use 3 spaces for indenting (never use tabs).
  * Use spaces in assignments (make them clear)
  * Comment code blocks as necessary
+ * Use "_" to separate compound function names. 
 
 Example:
 {{{
-def function(x, y):
+def function_name(x, y):
    """
    Comment on what is done... (Get volume for 1m height)
 
