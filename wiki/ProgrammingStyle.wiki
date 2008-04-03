@@ -12,7 +12,7 @@ Ideas:
  * Use 3 spaces for indenting (never use tabs).
  * Use spaces in assignments (make them clear)
  * Comment code blocks as necessary
- * Use _ to separate compound function names. 
+ * Use underscore (_) to separate compound function names. 
 
 Example:
 {{{
