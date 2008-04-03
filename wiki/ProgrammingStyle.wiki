@@ -1,0 +1,33 @@
+#summary Programming Style
+
+= Introduction =
+
+This page intents to describe the programming style to follow on PPC-project.
+
+
+= Details =
+
+Ideas:
+ * Use the standard syntax of pydoc for comments.
+ * Use 3 spaces for indenting (never use tabs).
+ * Use spaces in assignments (make them clear)
+ * Comment code blocks as necessary
+
+Example:
+{{{
+def function(x, y):
+   """
+   Comment on what is done... (Get volume for 1m height)
+
+   x, comment about x, if useful.
+
+   Return: comment on returned object, if useful.
+   """
+   z = 1
+
+   # Get volume
+   a = x * y
+   v = a * z
+
+   return z   
+}}}
