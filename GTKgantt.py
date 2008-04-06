@@ -134,6 +134,7 @@ class GanttDrawing(gtk.Layout):
       self.graph = Diagram_graph()
       self.row_height = 25
       self.width = 0
+      self.modified = 0
 
    def set_row_height(self,num):
       self.row_height = num
@@ -166,6 +167,7 @@ class GanttDrawing(gtk.Layout):
             slack = 0
          self.graph.slacks[name] = slack
          self.graph.comments[name] = comment
+         self.modified = 1
 
    def set_activity_name(self,activity,name):
       for act in self.graph.activities:
@@ -176,18 +178,22 @@ class GanttDrawing(gtk.Layout):
 
    def set_activity_duration(self, activity, duration):
       self.graph.durations[activity] = duration
+      self.modified = 1
 
    def set_activity_prelations(self,activity,prelations):
       self.graph.prelations[activity] = prelation
 
    def set_activity_slack(self,activity,slack):
       self.graph.slacks[activity] = slack
+      self.modified = 1
 
    def set_activity_comment(self,activity,comment):
       self.graph.comments[activity] = comment
+      self.modified = 1
 
    def set_activity_start_time(self, activity, time):
       self.graph.start_time[activity] = time
+      self.modified = 1
 
    def remove_activity(self, activity):
       if activity in self.graph.activities:
@@ -195,6 +201,7 @@ class GanttDrawing(gtk.Layout):
             if activity in self.graph.prelations[act]:
                self.graph.prelations[act].remove(activity)
          self.graph.activities.remove(activity)
+         self.modified = 1
 
    def reorder(self,activities):
       self.graph.activities = activities
@@ -213,12 +220,13 @@ class GanttDrawing(gtk.Layout):
       return False
 
    def draw(self, context):
-      if self.graph.activities != []:
+      if self.graph.activities != [] and self.modified == 1:
          width = self.get_needed_length(context)
          if width != self.width:
             self.set_size_request(width, self.row_height)
             self.width = width
             self.emit("gantt-width-changed",width)
+            self.modified = 0
       height = self.row_height * len(self.graph.activities)
       self.set_size(self.width, height)
       for i in range(0, max(self.available_width, self.width) / self.row_height + 1):
