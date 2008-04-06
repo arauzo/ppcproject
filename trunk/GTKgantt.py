@@ -10,6 +10,8 @@ Interface:
    -set_activity_duration(activity, duration)
    -set_activity_prelations(activity, prelations)
    -set_activity_start_time(activity, time)
+   -set_activity_comment(activity, comment)
+   -set_activity_slack(activity, slack)
    -remove_activity(activity)
    -reorder(activities)
    -clear()
@@ -116,20 +118,20 @@ class GanttHeader(gtk.Layout):
       context.set_source_rgb(0, 0, 0)
       context.stroke()
 
-class Graph():
-	activities = []
-	durations={}
-	prelations={}
-	start_time={}
-        slacks = {}
-        comments = {}
+class Diagram_graph():
+   activities = []
+   durations={}
+   prelations={}
+   start_time={}
+   slacks = {}
+   comments = {}
 
 class GanttDrawing(gtk.Layout):
    __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
    def __init__(self):
       gtk.Layout.__init__(self)
       self.connect("expose-event", self.expose)
-      self.graph = Graph()
+      self.graph = Diagram_graph()
       self.row_height = 25
       self.width = 0
 
@@ -211,11 +213,12 @@ class GanttDrawing(gtk.Layout):
       return False
 
    def draw(self, context):
-      width = self.get_needed_length(context)
-      if width != self.width:
-         self.set_size_request(width, self.row_height)
-         self.width = width
-         self.emit("gantt-width-changed",width)
+      if self.graph.activities != []:
+         width = self.get_needed_length(context)
+         if width != self.width:
+            self.set_size_request(width, self.row_height)
+            self.width = width
+            self.emit("gantt-width-changed",width)
       height = self.row_height * len(self.graph.activities)
       self.set_size(self.width, height)
       for i in range(0, max(self.available_width, self.width) / self.row_height + 1):
@@ -268,20 +271,20 @@ class GanttDrawing(gtk.Layout):
 def main():
    window = gtk.Window()
    gantt = GTKgantt()
-   gantt.add_activity("A", ["B", "C"], 5,0, 0, "Actividad inicial")
+   gantt.add_activity("A", ["B", "C"], 5,0, 0, "Initial Activity")
    gantt.add_activity("B", ["D"], 3, 5, 11)
-   gantt.add_activity("C", ["D","E","F","G"], 2, 5,  0 , "Actividad critica")
+   gantt.add_activity("C", ["D","E","F","G"], 2, 5,  0 , "Critical Activity")
    gantt.add_activity("D", ["J"], 4, 8, 11)
-   gantt.add_activity("E", ["J"], 6, 7, 10)
+   gantt.add_activity("E", ["J"], 6, 7, 10, "Not so important activity")
    gantt.add_activity("F", ["H"], 3, 7, 15)
-   gantt.add_activity("G", ["I"], 9, 7, 0, "Actividad critica")
+   gantt.add_activity("G", ["I"], 9, 7, 0, "Critical Activity")
    gantt.add_activity("H", [], 1, 15, 10)
-   gantt.add_activity("I", [], 10, 16, 0, "Actividad final")
+   gantt.add_activity("I", [], 10, 16, 0, "Final Activity")
    gantt.add_activity("J", ["H"], 2, 13, 10)
    gantt.set_row_height(25)
    window.add(gantt)
    window.connect("destroy", gtk.main_quit)
-#   gantt.update()
+   gantt.update()
    window.show_all()
    gtk.main()
 
