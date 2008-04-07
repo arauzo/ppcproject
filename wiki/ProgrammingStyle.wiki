@@ -2,33 +2,37 @@
 
 = Introduction =
 
-This page intents to describe the programming style to follow on PPC-project.
-
+This page intents to describe the programming style to follow on PPC-project. 
 
 = Details =
 
-Ideas:
- * Use the standard syntax of pydoc for comments.
- * Use 3 spaces for indenting (never use tabs).
+We will try to adhere to [http://www.python.org/doc/essays/styleguide.html official Python style guide] ([http://mundogeek.net/traducciones/guia-estilo-python.htm spanish translation]).
+
+Remember some main ideas:
+ * Use the standard syntax for pydoc in comments.
+ * Use 4 spaces for indenting (never use tabs).
  * Use spaces in assignments (make them clear)
  * Comment code blocks as necessary
- * Use underscore to separate compound function names. 
+ * Use lowercase and underscore to separate compound function or method names. 
+ * Use uppercase and uppercased separation for classes or modules (ex. "RedCar").
 
 Example:
 {{{
-def function_name(x, y):
-   """
-   Comment on what is done... (Get volume for 1m height)
+class ClassName:
 
-   x, comment about x, if useful.
+    def function_name(x, y):
+        """
+        Comment on what is done... (Get volume for 1m height)
 
-   Return: comment on returned object, if useful.
-   """
-   z = 1
+        x, comment about x, if useful.
 
-   # Get volume
-   a = x * y
-   v = a * z
+        Return: comment on returned object, if useful.
+        """
+        z = 1
 
-   return z   
+        # Get volume
+        a = x * y
+        v = a * z
+
+        return z   
 }}}
