@@ -51,33 +51,30 @@ gtk.glade.textdomain(APP)
 # Own application modules
 import pert
 import graph
+import interface
+from PSPLIB import leerPSPLIB
+from zaderenko import mZad, early, last
 
 
 class PPCproject:
    def __init__(self):
-      self._widgets = gtk.glade.XML('ppcproject.glade')
-      self._widgets.signal_autoconnect(self)
 
-      self.bufer=gtk.TextBuffer()
-      self.directorio = gettext.gettext('Unnamed -PPC-Project')
-      self.modified=0
-      self.vBoxProb = self._widgets.get_widget('vbProb')
-      self.grafica = gtk.Image()
-      self.box=gtk.VBox()
-      self.hBoxSim = self._widgets.get_widget('hbSim')
-      self.boxS=gtk.VBox()
-      # Adding Gantt Diagram
-      self.gantt = GTKgantt.GTKgantt()
-      self._widgets.get_widget("hpnPanel").add2(self.gantt)
-      self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
-      self.gantt.show_all()
       # Estructuras de datos básicas de la aplicación
       self.actividad  = []
       self.recurso    = []
       self.asignacion = []
       self.tabla      = []
-
-
+      self.bufer=gtk.TextBuffer()
+      self.directorio = gettext.gettext('Unnamed -PPC-Project')
+      self.modified=0
+      self.interface = interface.Interface(self)
+      self._widgets = self.interface._widgets
+      self._widgets.signal_autoconnect(self)
+      self.vBoxProb = self._widgets.get_widget('vbProb')
+      self.grafica = gtk.Image()
+      self.box=gtk.VBox()
+      self.hBoxSim = self._widgets.get_widget('hbSim')
+      self.boxS=gtk.VBox()
       self.vPrincipal=self._widgets.get_widget('wndPrincipal')
       self.vIntroduccion=self._widgets.get_widget('wndIntroduccion')
       self.vZaderenko = self._widgets.get_widget('wndZaderenko')
@@ -93,6 +90,21 @@ class PPCproject:
       self.dAyuda=self._widgets.get_widget('dAyuda')
       self.bHerramientas=self._widgets.get_widget('bHerramientas')
 
+      self.vistaLista = self._widgets.get_widget('vistaListaDatos')
+      self.modelo = self.interface.modelo
+      self.gantt = self.interface.gantt
+      self.modeloR = self.interface.modeloR
+      self.modeloAR = self.interface.modeloAR
+      self.modeloComboS = self.interface.modeloComboS
+      self.modeloA = self.interface.modeloA
+      self.modeloZ = self.interface.modeloZ
+      self.vistaListaZ = self.interface.vistaListaZ
+      self.modeloH = self.interface.modeloH
+      self.modeloC = self.interface.modeloC
+      self.checkColum=[None]*9
+      for n in range(9):
+         self.checkColum[n] = self.interface.checkColum[n]
+
       self._widgets.get_widget('mnSalirPantComp').hide()
       self.disableProjectControls()
 
@@ -101,319 +113,16 @@ class PPCproject:
       self._widgets.get_widget('mnGuardarComo').set_sensitive(True)
       self._widgets.get_widget('mnCerrar').set_sensitive(True)
       self._widgets.get_widget('mnAccion').set_sensitive(True)
+      self._widgets.get_widget('tbGuardar').set_sensitive(True)
+      self._widgets.get_widget('tbCerrar').set_sensitive(True)
 
    def disableProjectControls(self):
       self._widgets.get_widget('mnGuardar').set_sensitive(False)
       self._widgets.get_widget('mnGuardarComo').set_sensitive(False)
       self._widgets.get_widget('mnCerrar').set_sensitive(False)
       self._widgets.get_widget('mnAccion').set_sensitive(False)
-
-#########  CREAMOS TODOS LOS TREEVIEWS DE LA APLICACIÓN  ##############
-   def crearTreeViews(self):
-      """
-      Creación de todos los TreeViews que se utilizarán
-          en la aplicación
-
-      Parámetros: -
-
-      Valor de retorno: -
-      """
-      # TREEVIEW para la INTRODUCCIÓN DE DATOS
-      self.vistaLista=self._widgets.get_widget('vistaListaDatos')
-      self.vistaLista.show() 
-      self.selec=self.vistaLista.get_selection()
-      self.selec.set_mode(gtk.SELECTION_MULTIPLE)
-      mode=self.selec.get_mode()   
-      self.menu=gtk.Menu()
-      self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
-      self.vistaLista.set_model(self.modelo)
-      self.orden=gtk.TreeModelSort(self.modelo)
-      self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaLista.columna=[None]*11
-      self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('ID'))
-      self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activities'))
-      self.vistaLista.columna[2] = gtk.TreeViewColumn(gettext.gettext('Following Act.'))
-      self.vistaLista.columna[3] = gtk.TreeViewColumn(gettext.gettext('Optimistic Dur.'))
-      self.vistaLista.columna[4] = gtk.TreeViewColumn(gettext.gettext('Most Probable Dur.'))
-      self.vistaLista.columna[5] = gtk.TreeViewColumn(gettext.gettext('Pessimistic Dur.'))
-      self.vistaLista.columna[6] = gtk.TreeViewColumn(gettext.gettext('Average Dur.'))
-      self.vistaLista.columna[7] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
-      self.vistaLista.columna[8] = gtk.TreeViewColumn(gettext.gettext('Resources'))
-      self.vistaLista.columna[9] = gtk.TreeViewColumn(gettext.gettext('Distribution'))
-      self.vistaLista.renderer=[None]*10 
-         
-      self.columnaNoEditableColor(0)
-      self.columnaEditable(self.vistaLista, self.modelo, 1)
-      self.modeloComboS=self.columnaCombo(self.vistaLista, self.modelo, 2)
-      self.columnaEditable(self.vistaLista, self.modelo, 3)
-      self.columnaEditable(self.vistaLista, self.modelo, 4)
-      self.columnaEditable(self.vistaLista, self.modelo, 5)
-      self.columnaEditable(self.vistaLista, self.modelo, 6)
-      self.columnaEditable(self.vistaLista, self.modelo, 7)
-      self.columnaNoEditableColor(8)
-      self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9)  
-      
-      # Se añaden los tipos de distribución
-      self.modeloComboD.append([gettext.gettext('Normal')])
-      self.modeloComboD.append([gettext.gettext('Triangular')])
-      self.modeloComboD.append([gettext.gettext('Beta')])
-      self.modeloComboD.append([gettext.gettext('Uniform')])
-
-      # Se ocultan algunas columnas 
-      self.vistaLista.columna[3].set_visible(False) 
-      self.vistaLista.columna[4].set_visible(False)
-      self.vistaLista.columna[5].set_visible(False)  
-      self.vistaLista.columna[8].set_visible(False) 
-      self.vistaLista.columna[9].set_visible(False) 
-
-      # Columna menu
-      self.menu=gtk.Menu()
-      self.imagen=gtk.Image()
-      self.imagen.set_from_file('icono076.gif')
-      self.imagen.show()
-      self.vistaLista.columna[10] = gtk.TreeViewColumn()
-      self.vistaLista.columna[10].set_widget(self.imagen)
-      self.vistaLista.render = gtk.CellRendererText()
-      self.vistaLista.render.set_property('cell-background', 'lightGoldenRodYellow')
-      self.vistaLista.append_column(self.vistaLista.columna[10])
-      self.vistaLista.columna[10].pack_start(self.vistaLista.render, True)
-      self.vistaLista.columna[10].set_attributes(self.vistaLista.render)
-      self.vistaLista.columna[10].set_clickable(True)
-      self.vistaLista.columna[10].connect('clicked', self.columna_press, self.menu) 
-      self.vistaLista.columna[10].set_expand(False)
-      self.checkColum=[None]*9
-      self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activities'), True)
-      self.checkColum[1] = gtk.CheckMenuItem(gettext.gettext('Following Act.'), True)
-      self.checkColum[2] = gtk.CheckMenuItem(gettext.gettext('Optimistic Dur.'), True)
-      self.checkColum[3] = gtk.CheckMenuItem(gettext.gettext('Most Probable Dur.'), True)
-      self.checkColum[4] = gtk.CheckMenuItem(gettext.gettext('Pessimistic Dur.'), True)
-      self.checkColum[5] = gtk.CheckMenuItem(gettext.gettext('Average Dur.'), True)
-      self.checkColum[6] = gtk.CheckMenuItem(gettext.gettext('Typical Dev.'), True)
-      self.checkColum[7] = gtk.CheckMenuItem(gettext.gettext('Resources'), True)
-      self.checkColum[8] = gtk.CheckMenuItem(gettext.gettext('Distribution'), True)
-      for n in range(9):
-         self.menu.add(self.checkColum[n])
-         self.checkColum[n].set_active(True)
-
-      # Las columnas inactivas aparecen desactivadas en el menú
-      self.checkColum[2].set_active(False)
-      self.checkColum[3].set_active(False)
-      self.checkColum[4].set_active(False)
-      self.checkColum[7].set_active(False)
-      self.checkColum[8].set_active(False)
-
-      # TREEVIEW para los caminos (ventana de ZADERENKO)
-      self.vistaListaZ = self._widgets.get_widget('vistaListaZad')
-      self.modeloZ = gtk.ListStore(str, str, str, bool)
-      self.vistaListaZ.set_model(self.modeloZ)
-      self.ordenZ=gtk.TreeModelSort(self.modeloZ)
-      self.ordenZ.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaListaZ.columna=[None]*3
-      self.vistaListaZ.columna[0] = gtk.TreeViewColumn(gettext.gettext('Duration'))
-      self.vistaListaZ.columna[1] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
-      self.vistaListaZ.columna[2] = gtk.TreeViewColumn(gettext.gettext('Path'))
-      self.vistaListaZ.renderer=[None]*3
-        
-      self.columnaNoEditable(self.vistaListaZ, 0)
-      self.columnaNoEditable(self.vistaListaZ, 1)
-      self.columnaNoEditable(self.vistaListaZ, 2)
-
-      for n in range(2):
-         self.vistaListaZ.columna[n].set_expand(False)
-
-                 
-      # TREEVIEW para las ACTIVIDADES y NODOS
-      self.vistaListaA = self._widgets.get_widget('vistaListaAct')
-      self.modeloA = gtk.ListStore(str, str, str)
-      self.vistaListaA.set_model(self.modeloA)
-      self.ordenA=gtk.TreeModelSort(self.modeloA)
-      self.ordenA.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaListaA.columna=[None]*3
-      self.vistaListaA.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
-      self.vistaListaA.columna[1] = gtk.TreeViewColumn(gettext.gettext('First Node'))
-      self.vistaListaA.columna[2] = gtk.TreeViewColumn(gettext.gettext('Last Node'))
-      self.vistaListaA.renderer=[None]*3
-
-      self.columnaNoEditable(self.vistaListaA, 0)
-      self.columnaNoEditable(self.vistaListaA, 1)
-      self.columnaNoEditable(self.vistaListaA, 2)
-
-
-      # TREEVIEW para las HOLGURAS
-      self.vistaListaH = self._widgets.get_widget('vistaListaHolg')
-      self.modeloH = gtk.ListStore(str, str, str, str)
-      self.vistaListaH.set_model(self.modeloH)
-      self.ordenH=gtk.TreeModelSort(self.modeloH)
-      self.ordenH.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaListaH.columna=[None]*4
-      self.vistaListaH.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activities'))
-      self.vistaListaH.columna[1] = gtk.TreeViewColumn(gettext.gettext('Total Sl.'))
-      self.vistaListaH.columna[2] = gtk.TreeViewColumn(gettext.gettext('Free Sl.'))
-      self.vistaListaH.columna[3] = gtk.TreeViewColumn(gettext.gettext('Independent Sl.'))
-      self.vistaListaH.renderer=[None]*4
-
-      self.columnaNoEditable(self.vistaListaH, 0)
-      self.columnaNoEditable(self.vistaListaH, 1)
-      self.columnaNoEditable(self.vistaListaH, 2)
-      self.columnaNoEditable(self.vistaListaH, 3)
-
-
-      # TREEVIEW para los RECURSOS
-      self.vistaListaR = self._widgets.get_widget('vistaListaRec')
-      self.modeloR = gtk.ListStore(str, str, str, str)
-      self.vistaListaR.set_model(self.modeloR)
-      self.ordenR=gtk.TreeModelSort(self.modeloR)
-      self.ordenR.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaListaR.columna=[None]*4
-      self.vistaListaR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Name'))
-      self.vistaListaR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Kind'))
-      self.vistaListaR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Project Dur. Unit'))
-      self.vistaListaR.columna[3] = gtk.TreeViewColumn(gettext.gettext('Period Dur. Unit'))
-      self.vistaListaR.renderer=[None]*4
-     
-      self.columnaEditable(self.vistaListaR, self.modeloR, 0)
-      self.modeloComboR=self.columnaCombo(self.vistaListaR, self.modeloR, 1)
-      self.columnaEditable(self.vistaListaR, self.modeloR, 2)
-      self.columnaEditable(self.vistaListaR, self.modeloR, 3)
-
-      # Se añaden los tipos de recursos
-      self.modeloComboR.append([gettext.gettext('Renewable')])
-      self.modeloComboR.append([gettext.gettext('Non renewable')])
-      self.modeloComboR.append([gettext.gettext('Double restricted')])
-      self.modeloComboR.append([gettext.gettext('Unlimited')])
-  
-      # TREEVIEW para los RECURSOS NECESARIOS POR ACTIVIDAD
-      self.vistaListaAR = self._widgets.get_widget('vistaListaAR')
-      self.modeloAR = gtk.ListStore(str, str, str)
-      self.vistaListaAR.set_model(self.modeloAR)
-      self.ordenAR=gtk.TreeModelSort(self.modeloAR)
-      self.ordenAR.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaListaAR.columna=[None]*3
-      self.vistaListaAR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
-      self.vistaListaAR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Resource'))
-      self.vistaListaAR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Needed Units'))
-      self.vistaListaAR.renderer=[None]*3
-
-      self.columnaEditable(self.vistaListaAR, self.modeloAR, 0)
-      self.columnaEditable(self.vistaListaAR, self.modeloAR, 1)
-      self.columnaEditable(self.vistaListaAR, self.modeloAR, 2)
-
-
-      # TREEVIEW para los caminos (ventana de SIMULACIÓN)
-      self.vLCriticidad = self._widgets.get_widget('vistaListaCriticidad')
-      self.modeloC = gtk.ListStore(str, str, str)
-      self.vLCriticidad.set_model(self.modeloC)
-      self.ordenC=gtk.TreeModelSort(self.modeloC)
-      self.ordenC.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vLCriticidad.columna=[None]*3
-      self.vLCriticidad.columna[0] = gtk.TreeViewColumn(gettext.gettext('N'))
-      self.vLCriticidad.columna[1] = gtk.TreeViewColumn(gettext.gettext('I.Criticidad'))
-      self.vLCriticidad.columna[2] = gtk.TreeViewColumn(gettext.gettext('Paths'))
-      self.vLCriticidad.renderer=[None]*3
-      
-      self.columnaNoEditable(self.vLCriticidad, 0)
-      self.columnaNoEditable(self.vLCriticidad, 1)
-      self.columnaNoEditable(self.vLCriticidad, 2)
-
-      for n in range(2):
-         self.vLCriticidad.columna[n].set_expand(False)
-       
-
-
-##################### FUNCIONES RELACIONADAS CON LOS TREEVIEW ###########################
-
-   def columnaNoEditableColor(self, n):  
-      """
-       Creación de las columnas no editables y con color de celda
-       Parámetros: n (columna)
-       Valor de retorno: -
-      """
-      self.vistaLista.renderer[n] = gtk.CellRendererText()
-      self.vistaLista.renderer[n].set_property('editable', False)
-      self.vistaLista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
-      self.vistaLista.append_column(self.vistaLista.columna[n])
-      self.vistaLista.columna[n].set_sort_column_id(n)
-      self.vistaLista.columna[n].pack_start(self.vistaLista.renderer[n], True)
-      self.vistaLista.columna[n].set_attributes(self.vistaLista.renderer[n], text=n)
-      self.vistaLista.columna[n].set_spacing(8)
-      self.vistaLista.columna[n].set_expand(True)
-      self.vistaLista.columna[0].set_expand(False)
-      self.vistaLista.columna[n].set_resizable(True)
-
-
-   def columnaNoEditable(self, vista, n):
-      """
-       Creación de las columnas no editables y 
-                sin color de celda 
-
-       Parámetros: vista (widget que muestra el treeview)
-                   n (columna)
-
-       Valor de retorno: -
-      """
-      vista.renderer[n] = gtk.CellRendererText()
-      vista.append_column(vista.columna[n])
-      vista.columna[n].set_sort_column_id(n)
-      vista.columna[n].pack_start(vista.renderer[n], True)
-      vista.columna[n].set_attributes(vista.renderer[n], text=n)
-      vista.columna[n].set_spacing(8)
-      vista.columna[n].set_expand(True)
-      vista.columna[n].set_reorderable(True)
-
-#-----------------------------------------------------------                           
-     
-   def columnaEditable(self, vista, modelo, n):
-      """
-       Creación de las columnas editables y con color
-                de celda
-
-       Parámetros: vista (widget que muestra el treeview)
-                   modelo (lista) 
-                   n (columna)
-
-       Valor de retorno: -
-      """
-      vista.renderer[n] = gtk.CellRendererText()
-      vista.renderer[n].set_property('editable', True)
-      vista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
-      vista.renderer[n].connect('edited', self.col_edited_cb, modelo, n)
-      vista.append_column(vista.columna[n])
-      vista.columna[n].set_sort_column_id(n)
-      vista.columna[n].pack_start(vista.renderer[n], True)
-      vista.columna[n].set_attributes(vista.renderer[n], text=n)
-      vista.columna[n].set_spacing(8)
-      vista.columna[n].set_expand(True)
-      vista.columna[n].set_resizable(True)
-      vista.columna[n].set_reorderable(True)
-      
-     
-   def columnaCombo(self, vista, modelo, n):
-      """
-       Creación de todas las columnas combo (selector)
-
-       Parámetros: vista (widget que muestra el treeview)
-                   modelo (lista) 
-                   n (columna)
-
-       Valor de retorno: modeloCombo (lista para los datos del selector)
-      """
-      modeloCombo=gtk.ListStore(str)
-      vista.renderer[n]=gtk.CellRendererCombo()
-      vista.renderer[n].set_property('editable', True)
-      vista.renderer[n].connect('edited', self.col_edited_cb, modelo, n)
-      vista.renderer[n].set_property('model', modeloCombo)
-      #vista.renderer[n].set_property('has-entry', False)
-      vista.renderer[n].set_property('text-column', 0)
-      vista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
-      vista.append_column(vista.columna[n])
-      vista.columna[n].set_sort_column_id(n)
-      vista.columna[n].pack_start(vista.renderer[n], True)
-      vista.columna[n].set_attributes(vista.renderer[n], text=n)
-      vista.columna[n].set_resizable(True)
-      #vista.columna[n].set_min_width(150)
-
-      return modeloCombo
-
+      self._widgets.get_widget('tbGuardar').set_sensitive(False)
+      self._widgets.get_widget('tbCerrar').set_sensitive(False)
 
    def columna_press(self, columna, menu): 
       """
@@ -472,8 +181,6 @@ class PPCproject:
       self.tabla=[]
       cont=1
       self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])  # Se inserta una fila vacia
-        
-             
 
    def col_edited_cb( self, renderer, path, new_text, modelo, n):
       """
@@ -933,54 +640,9 @@ class PPCproject:
 
 
 #********************************************************************************************************************** 
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #           PSPLIB                        #
       #++++++++++++++++++++++++++++++++++++++++++++++++++#
- 
-#-----------------------------------------------------------
-# Lectura de un proyecto de la librería de proyectos PSPLIB   
-#
-# Parámetros: f (fichero) 
-#
-# Valor de retorno: prelaciones (lista que almacena las actividades 
-#                                y sus siguientes)
-#                   rec (lista que almacena el nombre y las unidades
-#                       de recurso)
-#                   asig (lista que almacena las duraciones y las 
-#                         unid. de recurso necesarias por cada actividad)
-#----------------------------------------------------------- 
-     
-   def leerPSPLIB(self, f):
-         prelaciones=[]
-         asig=[]
-         rec=[]
-         l=f.readline()         
-         while l:
-            # Lectura de las actividades y sus siguientes
-            if l[0]=='j' and l[10]=='#':
-                l=f.readline()
-                while l[0]!='*':                   
-                   prel=l.split()[0], l.split()[3:]
-                   prelaciones.append(prel)
-                   l=f.readline()
-            
-            # Lectura de la duración de las actividades y de las unidades de recursos necesarias por actividad
-            if l[0]=='-':
-                l=f.readline()
-                while l[0]!='*': 
-                   asig.append(l.split())
-                   l=f.readline()
-         
-            # Lectura del nombre, tipo y unidad de los recursos
-            if l[0:22]=='RESOURCEAVAILABILITIES':
-                l=f.readline()
-                while l[0]!='*': 
-                   rec.append(l.split())
-                   l=f.readline()
-            
-            l=f.readline()  
-         
-         return (prelaciones, rec, asig)
+      #                    PSPLIB                        #
+      #++++++++++++++++++++++++++++++++++++++++++++++++++#
 
 #-----------------------------------------------------------
 # Actualización de los datos con los obtenidos de la   
@@ -1097,7 +759,6 @@ class PPCproject:
          if self.asignacion!=[]:
              mostrarColumnaRec=self.mostrarRec(self.asignacion, 0)
              self.actualizarColR(mostrarColumnaRec)
-
 
 #*****************************************************************************
 #-----------------------------------------------------------
@@ -1774,19 +1435,19 @@ class PPCproject:
            nodosN.append(n+1)
 
         # Se calcula la matriz de Zaderenko
-        mZad=self.mZad(grafoRenumerado.activities, nodosN, 1, []) 
+        matrizZad=mZad(self.actividad,grafoRenumerado.activities, nodosN, 1, []) 
 
         # Se calculan los tiempos early y last
-        early=self.early(nodosN, mZad)      
-        last=self.last(nodosN, early, mZad)  
+        tearly=early(nodosN, matrizZad)      
+        tlast=last(nodosN, tearly, matrizZad)  
 
         # duración del proyecto
-        tam=len(early)
-        duracionProyecto=early[tam-1]
+        tam=len(tearly)
+        duracionProyecto=tearly[tam-1]
         #print duracionProyecto, 'duracion proyecto'            
 
         # Se buscan las actividades que son crí­ticas, que serán aquellas cuya holgura total sea 0
-        holguras=self.holguras(grafoRenumerado.activities, early, last, []) 
+        holguras=self.holguras(grafoRenumerado.activities, tearly, tlast, []) 
         #print holguras, 'holguras'
         actCriticas=self.actCriticas(holguras, grafoRenumerado.activities)
         #print 'actividades criticas: ', actCriticas
@@ -1797,8 +1458,9 @@ class PPCproject:
 
         # Se extraen todos los caminos (crí­ticos o no) del grafo original
         successors = self.tablaSucesoras(self.actividad)
-        g=graph.roy(successors)
-        caminos=self.buscarCaminos(g)            
+        g=graph.roy(successors)
+        # Se eliminan 'begin' y 'end' de todos los caminos
+        caminos=[c[1:-1]for c in graph.findAllPaths(g, 'Begin', 'End')]
         #print 'caminos', caminos
 
         # Se marca con 1 los caminos crí­ticos en todos los caminos del grafo, el resto se marca con 0
@@ -1813,147 +1475,9 @@ class PPCproject:
         #print 'caminos, duraciones y dt: ', informacionCaminos
 
         # Se muestran Zaderenko y los caminos en la interfaz
-        self.zaderenko(early, last, nodosN, mZad)
+        self.zaderenko(tearly, tlast, nodosN, matrizZad)
         self.mostrarCaminosZad(self.modeloZ, criticos, informacionCaminos)
         self.vZaderenko.show()
-
-
-#*********************************************************************************
-#-----------------------------------------------------------
-# Creación de la matriz de Zaderenko 
-#
-# Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-#             nodos (lista de nodos)
-#             control (0: llamada desde Simulación
-#                      1: llamada desde Zaderenko u Holguras)
-#             duracionSim (duración de la simulación)
-#
-# Valor de retorno: mZad (matriz de Zaderenko)
-#-----------------------------------------------------------  
-    
-   def mZad(self, actividadesGrafo, nodos, control, duracionSim): 
-        mZad=[]
-        fila=[]
-
-        # Se inicializa la matriz
-        for n in range(len(nodos)):
-            fila.append('')
-        for n in range(len(nodos)):       
-            mZad.append(list(fila))
-        
-        actividades=[]
-        for n in range(len(self.actividad)):
-            actividades.append(self.actividad[n][1])
-       
-        # Se añaden las duraciones en la posición correspondiente
-        for g in actividadesGrafo:
-            i=g[0]-1
-            j=g[1]-1
-            if actividadesGrafo[i+1, j+1][0] in actividades:
-                 if control==1: # Si es llamada desde Zaderenko
-                    for m in range(len(self.actividad)):
-                      #print self.actividad[m][1]
-                      if actividadesGrafo[i+1, j+1][0]==self.actividad[m][1]:   
-                         mZad[j][i]=self.actividad[m][6]
-
-                 else: # Si es llamada desde Simulación
-                     for m in range(len(self.actividad)):
-                      #print self.actividad[m][1]
-                      if actividadesGrafo[i+1, j+1][0]==self.actividad[m][1]:   
-                         mZad[j][i]=duracionSim[m]
-
-            else: # Las actividades ficticias tienen duración 0
-                    mZad[j][i]=0
-        
-        #print mZad
-        return mZad
-
-
-#*****************************************************************************        
-#-----------------------------------------------------------
-# Cálculo de los tiempos early de cada nodo 
-#
-# Parámetros: nodos (lista de nodos)
-#             mZad (matriz de Zaderenko)
-#
-# Valor de retorno: early (lista con los tiempos early)
-#----------------------------------------------------------- 
-
-   def early(self, nodos, mZad):  
-        # Se crea una la lista de tiempos early y se inicializa a 0
-        early=[]
-        for n in range(len(nodos)):
-           a=0
-           early.append(a)
-
-        # Se calculan los tiempos early y se van introduciendo a la lista
-        for n in range(len(nodos)):
-            mayor=0
-            #print mayor, '******************************'
-            for m in range(len(nodos)):
-                if m<n and mZad[n][m]!='':
-                    aux=float(mZad[n][m])+early[m]
-                    #print aux, mZad[n][m], early[m], '--------------'
-                    if aux>mayor:
-                        mayor=aux
-                    aux=0 
-                    #print mayor
-            early[n]=mayor
-            #print early
-        for e in range(len(early)):
-            early[e]=float('%5.2f'%(float(early[e])))
-        
-        return early
-
- #*****************************************************************************        
-#-----------------------------------------------------------
-# Cálculo de los tiempos last de cada nodo 
-#
-# Parámetros: nodos (lista de nodos)
-#             early (lista con los tiempos early)
-#             mZad (matriz de Zaderenko)
-#
-# Valor de retorno: last (lista con los tiempos last)
-#----------------------------------------------------------- 
-
-   def last(self, nodos, early, mZad): 
-        #Se cambian filas por columnas en mZad para usarla en el calculo de los tiempos last
-        for n in range(len(nodos)):
-            for m in range(len(nodos)):
-                 if mZad[n][m]!='':
-                     mZad[n][m]=''
-                 else:
-                     mZad[n][m]=mZad[m][n]
-
-        # Se crea una la lista de tiempos last y se inicializa a 0
-        last=[]
-        for n in range(len(nodos)):
-           a=0
-           last.append(a)
-     
-        # Se calculan los tiempos last y se van introduciendo a la lista
-        l=len(nodos)-1
-        aux=early[l]
-        last[l]=early[l]
-        for m in range(len(nodos)):
-            menor=early[l]
-            #print menor, '*************************************************'
-            for n in range(len(nodos)):
-                if (l-m)<n and mZad[l-m][n]!='':
-                    aux=last[n]-float(mZad[l-m][n])
-                    #print aux, last[n], mZad[l-m][n], '------------'
-                    #print menor, aux
-                    if aux<menor:
-                        menor=aux
-                    aux=0 
-                    #print menor
-            last[l-m]=menor
-        #print last, 'last'  
-        for l in range(len(last)):
-            last[l]=float('%5.2f'%(float(last[l])))
- 
-        return last
-
 
 #***************************************************************
 #-----------------------------------------------------------
@@ -1967,7 +1491,7 @@ class PPCproject:
 #
 # Valor de retorno: -
 #----------------------------------------------------------- 
-  
+
    def zaderenko(self, early, last, nodos, mZad):
         # Se prepara la matriz de Zaderenko y los tiempos early y last para mostrarlos en la interfaz
         linea='______________'
@@ -2294,14 +1818,14 @@ class PPCproject:
            nodosN.append(n+1)
 
         # Se calcula la matriz de Zaderenko
-        mZad=self.mZad(grafoRenumerado.activities, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad, grafoRenumerado.activities, nodosN, 1, []) 
 
         # Se calculan los tiempos early y last
-        early=self.early(nodosN, mZad) 
-        last=self.last(nodosN, early, mZad)
+        tearly=early(nodosN, matrizZad) 
+        tlast=last(nodosN, tearly, matrizZad)
 
         # Se calculan los tres tipos de holgura y se muestran en la interfaz
-        holguras=self.holguras(grafoRenumerado.activities, early, last, []) 
+        holguras=self.holguras(grafoRenumerado.activities, tearly, tlast, []) 
         self.mostrarHolguras(self.modeloH, holguras) 
 
 
@@ -2396,10 +1920,9 @@ class PPCproject:
            successors = self.tablaSucesoras(self.actividad)
            roy = graph.roy(successors)
            #print roy, 'grafo'
-           
-           # Se extraen todos los caminos en una lista
-           caminosSinBeginEnd=self.buscarCaminos(roy)
 
+           # Se eliminan 'begin' y 'end' de todos los caminos
+           caminosSinBeginEnd=[c[1:-1]for c in graph.findAllPaths(roy, 'Begin', 'End')]
            # Se preparan los caminos para mostrarlos en el interfaz
            numeroCaminos=len(caminosSinBeginEnd) 
            camino=gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
@@ -2411,32 +1934,7 @@ class PPCproject:
            # Se muestran los caminos en la interfaz
            self.vCaminos.show()
            widget=self._widgets.get_widget('tvCaminos')
-           self.mostrarTextView(widget, camino)
-           
-
-#*****************************************************************************
-#-----------------------------------------------------------
-# Búsqueda de los caminos del grafo (crí­ticos o no)
-#
-# Parámetros: grafo (grafo Pert)
-#
-# Valor de retorno: caminosSinBeginEnd (lista con todos los caminos del grafo)
-#-----------------------------------------------------------  
-
-   def buscarCaminos(self, grafo):  
-        caminos=[]
-        caminos=graph.findAllPaths(grafo, 'Begin', 'End')
-
-        # Se eliminan 'begin' y 'end' de todos los caminos
-        caminosSinBeginEnd=[c[1:-1]for c in caminos]
-
-        # Impresión en terminal para comprobaciones    
-        #for camino in caminosSinBeginEnd:
-            #print camino
-        
-        return caminosSinBeginEnd
-
-
+           self.mostrarTextView(widget, camino)
 #*******************************************************************************************************************
       #++++++++++++++++++++++++++++++++++++++++++++++++++#
       #     RECUROS NECESARIOS POR ACTIVIDAD         #
@@ -2792,7 +2290,7 @@ class PPCproject:
       # Se extraen todos los caminos (crí­ticos o no) del grafo original
       successors = self.tablaSucesoras(self.actividad)
       g=graph.roy(successors)
-      caminos=self.buscarCaminos(g) 
+      caminos = [c[1:-1]for c in graph.findAllPaths(g, 'Begin', 'End')]
    
       # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
       caminosCriticos=[]
@@ -3125,7 +2623,7 @@ class PPCproject:
                      self.cargaDatos(tabla)
                   elif self.directorio[-3:] == '.sm':  
                      # Se lee el fichero y se extraen los datos necesarios 
-                     prelaciones, rec, asig=self.leerPSPLIB(flectura)   
+                     prelaciones, rec, asig=leerPSPLIB(flectura)   
                      # Se cargan los datos extraidos en las listas correspondientes
                      self.cargarPSPLIB(prelaciones, rec, asig)       
                   else: # Fichero de texto
@@ -3760,7 +3258,7 @@ class PPCproject:
                    intervalos.append(interv) 
 
                 # Se calcula la probabilidad
-         x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
+                x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
         
          # Se muestra el resultado en la casilla correspondiente
          prob=str('%3.2f'%(x*100))+' %'
@@ -3815,7 +3313,7 @@ class PPCproject:
                    intervalos.append(interv) 
 
                 # Se calcula la probabilidad
-         x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
+                x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
        
          # Se muestra el resultado en la casilla correspondiente
          prob=str('%3.2f'%(x*100))+' %'
@@ -3875,12 +3373,12 @@ class PPCproject:
 
                 # Se calcula la probabilidad
                 suma=0
-         for n in range(len(intervalos)):
-            suma+=self.Fa[n]/float(itTotales)
-            if suma>float(dato3) or suma==float(dato3):
-               x=intervalos[n][1]
-               print x, 'x'
-               break
+                for n in range(len(intervalos)):
+                   suma+=self.Fa[n]/float(itTotales)
+                   if suma>float(dato3) or suma==float(dato3):
+                      x=intervalos[n][1]
+                      print x, 'x'
+                      break
                
          if x==0:
             return             
@@ -3982,17 +3480,17 @@ class PPCproject:
             return
          else:
             for s in simulacion: 
-               mZad=self.mZad(grafoRenumerado.activities, nodosN, 0, s)
-               early=self.early(nodosN, mZad)  
-               last=self.last(nodosN, early, mZad)      
-               tam=len(early)
+               matrizZad=mZad(self.actividad,grafoRenumerado.activities, nodosN, 0, s)
+               tearly=early(nodosN, matrizZad)  
+               tlast=last(nodosN, tearly, matrizZad)      
+               tam=len(tearly)
                # Se calcula la duración del proyecto para cada simulación
-               duracionProyecto=early[tam-1]
+               duracionProyecto=tearly[tam-1]
                #print duracionProyecto, 'duracion proyecto'  
                self.duraciones.append(duracionProyecto) 
                #print self.duraciones,'duraciones simuladas'
                # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
-               self.indiceCriticidad(grafoRenumerado, s, early, last, itTotales)
+               self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
 
                # Se añaden la media y la desviación típica a la interfaz
                duracionMedia=scipy.stats.mean(self.duraciones)
@@ -4325,7 +3823,6 @@ class PPCproject:
 if __name__ == '__main__':
    app = PPCproject()
    # Se crean todos los TreeViews
-   app.crearTreeViews()
 
    if   len(sys.argv) == 1:
       gtk.main()   elif len(sys.argv) == 2:
