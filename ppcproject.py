@@ -102,6 +102,8 @@ class PPCproject:
       self.vistaListaZ = self.interface.vistaListaZ
       self.modeloH = self.interface.modeloH
       self.modeloC = self.interface.modeloC
+      self.modeloF = self.interface.modeloF
+      self.vistaFrecuencias = self.interface.vistaFrecuencias
       self.checkColum=[None]*9
       for n in range(9):
          self.checkColum[n] = self.interface.checkColum[n]
@@ -1525,7 +1527,6 @@ class PPCproject:
         column.set_min_width(50)
         self.mostrarCaminosZad(self.modeloZ, criticos, informacionCaminos)
         self.vZaderenko.show()
-        width_list = []
 
 #***************************************************************
 #-----------------------------------------------------------
@@ -2442,7 +2443,7 @@ class PPCproject:
         dTipica=self._widgets.get_widget('dTipicaSim')
         dTipica.set_text('')
         frecuencias=self._widgets.get_widget('vistaFrecuencias')
-        self.mostrarTextView(frecuencias, '')
+        self.modeloF.clear()
         self.modeloC.clear()
         if len(self.boxS)>0:
            self.hBoxSim.remove(self.boxS)
@@ -3566,7 +3567,14 @@ class PPCproject:
          self.Fa, Fr=self.calcularFrecuencias(dMax, dMin, itTotales, N)
 
          # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
-         self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
+         self.modeloF.clear()
+         i = 0
+         for column in self.vistaFrecuencias.get_columns()[1:]:
+            column.set_title(self.intervalos[i])
+            i = i + 1
+         self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str,self.Fa))
+         self.modeloF.append([gettext.gettext("Relative freq.")] + map(str,Fr))
+         #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
 
          # Dibuja histograma devolviendo los intervalos (bins) y otros datos
          fig = Figure(figsize=(5,4), dpi=100)

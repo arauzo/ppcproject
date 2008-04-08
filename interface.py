@@ -258,8 +258,27 @@ class Interface:
 
       for n in range(2):
          self.vLCriticidad.columna[n].set_expand(False)
-       
-
+      
+      # TREEVIEW for frequencies in simulation window
+      self.vistaFrecuencias=self._widgets.get_widget('vistaFrecuencias')
+      columns_type = [str]  * 21
+      self.modeloF = gtk.ListStore(*columns_type)
+      self.vistaFrecuencias.set_model(self.modeloF)
+      #First column
+      column = gtk.TreeViewColumn(gettext.gettext("Durations"))
+      self.vistaFrecuencias.append_column(column)
+      cell = gtk.CellRendererText()
+      column.pack_start(cell, False)
+      column.add_attribute(cell, 'text', 0)
+      column.set_min_width(50)
+      #Intervals
+      for interval in range(1,21):
+         column = gtk.TreeViewColumn("")
+         self.vistaFrecuencias.append_column(column)
+         cell = gtk.CellRendererText()
+         column.pack_start(cell, False)
+         column.add_attribute(cell, 'text', interval)
+         column.set_min_width(50)
 
 ##################### FUNCIONES RELACIONADAS CON LOS TREEVIEW ###########################
 
