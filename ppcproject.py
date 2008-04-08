@@ -90,6 +90,7 @@ class PPCproject:
       self.dAyuda=self._widgets.get_widget('dAyuda')
       self.bHerramientas=self._widgets.get_widget('bHerramientas')
 
+      self.zadViewList = self._widgets.get_widget('vistaZad')
       self.vistaLista = self._widgets.get_widget('vistaListaDatos')
       self.modelo = self.interface.modelo
       self.gantt = self.interface.gantt
@@ -1475,9 +1476,56 @@ class PPCproject:
         #print 'caminos, duraciones y dt: ', informacionCaminos
 
         # Se muestran Zaderenko y los caminos en la interfaz
-        self.zaderenko(tearly, tlast, nodosN, matrizZad)
+        #self.zaderenko(tearly, tlast, nodosN, matrizZad)
+        
+        #Creating Zaderenko Matrix model
+        previous_model = self.zadViewList.get_model()
+        if previous_model != None:
+           previous_model.clear()
+        columns_type = [str] * (len(nodosN) + 3)
+        zad_model = gtk.ListStore(*columns_type)
+        self.zadViewList.set_model(zad_model)
+        for column in self.zadViewList.get_columns():
+           self.zadViewList.remove_column(column)
+        for node in range(len(nodosN)):
+           row = []
+           row.append(str(tearly[node]))
+           row.append(str(nodosN[node]))
+           for nodes in range(len(nodosN)):
+              row.append(str(matrizZad[node][nodes]))
+           row.append(str(tlast[node]))
+           zad_model.append(row)
+        #Early Column
+        column = gtk.TreeViewColumn(gettext.gettext("Early"))
+        self.zadViewList.append_column(column)
+        cell = gtk.CellRendererText()
+        column.pack_start(cell, False)
+        column.add_attribute(cell, 'text', 0)
+        column.set_min_width(50)
+        #Activities Column
+        column = gtk.TreeViewColumn(gettext.gettext("Node"))
+        self.zadViewList.append_column(column)
+        cell = gtk.CellRendererText()
+        column.pack_start(cell, False)
+        column.add_attribute(cell, 'text', 1)
+        column.set_min_width(50)
+        for node in range(len(nodosN)):
+           column = gtk.TreeViewColumn(str(nodosN[node]))
+           self.zadViewList.append_column(column)
+           cell = gtk.CellRendererText()
+           column.pack_start(cell, False)
+           column.add_attribute(cell, 'text', 2 + node)
+           column.set_min_width(50)
+        #Last Column
+        column = gtk.TreeViewColumn(gettext.gettext("Last"))
+        self.zadViewList.append_column(column)
+        cell = gtk.CellRendererText()
+        column.pack_start(cell, False)
+        column.add_attribute(cell, 'text', len(nodosN) + 2)
+        column.set_min_width(50)
         self.mostrarCaminosZad(self.modeloZ, criticos, informacionCaminos)
         self.vZaderenko.show()
+        width_list = []
 
 #***************************************************************
 #-----------------------------------------------------------
