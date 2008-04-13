@@ -257,24 +257,27 @@ class GanttDrawing(gtk.Layout):
          y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 0.5
          context.set_source_rgb(0, 0, 0)
          for children in self.graph.prelations[activity]:
-            id_actividad2 = self.graph.activities.index(children)
-            context.arc(x,y, self.row_height / 8, 0 , 2 * math.pi )
-            context.fill()
-            context.move_to(x,y)
-            y2 = (id_actividad2) * self.row_height - 3.5
-            context.line_to(x, y2 )
-            context.move_to(x,y2)
-            x2 = self.graph.start_time[children] * self.row_height + 0.5
-            context.line_to(x2, y2)
-            context.stroke()
-            v1 = x2 - 3.5
-            v2 = x2 + 3.5
-            context.move_to(v1, y2)
-            context.line_to(x2, self.row_height * id_actividad2 - 0.5)
-            context.rel_line_to(3, -3)
-            context.close_path()
-            context.fill_preserve()
-            context.stroke()
+            try:
+               id_actividad2 = self.graph.activities.index(children)
+               context.arc(x,y, self.row_height / 8, 0 , 2 * math.pi )
+               context.fill()
+               context.move_to(x,y)
+               y2 = (id_actividad2) * self.row_height - 3.5
+               context.line_to(x, y2 )
+               context.move_to(x,y2)
+               x2 = self.graph.start_time[children] * self.row_height + 0.5
+               context.line_to(x2, y2)
+               context.stroke()
+               v1 = x2 - 3.5
+               v2 = x2 + 3.5
+               context.move_to(v1, y2)
+               context.line_to(x2, self.row_height * id_actividad2 - 0.5)
+               context.rel_line_to(3, -3)
+               context.close_path()
+               context.fill_preserve()
+               context.stroke()
+            except:
+               pass
 
 def main():
    window = gtk.Window()
