@@ -49,6 +49,14 @@ class Interface:
       self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
       self.gantt.show_all()
       self.crearTreeViews()
+      # Setting unsensitive GTKEntries
+      self._widgets.get_widget('dTipicaSim').set_sensitive(False)
+      self._widgets.get_widget('mediaSim').set_sensitive(False)
+      self._widgets.get_widget('iteracionesTotales').set_sensitive(False)
+      self._widgets.get_widget('mediaProb').set_sensitive(False)
+      self._widgets.get_widget('dTipicaProb').set_sensitive(False)
+      self._widgets.get_widget('resultado1Prob').set_sensitive(False)
+      self._widgets.get_widget('resultado2Prob').set_sensitive(False)
 
 #########  CREAMOS TODOS LOS TREEVIEWS DE LA APLICACIÓN  ##############
    def crearTreeViews(self):
