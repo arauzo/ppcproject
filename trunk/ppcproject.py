@@ -1526,6 +1526,7 @@ class PPCproject:
         column.add_attribute(cell, 'text', len(nodosN) + 2)
         column.set_min_width(50)
         self.mostrarCaminosZad(self.modeloZ, criticos, informacionCaminos)
+        self.vZaderenko.hide()
         self.vZaderenko.show()
 
 #***************************************************************
@@ -1939,6 +1940,7 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def mostrarHolguras(self, modelo, holguras):
+        self.vHolguras.hide()  
         self.vHolguras.show()  
 
         modelo.clear()
@@ -3269,6 +3271,11 @@ class PPCproject:
 
 # PROBABILIDADES window
 
+   def on_btnIntervalReset_clicked(self, button):
+      self._widgets.get_widget('valor1Prob').set_text("")
+      self._widgets.get_widget('valor2Prob').set_text("")
+      self._widgets.get_widget('resultado1Prob').set_text("")
+
 #-----------------------------------------------------------
 # Acción usuario al activar el valor introducido en 
 #          el primer gtk.Entry de la ventana de probabilidades          
@@ -3277,7 +3284,7 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-   def on_valor1Prob_activate(self, entry):
+   def on_bntIntervalCalculate_clicked(self, button):
          # Se extraen los valores de las u.d.t. de la interfaz
          valor1=self._widgets.get_widget('valor1Prob')   
          dato1=valor1.get_text()
@@ -3323,61 +3330,9 @@ class PPCproject:
              mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project > ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
          self.escribirProb(mostrarDato)
 
-
-#-----------------------------------------------------------
-# Acción usuario al activar el valor introducido en 
-#          el segundo gtk.Entry de la ventana de probabilidades          
-#
-# Parámetros: entry (entry activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-   def on_valor2Prob_activate(self, entry):
-         # Se extraen los valores de las u.d.t. de la interfaz
-         valor1=self._widgets.get_widget('valor1Prob')   
-         dato1=valor1.get_text()
-         valor2=self._widgets.get_widget('valor2Prob')   
-         dato2=valor2.get_text()
-
-         titulo=self.vProbabilidades.get_title()
-         if titulo==gettext.gettext('Probability related to the path'):
-            # Se extrae la media y la desviación típica de la interfaz
-            widgetMedia=self._widgets.get_widget('mediaProb')
-            media=widgetMedia.get_text()
-            widgetdTipica=self._widgets.get_widget('dTipicaProb')
-            dTipica=widgetdTipica.get_text()
-         
-            # Se calcula la probabilidad
-            x=self.calcularProb(dato1, dato2, media, dTipica)
-
-         else:
-           # Extraigo las iteraciones totales
-                totales=self._widgets.get_widget('iteracionesTotales')
-                itTotales=totales.get_text()
-
-                intervalos=[]
-                for n in self.intervalos:
-                   d=n.split('[')
-                   interv=d[1].split(',')
-                   intervalos.append(interv) 
-
-                # Se calcula la probabilidad
-                x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
-       
-         # Se muestra el resultado en la casilla correspondiente
-         prob=str('%3.2f'%(x*100))+' %'
-         resultado1=self._widgets.get_widget('resultado1Prob')
-         resultado1.set_text(prob)
-
-         # Se muestra el resultado completo en el textView
-         if dato1=='':
-             mostrarDato=gettext.gettext('P ( Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
-         elif dato2=='':
-             mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project ) = ')+str('%3.3f'%(x))+' ('+prob+')'
-         else:
-             mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
-         self.escribirProb(mostrarDato)
-         
+   def on_btnProbabilityReset_clicked(self, button):
+      self._widgets.get_widget('valor3Prob').set_text("")
+      self._widgets.get_widget('resultado2Prob').set_text("")
 
 #-----------------------------------------------------------
 # Acción usuario al activar el valor introducido en 
@@ -3387,7 +3342,7 @@ class PPCproject:
 #
 # Valor de retorno: -
 #-----------------------------------------------------------  
-   def on_valor3Prob_activate(self, entry):
+   def on_btnProbabilityCalculate_clicked(self, button):
          # Se extrae el valor de probabilidad de la interfaz
          valor3=self._widgets.get_widget('valor3Prob')   
          dato3=valor3.get_text()
@@ -3624,16 +3579,9 @@ class PPCproject:
       # Se muestran la media y desviación típica en la ventana de probabilidades
       widgetMedia=self._widgets.get_widget('mediaProb')
       widgetMedia.set_text(m)
-      widgetMedia.set_sensitive(False)
       widgetdTipica=self._widgets.get_widget('dTipicaProb')
       widgetdTipica.set_text(dt)
-      widgetdTipica.set_sensitive(False)
 
-      # Se insensibilizan las casillas resultado
-      resultado1=self._widgets.get_widget('resultado1Prob')
-      resultado1.set_sensitive(False)
-      resultado2=self._widgets.get_widget('resultado2Prob')
-      resultado2.set_sensitive(False)
 
       # Se muestra la gráfica
       fig = Figure(figsize=(5,4), dpi=100)
