@@ -109,23 +109,28 @@ class PPCproject:
          self.checkColum[n] = self.interface.checkColum[n]
 
       self._widgets.get_widget('mnSalirPantComp').hide()
-      self.disableProjectControls()
+      self.enableProjectControls(False)
 
-   def enableProjectControls(self):
-      self._widgets.get_widget('mnGuardar').set_sensitive(True)
-      self._widgets.get_widget('mnGuardarComo').set_sensitive(True)
-      self._widgets.get_widget('mnCerrar').set_sensitive(True)
-      self._widgets.get_widget('mnAccion').set_sensitive(True)
-      self._widgets.get_widget('tbGuardar').set_sensitive(True)
-      self._widgets.get_widget('tbCerrar').set_sensitive(True)
+   def enableProjectControls(self, value):
+      self._widgets.get_widget('mnGuardar').set_sensitive(value)
+      self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
+      self._widgets.get_widget('mnCerrar').set_sensitive(value)
+      self._widgets.get_widget('mnAccion').set_sensitive(value)
+      self._widgets.get_widget('tbGuardar').set_sensitive(value)
+      self._widgets.get_widget('tbCerrar').set_sensitive(value)
+      if (not value):
+         self._widgets.get_widget('stbStatus').pop(0)
+         self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
 
-   def disableProjectControls(self):
-      self._widgets.get_widget('mnGuardar').set_sensitive(False)
-      self._widgets.get_widget('mnGuardarComo').set_sensitive(False)
-      self._widgets.get_widget('mnCerrar').set_sensitive(False)
-      self._widgets.get_widget('mnAccion').set_sensitive(False)
-      self._widgets.get_widget('tbGuardar').set_sensitive(False)
-      self._widgets.get_widget('tbCerrar').set_sensitive(False)
+   def set_modified(self, value):
+      self._widgets.get_widget('mnGuardar').set_sensitive(value)
+      self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
+      self._widgets.get_widget('tbGuardar').set_sensitive(value)
+      self._widgets.get_widget('stbStatus').pop(0)
+      if value:
+         self._widgets.get_widget('stbStatus').push(0, gettext.gettext("Project modified"))
+      else:
+         self._widgets.get_widget('stbStatus').push(0, gettext.gettext("Project without changes"))
 
    def columna_press(self, columna, menu): 
       """
@@ -199,6 +204,7 @@ class PPCproject:
        Valor de retorno: -
       """
       self.modified=1   # Controlamos que el proyecto ha cambiado
+      self.set_modified(True)
       cont=int(path)+1
       #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
         
@@ -2709,6 +2715,8 @@ class PPCproject:
             self.directorio=dialogoGuardar.get_filename()
             self.saveProject(self.directorio)
             self.asignarTitulo(self.directorio)
+            self.set_modified(False)
+            self.modified = 0
 
          dialogoGuardar.destroy() 
       else:
@@ -2811,6 +2819,7 @@ class PPCproject:
          self.modeloAR.clear()
          self.asignacion=[]
          self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
+         self.modified = 0
 
       return close
 
@@ -2903,12 +2912,14 @@ class PPCproject:
    def on_New_activate(self, item):
       """ User ask for new file (from menu or toolbar) """
       self.introduccionDatos()
-      self.enableProjectControls()
+      self.enableProjectControls(True)
+      self.set_modified(True)
+      self.modified = 1
 
    def on_Open_activate(self, item):
       """ User ask for open file (from menu or toolbar) """
       if self.abrir():
-         self.enableProjectControls()
+         self.enableProjectControls(True)
 
    def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
@@ -2921,6 +2932,7 @@ class PPCproject:
             self.errorActividadesRepetidas(actividadesRepetidas) 
 
         self.modified=0
+        self.set_modified(False)
 
    def on_mnGuardarComo_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas
@@ -2934,10 +2946,11 @@ class PPCproject:
             self.errorActividadesRepetidas(actividadesRepetidas) 
        
         self.modified=0
+        self.set_modified(False)
 
    def on_Close_activate(self, menu_item):
-      self.closeProject()
-      self.disableProjectControls()
+      if self.closeProject():
+         self.enableProjectControls(False)
 
    def on_Exit_activate(self, *args):
       closed = self.closeProject()
