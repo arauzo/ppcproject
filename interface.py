@@ -49,6 +49,8 @@ class Interface:
       self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
       self.gantt.show_all()
       self.crearTreeViews()
+      # Setting status message
+      self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
       # Setting unsensitive GTKEntries
       self._widgets.get_widget('dTipicaSim').set_sensitive(False)
       self._widgets.get_widget('mediaSim').set_sensitive(False)
