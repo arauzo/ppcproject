@@ -2920,6 +2920,8 @@ class PPCproject:
       """ User ask for open file (from menu or toolbar) """
       if self.abrir():
          self.enableProjectControls(True)
+         self.set_modified(False)
+         self.modified = 0
 
    def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
