@@ -37,11 +37,16 @@ class GTKgantt(gtk.VBox):
       self.scrolled_window.add(self.diagram)
       self.set_size_request(100,100)
       self.diagram.connect("gantt-width-changed", self.header.set_width)
+      self.set_row_height(25)
+      self.set_header_height(28)
    def set_vadjustment(self, adjustment):
       self.diagram.set_vadjustment(adjustment)
    def set_row_height(self,num):
       self.diagram.set_row_height(num)
       self.header.set_cell_width(num)
+      self.set_size_request(num, num)
+   def set_header_height(self,num):
+      self.header.set_height(num)
       self.set_size_request(num, num)
    def update(self):
       self.diagram.queue_draw()
@@ -80,16 +85,21 @@ class GanttHeader(gtk.Layout):
       gtk.Layout.__init__(self)
       self.connect("expose-event", self.expose)
       self.width = self.cell_width = 25
-      self.set_size_request(self.cell_width, self.cell_width + 2)
+      self.height = self.cell_width + 3
+      self.set_size_request(self.cell_width, self.height)
 
    def set_cell_width(self,num):
       self.cell_width = num
-      self.set_size_request(self.width, num + 2)
+      self.set_size_request(self.width, self.height)
 
    def set_width(self, widget, width):
       if width != self.width:
          self.width = width
-         self.set_size_request(width, self.cell_width + 2)
+         self.set_size_request(width, self.height)
+
+   def set_height(self, num):
+      self.height = num
+      self.set_size_request(self.width, self.height)
 
    def expose (self,widget,event):
       #Creating Cairo drawing context
@@ -104,18 +114,16 @@ class GanttHeader(gtk.Layout):
       return False
 
    def draw(self, context):
-      #Obtaining needed width and height
-      height = self.cell_width + 2
       #Setting Layout size
-      self.set_size(self.width + self.cell_width, height)
+      self.set_size(self.width + self.cell_width, self.height)
       #Drawing squares with numbers inside
+      context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
       for i in range(0, max(self.available_width, self.width) / self.cell_width + 1):
-         context.rectangle(i * self.cell_width + 0.5, 0.5, self.cell_width, self.cell_width+1)
+         context.rectangle(i * self.cell_width + 0.5, 0.5, self.cell_width, self.height - 1)
          x_bearing, y_bearing, txt_width, txt_height = context.text_extents(str(i+1))[:4]
          context.move_to((i + 0.5) * self.cell_width + 0.5 - txt_width / 2 - x_bearing, self.cell_width / 2 - txt_height / 2 - y_bearing + 0.5)
          context.show_text(str(i+1))
       context.set_line_width(1);
-      context.set_source_rgb(0, 0, 0)
       context.stroke()
 
 class Diagram_graph():
@@ -233,14 +241,14 @@ class GanttDrawing(gtk.Layout):
          context.move_to(i * self.row_height + 0.5,-0.5)
          context.line_to(i * self.row_height + 0.5, max(self.available_height, height, self.get_vadjustment().upper) + 0.5)
       context.set_line_width(1)
-      context.set_source_rgb(0.7, 0.7, 0.7)
+      context.set_source_color(self.get_style().fg[gtk.STATE_INSENSITIVE])
       context.stroke()
       for activity in self.graph.activities:
          context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.row_height + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.slacks[activity] * self.row_height , self.row_height - 1 )
       context.set_line_width(1)
-      context.set_source_rgba(0.7, 0.1, 0.1,0.6)
+      context.set_source_color(self.get_style().bg[gtk.STATE_ACTIVE])
       context.fill_preserve()
-      context.set_source_rgb(0, 0, 0)
+      context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
       context.stroke()
       for activity in self.graph.activities:
          context.rectangle(self.graph.start_time[activity]* self.row_height + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.durations[activity] * self.row_height , self.row_height - 1 )
@@ -248,14 +256,14 @@ class GanttDrawing(gtk.Layout):
          context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.row_height + 0.5 + x_bearing, (self.graph.activities.index(activity)+ 1) * self.row_height - 0.5 + y_bearing + 0.5)
          context.show_text(self.graph.comments[activity])
       context.set_line_width(1)
-      context.set_source_rgba(0.7, 0.8, 0.1,0.6)
+      context.set_source_color(self.get_style().bg[gtk.STATE_SELECTED])
       context.fill_preserve()
-      context.set_source_rgb(0, 0, 0)
+      context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
       context.stroke()
       for activity in self.graph.activities:
          x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.row_height + 0.5
          y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 0.5
-         context.set_source_rgb(0, 0, 0)
+         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
          for children in self.graph.prelations[activity]:
             try:
                id_actividad2 = self.graph.activities.index(children)
