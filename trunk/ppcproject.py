@@ -54,6 +54,9 @@ import graph
 import interface
 from PSPLIB import leerPSPLIB
 from zaderenko import mZad, early, last
+from simAnnealing import simulatedAnnealing
+from simAnnealing import resourcesAvailability
+from simAnnealing import resourcesPerActivities
 
 
 class PPCproject:
@@ -82,6 +85,7 @@ class PPCproject:
       self.vHolguras=self._widgets.get_widget('wndHolguras')
       self.vProbabilidades=self._widgets.get_widget('wndProbabilidades')
       self.vSimulacion=self._widgets.get_widget('wndSimulacion')
+      self.wndSimAnnealing=self._widgets.get_widget('wndSimAnnealing')
       self.vRecursos=self._widgets.get_widget('wndRecursos')
       self.vAsignarRec=self._widgets.get_widget('wndAsignarRec')
       self.vCaminos=self._widgets.get_widget('wndCaminos')
@@ -2024,7 +2028,7 @@ class PPCproject:
             self.vAsignarRec.show()
 
 
-
+         
 #*******************************************************************************************************************
                 #++++++++++++++++++++++++++++++++++++++++++++++++++#
       #              SIMULACIÓN                      #
@@ -3081,7 +3085,91 @@ class PPCproject:
    def on_mnCalcularCaminos_activate(self, menu_item):
       """ User ask for paths in project """
       self.calcularCaminos()
+   
+   
+   # XXX XXX XXX XXX --- SimAnnealing
+   
+   
+   def on_wndSimAnnealing_delete_event(self, window, event):
+      """ 
+      User action to close the window
+      Parameters:
+                  window
+                  event
+      Returns: -
+      """
+      
+      window.hide()
+      return True
+   
+   def on_btnSimAnnealingCalculate_clicked(self, menu_item):
+      
+      # Add all activities in rest dictionary
+      rest={}
+      for a in self.actividad:
+         if a[6] == '':
+            self.dialogoError(gettext.gettext('You must introduce the average duration.'))
+            return False
+         rest[a[1]] = [a[6]]
+         
+      asignation = resourcesPerActivities(self.asignacion)
+      resources = resourcesAvailability(self.recurso)
+      successors = self.tablaSucesoras(self.actividad)
+      activities = self.alteredLast(rest)
+      
+      balRadioButton = self._widgets.get_widget('rbBalance')
+      alloRadioButton = self._widgets.get_widget('rbAllocation')
+      if balRadioButton.get_active():
+         balance = 1
+      else:
+         balance = 0
+      
+      entryTempSA = self._widgets.get_widget('entryTempSA')   
+      temp = entryTempSA.get_text()
+      entryMinTempSA = self._widgets.get_widget('entryMinTempSA')   
+      minTemp = entryMinTempSA.get_text()
+      entryKSA = self._widgets.get_widget('entryKSA')   
+      k = entryKSA.get_text()
+      entryNumItSA = self._widgets.get_widget('entryNumItSA')   
+      numIter = entryNumItSA.get_text()
+      
+      simulatedAnnealing(asignation,resources,successors,activities,balance,float(temp),float(minTemp),float(k),float(numIter)) 
+   
+   # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
+   def alteredLast(self,rest):
+      # Se crea el grafo Pert y se renumera
+      grafoRenumerado = self.pertFinal()
 
+      # Nuevos nodos
+      nodosN = []
+      for n in range(len(grafoRenumerado.graph)):
+         nodosN.append(n+1)
+
+      # Se calcula la matriz de Zaderenko
+      matrizZad = mZad(self.actividad,grafoRenumerado.activities, nodosN, 1, []) 
+
+      # Se calculan los tiempos early y last
+      tearly = early(nodosN, matrizZad)      
+      tlast = last(nodosN, tearly, matrizZad)
+      
+      entrySlack = self._widgets.get_widget('entrySlackSA')   
+      slack = entrySlack.get_text()
+    
+      # Calculate altered last time
+      for a in grafoRenumerado.activities:
+         if grafoRenumerado.activities[a][0] != 'dummy':
+            rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + int(slack) - float(rest[grafoRenumerado.activities[a][0]][0])]
+      
+      return rest
+        
+        
+   def on_mnCOMSOAL_activate(self, menu_item):
+      """User action to show SimAnnealing window"""
+      
+      self.wndSimAnnealing.show()
+      
+
+#XXX XXX XXX XXX
 
 # Help menu actions
 
@@ -3652,8 +3740,7 @@ class PPCproject:
       self.limpiarVentanaSim()
       ventana.hide()
       return True
-
-
+      
 # --- Resources
 
    def on_btAceptarRec_clicked(self, boton):
@@ -3691,7 +3778,8 @@ class PPCproject:
       Valor de retorno: -
       """
       self.asignarRecursos()
- 
+
+      
    def on_wndRecursos_delete_event(self, ventana, evento):
       """
       Acción usuario para cerrar la ventana de recursos
