@@ -3087,7 +3087,7 @@ class PPCproject:
       self.calcularCaminos()
    
    
-   # XXX XXX XXX XXX --- SimAnnealing
+    # XXX XXX XXX XXX --- SimAnnealing
    
    
    def on_wndSimAnnealing_delete_event(self, window, event):
