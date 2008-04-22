@@ -2399,6 +2399,7 @@ class PPCproject:
          dialogoGuardar.destroy() 
       else:
          self.saveProject(self.directorio)
+         self.modified = 0
          
    def saveProject(self, nombre):
       """
