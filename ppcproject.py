@@ -33,11 +33,12 @@ import GTKgantt
 
 import scipy.stats
 from matplotlib import rcParams
-rcParams['text.fontname'] = 'cmr10'
+rcParams['font.family'] = 'monospace'
 from pylab import *
 from matplotlib.axes import Subplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
+import simulation
 
 # Internationalization
 import gettext
@@ -2055,7 +2056,7 @@ class PPCproject:
                 if distribucion==gettext.gettext('Uniform'):
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
                        if self.actividad[m][3]!=self.actividad[m][5]:
-                             valor=self.generaAleatoriosUniforme(float(self.actividad[m][3]), float(self.actividad[m][5]))
+                             valor=simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), float(self.actividad[m][5]))
                        else: # Si d.optimista=d.pesimista
                           valor=self.actividad[m][3]
                     else:
@@ -2066,10 +2067,10 @@ class PPCproject:
                 elif distribucion==gettext.gettext('Beta'):
                      if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
                         if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
-                             mean, stdev, shape_a, shape_b=self.datosBeta(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
+                             mean, stdev, shape_a, shape_b=simulation.datosBeta(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
                         #print "Mean=", mean, "Stdev=", stdev
                         #print "shape_a=", shape_a, "shape_b=", shape_b
-                             valor=self.generaAleatoriosBeta(float(self.actividad[m][3]), float(self.actividad[m][5]), float(shape_a), float(shape_b))
+                             valor=simulation.generaAleatoriosBeta(float(self.actividad[m][3]), float(self.actividad[m][5]), float(shape_a), float(shape_b))
                         else:  # Si d.optimista=d.pesimista=d.mas probable
                            valor=self.actividad[m][3]
                      else:
@@ -2080,7 +2081,7 @@ class PPCproject:
                 elif distribucion==gettext.gettext('Triangular'):
                     if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
                        if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
-                             valor=self.generaAleatoriosTriangular(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
+                             valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), float(self.actividad[m][4]), float(self.actividad[m][5]))
                        else:   # Si d.optimista=d.pesimista=d.mas probable
                           valor=self.actividad[m][3]
                     else:
@@ -2090,7 +2091,7 @@ class PPCproject:
                 else:
                     if self.actividad[m][6]!='' and self.actividad[m][7]!='':
                        if float(self.actividad[m][7])!=0.00:
-                             valor=self.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
+                             valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
                        else:   # Si d.tipica=0
                           valor=self.actividad[m][6]
                     else:
@@ -2101,232 +2102,6 @@ class PPCproject:
             simulacion.append(sim)
 
         return simulacion
- 
-
-#***************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución uniforme
-#
-# Parámetros: op (duración optimista)
-#             pes (duración pesimista)
-#
-# Valor de retorno: unif (número aleatorio)
-#----------------------------------------------------------- 
-
-   def generaAleatoriosUniforme(self, op, pes):
-        #print "\n *** Uniform(",op,pes,")"
-        unif=random.uniform(op,pes)
-        return unif
-
-
-#******************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución beta
-#
-# Parámetros: op (duración optimista)
-#             pes (duración pesimista)
-#             shape_a (shape factor)
-#             shape_b (shapa factor)
-#
-# Valor de retorno: beta (número aleatorio)
-#----------------------------------------------------------- 
-
-   def generaAleatoriosBeta(self, op, pes, shape_a, shape_b):
-        #mean, stdev, shape_a, shape_b=self.datosBeta(op, mode, pes)
-   #print "Mean=", mean, "Stdev=", stdev
-   #print "shape_a=", shape_a, "shape_b=", shape_b
-   #for i in range(n):
-      beta=random.betavariate(shape_a,shape_b)*(pes-op) + op
-      return beta
-
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Obtención de datos necesarios para la generación de 
-#          números aleatorios para una distribución beta
-#
-# Parámetros: op (duración optimista)
-#             mode (duración más problable)
-#             pes (duración pesimista)
-#
-# Valor de retorno:  mean (duración media)
-#                    stdev (desviación tí­pica)
-#                    shape_a (shape factor)
-#                    shape_b (shape factor)
-#----------------------------------------------------------- 
-
-   def datosBeta(self, op, mode, pes):
-        #print "\n *** Beta(",op,mode,pes,")"
-      mean  = (op + 4*mode + pes) / 6.0
-      stdev = (pes - op) / 6.0
-      shape_a = ((mean - op) / (pes-op)) * ((mean-op)*(pes-mean)/stdev**2 - 1)
-      shape_b = ((pes-mean)/(mean-op)) * shape_a
-
-      return mean, stdev, shape_a, shape_b
-
-
-#******************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución triangular
-#
-# Parámetros: op (duración optimista)
-#             mode (duración más problable)
-#             pes (duración pesimista)
-#
-# Valor de retorno: triang (número aleatorio)
-#----------------------------------------------------------- 
-   
-   def generaAleatoriosTriangular(self, op, mode, pes):
-      #print "\n *** Triangle(",op,mode,pes,")"
-      """
-      Generates a random number in a triangular distribution in [op, pes]
-      with mode
-      """
-      unif = random.random()  #[0,1]
-        
-      if unif <= (mode-op) / (pes-op):
-         aux = unif * (pes-op) * (mode-op)
-         triang = op + math.sqrt(aux)
-      else:
-         aux = (pes-op) * (pes-mode) * (1-unif)
-         triang = pes - math.sqrt(aux)
-
-      #triang=self.trianglevariate(op,mode,pes) Función no usada
-      return triang
-
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución normal
-#
-# Parámetros: mean (duración media)
-#             stdev (desviación tí­pica)
-#
-# Valor de retorno: norm (número aleatorio)
-#----------------------------------------------------------- 
-
-   def generaAleatoriosNormal(self, mean, stdev):
-         #print "\n *** Normal(",mean,stdev,")"
-      norm=random.gauss(mean,stdev)
-      return norm
-
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Cálculo de las F.Absolutas y F.Relativas 
-#
-# Parámetros: dMax (duración máxima)
-#             dMin (duración mímima)
-#             itTotales (iteraciones totales)
-#             N (número de intervalos)
-#
-# Valor de retorno: Fa (frecuencias absolutas)
-#                   Fr (frecuencias relativas)
-#----------------------------------------------------------- 
-
-   def calcularFrecuencias(self, dMax, dMin, itTotales, N):
-        Fa=[]
-        Fr=[]
-        # Se inicializa el vector de F.Absolutas
-        for n in range(N):
-           Fa.append(0)
-
-        # Se calculan las F.Absolutas
-        for d in self.duraciones:
-            x=self.posicion(d, dMax, dMin, N)
-            Fa[x]+=1
-        #print Fa, 'Fa'
-
-        # Se calculan las F.Relativas
-        for a in Fa:
-           r='%2.2f'%(float(a)/itTotales)
-           Fr.append(r)
-        #print Fr, 'Fr'
-
-        return Fa, Fr
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Cálculo de la posición de una duración dentro del 
-#          vector de F.Absolutas
-#
-# Parámetros: d (duración)
-#             dMax (duración máxima)
-#             dMin (duración mí­nima)
-#             N (número de intervalos)
-#
-# Valor de retorno: x (posición)
-#----------------------------------------------------------- 
-
-   def posicion(self, d, dMax, dMin, N):
-        x = int ( ((d-dMin)/(dMax-dMin)) * N )
-        return x
-
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Cálculo de la duración correspondiente a una posición 
-#          (inversa de la Función anterior)
-#
-# Parámetros: x (posición)
-#             dMax (duración máxima)
-#             dMin (duración mí­nima)
-#             N (número de intervalos)
-#
-# Valor de retorno: d (duración)
-#----------------------------------------------------------- 
-
-   def duracion(self, x, dMax, dMin, N):
-        d = ( x*(dMax-dMin)/N ) + dMin
-        return d
-
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Prepara la tabla de frecuencias para ser mostrada en  
-#          la interfaz
-#
-# Parámetros: intervalos (intervalos)
-#             Fa (lista de frecuencias absolutas)
-#             Fr (lista de frecuencias relativas)
-#
-# Valor de retorno: - 
-#-----------------------------------------------------------
-
-   def mostrarFrecuencias(self, intervalos, Fa, Fr):
-        lineas=''
-        l='___________________'
-        lineas+=gettext.gettext('Durations')
-        lineas+='\t'
-        for n in intervalos:
-          lineas+=n
-          lineas+='\t'+'\t'
-        lineas+='\n'
-        lineas+=l*len(intervalos)
-        lineas+='\n'
-        lineas+='\n'
-        lineas+=gettext.gettext('Absolute Freq.')
-        lineas+='\t'
-        for a in Fa:
-           lineas+='\t'
-           lineas+=str(a)
-           lineas+='\t'+'\t'+'\t'
-        lineas+='\n'
-        lineas+='\n'
-        lineas+=gettext.gettext('Relative Freq.')
-        lineas+='\t'
-        for r in Fr:
-           lineas+='\t'
-           lineas+=r
-           lineas+='\t'+'\t'+'\t'
-       
-        widget=self._widgets.get_widget('vistaFrecuencias')
-        self.mostrarTextView(widget, lineas)
-
 
 #*******************************************************************
 #-----------------------------------------------------------
@@ -2387,53 +2162,6 @@ class PPCproject:
       for c in self.criticidad:
          n=self.criticidad[c]
          self.modeloC.append([n, str('%3.2f'%((float(n)/itTotales)*100))+'%', c])
-
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Prepara los datos de la simulación para ser mostrados
-#          en formato CSV
-#
-# Parámetros: duraciones (lista con las duraciones de la simulación)
-#             iteraciones (número de iteraciones totales)
-#             media (duración media)
-#             dTipica (desviación tí­pica)
-#             modeloCriticidad (lista de caminos e í­ndice de criticidad)
-#
-# Valor de retorno: s (texto a mostrar en formato CSV) 
-#-----------------------------------------------------------
-
-   def datosSimulacion2csv(self, duraciones, iteraciones, media, dTipica, modeloCriticidad): 
-        s=''
-        s+=gettext.gettext('SIMULATION DATA')
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('N, I.CRITICIDAD, PATH')
-        s+='\n'
-        for n in range(len(modeloCriticidad)):
-           s+= modeloCriticidad[n][0]+','+ modeloCriticidad[n][1]+','+'"'+modeloCriticidad[n][2]+'"'
-           s+='\n'
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('AVERAGE, TYPICAL DEV.')
-        s+='\n'
-        s+= media+','+dTipica
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('TOTAL SIMULATIONS')
-        s+='\n'
-        s+= iteraciones
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('DURATIONS')
-        s+='\n'
-        for d in duraciones:
-           s+= str(d)
-           s+='\n'
-
-        #print s
-        return s        
- 
 
 #********************************************************************
 #-----------------------------------------------------------
@@ -3616,13 +3344,13 @@ class PPCproject:
          #print dMax, 'max', dMin, 'min'
          if int(it)==int(itTotales):
             for n in range(N):
-               valor='['+str('%5.2f'%(self.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(self.duracion((n+1), dMax, dMin, N)))+'['       
+               valor='['+str('%5.2f'%(simulation.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(simulation.duracion((n+1), dMax, dMin, N)))+'['       
                interv.append(valor)
          if self.intervalos==[]:
             self.intervalos=interv
 
          # Se calculan las frecuencias
-         self.Fa, Fr=self.calcularFrecuencias(dMax, dMin, itTotales, N)
+         self.Fa, Fr=simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
 
          # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
          self.modeloF.clear()
@@ -3721,7 +3449,7 @@ class PPCproject:
       iteraciones=totales.get_text()
 
       # Se pasan los datos de la simulación a formato CSV
-      simulacionCsv = self.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
+      simulacionCsv = simulation.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
       
       # Se muestra el diálogo para salvar el archivo
       self.guardarCsv(simulacionCsv)
