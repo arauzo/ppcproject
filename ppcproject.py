@@ -294,6 +294,8 @@ class PPCproject:
          if self.modelo[path][n]=='':
                if n==2:
                   self.actividad[int(path)][2]=[]
+                  self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
+                  self.gantt.update()
                else:
                   self.actividad[int(path)][n]=self.modelo[path][n]
          else: # Si hay datos introducidos
@@ -320,7 +322,8 @@ class PPCproject:
                            dialogo.destroy()
 
                            self.modelo[path][6]=self.actividad[int(path)][6]=''
-
+                     self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
+                     self.gantt.update()
                            
                # Si se introduce la media, se elimina el resto de duraciones        
                elif n==6:   
@@ -328,7 +331,8 @@ class PPCproject:
                   for i in range(3, 6):
                      self.modelo[path][i]=''
                      self.actividad[int(path)][i]=''
-
+                  self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
+                  self.gantt.update()
 
                # Si se modifica el tipo de distribución, se actualizan la media y la desviación tí­pica
                elif n==9:  
@@ -338,7 +342,8 @@ class PPCproject:
                      b=float(self.modelo[path][5]) #d.pesimista
                      m=float(self.modelo[path][4]) #d.más probable
                      self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
-                  
+                     self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
+                     self.gantt.update()                  
 
                # Se controla el valor introducido en las siguientes 
                elif n==2:  
@@ -347,6 +352,8 @@ class PPCproject:
                         self.actividad[int(path)][2]=[]
                   else: 
                         self.actividad[int(path)][2] = self.texto2Lista(self.modelo[path][2])
+                        self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
+                        self.gantt.update()
 
 
                # Si no es ningún caso de los anteriores, se actualiza normalmente
@@ -443,8 +450,9 @@ class PPCproject:
       for i in range(len(self.actividad)):
          if self.actividad[i][2]==['']:
                self.actividad[i][2]=[]   
+         self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]))
 
-      
+      self.gantt.update()      
       # Se actualizan la interfaz y la lista de los recursos
       self.modeloR.clear()
       self.recurso=tabla[1]   
@@ -507,6 +515,7 @@ class PPCproject:
          fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
          self.actividad.append(fila)
          self.modelo.append(fila1)
+         self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
          cont+=1
    
 
@@ -692,6 +701,7 @@ class PPCproject:
                  
                  self.actividad.append(fila)
                  self.modelo.append(fila1)
+                 self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
                  # Se actualiza la columna de siguientes en la interfaz
                  self.actualizarColSigPSPLIB(prelaciones)
                  
@@ -1539,70 +1549,6 @@ class PPCproject:
         self.mostrarCaminosZad(self.modeloZ, criticos, informacionCaminos)
         self.vZaderenko.hide()
         self.vZaderenko.show()
-
-#***************************************************************
-#-----------------------------------------------------------
-# Prepara y muestra en la interfaz la matriz de Zaderenko y  
-#          los tiempos early y last 
-#
-# Parámetros: early (lista con los tiempos early)
-#             last (lista con los tiempos last)
-#             nodos (lista de nodos)
-#             mZad (matriz de Zaderenko)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
-
-   def zaderenko(self, early, last, nodos, mZad):
-        # Se prepara la matriz de Zaderenko y los tiempos early y last para mostrarlos en la interfaz
-        linea='______________'
-        filas=''
-        filas+='Early'
-        filas+='\t'
-        filas+='\t'
-        for n in nodos:
-            filas+='\t'
-            filas+='       '+str(n)
-            filas+='\t'
-
-        filas+='\n'
-        filas+=linea*(len(nodos)+1)
-
-        for n in range(len(mZad)):
-            filas+='\n'
-            e='%5.2f'% (early[n])
-            filas+=str(e) 
-            filas+='\t'
-            filas+='\t'
-            filas+=str(nodos[n]) 
-            filas+='\t'       
-            for m in range(len(mZad)):
-                filas+='\t'
-                if mZad[n][m]!='':
-                   m=str('%3.2f'%(float(mZad[n][m])))
-                   filas+=str(m)
-                else:
-                   filas+=str(mZad[n][m])   
-                filas+='\t'+'\t'
-            filas+='\n'
-        filas+='\n'
-        filas+=linea*(len(nodos)+1)
-        filas+='\n'
-
-        filas+='\t' 
-        filas+='\t'
-        filas+='Last'
-        filas+='\t'
-        for n in range(len(last)):
-            filas+='\t'
-            l='%5.2f'% (last[n])
-            filas+='  '+str(l)
-            filas+='\t'
-
-        # Se muestran los datos anteriores en la interfaz
-        widget=self._widgets.get_widget('vistaZad')
-        self.mostrarTextView(widget ,filas)
-
 
 #******************************************************************************
 #-----------------------------------------------------------
@@ -2552,6 +2498,8 @@ class PPCproject:
          self.asignacion=[]
          self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
          self.modified = 0
+         self.gantt.clear()
+         self.gantt.update()
 
       return close
 
