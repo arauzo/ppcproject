@@ -1,22 +1,24 @@
 #!/usr/bin/env python
-"""
+# -*- coding: utf-8 -*-
 
-Interface:
-   -set_vadjustment(adjustment)
-   -set_row_height(num)
-   -update()
-   -add_activity(name, prelations, duration, start_time)
-   -rename_activity(old, new)
-   -set_activity_duration(activity, duration)
-   -set_activity_prelations(activity, prelations)
-   -set_activity_start_time(activity, time)
-   -set_activity_comment(activity, comment)
-   -set_activity_slack(activity, slack)
-   -remove_activity(activity)
-   -reorder(activities)
-   -clear()
+# Gantt diagram drawing GTK widget
+#-----------------------------------------------------------------------
+# PPC-PROJECT
+#   Multiplatform software tool for education and research in 
+#   project management
+#
+# Copyright 2007-8 Universidad de Córdoba
+# This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation, either version 3 of the License,
+#   or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
 import cairo
 import math
 import gtk
@@ -24,288 +26,662 @@ import gtk.gdk
 import gobject
 
 class GTKgantt(gtk.VBox):
-   def __init__(self):
-      gtk.VBox.__init__(self)
-      self.set_homogeneous(False)
-      self.header = GanttHeader()
-      self.diagram = GanttDrawing()
-      self.diagram.set_hadjustment(self.header.get_hadjustment())
-      self.scrolled_window = gtk.ScrolledWindow(self.diagram.get_hadjustment(), self.diagram.get_vadjustment())
-      self.pack_start(self.header, False, False, 0)
-      self.pack_start(self.scrolled_window, True, True, 0)
-      self.scrolled_window.set_policy(gtk.POLICY_ALWAYS,gtk.POLICY_AUTOMATIC)
-      self.scrolled_window.add(self.diagram)
-      self.set_size_request(100,100)
-      self.diagram.connect("gantt-width-changed", self.header.set_width)
-      self.set_row_height(25)
-      self.set_header_height(28)
-   def set_vadjustment(self, adjustment):
-      self.diagram.set_vadjustment(adjustment)
-   def set_row_height(self,num):
-      self.diagram.set_row_height(num)
-      self.header.set_cell_width(num)
-      self.set_size_request(num, num)
-   def set_header_height(self,num):
-      self.header.set_height(num)
-      self.set_size_request(num, num)
-   def update(self):
-      self.diagram.queue_draw()
-      self.header.queue_draw()
-   def add_activity(self, name, prelations, duration = 0, start_time = 0, slack = 0, comment = ""):
-      self.diagram.add_activity(name, prelations, duration, start_time, slack, comment)
-   def rename_activity(self,old,new):
-      if (old != new):
-         self.diagram.set_activity_name(old,new)
-   def set_activity_duration(self, activity, duration):
-      self.diagram.set_activity_duration(activity,duration)
-   def set_activity_prelations(self,activity,prelations):
-      self.diagram.set_activity_prelations(activity,prelations)
-   def set_activity_slack(self,activity,slack):
-      self.diagram.set_activity_slack(activity,slack)
-   def set_activity_comment(self,activity,comment):
-      self.diagram.set_activity_comment(activity,comment)
-   def set_activity_start_time(self,activity,time):
-      self.diagram.set_activity_start_time(activity,time)
-   def remove_activity(self, activity):
-      self.diagram.remove_activity(activity)
-   def reorder(self,activities):
-      self.diagram.reorder(activities)
-   def clear(self):
-      self.diagram.clear()
-      self.header.set_width(0)
-      self.update()
+    """
+    Class GTKgantt
+        Structure:
+            GTKgantt(gtk.VBox)
+                GanttHeader(gtk.Layout)
+                gtk.ScrolledWindow
+                    GanttDrawing
+
+        Properties:
+            header
+            diagram
+            scrolled_window
+
+        Interface:
+            set_vadjustment(adjustment)
+            set_policy(horizontal policy, vertical policy)
+            set_cell_width(width)
+            set_header_height(height)
+            set_row_height(height)
+            update()
+            add_activity(name, prelations, duration = 0 , start_time = 0, slack = 0, comment = "")
+            rename_activity(old name, new name)
+            set_activity_duration(activity, duration)
+            set_activity_prelations(activity, prelations)
+            set_activity_slack(activity, slack)
+            set_activity_start_time(activity, time)
+            set_activity_comment(activity, comment)
+            set_activities_color(color)
+            set_slack_color(color)
+            set_thin_slack(value)
+            remove_activity(activity)
+            reorder(activities)
+            clear()
+    """
+    def __init__(self):
+        gtk.VBox.__init__(self)
+        #Creating objects
+        self.header = GanttHeader()
+        self.diagram = GanttDrawing()
+        #Setting adjustments
+        self.diagram.set_hadjustment(self.header.get_hadjustment())
+        self.scrolled_window = gtk.ScrolledWindow(self.diagram.get_hadjustment(), self.diagram.get_vadjustment())
+        #Packing
+        self.set_homogeneous(False)
+        self.pack_start(self.header, False, False, 0)
+        self.pack_start(self.scrolled_window, True, True, 0)
+        self.scrolled_window.add(self.diagram)
+        #Setting scrollbars policy
+        self.scrolled_window.set_policy(gtk.POLICY_ALWAYS,gtk.POLICY_AUTOMATIC)
+        #Setting minimum size
+        self.set_size_request(100,100)
+        #Connecting signals
+        self.diagram.connect("gantt-width-changed", self.header.set_width)
+    def set_vadjustment(self, adjustment):
+        """
+        Set vertical adjustment to "adjustment"
+        
+        adjustment: gtk.Adjustment to be set.
+        """
+        self.diagram.set_vadjustment(adjustment)
+    def set_policy(self, hpol, vpol):
+        """
+        Set scrollbars policy
+        
+        hpol: horizontal policy (gtk.POLICY_ALWAYS, gtk.POLICY_AUTOMATIC or gtk.POLICY_NEVER)
+        vpol: vertical policy (gtk.POLICY_ALWAYS, gtk.POLICY_AUTOMATIC or gtk.POLICY_NEVER)
+        """
+        self.scrolled_window.set_policy(hpol , vpol)
+    def set_cell_width(self, num):
+        """
+        Set cell width
+        
+        num: width (pixels)
+        """
+        self.header.set_cell_width(num)
+        self.diagram.set_cell_width(num)
+    def set_row_height(self,num):
+        """
+        Set row height
+        
+        num: height (pixels)
+        """
+        self.diagram.set_row_height(num)
+    def set_header_height(self,num):
+        """
+        Set header height
+        
+        num: height (pixels)
+        """
+        self.header.set_height(num)
+    def update(self):
+        """
+        Redraw Gantt diagram.
+        
+        """
+        self.diagram.queue_draw()
+        self.header.queue_draw()
+    def add_activity(self, name, prelations=[], duration = 0, start_time = 0, slack = 0, comment = ""):
+        """
+        Add an activity to the diagram
+        
+        name: Activity name (string)
+        prelations: List of strings containing activity names.
+        duration: duration of the activity measured in units of time.
+        start_time: unit of time when the activity start.
+        slack: slack measured in units of time.
+        comment: String that will be shown to the right of the activity (string).
+        """
+        self.diagram.add_activity(name, prelations, duration, start_time, slack, comment)
+    def rename_activity(self,old,new):
+        """
+        Changes the name of an activity.
+
+        old: old name (string)
+        new: new name (string)
+        """
+        if (old != new):
+            self.diagram.set_activity_name(old,new)
+    def set_activity_duration(self, activity, duration):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        duration: duration of the activity measured in units of time.
+        """
+        self.diagram.set_activity_duration(activity,duration)
+    def set_activity_prelations(self,activity,prelations):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        prelations: List of strings containing activity names.
+        """
+        self.diagram.set_activity_prelations(activity,prelations)
+    def set_activity_slack(self,activity,slack):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        slack: slack measured in units of time
+        """
+        self.diagram.set_activity_slack(activity,slack)
+    def set_activity_comment(self,activity,comment):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        comment: String that will be shown to the right of the activity (string)
+        """
+        self.diagram.set_activity_comment(activity,comment)
+    def set_activity_start_time(self,activity,time):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        time: unit of time when the activity start.
+        """
+        self.diagram.set_activity_start_time(activity,time)
+    def set_activities_color(self, color):
+        """
+        Change the color of the activities rectangles
+
+        color: new color (gtk.gdk.Color)
+        """
+        self.diagram.set_activities_color(color)
+    def set_slack_color(self, color):
+        """
+        Change the color of the slacks rectangles
+
+        color: new color (gtk.gdk.Color)
+        """
+        self.diagram.set_slack_color(color)
+    def set_thin_slack(self, value):
+        """
+        Set if the slacks rectangles will be thinner than the activities ones
+
+        value (True or False)
+        """
+        self.diagram.set_thin_slack(value)
+    def remove_activity(self, activity):
+        """
+        Removes an activity from the diagram.
+
+        activity: name of the activity (string)
+        """
+        self.diagram.remove_activity(activity)
+    def reorder(self,activities):
+        """
+        change the order of the activities
+        
+        activities: list of strings containing activity names.
+        """
+        self.diagram.reorder(activities)
+    def clear(self):
+        """
+        Clear all the activities information
+        """
+        self.diagram.clear()
+        self.header.set_width(None, 0)
 
 class GanttHeader(gtk.Layout):
-   """
-   Properties:
-      -Project Duration.
-      -Cell width.
-   """
-   def __init__(self):
-      gtk.Layout.__init__(self)
-      self.connect("expose-event", self.expose)
-      self.width = self.cell_width = 25
-      self.height = self.cell_width + 3
-      self.set_size_request(self.cell_width, self.height)
+    """    
+    Class GanttHeader
 
-   def set_cell_width(self,num):
-      self.cell_width = num
-      self.set_size_request(self.width, self.height)
+        Properties:
+            width
+            cell_width
+            height
+            context
+            available_width
 
-   def set_width(self, widget, width):
-      if width != self.width:
-         self.width = width
-         self.set_size_request(width, self.height)
+        Interface:
+            set_cell_width(width)
+            set_width(width)
+            set_height(height)
+            expose(widget,event)
+            draw(context)
+    """
+    def __init__(self):
+        gtk.Layout.__init__(self)
+        #Initialising values
+        self.width = self.cell_width = 25
+        self.height = 28
+        #Connecting signals
+        self.connect("expose-event", self.expose)
+        #Setting size request
+        self.set_size_request(self.width, self.height)
+    def set_cell_width(self,num):
+        """
+        Set cell width
+        
+        num: width (pixels)
+        """
+        self.cell_width = num
+    def set_width(self, widget, width):
+        """
+        Set header width.
+        
+        widget
+        width: width (pixels)
+        """
+        self.width = width
+        self.set_size_request(width, self.height)
+    def set_height(self, num):
+        """
+        Set header height
+        
+        num: height (pixels)
+        """
+        self.height = num
+        self.set_size_request(self.width, self.height)
+    def expose (self,widget,event):
+        """
+        Function called when the widget needs to be drawn
+        
+        widget:
+        event:
 
-   def set_height(self, num):
-      self.height = num
-      self.set_size_request(self.width, self.height)
+        Returns: False
+        """
+        #Creating Cairo drawing context
+        self.context = self.bin_window.cairo_create()
+        #Setting context size to available size
+        self.context.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
+        self.context.clip()
+        #Obtaining available width
+        self.available_width = event.area.width
+        #Drawing
+        self.draw(self.context)
+        return False
+    def draw(self, context):
+        """
+        Draw the widget
 
-   def expose (self,widget,event):
-      #Creating Cairo drawing context
-      self.context = self.bin_window.cairo_create()
-      #Setting context size to available size
-      self.context.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
-      self.context.clip()
-      #Obtaining available width
-      self.available_width = event.area.width
-      #Drawing
-      self.draw(self.context)
-      return False
-
-   def draw(self, context):
-      #Setting Layout size
-      self.set_size(self.width + self.cell_width, self.height)
-      #Drawing squares with numbers inside
-      context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-      for i in range(0, max(self.available_width, self.width) / self.cell_width + 1):
-         context.rectangle(i * self.cell_width + 0.5, 0.5, self.cell_width, self.height - 1)
-         x_bearing, y_bearing, txt_width, txt_height = context.text_extents(str(i+1))[:4]
-         context.move_to((i + 0.5) * self.cell_width + 0.5 - txt_width / 2 - x_bearing, self.cell_width / 2 - txt_height / 2 - y_bearing + 0.5)
-         context.show_text(str(i+1))
-      context.set_line_width(1);
-      context.stroke()
+        context: Cairo context (gtk.gdk.CairoContext)
+        """
+        #Setting Layout size
+        self.set_size(self.width + self.cell_width, self.height) #An extra cell is needed in case the diagram vertical scrollbar is visible
+        #Drawing cells with numbers inside
+        context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+        for i in range(0, max(self.available_width, self.width) / self.cell_width + 1):
+            context.rectangle(i * self.cell_width + 0.5, 0.5, self.cell_width, self.height - 1)
+            x_bearing, y_bearing, txt_width, txt_height = context.text_extents(str(i+1))[:4]
+            context.move_to((i + 0.5) * self.cell_width + 0.5 - txt_width / 2 - x_bearing, self.height / 2 - txt_height / 2 - y_bearing + 0.5)
+            context.show_text(str(i+1))
+        context.set_line_width(1);
+        context.stroke()
 
 class Diagram_graph():
-   activities = []
-   durations={}
-   prelations={}
-   start_time={}
-   slacks = {}
-   comments = {}
+    """
+    Class Diagram_graph:
+        Simple structure created to group the activities information
+
+        Properties:
+            activities: list of string containing activity names
+            prelations: dictionary (index: activity names (strings), definitions: List of strings containing activity names).
+            duration: dictionary (index: activity names (strings), definitions: duration of the activity measured in units of time).
+            start_time: dictionary (index: activity names (strings), definitions: unit of time when the activity start).
+            slack: dictionary (index: activity names (strings), definitions: slack measured in units of time).
+            comment: dictionary (index: activity names (strings), definitions: string that will be shown to the right of the activity (string))
+    """
+    activities = []
+    durations = {}
+    prelations = {}
+    start_time = {}
+    slacks = {}
+    comments = {}
 
 class GanttDrawing(gtk.Layout):
-   __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
-   def __init__(self):
-      gtk.Layout.__init__(self)
-      self.connect("expose-event", self.expose)
-      self.graph = Diagram_graph()
-      self.row_height = 25
-      self.width = 0
-      self.modified = 0
+    """
+    Class GanttDrawing(gtk.Layout)
 
-   def set_row_height(self,num):
-      self.row_height = num
-      self.set_size_request(self.width ,num)
+        Properties:
+            graph
+            row_height
+            cell_width
+            width
+            available_width
+            modified
+            activities_color
+            slack_color
+            thin_slack
+            context
 
-   def get_needed_length (self, context):
-      lengths = []
-      for activity in self.graph.activities:
-         x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
-         lengths.append( (self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.row_height + 0.5 + x_bearing + txt_width)
-      return(int(max(lengths)+1))
+        Interface:
+            set_vadjustment(adjustment)
+            set_policy(horizontal policy, vertical policy)
+            set_cell_width(width)
+            set_row_height(height)
+            update()
+            add_activity(name, prelations, duration = 0 , start_time = 0, slack = 0, comment = "")
+            rename_activity(old name, new name)
+            set_activity_duration(activity, duration)
+            set_activity_prelations(activity, prelations)
+            set_activity_slack(activity, slack)
+            set_activity_start_time(activity, time)
+            set_activity_comment(activity, comment)
+            set_activities_color(color)
+            set_slack_color(color)
+            set_thin_slack(value)
+            remove_activity(activity)
+            reorder(activities)
+            clear()
 
-   def clear(self):
-      del self.graph
-      self.graph = Graph()
+        Signals:
+            'gantt-width-changed' Signal emmited when the required width has changed. Parameters: widget, width
+    """
+    __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
+    def __init__(self):
+        gtk.Layout.__init__(self)
+        #Creating objects
+        self.graph = Diagram_graph()
+        #Initialising values
+        self.row_height = 25
+        self.cell_width = 25
+        self.width = 0
+        self.modified = 0
+        self.activities_color = self.get_style().bg[gtk.STATE_SELECTED]
+        self.slack_color = self.get_style().bg[gtk.STATE_ACTIVE]
+        self.thin_slack = True
+        #Connecting signals
+        self.connect("expose-event", self.expose)
 
-   def add_activity(self, name, prelations, duration, start_time, slack, comment):
-      if (name != ""):
-         self.graph.activities.append(name)
-         if (prelations == ""):
-            prelations = []
-         self.graph.prelations[name] = prelations
-         if (duration == ""):
-            duration = 0
-         self.graph.durations[name] = duration
-         if (start_time == ""):
-            start_time = 0
-         self.graph.start_time[name] = start_time
-         if (slack == ""):
-            slack = 0
-         self.graph.slacks[name] = slack
-         self.graph.comments[name] = comment
-         self.modified = 1
+    def set_activities_color(self, color):
+        """
+        Change the color of the activities rectangles
 
-   def set_activity_name(self,activity,name):
-      for act in self.graph.activities:
-         if activity in self.graph.prelations[act]:
-            self.graph.prelations[act].remove(activity)
-            self.graph.prelations[act].append(name)
-      self.graph.activities[self.graph.activities.index(activity)] = name
+        color: new color (gtk.gdk.Color)
+        """
+        self.activities_color = color
 
-   def set_activity_duration(self, activity, duration):
-      self.graph.durations[activity] = duration
-      self.modified = 1
+    def set_slack_color(self, color):
+        """
+        Change the color of the slacks rectangles
 
-   def set_activity_prelations(self,activity,prelations):
-      self.graph.prelations[activity] = prelation
+        color: new color (gtk.gdk.Color)
+        """
+        self.slack_color = color
 
-   def set_activity_slack(self,activity,slack):
-      self.graph.slacks[activity] = slack
-      self.modified = 1
+    def set_thin_slack(self, value):
+        """
+        Set if the slacks rectangles will be thinner than the activities ones
 
-   def set_activity_comment(self,activity,comment):
-      self.graph.comments[activity] = comment
-      self.modified = 1
+        value (True or False)
+        """
+        self.thin_slack = value
 
-   def set_activity_start_time(self, activity, time):
-      self.graph.start_time[activity] = time
-      self.modified = 1
+    def set_cell_width(self, width):
+        """
+        Set cell width
+        
+        num: width (pixels)
+        """
+        self.cell_width = width
+        self.modified = 1
 
-   def remove_activity(self, activity):
-      if activity in self.graph.activities:
-         for act in self.graph.activities:
+    def set_row_height(self,num):
+        """
+        Set row height
+        
+        num: height (pixels)
+        """
+        self.row_height = num
+        self.set_size_request(self.width ,num)
+
+    def get_needed_length (self, context):
+        """
+        Calculate needed length
+
+        context: Cairo context (gtk.gdk.CairoContext)
+
+        Returns: length measured in pixels
+        """
+        lengths = []
+        for activity in self.graph.activities:
+            x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
+            lengths.append( (self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + 0.5 + x_bearing + txt_width)
+        return(int(max(lengths)+1))
+
+    def clear(self):
+        """
+        Clear all the activities information
+        """
+        del self.graph
+        self.graph = Diagram_graph()
+
+    def add_activity(self, name, prelations, duration, start_time, slack, comment):
+        """
+        Add an activity to the diagram
+        
+        name: Activity name (string)
+        prelations: List of strings containing activity names.
+        duration: duration of the activity measured in units of time.
+        start_time: unit of time when the activity start.
+        slack: slack measured in units of time.
+        comment: String that will be shown to the right of the activity (string).
+        """
+        if (name != ""):
+            self.graph.activities.append(name)
+            if (prelations == ""):
+                prelations = []
+            self.graph.prelations[name] = prelations
+            if (duration == ""):
+                duration = 0
+            self.graph.durations[name] = duration
+            if (start_time == ""):
+                start_time = 0
+            self.graph.start_time[name] = start_time
+            if (slack == ""):
+                slack = 0
+            self.graph.slacks[name] = slack
+            self.graph.comments[name] = comment
+            self.modified = 1
+
+    def set_activity_name(self,activity,name):
+        """
+        Changes the name of an activity.
+
+        activity: old name (string)
+        name: new name (string)
+        """
+        for act in self.graph.activities:
             if activity in self.graph.prelations[act]:
-               self.graph.prelations[act].remove(activity)
-         self.graph.activities.remove(activity)
-         self.modified = 1
+                self.graph.prelations[act].remove(activity)
+                self.graph.prelations[act].append(name)
+        self.graph.activities[self.graph.activities.index(activity)] = name
 
-   def reorder(self,activities):
-      self.graph.activities = activities
+    def set_activity_duration(self, activity, duration):
+        """
+        Change the duration of an activity
 
-   def expose (self,widget,event):
-      #Creating Cairo drawing context
-      self.context = self.bin_window.cairo_create()
-      #Setting context size to available size
-      self.context.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
-      self.context.clip()
-      #Obtaining available width
-      self.available_width = event.area.width
-      self.available_height = event.area.height
-      #Drawing
-      self.draw(self.context)
-      return False
+        activity: name of the activity (string)
+        duration: duration of the activity measured in units of time.
+        """
+        self.graph.durations[activity] = duration
+        self.modified = 1
 
-   def draw(self, context):
-      if self.graph.activities != [] and self.modified == 1:
-         width = self.get_needed_length(context)
-         if width != self.width:
-            self.set_size_request(width, self.row_height)
-            self.width = width
-            self.emit("gantt-width-changed",width)
-            self.modified = 0
-      height = self.row_height * len(self.graph.activities)
-      self.set_size(self.width, height)
-      for i in range(0, max(self.available_width, self.width) / self.row_height + 1):
-         context.move_to(i * self.row_height + 0.5,-0.5)
-         context.line_to(i * self.row_height + 0.5, max(self.available_height, height, self.get_vadjustment().upper) + 0.5)
-      context.set_line_width(1)
-      context.set_source_color(self.get_style().fg[gtk.STATE_INSENSITIVE])
-      context.stroke()
-      for activity in self.graph.activities:
-         context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.row_height + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.slacks[activity] * self.row_height , self.row_height - 1 )
-      context.set_line_width(1)
-      context.set_source_color(self.get_style().bg[gtk.STATE_ACTIVE])
-      context.fill_preserve()
-      context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-      context.stroke()
-      for activity in self.graph.activities:
-         context.rectangle(self.graph.start_time[activity]* self.row_height + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.durations[activity] * self.row_height , self.row_height - 1 )
-         x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
-         context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.row_height + 0.5 + x_bearing, (self.graph.activities.index(activity)+ 1) * self.row_height - 0.5 + y_bearing + 0.5)
-         context.show_text(self.graph.comments[activity])
-      context.set_line_width(1)
-      context.set_source_color(self.get_style().bg[gtk.STATE_SELECTED])
-      context.fill_preserve()
-      context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-      context.stroke()
-      for activity in self.graph.activities:
-         x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.row_height + 0.5
-         y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 0.5
-         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-         for children in self.graph.prelations[activity]:
-            try:
-               id_actividad2 = self.graph.activities.index(children)
-               context.arc(x,y, self.row_height / 8, 0 , 2 * math.pi )
-               context.fill()
-               context.move_to(x,y)
-               y2 = (id_actividad2) * self.row_height - 3.5
-               context.line_to(x, y2 )
-               context.move_to(x,y2)
-               x2 = self.graph.start_time[children] * self.row_height + 0.5
-               context.line_to(x2, y2)
-               context.stroke()
-               v1 = x2 - 3.5
-               v2 = x2 + 3.5
-               context.move_to(v1, y2)
-               context.line_to(x2, self.row_height * id_actividad2 - 0.5)
-               context.rel_line_to(3, -3)
-               context.close_path()
-               context.fill_preserve()
-               context.stroke()
-            except:
-               pass
+    def set_activity_prelations(self,activity,prelations):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        prelations: List of strings containing activity names.
+        """
+        self.graph.prelations[activity] = prelation
+
+    def set_activity_slack(self,activity,slack):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        slack: slack measured in units of time
+        """
+        self.graph.slacks[activity] = slack
+        self.modified = 1
+
+    def set_activity_comment(self,activity,comment):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        comment: String that will be shown to the right of the activity (string)
+        """
+        self.graph.comments[activity] = comment
+        self.modified = 1
+
+    def set_activity_start_time(self, activity, time):
+        """
+        Change the duration of an activity
+
+        activity: name of the activity (string)
+        time: unit of time when the activity start.
+        """
+        self.graph.start_time[activity] = time
+        self.modified = 1
+
+    def remove_activity(self, activity):
+        """
+        Removes an activity from the diagram.
+
+        activity: name of the activity (string)
+        """
+        if activity in self.graph.activities:
+            for act in self.graph.activities:
+                if activity in self.graph.prelations[act]:
+                    self.graph.prelations[act].remove(activity)
+            self.graph.activities.remove(activity)
+            self.modified = 1
+
+    def reorder(self,activities):
+        """
+        change the order of the activities
+        
+        activities: list of strings containing activity names.
+        """
+        self.graph.activities = activities
+
+    def expose (self,widget,event):
+        """
+        Function called when the widget needs to be drawn
+        
+        widget:
+        event:
+
+        Returns: False
+        """
+        #Creating Cairo drawing context
+        self.context = self.bin_window.cairo_create()
+        #Setting context size to available size
+        self.context.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
+        self.context.clip()
+        #Obtaining available width
+        self.available_width = event.area.width
+        self.available_height = event.area.height
+        #Drawing
+        self.draw(self.context)
+        return False
+
+    def draw(self, context):
+        """
+        Draw the widget
+
+        context: Cairo context (gtk.gdk.CairoContext)
+        """
+        #Checking if it is necessary to calculate the needed width of the diagram
+        if self.graph.activities != [] and self.modified == 1:
+            width = self.get_needed_length(context)
+            if width != self.width: #If the width has changed...
+                self.set_size_request(width, self.row_height)
+                self.width = width
+                self.emit("gantt-width-changed",width)
+                self.modified = 0
+        height = self.row_height * len(self.graph.activities)
+        self.set_size(self.width, height)
+        #Drawing cell lines
+        for i in range(0, max(self.available_width, self.width) / self.cell_width + 1):
+            context.move_to(i * self.cell_width + 0.5,-0.5)
+            context.line_to(i * self.cell_width + 0.5, max(self.available_height, height, self.get_vadjustment().upper) + 0.5)
+        context.set_line_width(1)
+        context.set_source_color(self.get_style().fg[gtk.STATE_INSENSITIVE])
+        context.stroke()
+        #Drawing slacks
+        for activity in self.graph.activities:
+            context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
+        context.set_line_width(1)
+        context.set_source_color(self.slack_color)
+        context.fill_preserve()
+        context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+        context.stroke()
+        #Drawing activities and commentaries
+        for activity in self.graph.activities:
+            context.rectangle(self.graph.start_time[activity]* self.cell_width + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.durations[activity] * self.cell_width , self.row_height - 1 )
+            x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
+            context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + 0.5 + x_bearing, (self.graph.activities.index(activity)+ 1) * self.row_height - 0.5 + y_bearing + 0.5)
+            context.show_text(self.graph.comments[activity])
+        context.set_line_width(1)
+        context.set_source_color(self.activities_color)
+        context.fill_preserve()
+        context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+        context.stroke()
+        #Drawing prelation arrows
+        for activity in self.graph.activities:
+            x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.cell_width + 0.5
+            y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 0.5
+            context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+            for children in self.graph.prelations[activity]:
+                try:
+                    id_actividad2 = self.graph.activities.index(children)
+                    #Draw a circle at the end of the activity
+                    context.arc(x,y, max(self.cell_width, self.row_height) / 8, 0 , 2 * math.pi )
+                    context.fill()
+                    #draw an vertical line to the children activity row
+                    context.move_to(x,y)
+                    y2 = (id_actividad2) * self.row_height - 3.5
+                    context.line_to(x, y2 )
+                    context.move_to(x,y2)
+                    #draw an horizontal line next to the children activity
+                    x2 = self.graph.start_time[children] * self.cell_width + 0.5
+                    context.line_to(x2, y2)
+                    context.stroke()
+                    #draw a triangle
+                    v1 = x2 - 3.5
+                    v2 = x2 + 3.5
+                    context.move_to(v1, y2)
+                    context.line_to(x2, self.row_height * id_actividad2 - 0.5)
+                    context.rel_line_to(3, -3)
+                    context.close_path()
+                    context.fill_preserve()
+                    context.stroke()
+                except:
+                    pass
 
 def main():
-   window = gtk.Window()
-   gantt = GTKgantt()
-   gantt.add_activity("A", ["B", "C"], 5,0, 0, "Initial Activity")
-   gantt.add_activity("B", ["D"], 3, 5, 11)
-   gantt.add_activity("C", ["D","E","F","G"], 2, 5,  0 , "Critical Activity")
-   gantt.add_activity("D", ["J"], 4, 8, 11)
-   gantt.add_activity("E", ["J"], 6, 7, 10, "Not so important activity")
-   gantt.add_activity("F", ["H"], 3, 7, 15)
-   gantt.add_activity("G", ["I"], 9, 7, 0, "Critical Activity")
-   gantt.add_activity("H", [], 1, 15, 10)
-   gantt.add_activity("I", [], 10, 16, 0, "Final Activity")
-   gantt.add_activity("J", ["H"], 2, 13, 10)
-   gantt.set_row_height(25)
-   window.add(gantt)
-   window.connect("destroy", gtk.main_quit)
-   gantt.update()
-   window.show_all()
-   gtk.main()
+    """
+        Example of use.
+    """
+    window = gtk.Window()
+    gantt = GTKgantt()
+    gantt.add_activity("A", ["B", "C"], 5,0, 0, "Initial Activity")
+    gantt.add_activity("B", ["D"], 3, 5, 11)
+    gantt.add_activity("C", ["D","E","F","G"], 2, 5,  0 , "Critical Activity")
+    gantt.add_activity("D", ["J"], 4, 8, 11)
+    gantt.add_activity("E", ["J"], 6, 7, 10, "Not so important activity")
+    gantt.add_activity("F", ["H"], 3, 7, 15)
+    gantt.add_activity("G", ["I"], 9, 7, 0, "Critical Activity")
+    gantt.add_activity("H", [], 1, 15, 10)
+    gantt.add_activity("I", [], 10, 16, 0, "Final Activity")
+    gantt.add_activity("J", ["H"], 2, 13, 10)
+    gantt.set_row_height(25)
+    gantt.set_header_height(20)
+    gantt.set_cell_width(20)
+    window.add(gantt)
+    window.connect("destroy", gtk.main_quit)
+    gantt.update()
+    window.show_all()
+    gtk.main()
 
 if __name__ == "__main__":
    main()	
