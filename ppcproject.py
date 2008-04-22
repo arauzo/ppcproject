@@ -355,7 +355,6 @@ class PPCproject:
                         self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
                         self.gantt.update()
 
-
                # Si no es ningún caso de los anteriores, se actualiza normalmente
                else:  
                   self.actividad[int(path)][n]=self.modelo[path][n]
@@ -701,7 +700,6 @@ class PPCproject:
                  
                  self.actividad.append(fila)
                  self.modelo.append(fila1)
-                 self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
                  # Se actualiza la columna de siguientes en la interfaz
                  self.actualizarColSigPSPLIB(prelaciones)
                  
@@ -713,8 +711,11 @@ class PPCproject:
                  m=n-1
                  self.actividad[m][6]=float(asig[n][2])
                  self.modelo[m][6]=asig[n][2]
-         
 
+         # Update Gantt Diagram
+         for row in self.actividad:
+             self.gantt.add_activity(row[1], row[2], float(row[6]))         
+         self.gantt.update()
 
          # Se actualizan los recursos
          i=1
