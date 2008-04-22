@@ -449,8 +449,12 @@ class GanttDrawing(gtk.Layout):
         """
         Clear all the activities information
         """
-        del self.graph
-        self.graph = Diagram_graph()
+        self.graph.activities = []
+        self.graph.durations = {}
+        self.graph.prelations = {}
+        self.graph.start_time = {}
+        self.graph.slacks = {}
+        self.graph.comments = {}
 
     def add_activity(self, name, prelations, duration, start_time, slack, comment):
         """
@@ -510,7 +514,7 @@ class GanttDrawing(gtk.Layout):
         activity: name of the activity (string)
         prelations: List of strings containing activity names.
         """
-        self.graph.prelations[activity] = prelation
+        self.graph.prelations[activity] = prelations
 
     def set_activity_slack(self,activity,slack):
         """
