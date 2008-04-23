@@ -154,7 +154,7 @@ class GTKgantt(gtk.VBox):
         self.diagram.set_activity_duration(activity,duration)
     def set_activity_prelations(self,activity,prelations):
         """
-        Change the duration of an activity
+        Change the prelations of an activity
 
         activity: name of the activity (string)
         prelations: List of strings containing activity names.
@@ -162,7 +162,7 @@ class GTKgantt(gtk.VBox):
         self.diagram.set_activity_prelations(activity,prelations)
     def set_activity_slack(self,activity,slack):
         """
-        Change the duration of an activity
+        Change the slack of an activity
 
         activity: name of the activity (string)
         slack: slack measured in units of time
@@ -170,7 +170,7 @@ class GTKgantt(gtk.VBox):
         self.diagram.set_activity_slack(activity,slack)
     def set_activity_comment(self,activity,comment):
         """
-        Change the duration of an activity
+        Change the comment of an activity
 
         activity: name of the activity (string)
         comment: String that will be shown to the right of the activity (string)
@@ -178,7 +178,7 @@ class GTKgantt(gtk.VBox):
         self.diagram.set_activity_comment(activity,comment)
     def set_activity_start_time(self,activity,time):
         """
-        Change the duration of an activity
+        Change the start time of an activity
 
         activity: name of the activity (string)
         time: unit of time when the activity start.
@@ -383,8 +383,8 @@ class GanttDrawing(gtk.Layout):
         self.cell_width = 25
         self.width = 0
         self.modified = 0
-        self.activities_color = self.get_style().bg[gtk.STATE_SELECTED]
-        self.slack_color = self.get_style().bg[gtk.STATE_ACTIVE]
+        self.activities_color = None
+        self.slack_color = None
         self.thin_slack = True
         #Connecting signals
         self.connect("expose-event", self.expose)
@@ -491,10 +491,20 @@ class GanttDrawing(gtk.Layout):
         activity: old name (string)
         name: new name (string)
         """
+        self.graph.durations[name] = self.graph.durations[activity]
+        del self.graph.durations[activity]
+        self.graph.start_time[name] = self.graph.start_time[activity]
+        del self.graph.start_time[activity]
+        self.graph.slacks[name] = self.graph.slacks[activity]
+        del self.graph.slacks[activity]
+        self.graph.comments[name] = self.graph.comments[activity]
+        del  self.graph.comments[activity]
         for act in self.graph.activities:
             if activity in self.graph.prelations[act]:
                 self.graph.prelations[act].remove(activity)
                 self.graph.prelations[act].append(name)
+        self.graph.prelations[name] = self.graph.prelations[activity]
+        del  self.graph.prelations[activity]         
         self.graph.activities[self.graph.activities.index(activity)] = name
 
     def set_activity_duration(self, activity, duration):
@@ -509,7 +519,7 @@ class GanttDrawing(gtk.Layout):
 
     def set_activity_prelations(self,activity,prelations):
         """
-        Change the duration of an activity
+        Change the prelations of an activity
 
         activity: name of the activity (string)
         prelations: List of strings containing activity names.
@@ -518,7 +528,7 @@ class GanttDrawing(gtk.Layout):
 
     def set_activity_slack(self,activity,slack):
         """
-        Change the duration of an activity
+        Change the slack of an activity
 
         activity: name of the activity (string)
         slack: slack measured in units of time
@@ -528,7 +538,7 @@ class GanttDrawing(gtk.Layout):
 
     def set_activity_comment(self,activity,comment):
         """
-        Change the duration of an activity
+        Change the comments of an activity
 
         activity: name of the activity (string)
         comment: String that will be shown to the right of the activity (string)
@@ -538,7 +548,7 @@ class GanttDrawing(gtk.Layout):
 
     def set_activity_start_time(self, activity, time):
         """
-        Change the duration of an activity
+        Change the start_time of an activity
 
         activity: name of the activity (string)
         time: unit of time when the activity start.
@@ -553,9 +563,14 @@ class GanttDrawing(gtk.Layout):
         activity: name of the activity (string)
         """
         if activity in self.graph.activities:
+            del self.graph.durations[activity]
+            del self.graph.start_time[activity]
+            del self.graph.slacks[activity]
+            del  self.graph.comments[activity]         
             for act in self.graph.activities:
                 if activity in self.graph.prelations[act]:
                     self.graph.prelations[act].remove(activity)
+            del  self.graph.prelations[activity]         
             self.graph.activities.remove(activity)
             self.modified = 1
 
@@ -615,7 +630,7 @@ class GanttDrawing(gtk.Layout):
         for activity in self.graph.activities:
             context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
         context.set_line_width(1)
-        context.set_source_color(self.slack_color)
+        context.set_source_color(self.slack_color if self.slack_color != None else self.get_style().bg[gtk.STATE_ACTIVE])
         context.fill_preserve()
         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         context.stroke()
@@ -626,7 +641,7 @@ class GanttDrawing(gtk.Layout):
             context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + 0.5 + x_bearing, (self.graph.activities.index(activity)+ 1) * self.row_height - 0.5 + y_bearing + 0.5)
             context.show_text(self.graph.comments[activity])
         context.set_line_width(1)
-        context.set_source_color(self.activities_color)
+        context.set_source_color(self.activities_color if self.activities_color != None else self.get_style().bg[gtk.STATE_SELECTED])
         context.fill_preserve()
         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         context.stroke()
@@ -661,7 +676,7 @@ class GanttDrawing(gtk.Layout):
                     context.stroke()
                 except:
                     pass
-
+      
 def main():
     """
         Example of use.

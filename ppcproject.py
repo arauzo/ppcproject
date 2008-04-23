@@ -112,9 +112,18 @@ class PPCproject:
       self.checkColum=[None]*9
       for n in range(9):
          self.checkColum[n] = self.interface.checkColum[n]
-
       self._widgets.get_widget('mnSalirPantComp').hide()
       self.enableProjectControls(False)
+      self.row_height_signal = self.vistaLista.connect("expose-event", self.cbtreeview)
+      self.vistaLista.connect('drag-end', self.reorder_gantt)
+      self.modelo.connect('rows-reordered', self.reorder_gantt)
+
+   def cbtreeview (self, container, widget):
+      self.gantt.set_header_height(self.vistaLista.convert_tree_to_widget_coords(0,1)[1])
+      if len (self.modelo) > 0 and self.modelo[0][1] != "":
+         self.gantt.set_row_height(self.vistaLista.get_background_area(0,self.vistaLista.columna[0]).height)
+         self.vistaLista.disconnect(self.row_height_signal)
+      return False
 
    def enableProjectControls(self, value):
       self._widgets.get_widget('mnGuardar').set_sensitive(value)
@@ -195,6 +204,7 @@ class PPCproject:
       cont=1
       self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])  # Se inserta una fila vacia
 
+
    def col_edited_cb( self, renderer, path, new_text, modelo, n):
       """
        Edicción de filas y adicción de una fila vacía  
@@ -225,10 +235,11 @@ class PPCproject:
                   if new_text not in actividades:  # Si no está introducida                     
                      #print modelo[path][1], new_text, 'valores a intercambiar'
                      modelo=self.modificarSig(modelo, modelo[path][1], new_text)
+                     self.gantt.rename_activity(modelo[path][1],new_text)
+                     self.gantt.update()
                      modelo[path][1] = new_text
                      it=self.modeloComboS.get_iter(path)
                      self.modeloComboS.set_value(it, 0, new_text)
-
                   #else:
                      #print 'actividad repetida'
                      #self.dialogoError('Actividad repetida')
@@ -236,6 +247,9 @@ class PPCproject:
                else:  # Se inserta normalmente
                   modelo[path][1] = new_text
                   self.modeloComboS.append([modelo[path][1]])
+                  self.gantt.add_activity(new_text)
+                  self.gantt.update()
+
 
          elif n==2:  # Columna de las siguientes
             modelo=self.comprobarSig(modelo, path, new_text)
@@ -277,6 +291,13 @@ class PPCproject:
       self.actualizacion(modelo, path, n)
       return
 
+   def reorder_gantt(self, dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0 ):
+      act_list = []
+      for activity in self.modelo:
+         if activity[1] != "":
+            act_list.append(activity[1])
+      self.gantt.reorder(act_list)
+      self.gantt.update()
 
    def actualizacion(self, modelo, path, n):
       """
@@ -450,7 +471,6 @@ class PPCproject:
          if self.actividad[i][2]==['']:
                self.actividad[i][2]=[]   
          self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]))
-
       self.gantt.update()      
       # Se actualizan la interfaz y la lista de los recursos
       self.modeloR.clear()
@@ -3642,7 +3662,6 @@ class PPCproject:
       """
       self.dAyuda.hide()
       return True
-
 
 # --- Start running as a program
 
