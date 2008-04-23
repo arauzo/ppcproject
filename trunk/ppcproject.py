@@ -312,11 +312,12 @@ class PPCproject:
       """
       # Actividades
       if modelo==self.modelo:  
+         gantt_modified = False
          if self.modelo[path][n]=='':
                if n==2:
                   self.actividad[int(path)][2]=[]
                   self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
-                  self.gantt.update()
+                  gantt_modified = True
                else:
                   self.actividad[int(path)][n]=self.modelo[path][n]
          else: # Si hay datos introducidos
@@ -344,7 +345,7 @@ class PPCproject:
 
                            self.modelo[path][6]=self.actividad[int(path)][6]=''
                      self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
-                     self.gantt.update()
+                     gantt_modified = True
                            
                # Si se introduce la media, se elimina el resto de duraciones        
                elif n==6:   
@@ -353,7 +354,7 @@ class PPCproject:
                      self.modelo[path][i]=''
                      self.actividad[int(path)][i]=''
                   self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
-                  self.gantt.update()
+                  gantt_modified = True
 
                # Si se modifica el tipo de distribución, se actualizan la media y la desviación tí­pica
                elif n==9:  
@@ -364,7 +365,7 @@ class PPCproject:
                      m=float(self.modelo[path][4]) #d.más probable
                      self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                      self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
-                     self.gantt.update()                  
+                     gantt_modified = True                 
 
                # Se controla el valor introducido en las siguientes 
                elif n==2:  
@@ -374,12 +375,23 @@ class PPCproject:
                   else: 
                         self.actividad[int(path)][2] = self.texto2Lista(self.modelo[path][2])
                         self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
-                        self.gantt.update()
+                        gantt_modified = True
 
                # Si no es ningún caso de los anteriores, se actualiza normalmente
                else:  
                   self.actividad[int(path)][n]=self.modelo[path][n]
 
+         if gantt_modified == True:
+            act_list = []
+            dur_dic = {}
+            pre_dic = {}
+            for i in range(len(self.actividad)):
+               act_list.append(self.actividad[i][1])
+               dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])  
+               pre_dic[self.actividad[i][1]] = self.actividad[i][2]
+            for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+               self.gantt.set_activity_start_time(activity, time)
+            self.gantt.update()
          #print self.actividad, 'ya modificada'
 
 
@@ -467,10 +479,18 @@ class PPCproject:
 
       # Se actualiza la lista de las actividades
       self.actividad=tabla[0]    
+      act_list = []
+      dur_dic = {}
+      pre_dic = {}
       for i in range(len(self.actividad)):
+         act_list.append(self.actividad[i][1])
+         dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])
          if self.actividad[i][2]==['']:
                self.actividad[i][2]=[]   
+         pre_dic[self.actividad[i][1]] = self.actividad[i][2]
          self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]))
+      for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+         self.gantt.set_activity_start_time(activity, time)
       self.gantt.update()      
       # Se actualizan la interfaz y la lista de los recursos
       self.modeloR.clear()
@@ -525,6 +545,9 @@ class PPCproject:
       """
       cont=1
       self._widgets.get_widget('vistaListaDatos').show()
+      act_list = []
+      dur_dic = {}
+      pre_dic = {}
       for linea in tabla:
          sig=self.lista2Cadena2(linea[1])
          if linea[1]==['']:
@@ -534,8 +557,14 @@ class PPCproject:
          fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
          self.actividad.append(fila)
          self.modelo.append(fila1)
+         act_list.append(fila[1])
+         dur_dic[fila[1]] = float(fila[5])
+         pre_dic[fila[1]] = fila[2]
          self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
          cont+=1
+      for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+         self.gantt.set_activity_start_time(activity, time)
+      self.gantt.update() 
    
 
 #********************************************************************************************************************
@@ -733,9 +762,17 @@ class PPCproject:
                  self.modelo[m][6]=asig[n][2]
 
          # Update Gantt Diagram
+         act_list = []
+         dur_dic = {}
+         pre_dic = {}
          for row in self.actividad:
+             act_list.append(row[1])
+             pre_dic[row[1]] = row[2]
+             dur_dic[row[1]] = float(row[6])
              self.gantt.add_activity(row[1], row[2], float(row[6]))         
-         self.gantt.update()
+         for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+            self.gantt.set_activity_start_time(activity, time)
+         self.gantt.update() 
 
          # Se actualizan los recursos
          i=1
@@ -2791,55 +2828,17 @@ class PPCproject:
    def on_wndSimAnnealing_delete_event(self, window, event):
       """ 
       User action to close the window
-      
-      Parameters: window
+      Parameters:
+                  window
                   event
       Returns: -
       """
       
       window.hide()
       return True
-      
-   def on_mnCOMSOAL_activate(self, menu_item):
-      """ 
-      User action to open the COMSOAL window
-      
-      Parameters: menu_item
-      
-      Returns: -
-      """
-      
-      self.wndSimAnnealing.show()
-      
-   def on_btnSimAnnealingReset_clicked(self,menu_item):
-      """ 
-      User action to restart the values of the COMSOAL window fields
-      
-      Parameters: menu_item
-      
-      Returns: -
-      """
-      
-      sbTemperature = self._widgets.get_widget('sbTempSA')
-      Temperature = sbTemperature.set_value(10000)   
-      sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
-      minTemperature = sbMinTemperature.set_value(0.01) 
-      sbK = self._widgets.get_widget('sbKSA')
-      k = sbK.set_value(0.9)    
-      sbNumIterations = self._widgets.get_widget('svMaxIterSA')
-      numIterations = sbNumIterations.set_value(100)
-      sbSlack = self._widgets.get_widget('sbSlackSA')
-      slack = sbSlack.set_value(0)    
-      
    
    def on_btnSimAnnealingCalculate_clicked(self, menu_item):
-      """ 
-      User action to start the COMSOAL algorithm
       
-      Parameters: menu_item
-      
-      Returns: -
-      """
       # Add all activities in rest dictionary
       rest={}
       for a in self.actividad:
@@ -2860,29 +2859,19 @@ class PPCproject:
       else:
          balance = 0
       
-      sbTemperature = self._widgets.get_widget('sbTempSA')
-      Temperature = sbTemperature.get_value()   
-      sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
-      minTemperature = sbMinTemperature.get_value() 
-      sbK = self._widgets.get_widget('sbKSA')
-      k = sbK.get_value()    
-      sbNumIterations = self._widgets.get_widget('svMaxIterSA')
-      numIterations = sbNumIterations.get_value() 
+      entryTempSA = self._widgets.get_widget('entryTempSA')   
+      temp = entryTempSA.get_text()
+      entryMinTempSA = self._widgets.get_widget('entryMinTempSA')   
+      minTemp = entryMinTempSA.get_text()
+      entryKSA = self._widgets.get_widget('entryKSA')   
+      k = entryKSA.get_text()
+      entryNumItSA = self._widgets.get_widget('entryNumItSA')   
+      numIter = entryNumItSA.get_text()
       
-      prog = simulatedAnnealing(asignation,resources,successors,activities,balance,Temperature,minTemperature,k,numIterations) 
-      
-      entryResult = self._widgets.get_widget('entryResult')
-      entryResult.set_text(str(prog[1]))
-      
+      simulatedAnnealing(asignation,resources,successors,activities,balance,float(temp),float(minTemp),float(k),float(numIter)) 
+   
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):
-      """ 
-      Modify the last time of the activities with the slack introduced by the user
-      
-      Parameters: rest (activities in the project)
-      
-      Returns: rest (list of the activities and their characteristics)
-      """
       # Se crea el grafo Pert y se renumera
       grafoRenumerado = self.pertFinal()
 
@@ -2898,14 +2887,21 @@ class PPCproject:
       tearly = early(nodosN, matrizZad)      
       tlast = last(nodosN, tearly, matrizZad)
       
-      sbSlack = self._widgets.get_widget('sbSlackSA')
-      slack = sbSlack.get_value()      
+      entrySlack = self._widgets.get_widget('entrySlackSA')   
+      slack = entrySlack.get_text()
+    
       # Calculate altered last time
       for a in grafoRenumerado.activities:
          if grafoRenumerado.activities[a][0] != 'dummy':
-            rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + slack - float(rest[grafoRenumerado.activities[a][0]][0])]
+            rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + int(slack) - float(rest[grafoRenumerado.activities[a][0]][0])]
       
       return rest
+        
+        
+   def on_mnCOMSOAL_activate(self, menu_item):
+      """User action to show SimAnnealing window"""
+      
+      self.wndSimAnnealing.show()
       
 
 #XXX XXX XXX XXX
@@ -3662,6 +3658,37 @@ class PPCproject:
       """
       self.dAyuda.hide()
       return True
+
+#XXX This function will be moved to graph package.
+
+def get_start_time(activities, durations, prelations):
+   open_list = []
+   inv_prelations = {}
+   closed_list = []
+   start_time = {}
+   for activity in activities:
+      inv_prelations[activity] = []
+   for activity in activities:
+      for children in prelations[activity]:
+         inv_prelations[children].append(activity)
+   for activity in activities:
+      if inv_prelations[activity] == []:
+         open_list.append(activity)
+   while open_list != []:
+      chosen = open_list.pop()
+      closed_list.append(chosen)
+      time = [0]
+      for activity in inv_prelations[chosen]:
+         time.append(start_time[activity] + durations[activity])
+      start_time[chosen] = max(time)
+      for activity in prelations[chosen]:
+         pending = False
+         for parent in inv_prelations[activity]:
+            if parent not in closed_list:
+               pending = True
+         if not pending:
+            open_list.append(activity)
+   return(start_time)
 
 # --- Start running as a program
 
