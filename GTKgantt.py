@@ -658,7 +658,7 @@ class GanttDrawing(gtk.Layout):
                     context.fill()
                     #draw an vertical line to the children activity row
                     context.move_to(x,y)
-                    y2 = (id_actividad2) * self.row_height - 3.5
+                    y2 = ((id_actividad2) * self.row_height - 3.5) if id_actividad2 > self.graph.activities.index(activity) else ((id_actividad2 + 1) * self.row_height + 3.5)
                     context.line_to(x, y2 )
                     context.move_to(x,y2)
                     #draw an horizontal line next to the children activity
@@ -669,8 +669,8 @@ class GanttDrawing(gtk.Layout):
                     v1 = x2 - 3.5
                     v2 = x2 + 3.5
                     context.move_to(v1, y2)
-                    context.line_to(x2, self.row_height * id_actividad2 - 0.5)
-                    context.rel_line_to(3, -3)
+                    context.line_to(x2, (self.row_height *  id_actividad2 -0.5) if y < y2 else (self.row_height * (id_actividad2 + 1) + 0.5))
+                    context.rel_line_to(3, (-3 if y < y2 else 3))
                     context.close_path()
                     context.fill_preserve()
                     context.stroke()

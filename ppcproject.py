@@ -3110,8 +3110,8 @@ class PPCproject:
 # PROBABILIDADES window
 
    def on_btnIntervalReset_clicked(self, button):
-      self._widgets.get_widget('valor1Prob').set_text("")
-      self._widgets.get_widget('valor2Prob').set_text("")
+      self._widgets.get_widget('valor1Prob').set_value(0)
+      self._widgets.get_widget('valor2Prob').set_value(0)
       self._widgets.get_widget('resultado1Prob').set_text("")
 
 #-----------------------------------------------------------
@@ -3124,10 +3124,10 @@ class PPCproject:
 #-----------------------------------------------------------  
    def on_bntIntervalCalculate_clicked(self, button):
          # Se extraen los valores de las u.d.t. de la interfaz
-         valor1=self._widgets.get_widget('valor1Prob')   
-         dato1=valor1.get_text()
-         valor2=self._widgets.get_widget('valor2Prob')   
-         dato2=valor2.get_text()
+         valor1=self._widgets.get_widget('valor1Prob')
+         dato1=str(valor1.get_value())
+         valor2=self._widgets.get_widget('valor2Prob')
+         dato2=str(valor2.get_value())
 
          titulo=self.vProbabilidades.get_title()
          if titulo==gettext.gettext('Probability related to the path'):
@@ -3169,7 +3169,7 @@ class PPCproject:
          self.escribirProb(mostrarDato)
 
    def on_btnProbabilityReset_clicked(self, button):
-      self._widgets.get_widget('valor3Prob').set_text("")
+      self._widgets.get_widget('valor3Prob').set_value(0)
       self._widgets.get_widget('resultado2Prob').set_text("")
 
 #-----------------------------------------------------------
@@ -3183,10 +3183,8 @@ class PPCproject:
    def on_btnProbabilityCalculate_clicked(self, button):
          # Se extrae el valor de probabilidad de la interfaz
          valor3=self._widgets.get_widget('valor3Prob')   
-         dato3=valor3.get_text()
+         dato3=float(valor3.get_value() / 100)
          #print dato3, 'dato3'
-         if dato3[-1:]=='%':
-            dato3=float(dato3[:-1])/100
 
          x=0
          titulo=self.vProbabilidades.get_title()
@@ -3286,102 +3284,99 @@ class PPCproject:
       """
       # Se extrae el número de iteraciones 
       iteracion=self._widgets.get_widget('iteracion')
-      it=iteracion.get_text()
+      it=iteracion.get_value_as_int()
       #print it, 'iteraciones'
 
-      if it[:1]=='-':  # Nº iteraciones negativo
-         self.dialogoError(gettext.gettext('The number of iterations must be positive'))
-      else: # Nº iteraciones positivo
-         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
-         totales=self._widgets.get_widget('iteracionesTotales')
-         interfaz=totales.get_text()
-         if interfaz!='':
-            itTotales=int(it)+int(interfaz)
-         else:
-            itTotales=int(it)
-         #print itTotales, 'iteraciones totales'
-         totales.set_text(str(itTotales))
+      # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
+      totales=self._widgets.get_widget('iteracionesTotales')
+      interfaz=totales.get_text()
+      if interfaz!='':
+         itTotales= it +int(interfaz)
+      else:
+         itTotales= it
+      #print itTotales, 'iteraciones totales'
+      totales.set_text(str(itTotales))
 
-         # Se realiza la simulación
-         simulacion=self.simulacion(int(it))
-         self.simTotales.append(simulacion)
-         #print len(self.simTotales), 'simulaciones'
-         #for s in self.simTotales:
-            #print s
+      # Se realiza la simulación
+      simulacion=self.simulacion(it)
+      self.simTotales.append(simulacion)
+      #print len(self.simTotales), 'simulaciones'
+      #for s in self.simTotales:
+         #print s
 
-         # Se crea el grafo Pert y se renumera
-         grafoRenumerado=self.pertFinal()
+      # Se crea el grafo Pert y se renumera
+      grafoRenumerado=self.pertFinal()
 
-         # Nuevos nodos
-         nodosN=[]
-         for n in range(len(grafoRenumerado.graph)):
-            nodosN.append(n+1)
-         
-         # Zaderenko
-         if simulacion==None:
-            return
-         else:
-            for s in simulacion: 
-               matrizZad=mZad(self.actividad,grafoRenumerado.activities, nodosN, 0, s)
-               tearly=early(nodosN, matrizZad)  
-               tlast=last(nodosN, tearly, matrizZad)      
-               tam=len(tearly)
-               # Se calcula la duración del proyecto para cada simulación
-               duracionProyecto=tearly[tam-1]
-               #print duracionProyecto, 'duracion proyecto'  
-               self.duraciones.append(duracionProyecto) 
-               #print self.duraciones,'duraciones simuladas'
-               # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
-               self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
+      # Nuevos nodos
+      nodosN=[]
+      for n in range(len(grafoRenumerado.graph)):
+         nodosN.append(n+1)
+      
+      # Zaderenko
+      if simulacion==None:
+         return
+      else:
+         for s in simulacion: 
+            matrizZad=mZad(self.actividad,grafoRenumerado.activities, nodosN, 0, s)
+            tearly=early(nodosN, matrizZad)  
+            tlast=last(nodosN, tearly, matrizZad)      
+            tam=len(tearly)
+            # Se calcula la duración del proyecto para cada simulación
+            duracionProyecto=tearly[tam-1]
+            #print duracionProyecto, 'duracion proyecto'  
+            self.duraciones.append(duracionProyecto) 
+            #print self.duraciones,'duraciones simuladas'
+            # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
+            self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
 
-               # Se añaden la media y la desviación típica a la interfaz
-               duracionMedia=scipy.stats.mean(self.duraciones)
-               media=self._widgets.get_widget('mediaSim')
-               media.set_text(str(duracionMedia))
+            # Se añaden la media y la desviación típica a la interfaz
+            duracionMedia=scipy.stats.mean(self.duraciones)
+            media=self._widgets.get_widget('mediaSim')
+            media.set_text(str(duracionMedia))
 
-               desviacionTipica=scipy.stats.std(self.duraciones)
-               dTipica=self._widgets.get_widget('dTipicaSim')
-               dTipica.set_text(str(desviacionTipica))
+            desviacionTipica=scipy.stats.std(self.duraciones)
+            dTipica=self._widgets.get_widget('dTipicaSim')
+            dTipica.set_text(str(desviacionTipica))
 
-         # Se calculan los intervalos
-         interv=[]
-         N=20 # Número de intervalos
-         dMax=float(max(self.duraciones)+0.00001)  # duración máxima
-         dMin=float(min(self.duraciones))   # duración mí­nima
-         #print dMax, 'max', dMin, 'min'
-         if int(it)==int(itTotales):
-            for n in range(N):
-               valor='['+str('%5.2f'%(simulation.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(simulation.duracion((n+1), dMax, dMin, N)))+'['       
-               interv.append(valor)
-         if self.intervalos==[]:
-            self.intervalos=interv
+      # Se calculan los intervalos
+      interv=[]
+      N=20 # Número de intervalos
+      dMax=float(max(self.duraciones)+0.00001)  # duración máxima
+      dMin=float(min(self.duraciones))   # duración mí­nima
+      #print dMax, 'max', dMin, 'min'
+      if int(it)==int(itTotales):
+         for n in range(N):
+            valor='['+str('%5.2f'%(simulation.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(simulation.duracion((n+1), dMax, dMin, N)))+'['       
+            interv.append(valor)
+      if self.intervalos==[]:
+         self.intervalos=interv
 
-         # Se calculan las frecuencias
-         self.Fa, Fr=simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
+      # Se calculan las frecuencias
+      self.Fa, Fr=simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
 
-         # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
-         self.modeloF.clear()
-         i = 0
-         for column in self.vistaFrecuencias.get_columns()[1:]:
-            column.set_title(self.intervalos[i])
-            i = i + 1
-         self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str,self.Fa))
-         self.modeloF.append([gettext.gettext("Relative freq.")] + map(str,Fr))
-         #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
+      # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
+      self.modeloF.clear()
+      i = 0
+      for column in self.vistaFrecuencias.get_columns()[1:]:
+         column.set_title(self.intervalos[i])
+         i = i + 1
+      self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str,self.Fa))
+      self.modeloF.append([gettext.gettext("Relative freq.")] + map(str,Fr))
+      #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
 
-         # Dibuja histograma devolviendo los intervalos (bins) y otros datos
-         fig = Figure(figsize=(5,4), dpi=100)
-         ax = fig.add_subplot(111)
+      # Dibuja histograma devolviendo los intervalos (bins) y otros datos
+      fig = Figure(figsize=(5,4), dpi=100)
+      ax = fig.add_subplot(111)
 
-         n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
-         canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-         if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-            self.hBoxSim.remove(self.boxS)
-            self.boxS=gtk.VBox()
+      n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
+      canvas = FigureCanvas(fig)  # a gtk.DrawingArea
+      if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
+         self.hBoxSim.remove(self.boxS)
+         self.boxS=gtk.VBox()
 
-         self.hBoxSim.add(self.boxS)
-         self.boxS.pack_start(canvas)
-         self.boxS.show_all()
+      self.hBoxSim.add(self.boxS)
+      self.boxS.pack_start(canvas)
+      self.boxS.show_all()
 
    def on_btAceptarSim_clicked(self, boton):
       """
