@@ -2867,7 +2867,7 @@ class PPCproject:
       vBoxGantt.pack_start(self.ganttSA)      
       
       for a in self.actividad:
-        self.ganttSA.add_activity(a[1],[],a[6],0,0,a[1])
+        self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,a[1])
         
       self.wndSimAnnealing.show()
  
@@ -2907,19 +2907,23 @@ class PPCproject:
          if a[6] == '':
             self.dialogoError(gettext.gettext('You must introduce the average duration.'))
             return False
-         rest[a[1]] = [a[6]]
-         
-      asignation = resourcesPerActivities(self.asignacion)
-      resources = resourcesAvailability(self.recurso)
-      successors = self.tablaSucesoras(self.actividad)
-      activities = self.alteredLast(rest)
-      
+         rest[a[1]] = [float(a[6])]
+
       balRadioButton = self._widgets.get_widget('rbBalance')
       alloRadioButton = self._widgets.get_widget('rbAllocation')
       if balRadioButton.get_active():
          balance = 1
       else:
          balance = 0
+         
+      if balance == 1 and self.recurso == []:
+         self.dialogoError(gettext.gettext('There are not resources introduced.'))
+         return False      
+         
+      asignation = resourcesPerActivities(self.asignacion)
+      resources = resourcesAvailability(self.recurso)
+      successors = self.tablaSucesoras(self.actividad)
+      activities = self.alteredLast(rest)
       
       sbTemperature = self._widgets.get_widget('sbTempSA')
       Temperature = sbTemperature.get_value()   
@@ -2971,7 +2975,7 @@ class PPCproject:
       for a in grafoRenumerado.activities:
          if grafoRenumerado.activities[a][0] != 'dummy':
             rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + slack - float(rest[grafoRenumerado.activities[a][0]][0])]
-      
+            
       return rest
       
 
