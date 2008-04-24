@@ -2841,17 +2841,66 @@ class PPCproject:
    def on_wndSimAnnealing_delete_event(self, window, event):
       """ 
       User action to close the window
-      Parameters:
-                  window
+      
+      Parameters: window
                   event
       Returns: -
       """
       
       window.hide()
       return True
+      
+   def on_mnCOMSOAL_activate(self, menu_item):
+      """ 
+      User action to open the COMSOAL window
+      
+      Parameters: menu_item
+      
+      Returns: -
+      """
+      self.ganttSA = GTKgantt.GTKgantt()
+      self.ganttSA.set_row_height(25)
+      self.ganttSA.set_header_height(20)
+      self.ganttSA.set_cell_width(20)
+
+      vBoxGantt = self._widgets.get_widget('vBoxGantt')
+      vBoxGantt.pack_start(self.ganttSA)      
+      
+      for a in self.actividad:
+        self.ganttSA.add_activity(a[1],[],a[6],0,0,a[1])
+        
+      self.wndSimAnnealing.show()
+ 
+            
+   def on_btnSimAnnealingReset_clicked(self,menu_item):
+      """ 
+      User action to restart the values of the COMSOAL window fields
+      
+      Parameters: menu_item
+      
+      Returns: -
+      """
+      
+      sbTemperature = self._widgets.get_widget('sbTempSA')
+      Temperature = sbTemperature.set_value(10000)   
+      sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
+      minTemperature = sbMinTemperature.set_value(0.01) 
+      sbK = self._widgets.get_widget('sbKSA')
+      k = sbK.set_value(0.9)    
+      sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
+      numIterations = sbNumIterations.set_value(100)
+      sbSlack = self._widgets.get_widget('sbSlackSA')
+      slack = sbSlack.set_value(0)    
+      
    
    def on_btnSimAnnealingCalculate_clicked(self, menu_item):
+      """ 
+      User action to start the COMSOAL algorithm
       
+      Parameters: menu_item
+      
+      Returns: -
+      """
       # Add all activities in rest dictionary
       rest={}
       for a in self.actividad:
@@ -2872,19 +2921,35 @@ class PPCproject:
       else:
          balance = 0
       
-      entryTempSA = self._widgets.get_widget('entryTempSA')   
-      temp = entryTempSA.get_text()
-      entryMinTempSA = self._widgets.get_widget('entryMinTempSA')   
-      minTemp = entryMinTempSA.get_text()
-      entryKSA = self._widgets.get_widget('entryKSA')   
-      k = entryKSA.get_text()
-      entryNumItSA = self._widgets.get_widget('entryNumItSA')   
-      numIter = entryNumItSA.get_text()
+      sbTemperature = self._widgets.get_widget('sbTempSA')
+      Temperature = sbTemperature.get_value()   
+      sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
+      minTemperature = sbMinTemperature.get_value() 
+      sbK = self._widgets.get_widget('sbKSA')
+      k = sbK.get_value()    
+      sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
+      numIterations = sbNumIterations.get_value() 
       
-      simulatedAnnealing(asignation,resources,successors,activities,balance,float(temp),float(minTemp),float(k),float(numIter)) 
-   
+      prog = simulatedAnnealing(asignation,resources,successors,activities,balance,Temperature,minTemperature,k,numIterations) 
+      
+      entryResult = self._widgets.get_widget('entryResult')
+      entryResult.set_text(str(prog[1]))
+      
+      for act,startTime,finalTime in prog[0]:
+         self.ganttSA.set_activity_start_time(act, startTime)
+        
+      self.ganttSA.update()
+      self.ganttSA.show_all()
+      
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):
+      """ 
+      Modify the last time of the activities with the slack introduced by the user
+      
+      Parameters: rest (activities in the project)
+      
+      Returns: rest (list of the activities and their characteristics)
+      """
       # Se crea el grafo Pert y se renumera
       grafoRenumerado = self.pertFinal()
 
@@ -2900,21 +2965,14 @@ class PPCproject:
       tearly = early(nodosN, matrizZad)      
       tlast = last(nodosN, tearly, matrizZad)
       
-      entrySlack = self._widgets.get_widget('entrySlackSA')   
-      slack = entrySlack.get_text()
-    
+      sbSlack = self._widgets.get_widget('sbSlackSA')
+      slack = sbSlack.get_value()      
       # Calculate altered last time
       for a in grafoRenumerado.activities:
          if grafoRenumerado.activities[a][0] != 'dummy':
-            rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + int(slack) - float(rest[grafoRenumerado.activities[a][0]][0])]
+            rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + slack - float(rest[grafoRenumerado.activities[a][0]][0])]
       
       return rest
-        
-        
-   def on_mnCOMSOAL_activate(self, menu_item):
-      """User action to show SimAnnealing window"""
-      
-      self.wndSimAnnealing.show()
       
 
 #XXX XXX XXX XXX
