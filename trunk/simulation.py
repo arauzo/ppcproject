@@ -31,46 +31,46 @@ gettext.textdomain(APP)
 
 def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
     """
- Cálculo de las F.Absolutas y F.Relativas 
+     Cálculo de las F.Absolutas y F.Relativas 
 
- Parámetros: dMax (duración máxima)
-             dMin (duración mímima)
-             itTotales (iteraciones totales)
-             N (número de intervalos)
+     Parámetros: dMax (duración máxima)
+                 dMin (duración mímima)
+                 itTotales (iteraciones totales)
+                 N (número de intervalos)
 
- Valor de retorno: Fa (frecuencias absolutas)
-                   Fr (frecuencias relativas)
+     Valor de retorno: fa (frecuencias absolutas)
+                       fr (frecuencias relativas)
     """
-    Fa=[]
-    Fr=[]
+    fa=[]
+    fr=[]
     # Se inicializa el vector de F.Absolutas
     for n in range(N):
-    Fa.append(0)
+        fa.append(0)
 
     # Se calculan las F.Absolutas
     for d in duraciones:
         x=posicion(d, dMax, dMin, N)
-        Fa[x]+=1
+        fa[x]+=1
 
     # Se calculan las F.Relativas
-    for a in Fa:
-    r='%2.2f'%(float(a)/itTotales)
-    Fr.append(r)
+    for a in fa:
+        r = '%2.2f'%(float(a)/itTotales)
+        fr.append(r)
 
-    return Fa, Fr
+    return fa, fr
 
 
 def posicion(d, dMax, dMin, N):
     """
- Cálculo de la posición de una duración dentro del 
-          vector de F.Absolutas
+     Cálculo de la posición de una duración dentro del 
+              vector de F.Absolutas
 
- Parámetros: d (duración)
-             dMax (duración máxima)
-             dMin (duración mí­nima)
-             N (número de intervalos)
+     Parámetros: d (duración)
+                 dMax (duración máxima)
+                 dMin (duración mí­nima)
+                 N (número de intervalos)
 
- Valor de retorno: x (posición)
+     Valor de retorno: x (posición)
     """
     x = int ( ((d-dMin)/(dMax-dMin)) * N )
     return x
@@ -78,15 +78,15 @@ def posicion(d, dMax, dMin, N):
 
 def duracion(x, dMax, dMin, N):
     """
- Cálculo de la duración correspondiente a una posición 
-          (inversa de la Función anterior)
+     Cálculo de la duración correspondiente a una posición 
+              (inversa de la Función anterior)
 
- Parámetros: x (posición)
-             dMax (duración máxima)
-             dMin (duración mí­nima)
-             N (número de intervalos)
+     Parámetros: x (posición)
+                 dMax (duración máxima)
+                 dMin (duración mí­nima)
+                 N (número de intervalos)
 
- Valor de retorno: d (duración)
+     Valor de retorno: d (duración)
     """
     d = ( x*(dMax-dMin)/N ) + dMin
     return d
@@ -94,16 +94,16 @@ def duracion(x, dMax, dMin, N):
 
 def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticidad): 
     """
- Prepara los datos de la simulación para ser mostrados
-          en formato CSV
+     Prepara los datos de la simulación para ser mostrados
+              en formato CSV
 
- Parámetros: duraciones (lista con las duraciones de la simulación)
-             iteraciones (número de iteraciones totales)
-             media (duración media)
-             dTipica (desviación tí­pica)
-             modeloCriticidad (lista de caminos e í­ndice de criticidad)
+     Parámetros: duraciones (lista con las duraciones de la simulación)
+                 iteraciones (número de iteraciones totales)
+                 media (duración media)
+                 dTipica (desviación tí­pica)
+                 modeloCriticidad (lista de caminos e í­ndice de criticidad)
 
- Valor de retorno: s (texto a mostrar en formato CSV) 
+     Valor de retorno: s (texto a mostrar en formato CSV) 
     """
     s=''
     s+=gettext.gettext('SIMULATION DATA')
