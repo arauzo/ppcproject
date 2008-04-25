@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Main program
+# Functions for simulation of project duration
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
@@ -17,6 +17,7 @@
 #   GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import random
 
 # Internationalization
@@ -27,220 +28,172 @@ gettext.bindtextdomain(APP, DIR)
 gettext.textdomain(APP)
 
 
-#*******************************************************************
-#-----------------------------------------------------------
-# Cálculo de las F.Absolutas y F.Relativas 
-#
-# Parámetros: dMax (duración máxima)
-#             dMin (duración mímima)
-#             itTotales (iteraciones totales)
-#             N (número de intervalos)
-#
-# Valor de retorno: Fa (frecuencias absolutas)
-#                   Fr (frecuencias relativas)
-#----------------------------------------------------------- 
 
 def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
-     Fa=[]
-     Fr=[]
-     # Se inicializa el vector de F.Absolutas
-     for n in range(N):
-        Fa.append(0)
+    """
+ Cálculo de las F.Absolutas y F.Relativas 
 
-     # Se calculan las F.Absolutas
-     for d in duraciones:
-         x=posicion(d, dMax, dMin, N)
-         Fa[x]+=1
+ Parámetros: dMax (duración máxima)
+             dMin (duración mímima)
+             itTotales (iteraciones totales)
+             N (número de intervalos)
 
-     # Se calculan las F.Relativas
-     for a in Fa:
-        r='%2.2f'%(float(a)/itTotales)
-        Fr.append(r)
+ Valor de retorno: Fa (frecuencias absolutas)
+                   Fr (frecuencias relativas)
+    """
+    Fa=[]
+    Fr=[]
+    # Se inicializa el vector de F.Absolutas
+    for n in range(N):
+    Fa.append(0)
 
-     return Fa, Fr
+    # Se calculan las F.Absolutas
+    for d in duraciones:
+        x=posicion(d, dMax, dMin, N)
+        Fa[x]+=1
 
-#*******************************************************************
-#-----------------------------------------------------------
-# Cálculo de la posición de una duración dentro del 
-#          vector de F.Absolutas
-#
-# Parámetros: d (duración)
-#             dMax (duración máxima)
-#             dMin (duración mí­nima)
-#             N (número de intervalos)
-#
-# Valor de retorno: x (posición)
-#----------------------------------------------------------- 
+    # Se calculan las F.Relativas
+    for a in Fa:
+    r='%2.2f'%(float(a)/itTotales)
+    Fr.append(r)
+
+    return Fa, Fr
+
 
 def posicion(d, dMax, dMin, N):
-     x = int ( ((d-dMin)/(dMax-dMin)) * N )
-     return x
+    """
+ Cálculo de la posición de una duración dentro del 
+          vector de F.Absolutas
 
-#*******************************************************************
-#-----------------------------------------------------------
-# Cálculo de la duración correspondiente a una posición 
-#          (inversa de la Función anterior)
-#
-# Parámetros: x (posición)
-#             dMax (duración máxima)
-#             dMin (duración mí­nima)
-#             N (número de intervalos)
-#
-# Valor de retorno: d (duración)
-#----------------------------------------------------------- 
+ Parámetros: d (duración)
+             dMax (duración máxima)
+             dMin (duración mí­nima)
+             N (número de intervalos)
+
+ Valor de retorno: x (posición)
+    """
+    x = int ( ((d-dMin)/(dMax-dMin)) * N )
+    return x
+
 
 def duracion(x, dMax, dMin, N):
-        d = ( x*(dMax-dMin)/N ) + dMin
-        return d
+    """
+ Cálculo de la duración correspondiente a una posición 
+          (inversa de la Función anterior)
 
+ Parámetros: x (posición)
+             dMax (duración máxima)
+             dMin (duración mí­nima)
+             N (número de intervalos)
 
-#*******************************************************************
-#-----------------------------------------------------------
-# Prepara los datos de la simulación para ser mostrados
-#          en formato CSV
-#
-# Parámetros: duraciones (lista con las duraciones de la simulación)
-#             iteraciones (número de iteraciones totales)
-#             media (duración media)
-#             dTipica (desviación tí­pica)
-#             modeloCriticidad (lista de caminos e í­ndice de criticidad)
-#
-# Valor de retorno: s (texto a mostrar en formato CSV) 
-#-----------------------------------------------------------
+ Valor de retorno: d (duración)
+    """
+    d = ( x*(dMax-dMin)/N ) + dMin
+    return d
+
 
 def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticidad): 
-        s=''
-        s+=gettext.gettext('SIMULATION DATA')
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('N, I.CRITICIDAD, PATH')
-        s+='\n'
-        for n in range(len(modeloCriticidad)):
-           s+= modeloCriticidad[n][0]+','+ modeloCriticidad[n][1]+','+'"'+modeloCriticidad[n][2]+'"'
-           s+='\n'
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('AVERAGE, TYPICAL DEV.')
-        s+='\n'
-        s+= media+','+dTipica
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('TOTAL SIMULATIONS')
-        s+='\n'
-        s+= iteraciones
-        s+='\n'
-        s+='\n'
-        s+=gettext.gettext('DURATIONS')
-        s+='\n'
-        for d in duraciones:
-           s+= str(d)
-           s+='\n'
+    """
+ Prepara los datos de la simulación para ser mostrados
+          en formato CSV
 
-        #print s
-        return s        
+ Parámetros: duraciones (lista con las duraciones de la simulación)
+             iteraciones (número de iteraciones totales)
+             media (duración media)
+             dTipica (desviación tí­pica)
+             modeloCriticidad (lista de caminos e í­ndice de criticidad)
 
-#***************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución uniforme
-#
-# Parámetros: op (duración optimista)
-#             pes (duración pesimista)
-#
-# Valor de retorno: unif (número aleatorio)
-#----------------------------------------------------------- 
+ Valor de retorno: s (texto a mostrar en formato CSV) 
+    """
+    s=''
+    s+=gettext.gettext('SIMULATION DATA')
+    s+='\n'
+    s+='\n'
+    s+=gettext.gettext('N, I.CRITICIDAD, PATH')
+    s+='\n'
+    for n in range(len(modeloCriticidad)):
+        s+= modeloCriticidad[n][0]+','+ modeloCriticidad[n][1]+','+'"'+modeloCriticidad[n][2]+'"'
+        s+='\n'
+    s+='\n'
+    s+='\n'
+    s+=gettext.gettext('AVERAGE, TYPICAL DEV.')
+    s+='\n'
+    s+= media+','+dTipica
+    s+='\n'
+    s+='\n'
+    s+=gettext.gettext('TOTAL SIMULATIONS')
+    s+='\n'
+    s+= iteraciones
+    s+='\n'
+    s+='\n'
+    s+=gettext.gettext('DURATIONS')
+    s+='\n'
+    for d in duraciones:
+        s+= str(d)
+        s+='\n'
 
-def generaAleatoriosUniforme(op, pes):
-        #print "\n *** Uniform(",op,pes,")"
-        unif=random.uniform(op,pes)
-        return unif
+    #print s
+    return s        
 
-#******************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución beta
-#
-# Parámetros: op (duración optimista)
-#             pes (duración pesimista)
-#             shape_a (shape factor)
-#             shape_b (shapa factor)
-#
-# Valor de retorno: beta (número aleatorio)
-#----------------------------------------------------------- 
-
-def generaAleatoriosBeta(op, pes, shape_a, shape_b):
-        #mean, stdev, shape_a, shape_b=self.datosBeta(op, mode, pes)
-   #print "Mean=", mean, "Stdev=", stdev
-   #print "shape_a=", shape_a, "shape_b=", shape_b
-   #for i in range(n):
-      beta=random.betavariate(shape_a,shape_b)*(pes-op) + op
-      return beta
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Obtención de datos necesarios para la generación de 
-#          números aleatorios para una distribución beta
-#
-# Parámetros: op (duración optimista)
-#             mode (duración más problable)
-#             pes (duración pesimista)
-#
-# Valor de retorno:  mean (duración media)
-#                    stdev (desviación tí­pica)
-#                    shape_a (shape factor)
-#                    shape_b (shape factor)
-#----------------------------------------------------------- 
 
 def datosBeta(op, mode, pes):
-        #print "\n *** Beta(",op,mode,pes,")"
-      mean  = (op + 4*mode + pes) / 6.0
-      stdev = (pes - op) / 6.0
-      shape_a = ((mean - op) / (pes-op)) * ((mean-op)*(pes-mean)/stdev**2 - 1)
-      shape_b = ((pes-mean)/(mean-op)) * shape_a
+    """
+    Returns the parameters of a general Beta random variate from those of
+    PERT method
 
-      return mean, stdev, shape_a, shape_b
+    op (optimistic)
+    mode (most likely)
+    pes (pesimist)
 
-#******************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución triangular
-#
-# Parámetros: op (duración optimista)
-#             mode (duración más problable)
-#             pes (duración pesimista)
-#
-# Valor de retorno: triang (número aleatorio)
-#----------------------------------------------------------- 
+    Returned value: (mean, std deviation, shape factor a, shape factor b)
+    """
+    mean  = (op + 4*mode + pes) / 6.0
+    stdev = (pes - op) / 6.0
+    shape_a = ((mean - op) / (pes-op)) * ((mean-op)*(pes-mean)/stdev**2 - 1)
+    shape_b = ((pes-mean)/(mean-op)) * shape_a
+
+    return mean, stdev, shape_a, shape_b
+
+
+def generaAleatoriosUniforme(op, pes):
+    """
+    Generates a random number in a Uniform distribution in [op, pes]    """
+    #print "\n *** Uniform(",op,pes,")"
+    unif=random.uniform(op,pes)
+    return unif
+
+def generaAleatoriosBeta(op, pes, shape_a, shape_b):
+    """
+    Generates a random number in a Beta distribution in [op, pes]    """
+    #mean, stdev, shape_a, shape_b=self.datosBeta(op, mode, pes)
+    #print "Mean=", mean, "Stdev=", stdev
+    #print "shape_a=", shape_a, "shape_b=", shape_b
+    #for i in range(n):
+    beta=random.betavariate(shape_a,shape_b)*(pes-op) + op
+    return beta
 
 def generaAleatoriosTriangular(op, mode, pes):
-      #print "\n *** Triangle(",op,mode,pes,")"
-      """
-      Generates a random number in a triangular distribution in [op, pes]
-      with mode
-      """
-      unif = random.random()  #[0,1]
-        
-      if unif <= (mode-op) / (pes-op):
-         aux = unif * (pes-op) * (mode-op)
-         triang = op + math.sqrt(aux)
-      else:
-         aux = (pes-op) * (pes-mode) * (1-unif)
-         triang = pes - math.sqrt(aux)
+    """
+    Generates a random number in a triangular distribution in [op, pes]
+    with mode
+    """
+    #print "\n *** Triangle(",op,mode,pes,")"
+    unif = random.random()  #[0,1]
+    
+    if unif <= (mode-op) / (pes-op):
+        aux = unif * (pes-op) * (mode-op)
+        triang = op + math.sqrt(aux)
+    else:
+        aux = (pes-op) * (pes-mode) * (1-unif)
+        triang = pes - math.sqrt(aux)
 
-      return triang
-
-#*******************************************************************
-#-----------------------------------------------------------
-# Generación de un número aleatorio para una 
-#          distribución normal
-#
-# Parámetros: mean (duración media)
-#             stdev (desviación tí­pica)
-#
-# Valor de retorno: norm (número aleatorio)
-#----------------------------------------------------------- 
+    return triang
 
 def generaAleatoriosNormal(mean, stdev):
-         #print "\n *** Normal(",mean,stdev,")"
-      norm=random.gauss(mean,stdev)
-      return norm
+    """
+    Generates a number from a Normal random variate with mean and stdev
+    """
+    norm=random.gauss(mean,stdev)
+    return norm
+      
+
