@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Main program
+# Interface view
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
