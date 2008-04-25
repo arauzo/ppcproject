@@ -41,23 +41,23 @@ def leerPSPLIB(f):
         if l[0]=='j' and l[10]=='#':
             l=f.readline()
             while l[0]!='*':                   
-            prel=l.split()[0], l.split()[3:]
-            prelaciones.append(prel)
-            l=f.readline()
+                prel=l.split()[0], l.split()[3:]
+                prelaciones.append(prel)
+                l=f.readline()
             
         # Lectura de la duración de las actividades y de las unidades de recursos necesarias por actividad
         if l[0]=='-':
             l=f.readline()
             while l[0]!='*': 
-            asig.append(l.split())
-            l=f.readline()
+                asig.append(l.split())
+                l=f.readline()
             
         # Lectura del nombre, tipo y unidad de los recursos
         if l[0:22]=='RESOURCEAVAILABILITIES':
             l=f.readline()
             while l[0]!='*': 
-            rec.append(l.split())
-            l=f.readline()
+                rec.append(l.split())
+                l=f.readline()
             
         l=f.readline()  
             
