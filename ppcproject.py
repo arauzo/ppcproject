@@ -3001,42 +3001,36 @@ class PPCproject:
 
 # ACTIVIDADES window
 
-#-----------------------------------------------------------
-# Acción usuario para acceder aceptar los datos
-#          que aparecen en la ventana de actividades
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_btAceptarAct_clicked(self, boton):
+        """
+         Acción usuario para acceder aceptar los datos
+                  que aparecen en la ventana de actividades
+
+         Parámetros: boton (botón clickeado)
+        """
         self.vActividades.hide()
 
-#-----------------------------------------------------------
-# Acción usuario para acceder cerrar la ventana de actividades
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_wndActividades_delete_event(self, ventana, evento):
+        """
+         Acción usuario para acceder cerrar la ventana de actividades
+
+         Parámetros: ventana (ventana actual)
+                     evento (evento cerrar)
+        """
         ventana.hide()
         return True
 
 
 # ZADERENKO window
 
-#-----------------------------------------------------------
-# Al seleccionar uno de los caminos del grafo que se muestran
-#          en la ventana de Zaderenko, se activa el botón 
-#          'calcular probabilidad' que aparací­a inactivo inicialmente          
-#
-# Parámetros: vistaListaZ (widget donde se muestran los caminos)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_vistaListaZad_cursor_changed(self, vistaListaZ):
+        """
+         Al seleccionar uno de los caminos del grafo que se muestran
+                  en la ventana de Zaderenko, se activa el botón 
+                  'calcular probabilidad' que aparací­a inactivo inicialmente          
+
+         Parámetros: vistaListaZ (widget donde se muestran los caminos)
+        """
         vistaListaZ = self._widgets.get_widget('vistaListaZad')
         cursor, columna = vistaListaZ.get_cursor()
         if cursor:
@@ -3046,16 +3040,14 @@ class PPCproject:
         else:
             self._widgets.get_widget('btCalcularProb').set_sensitive(False)
 
-#-----------------------------------------------------------
-# Acción usuario para acceder a la ventana que muestra
-#          el cálculo de probabilidades
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_btCalcularProb_clicked(self, boton):
-    # Extraigo los valores de la media y la desviación típica del camino que va a ser objeto del
+         """
+         Acción usuario para acceder a la ventana que muestra
+                  el cálculo de probabilidades
+
+         Parámetros: boton (botón clickeado)
+         """
+         # Extraigo los valores de la media y la desviación típica del camino que va a ser objeto del
          # cálculo de probabilidades
          media, dTipica=self.extraerMediaYDTipica()
 
@@ -3090,47 +3082,41 @@ class PPCproject:
 
          self.vProbabilidades.show()
 
-#-----------------------------------------------------------
-# Acción usuario para aceptar la información 
-#          que aparece en la ventana de Zaderenko: matriz de
-#          Zaderenko, tiempos early y last, caminos del grafo, ...
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_btAceptarZad_clicked(self, boton):
-        self._widgets.get_widget('btCalcularProb').set_sensitive(False)
-        self.vZaderenko.hide()
+      """
+         Acción usuario para aceptar la información 
+                  que aparece en la ventana de Zaderenko: matriz de
+                  Zaderenko, tiempos early y last, caminos del grafo, ...
 
-#-----------------------------------------------------------
-# Acción usuario para acceder a la ventana que muestra 
-#          las holguras de cada actividad
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
+         Parámetros: boton (botón clickeado)
+      """
+      self._widgets.get_widget('btCalcularProb').set_sensitive(False)
+      self.vZaderenko.hide()
+
    def on_btHolgZad_clicked(self, boton):
-          s=0
-          for a in self.actividad:
-               if a[6]=='' or a[7]=='':
-                    s+=1
-                    
-          if s>0:
-               self.dialogoError(gettext.gettext('There are uncomplete activities'))
-          else:
-               self.ventanaHolguras()
+        """
+         Acción usuario para acceder a la ventana que muestra 
+                  las holguras de cada actividad
+
+         Parámetros: boton (botón clickeado)
+        """
+        s=0
+        for a in self.actividad:
+            if a[6]=='' or a[7]=='':
+                s+=1
+                
+        if s>0:
+            self.dialogoError(gettext.gettext('There are uncomplete activities'))
+        else:
+            self.ventanaHolguras()
     
-#-----------------------------------------------------------
-# Acción usuario para cerrar la ventana de Zaderenko
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_wndZaderenko_delete_event(self, ventana, evento):
+        """
+         Acción usuario para cerrar la ventana de Zaderenko
+
+         Parámetros: ventana (ventana actual)
+                     evento (evento cerrar)
+        """
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         ventana.hide()
         return True
@@ -3138,46 +3124,40 @@ class PPCproject:
 
 # HOLGURAS window
 
-#-----------------------------------------------------------
-# Acción usuario para aceptar la información 
-#          que aparece en la ventana de holguras: los tres
-#          tipos de holgura para cada actividad
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_btAceptarHolg_clicked(self, boton):
-        self.vHolguras.hide()
+      """
+         Acción usuario para aceptar la información 
+                  que aparece en la ventana de holguras: los tres
+                  tipos de holgura para cada actividad
 
-#-----------------------------------------------------------
-# Acción usuario para acceder a la ventana de Zaderenko
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
+         Parámetros: boton (botón clickeado)
+      """
+      self.vHolguras.hide()
+
    def on_btZadHolg_clicked(self, boton):
-          s=0
-          for a in self.actividad:
-               if a[6]=='' or a[7]=='':
-                    s+=1
-                    
-          if s>0:
-               self.dialogoError(gettext.gettext('There are uncomplete activities'))
-          else:
-               self.ventanaZaderenko()
+        """
+         Acción usuario para acceder a la ventana de Zaderenko
+
+         Parámetros: boton (botón clickeado)
+        """
+        s=0
+        for a in self.actividad:
+            if a[6]=='' or a[7]=='':
+                s+=1
+                
+        if s>0:
+            self.dialogoError(gettext.gettext('There are uncomplete activities'))
+        else:
+            self.ventanaZaderenko()
 
 
-#-----------------------------------------------------------
-# Acción usuario para cerrar la ventana de holguras
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_wndHolguras_delete_event(self, ventana, evento):
+        """
+         Acción usuario para cerrar la ventana de holguras
+
+         Parámetros: ventana (ventana actual)
+                     evento (evento cerrar)
+        """
         ventana.hide()
         return True
 
@@ -3185,19 +3165,20 @@ class PPCproject:
 # PROBABILIDADES window
 
    def on_btnIntervalReset_clicked(self, button):
+      """
+      """
       self._widgets.get_widget('valor1Prob').set_value(0)
       self._widgets.get_widget('valor2Prob').set_value(0)
       self._widgets.get_widget('resultado1Prob').set_text("")
 
-#-----------------------------------------------------------
-# Acción usuario al activar el valor introducido en 
-#          el primer gtk.Entry de la ventana de probabilidades          
-#
-# Parámetros: entry (entry activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_bntIntervalCalculate_clicked(self, button):
+         """
+         Acción usuario al activar el valor introducido en 
+                  el primer gtk.Entry de la ventana de probabilidades          
+
+         Parámetros: entry (entry activado)
+         """
+
          # Se extraen los valores de las u.d.t. de la interfaz
          valor1=self._widgets.get_widget('valor1Prob')
          dato1=str(valor1.get_value())
@@ -3247,15 +3228,14 @@ class PPCproject:
       self._widgets.get_widget('valor3Prob').set_value(0)
       self._widgets.get_widget('resultado2Prob').set_text("")
 
-#-----------------------------------------------------------
-# Acción usuario al activar el valor introducido en 
-#          el tercer gtk.Entry de la ventana de probabilidades          
-#
-# Parámetros: entry (entry activado)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_btnProbabilityCalculate_clicked(self, button):
+         """
+         Acción usuario al activar el valor introducido en 
+                  el tercer gtk.Entry de la ventana de probabilidades          
+
+         Parámetros: entry (entry activado)
+         """
+
          # Se extrae el valor de probabilidad de la interfaz
          valor3=self._widgets.get_widget('valor3Prob')   
          dato3=float(valor3.get_value() / 100)
@@ -3309,15 +3289,13 @@ class PPCproject:
          self.escribirProb(mostrarDato)
                 
 
-#-----------------------------------------------------------
-# Acción usuario para aceptar la información que
-#          muestra la ventana de cálculo de probabilidades
-#
-# Parámetros: boton (botón clickeado)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
    def on_btAceptarProb_clicked(self, boton):
+      """
+         Acción usuario para aceptar la información que
+                  muestra la ventana de cálculo de probabilidades
+
+         Parámetros: boton (botón clickeado)
+      """
       titulo=self.vProbabilidades.get_title()
       if titulo==gettext.gettext('Probability related to the path'):
          self.limpiarVentanaProb(0)
@@ -3326,22 +3304,20 @@ class PPCproject:
          
       self.vProbabilidades.hide()
 
-#-----------------------------------------------------------
-# Acción usuario para cerrar la ventana de cálculo 
-#          de probabilidades
-#
-# Parámetros: ventana (ventana actual)
-#             evento (evento cerrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
    def on_wndProbabilidades_delete_event(self, ventana, evento):
+        """
+         Acción usuario para cerrar la ventana de cálculo 
+                  de probabilidades
+
+         Parámetros: ventana (ventana actual)
+                     evento (evento cerrar)
+        """ 
         titulo=self.vProbabilidades.get_title()
         if titulo==gettext.gettext('Probability related to the path'):
-           self.limpiarVentanaProb(0)
+            self.limpiarVentanaProb(0)
         else:
-           self.limpiarVentanaProb(1)
-  
+            self.limpiarVentanaProb(1)
+
         ventana.hide()
         return True
 
