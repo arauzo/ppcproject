@@ -51,16 +51,16 @@ def mZad(mActividad, actividadesGrafo, nodos, control, duracionSim):
         j=g[1]-1
         if actividadesGrafo[i+1, j+1][0] in actividades:
             if control==1: # Si es llamada desde Zaderenko
-            for m in range(len(actividad)):
-                #print actividad[m][1]
-                if actividadesGrafo[i+1, j+1][0]==actividad[m][1]:   
-                    mZad[j][i]=actividad[m][6]
+                for m in range(len(actividad)):
+                    #print actividad[m][1]
+                    if actividadesGrafo[i+1, j+1][0]==actividad[m][1]:   
+                        mZad[j][i]=actividad[m][6]
 
             else: # Si es llamada desde Simulación
-            for m in range(len(actividad)):
-                #print actividad[m][1]
-                if actividadesGrafo[i+1, j+1][0]==actividad[m][1]:   
-                    mZad[j][i]=duracionSim[m]
+                for m in range(len(actividad)):
+                    #print actividad[m][1]
+                    if actividadesGrafo[i+1, j+1][0]==actividad[m][1]:   
+                        mZad[j][i]=duracionSim[m]
 
         else: # Las actividades ficticias tienen duración 0
             mZad[j][i]=0
@@ -91,12 +91,12 @@ def early(nodos, mZad):
         #print mayor, '******************************'
         for m in range(len(nodos)):
             if m<n and mZad[n][m]!='':
-            aux=float(mZad[n][m])+early[m]
-            #print aux, mZad[n][m], early[m], '--------------'
-            if aux>mayor:
-                mayor=aux
-            aux=0 
-            #print mayor
+                aux=float(mZad[n][m])+early[m]
+                #print aux, mZad[n][m], early[m], '--------------'
+                if aux>mayor:
+                    mayor=aux
+                aux=0 
+                #print mayor
         early[n]=mayor
         #print early
     for e in range(len(early)):
@@ -119,9 +119,9 @@ def last(nodos, early, mZad):
     for n in range(len(nodos)):
         for m in range(len(nodos)):
             if mZad[n][m]!='':
-            mZad[n][m]=''
+                mZad[n][m]=''
             else:
-            mZad[n][m]=mZad[m][n]
+                mZad[n][m]=mZad[m][n]
 
     # Se crea una la lista de tiempos last y se inicializa a 0
     last=[]
@@ -138,13 +138,13 @@ def last(nodos, early, mZad):
         #print menor, '*************************************************'
         for n in range(len(nodos)):
             if (l-m)<n and mZad[l-m][n]!='':
-            aux=last[n]-float(mZad[l-m][n])
-            #print aux, last[n], mZad[l-m][n], '------------'
-            #print menor, aux
-            if aux<menor:
-                menor=aux
-            aux=0 
-            #print menor
+                aux=last[n]-float(mZad[l-m][n])
+                #print aux, last[n], mZad[l-m][n], '------------'
+                #print menor, aux
+                if aux<menor:
+                    menor=aux
+                aux=0 
+                #print menor
         last[l-m]=menor
     #print last, 'last'  
     for l in range(len(last)):
