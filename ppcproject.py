@@ -484,11 +484,11 @@ class PPCproject:
       pre_dic = {}
       for i in range(len(self.actividad)):
          act_list.append(self.actividad[i][1])
-         dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])
+         dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
          if self.actividad[i][2]==['']:
                self.actividad[i][2]=[]   
          pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-         self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]))
+         self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]) if self.actividad[i][6] != "" else 0)
       for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
          self.gantt.set_activity_start_time(activity, time)
       self.gantt.update()      
@@ -2271,10 +2271,10 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
+      x=0
       if dato1=='':
-           x=0
            for n in range(len(intervalos)):
-      #print intervalos[n][0], intervalos[n][1], dato2
+                #print intervalos[n][0], intervalos[n][1], dato2
                 if float(intervalos[n][0])<float(dato2):
                    if float(intervalos[n][0])<float(dato2)<float(intervalos[n][1]):
                       #print 'entre'
@@ -2288,9 +2288,8 @@ class PPCproject:
            #print x, 'suma'
 
       elif dato2=='':
-           x=0
            for n in range(len(intervalos)):
-      #print intervalos[n][0], intervalos[n][1], dato1
+                #print intervalos[n][0], intervalos[n][1], dato1
                 if float(intervalos[n][1])>float(dato1):
                    if float(intervalos[n][0])<float(dato1)<float(intervalos[n][1]):
                       s=self.Fa[n]/float(itTotales)
@@ -2306,14 +2305,13 @@ class PPCproject:
          if float(dato1)>float(dato2):
             self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
          else:
-            x=0
             for n in range(len(intervalos)):
-            #print intervalos[n][0], dato2, intervalos[n][1], dato1
+               #print intervalos[n][0], dato2, intervalos[n][1], dato1
                if float(intervalos[n][1])>float(dato1) and float(intervalos[n][0])<float(dato2):
                   #print 'entra'
                   s=self.Fa[n]/float(itTotales)
                   #print s, 's'
-                  x+=s
+                  x += s
                   #print x, 'suma'
       return x           
 
@@ -3081,6 +3079,8 @@ class PPCproject:
          resultado2.set_sensitive(False)
 
          self.vProbabilidades.show()
+         self.on_btnIntervalReset_clicked(None)
+         self.on_btnProbabilityReset_clicked(None)
 
    def on_btAceptarZad_clicked(self, boton):
       """
@@ -3167,10 +3167,63 @@ class PPCproject:
    def on_btnIntervalReset_clicked(self, button):
       """
       """
-      self._widgets.get_widget('valor1Prob').set_value(0)
-      self._widgets.get_widget('valor2Prob').set_value(0)
-      self._widgets.get_widget('resultado1Prob').set_text("")
+      widgetMedia=self._widgets.get_widget('mediaProb')
+      media=float(widgetMedia.get_text())
+      widgetdTipica=self._widgets.get_widget('dTipicaProb')
+      dTipica=float(widgetdTipica.get_text())
+      self._widgets.get_widget('valor1Prob').set_value(media - 2 * dTipica)
+      self._widgets.get_widget('valor2Prob').set_value(media + 2 * dTipica)
+      self.on_interval_changed(None)
 
+   def on_interval_changed(self, widget):
+         """
+         Acción usuario al activar el valor introducido en 
+                  el primer gtk.Entry de la ventana de probabilidades          
+
+         Parámetros: entry (entry activado)
+         """
+
+         # Se extraen los valores de las u.d.t. de la interfaz
+         valor1=self._widgets.get_widget('valor1Prob')
+         dato1=str(valor1.get_value())
+         valor2=self._widgets.get_widget('valor2Prob')
+         dato2=str(valor2.get_value())
+         if valor2.get_value() > valor1.get_value():
+            titulo=self.vProbabilidades.get_title()
+            if titulo==gettext.gettext('Probability related to the path'):
+               # Se extrae la media y la desviación típica de la interfaz
+               widgetMedia=self._widgets.get_widget('mediaProb')
+               media=widgetMedia.get_text()
+               widgetdTipica=self._widgets.get_widget('dTipicaProb')
+               dTipica=widgetdTipica.get_text()
+               # Se calcula la probabilidad
+               x=self.calcularProb(dato1, dato2, media, dTipica)
+
+            else:
+                   # Extraigo las iteraciones totales
+                   totales=self._widgets.get_widget('iteracionesTotales')
+                   itTotales=totales.get_text()
+
+                   intervalos=[]
+                   for n in self.intervalos:
+                      d=n.split('[')
+                      interv=d[1].split(',')
+                      intervalos.append(interv) 
+   
+                   # Se calcula la probabilidad
+                   x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
+            
+            # Se muestra el resultado en la casilla correspondiente
+            prob=str('%3.2f'%(x*100))+' %'
+            resultado1=self._widgets.get_widget('resultado1Prob')
+            resultado1.set_text(prob)
+         else:
+            prob=""
+            resultado1=self._widgets.get_widget('resultado1Prob')
+            resultado1.set_text(prob)
+         return False
+            
+            
    def on_bntIntervalCalculate_clicked(self, button):
          """
          Acción usuario al activar el valor introducido en 
@@ -3225,8 +3278,61 @@ class PPCproject:
          self.escribirProb(mostrarDato)
 
    def on_btnProbabilityReset_clicked(self, button):
-      self._widgets.get_widget('valor3Prob').set_value(0)
-      self._widgets.get_widget('resultado2Prob').set_text("")
+      self._widgets.get_widget('valor3Prob').set_value(90)
+      self.on_probability_changed(None)
+
+   def on_probability_changed(self, widget):
+         """
+         Acción usuario al activar el valor introducido en 
+                  el tercer gtk.Entry de la ventana de probabilidades          
+
+         Parámetros: entry (entry activado)
+         """
+
+         # Se extrae el valor de probabilidad de la interfaz
+         valor3=self._widgets.get_widget('valor3Prob')   
+         dato3=float(valor3.get_value() / 100)
+         #print dato3, 'dato3'
+
+         x=0
+         titulo=self.vProbabilidades.get_title()
+         if titulo==gettext.gettext('Probability related to the path'):         
+            # Se extrae la media y la desviación típica de la interfaz
+            widgetMedia=self._widgets.get_widget('mediaProb')
+            media=widgetMedia.get_text()
+            widgetdTipica=self._widgets.get_widget('dTipicaProb')
+            dTipica=widgetdTipica.get_text()
+
+            valorTabla=float(scipy.stats.distributions.norm.ppf(float(dato3)))
+            #print valorTabla
+
+            x=(valorTabla*float(dTipica))+float(media)
+
+         else:
+                # Extraigo las iteraciones totales
+                totales=self._widgets.get_widget('iteracionesTotales')
+                itTotales=totales.get_text()
+
+                intervalos=[]
+                for n in self.intervalos:
+                   d=n.split('[')
+                   interv=d[1].split(',')
+                   intervalos.append(interv) 
+
+                # Se calcula la probabilidad
+                suma=0
+                for n in range(len(intervalos)):
+                   suma+=self.Fa[n]/float(itTotales)
+                   if suma>float(dato3) or suma==float(dato3):
+                      x=intervalos[n][1]
+                      break
+               
+         if x==0:
+            return             
+         # Se muestra el resultado en la casilla correspondiente
+         tiempo='%5.2f'%(float(x))+' u.d.t.'
+         resultado2=self._widgets.get_widget('resultado2Prob')
+         resultado2.set_text(tiempo)
 
    def on_btnProbabilityCalculate_clicked(self, button):
          """
@@ -3244,7 +3350,7 @@ class PPCproject:
          x=0
          titulo=self.vProbabilidades.get_title()
          if titulo==gettext.gettext('Probability related to the path'):         
-       # Se extrae la media y la desviación típica de la interfaz
+          # Se extrae la media y la desviación típica de la interfaz
             widgetMedia=self._widgets.get_widget('mediaProb')
             media=widgetMedia.get_text()
             widgetdTipica=self._widgets.get_widget('dTipicaProb')
@@ -3256,7 +3362,7 @@ class PPCproject:
             x=(valorTabla*float(dTipica))+float(media)
 
          else:
-            # Extraigo las iteraciones totales
+                # Extraigo las iteraciones totales
                 totales=self._widgets.get_widget('iteracionesTotales')
                 itTotales=totales.get_text()
 
@@ -3480,6 +3586,8 @@ class PPCproject:
       self.box.pack_end(canvas)
       self.box.show_all()
       self.vProbabilidades.show()
+      self.on_btnIntervalReset_clicked(None)
+      self.on_btnProbabilityReset_clicked(None)
 
    def on_btGuardarSim_clicked(self, boton):
       """
