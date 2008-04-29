@@ -49,6 +49,14 @@ class Interface:
       self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
       self.gantt.show_all()
       self.crearTreeViews()
+      # Adding Gantt Diagram to Simulated Annealing window.
+      self.ganttSA = GTKgantt.GTKgantt()
+      self.ganttSA.set_row_height(25)
+      self.ganttSA.set_header_height(20)
+      self.ganttSA.set_cell_width(20)
+
+      vBoxGantt = self._widgets.get_widget('vBoxGantt')
+      vBoxGantt.pack_start(self.ganttSA)
       # Setting status message
       self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
       # Setting unsensitive GTKEntries

@@ -1,6 +1,6 @@
 import random
 import copy
-from math import exp
+from math import exp,log
 from graph import successors2precedents
 
 
@@ -47,7 +47,7 @@ def resourcesPerActivities(initialAsignation):
      
     return asignation
       
-def simulatedAnnealing(asignation,resources,successors,activities,balance,temperature,minTemperature,k,numIterations):
+def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,k,numIterations):
     """
     Try to find the best planning of the project by
         the technique of simulated annealing
@@ -73,31 +73,37 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,temper
 
     # prog1 will store the best planning
     progAux = prog1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),balance)
-    progAuxEvaluated = prog1Evaluated = evaluate(prog1,balance,asignation,resources)
-      
+    prog1Evaluated, loadingSheet, duration1 = evaluate(prog1,balance,asignation,resources)
+    progAuxEvaluated = prog1Evaluated
+    durationAux = duration1
+    
+    temperature = (mu/-log(phi)) * prog1Evaluated
+
     while temperature > minTemperature and numIterations != 0: # XXX grafica?
       
         prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
-        prog2Evaluated = evaluate(prog2,balance,asignation,resources)
-         
+        prog2Evaluated, loadingSheet, duration2 = evaluate(prog2,balance,asignation,resources)
         if prog2Evaluated <= prog1Evaluated:
+            duration1 = duration2
             prog1 = prog2
             prog1Evaluated = prog2Evaluated
         else:
-            numIterations -= 1
+            numIterations -= 1 
             r = random.random()
-            m = exp(-(prog2Evaluated*10000-prog1Evaluated*10000) / temperature)
+            m = exp(-(prog2Evaluated-prog1Evaluated) / temperature)
             if r < m:
-                progAux = prog1 # XXX Lorenzo dijo de quedarnos con la mejor solucion de todas aunque se fuese por un camino peor
+                durationAux = duration1
+                progAux = prog1 
                 progAuxEvaluated = prog1Evaluated
                 prog1 = prog2
-                prog1Evaluated = prog2Evaluated       
+                prog1Evaluated = prog2Evaluated   
+                    
         temperature = k * temperature
 
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1,prog1Evaluated)
+        return (prog1, loadingSheet, duration1)
     else:
-        return (progAux,progAuxEvaluated)
+        return (progAux, loadingSheet, durationAux)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
@@ -142,7 +148,7 @@ def modify(asignation,resources,predecessors,activities,prog1,balance):
 
    
     # The modification will start at this time
-    currentTime = random.randint(0, prog1[-2][1])
+    currentTime = random.randint(0, int(prog1[-3][1]))
    
     # Update the state of result, executing, resources and activities to the state they would be at currentTime
     for act,startTime,endTime in prog1:
@@ -187,18 +193,19 @@ def evaluate(prog,balance,asignation,resources):
     """
     
     duration = 0
-  
+    
     # Calculate duration
     for act,startTime,endTime in prog:
         if endTime > duration:
             duration = endTime
  
     if balance == 0: # if allocate
-        return duration   
+        return (duration, 0, duration) #XXX 2 loadingSheet cuando la calcule separado y 3 0 porque no varianza    
     else: #if balance
-        variance = calculateVariance(prog,resources,asignation,duration) 
-        return variance
-      
+        (variance, loadingSheet) = calculateVariance(prog,resources,asignation,duration) 
+        return (variance, loadingSheet, duration)
+
+#def calculateLoadingSheet (prog, resources, asignation):      
       
 def calculateVariance(prog,resources,asignation,duration): 
     """
@@ -219,10 +226,11 @@ def calculateVariance(prog,resources,asignation,duration):
     average = {}
     variance = {}
     finalVariance = 0
-
     for resource in resources:
         average[resource] = 0
-        for time in range(0,int(duration)):
+        #time = 0
+        for time in range(0,int(duration)): #while time < duration:
+            
             amount = 0
             for act in prog:
                 if act[1]<=time and time<act[2] and act[0] in asignation.keys():
@@ -244,7 +252,7 @@ def calculateVariance(prog,resources,asignation,duration):
         variance[resource] = variance[resource] / (duration-1)
         finalVariance += variance[resource]
       
-    return finalVariance / len(resources)
+    return (finalVariance / len(resources), loadingSheet)
          
 
 def generateOrModify(asignation,resources,predecessors,activities,balance,possibles,executing,result,currentTime):
@@ -282,7 +290,7 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
             # If it balance, pop the activities with maximum time to start = currentTime 
             if balance == 1:
                 for act in possibles.copy():
-                    if possibles[act][1] == currentTime:
+                    if possibles[act][1] == currentTime:                     
                         executing[act] = possibles[act][0]
                         result += [(act, currentTime, currentTime + possibles[act][0])]
                         del possibles[act]
@@ -327,12 +335,22 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
                     result += [(key, currentTime, currentTime + act[0])]
                     del possibles[key] #remove the activity from possibles dictionary
                     numActivities -= 1      
-      
-        currentTime += 1
+        
+        
+        time = min(executing.values())
+            
+        if balance == 0:
+            currentTime += time
+        else:
+            if time < (int(currentTime) + 1):
+                currentTime += time 
+            else:
+                time = 1
+                currentTime = int(currentTime) + time
 
         # Update the remaining time of all activities executing
         for a in executing.copy():
-            executing[a] = float(executing[a]) - 1
+            executing[a] = float(executing[a]) - time
             if executing[a] == 0:
                 del executing[a]
                 # Once one activity finish, update the resources' availability
