@@ -99,6 +99,7 @@ class PPCproject:
       self.vistaLista = self._widgets.get_widget('vistaListaDatos')
       self.modelo = self.interface.modelo
       self.gantt = self.interface.gantt
+      self.ganttSA = self.interface.ganttSA
       self.modeloR = self.interface.modeloR
       self.modeloAR = self.interface.modeloAR
       self.modeloComboS = self.interface.modeloComboS
@@ -2844,10 +2845,30 @@ class PPCproject:
                   event
       Returns: -
       """
-      
+      btReset = self._widgets.get_widget ('btnSimAnnealingReset')
+      btReset.pressed()
+      entryResult = self._widgets.get_widget ('entryResult')
+      entryResult.set_text('')
       window.hide()
       return True
+   
+   def on_rbAllocation_pressed (self, menu_item):
+      sbSlack = self._widgets.get_widget('sbSlackSA')
+      sbSlack.set_sensitive(False)
       
+   def on_rbBalance_pressed (self, menu_item):
+      sbSlack = self._widgets.get_widget('sbSlackSA')
+      sbSlack.set_sensitive(True)
+   
+   def on_cbIterationSA_toggled (self, menu_item):
+      cbIterationSA = self._widgets.get_widget('cbIterationSA')
+      sbMaxIterSA = self._widgets.get_widget('sbMaxIterSA')
+      
+      if cbIterationSA.get_active():
+         sbMaxIterSA.set_sensitive(False)
+      else:
+         sbMaxIterSA.set_sensitive(True)
+   
    def on_mnCOMSOAL_activate(self, menu_item):
       """ 
       User action to open the COMSOAL window
@@ -2856,14 +2877,8 @@ class PPCproject:
       
       Returns: -
       """
-      self.ganttSA = GTKgantt.GTKgantt()
-      self.ganttSA.set_row_height(25)
-      self.ganttSA.set_header_height(20)
-      self.ganttSA.set_cell_width(20)
-
-      vBoxGantt = self._widgets.get_widget('vBoxGantt')
-      vBoxGantt.pack_start(self.ganttSA)      
-      
+      self.ganttSA.clear()      
+      self.ganttSA.update()
       for a in self.actividad:
         self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,a[1])
         
@@ -2879,16 +2894,18 @@ class PPCproject:
       Returns: -
       """
       
-      sbTemperature = self._widgets.get_widget('sbTempSA')
-      Temperature = sbTemperature.set_value(10000)   
+      sbPhi = self._widgets.get_widget('sbPhi')
+      sbPhi.set_value(0.9)
+      sbMu = self._widgets.get_widget('sbMu')
+      sbMu.set_value(0.9)   
       sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
-      minTemperature = sbMinTemperature.set_value(0.01) 
+      sbMinTemperature.set_value(0.01) 
       sbK = self._widgets.get_widget('sbKSA')
-      k = sbK.set_value(0.9)    
+      sbK.set_value(0.9)    
       sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
-      numIterations = sbNumIterations.set_value(100)
+      sbNumIterations.set_value(100)
       sbSlack = self._widgets.get_widget('sbSlackSA')
-      slack = sbSlack.set_value(0)    
+      sbSlack.set_value(0)    
       
    
    def on_btnSimAnnealingCalculate_clicked(self, menu_item):
@@ -2908,7 +2925,7 @@ class PPCproject:
          rest[a[1]] = [float(a[6])]
 
       balRadioButton = self._widgets.get_widget('rbBalance')
-      alloRadioButton = self._widgets.get_widget('rbAllocation')
+      #alloRadioButton = self._widgets.get_widget('rbAllocation')
       if balRadioButton.get_active():
          balance = 1
       else:
@@ -2923,8 +2940,10 @@ class PPCproject:
       successors = self.tablaSucesoras(self.actividad)
       activities = self.alteredLast(rest)
       
-      sbTemperature = self._widgets.get_widget('sbTempSA')
-      Temperature = sbTemperature.get_value()   
+      sbPhi = self._widgets.get_widget('sbPhi')
+      phi = sbPhi.get_value()
+      sbMu = self._widgets.get_widget('sbMu')
+      mu = sbMu.get_value()   
       sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
       minTemperature = sbMinTemperature.get_value() 
       sbK = self._widgets.get_widget('sbKSA')
@@ -2932,12 +2951,12 @@ class PPCproject:
       sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
       numIterations = sbNumIterations.get_value() 
       
-      prog = simulatedAnnealing(asignation,resources,successors,activities,balance,Temperature,minTemperature,k,numIterations) 
-      
+      prog, loadingSheet, duration = simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,k,numIterations) 
+
       entryResult = self._widgets.get_widget('entryResult')
-      entryResult.set_text(str(prog[1]))
+      entryResult.set_text(str(duration))
       
-      for act,startTime,finalTime in prog[0]:
+      for act,startTime,finalTime in prog:
          self.ganttSA.set_activity_start_time(act, startTime)
         
       self.ganttSA.update()
@@ -2973,7 +2992,7 @@ class PPCproject:
       for a in grafoRenumerado.activities:
          if grafoRenumerado.activities[a][0] != 'dummy':
             rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + slack - float(rest[grafoRenumerado.activities[a][0]][0])]
-            
+     
       return rest
       
 
