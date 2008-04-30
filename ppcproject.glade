@@ -1922,7 +1922,7 @@ Alejandro Villagrán Marín
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="window_position">GTK_WIN_POS_CENTER</property>
     <property name="default_width">800</property>
-    <property name="default_height">600</property>
+    <property name="default_height">400</property>
     <signal name="delete_event" handler="on_wndSimAnnealing_delete_event"/>
     <child>
       <widget class="GtkHBox" id="hbox1">
@@ -1983,14 +1983,35 @@ Alejandro Villagrán Marín
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="lblSimAnnealing">
+              <widget class="GtkHBox" id="hbox15">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Slack: </property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <child>
+                  <widget class="GtkLabel" id="lblSimAnnealing">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Slack: </property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">19</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label6">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="label" translatable="yes">φ</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">55</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="padding">5</property>
                 <property name="position">2</property>
               </packing>
             </child>
@@ -2009,30 +2030,9 @@ Alejandro Villagrán Marín
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">59</property>
+                    <property name="padding">12</property>
                   </packing>
                 </child>
-              </widget>
-              <packing>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkLabel" id="label6">
-                <property name="visible">True</property>
-                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">φ</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">4</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkHBox" id="hbox3">
-                <property name="visible">True</property>
-                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
                   <widget class="GtkSpinButton" id="sbPhi">
                     <property name="visible">True</property>
@@ -2045,26 +2045,45 @@ Alejandro Villagrán Marín
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">60</property>
+                    <property name="padding">30</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </widget>
               <packing>
-                <property name="position">5</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label7">
+              <widget class="GtkHBox" id="hbox18">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">μ</property>
+                <child>
+                  <widget class="GtkLabel" id="label7">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="label" translatable="yes">μ</property>
+                  </widget>
+                  <packing>
+                    <property name="padding">20</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label2">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Min. temperature:</property>
+                  </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
-                <property name="position">6</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox4">
+              <widget class="GtkHBox" id="hbox3">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
@@ -2079,27 +2098,9 @@ Alejandro Villagrán Marín
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">60</property>
+                    <property name="padding">12</property>
                   </packing>
                 </child>
-              </widget>
-              <packing>
-                <property name="position">7</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkLabel" id="label2">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Min. temperature:</property>
-              </widget>
-              <packing>
-                <property name="position">8</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkHBox" id="hbox6">
-                <property name="visible">True</property>
-                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
                   <widget class="GtkSpinButton" id="sbMinTempSA">
                     <property name="visible">True</property>
@@ -2112,25 +2113,45 @@ Alejandro Villagrán Marín
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">51</property>
+                    <property name="padding">19</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </widget>
               <packing>
-                <property name="position">9</property>
+                <property name="position">5</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label3">
+              <widget class="GtkHBox" id="hbox4">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">alpha:</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <child>
+                  <widget class="GtkLabel" id="label3">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">alpha:</property>
+                  </widget>
+                  <packing>
+                    <property name="padding">10</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label1">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="label" translatable="yes">Execute n times:</property>
+                  </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
-                <property name="position">10</property>
+                <property name="position">6</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox9">
+              <widget class="GtkHBox" id="hbox6">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
@@ -2145,12 +2166,26 @@ Alejandro Villagrán Marín
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">59</property>
+                    <property name="padding">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkSpinButton" id="sbExecuteTimesSA">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="adjustment">1 1 100 1 10 10</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">30</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </widget>
               <packing>
-                <property name="position">11</property>
+                <property name="position">7</property>
               </packing>
             </child>
             <child>
@@ -2159,7 +2194,7 @@ Alejandro Villagrán Marín
                 <property name="label" translatable="yes">Iterations without improve:</property>
               </widget>
               <packing>
-                <property name="position">12</property>
+                <property name="position">8</property>
               </packing>
             </child>
             <child>
@@ -2196,7 +2231,7 @@ Alejandro Villagrán Marín
                 </child>
               </widget>
               <packing>
-                <property name="position">13</property>
+                <property name="position">9</property>
               </packing>
             </child>
             <child>
@@ -2237,19 +2272,28 @@ Alejandro Villagrán Marín
                 </child>
               </widget>
               <packing>
-                <property name="position">14</property>
+                <property name="position">10</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label5">
+              <widget class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label" translatable="yes">Result:</property>
+                <child>
+                  <widget class="GtkLabel" id="label5">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="label" translatable="yes">Result:</property>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">2</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">15</property>
+                <property name="position">11</property>
               </packing>
             </child>
             <child>
@@ -2257,24 +2301,35 @@ Alejandro Villagrán Marín
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
-                  <widget class="GtkEntry" id="entryResult">
+                  <widget class="GtkVBox" id="vbox3">
                     <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="editable">False</property>
+                    <child>
+                      <widget class="GtkEntry" id="entryResult">
+                        <property name="visible">True</property>
+                        <property name="sensitive">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="editable">False</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">3</property>
+                      </packing>
+                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">8</property>
+                    <property name="padding">21</property>
                   </packing>
                 </child>
               </widget>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">16</property>
+                <property name="position">12</property>
               </packing>
             </child>
           </widget>
