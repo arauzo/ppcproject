@@ -624,13 +624,24 @@ class GanttDrawing(gtk.Layout):
             context.move_to(i * self.cell_width + 0.5,-0.5)
             context.line_to(i * self.cell_width + 0.5, max(self.available_height, height, self.get_vadjustment().upper) + 0.5)
         context.set_line_width(1)
-        context.set_source_color(self.get_style().fg[gtk.STATE_INSENSITIVE])
+        red = float(self.get_style().fg[gtk.STATE_INSENSITIVE].red) / 65535
+        green = float(self.get_style().fg[gtk.STATE_INSENSITIVE].green) / 65535
+        blue = float(self.get_style().fg[gtk.STATE_INSENSITIVE].blue) / 65535
+        context.set_source_rgba(red, green, blue, 0.3)
         context.stroke()
         #Drawing slacks
         for activity in self.graph.activities:
             context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
         context.set_line_width(1)
-        context.set_source_color(self.slack_color if self.slack_color != None else self.get_style().bg[gtk.STATE_ACTIVE])
+        if self.slack_color != None:
+            red = float(self.slack_color.red) / 65535
+            green = float(self.slack_color.green) / 65535
+            blue = float(self.slack_color.blue) / 65535
+        else:
+            red = float(self.get_style().bg[gtk.STATE_ACTIVE].red) / 65535
+            green = float(self.get_style().bg[gtk.STATE_ACTIVE].green) / 65535
+            blue = float(self.get_style().bg[gtk.STATE_ACTIVE].blue) / 65535
+        context.set_source_rgba(red, green, blue, 0.5)
         context.fill_preserve()
         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         context.stroke()
@@ -641,7 +652,15 @@ class GanttDrawing(gtk.Layout):
             context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + 0.5 + x_bearing, (self.graph.activities.index(activity)+ 1) * self.row_height - 0.5 + y_bearing + 0.5)
             context.show_text(self.graph.comments[activity])
         context.set_line_width(1)
-        context.set_source_color(self.activities_color if self.activities_color != None else self.get_style().bg[gtk.STATE_SELECTED])
+        if self.activities_color != None:
+            red = float(self.activities_color.red) / 65535
+            green = float(self.activities_color.green) / 65535
+            blue = float(self.activities_color.blue) / 65535
+        else:
+            red = float(self.get_style().bg[gtk.STATE_SELECTED].red) / 65535
+            green = float(self.get_style().bg[gtk.STATE_SELECTED].green) / 65535
+            blue = float(self.get_style().bg[gtk.STATE_SELECTED].blue) / 65535
+        context.set_source_rgba(red, green, blue, 0.5)
         context.fill_preserve()
         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         context.stroke()
