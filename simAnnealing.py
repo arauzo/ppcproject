@@ -73,17 +73,19 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
 
     # prog1 will store the best planning
     progAux = prog1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),balance)
-    prog1Evaluated, loadingSheet, duration1 = evaluate(prog1,balance,asignation,resources)
+    prog1Evaluated, loadingSheet1, duration1 = evaluate(prog1,balance,asignation,resources)
     progAuxEvaluated = prog1Evaluated
     durationAux = duration1
+    loadingSheetAux = loadingSheet1
     
     temperature = (mu/-log(phi)) * prog1Evaluated
 
     while temperature > minTemperature and numIterations != 0: # XXX grafica?
       
         prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
-        prog2Evaluated, loadingSheet, duration2 = evaluate(prog2,balance,asignation,resources)
+        prog2Evaluated, loadingSheet2, duration2 = evaluate(prog2,balance,asignation,resources)
         if prog2Evaluated <= prog1Evaluated:
+            loadingSheet1 = loadingSheet2
             duration1 = duration2
             prog1 = prog2
             prog1Evaluated = prog2Evaluated
@@ -92,6 +94,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
             r = random.random()
             m = exp(-(prog2Evaluated-prog1Evaluated) / temperature)
             if r < m:
+                loadingSheetAux = loadingSheet1
                 durationAux = duration1
                 progAux = prog1 
                 progAuxEvaluated = prog1Evaluated
@@ -101,9 +104,9 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
         temperature = k * temperature
 
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, loadingSheet, duration1)
+        return (prog1, loadingSheet1, prog1Evaluated)
     else:
-        return (progAux, loadingSheet, durationAux)
+        return (progAux, loadingSheetAux, progAuxEvaluated)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
@@ -198,16 +201,69 @@ def evaluate(prog,balance,asignation,resources):
     for act,startTime,endTime in prog:
         if endTime > duration:
             duration = endTime
- 
+    
+    loadingSheet = calculateLoadingSheet(prog, resources, asignation, duration)
     if balance == 0: # if allocate
-        return (duration, 0, duration) #XXX 2 loadingSheet cuando la calcule separado y 3 0 porque no varianza    
+        return (duration, loadingSheet, duration)  
     else: #if balance
-        (variance, loadingSheet) = calculateVariance(prog,resources,asignation,duration) 
+        variance = calculateVariance(resources,asignation,duration,loadingSheet) 
         return (variance, loadingSheet, duration)
 
-#def calculateLoadingSheet (prog, resources, asignation):      
+def calculateLoadingSheet (prog, resources, asignation, duration):
+    """
+    Calculate the loading sheet of prog
+
+    Parameters: asignation (returned by resourcesPerActivity)
+                resources (returned by resourcesAvailability)
+                predecessors (dictionary with activities and their predecessors)
+                activities (dictionary with the name of activities and their characteristics)
+                balance (if 0 it will allocate else it will balance)
+
+    Returned value: prog (planing generated)
+    """
+        
+    startTime = []
+    endTime = []
+    loadingSheet = {}
+
+    for act in prog:
+        startTime.append(act[1])
+        endTime.append(act[2])
+    
+    for resource in resources:
+        startTimeCopy = copy.copy(startTime)
+        endTimeCopy = copy.copy(endTime)
+        time = min(min(startTimeCopy),min(endTimeCopy))      
+        while time != duration:
+            # remove activities with start time = current time
+            for a in copy.copy(startTimeCopy):
+                if a == time:
+                    startTimeCopy.remove(a)
+            # remove activities with end time = current time
+            for a in copy.copy(endTimeCopy):
+                if a == time:
+                    endTimeCopy.remove(a)
+            amount = 0        
+            for act,start,end in prog:
+                if time >= start and time < end and act in asignation.keys():
+                    for r, a in asignation[act]:
+                        if r == resource:
+                            amount += float(a)
+                            break
+            if resource in loadingSheet.keys() and loadingSheet[resource][-1][1] != amount:
+                loadingSheet[resource] += [(time,amount)]
+            elif resource not in loadingSheet.keys():
+                loadingSheet[resource] = [(time,amount)]
+            
+            if startTimeCopy != []:    
+                time = min(min(startTimeCopy),min(endTimeCopy))
+            else:
+                time = min(endTimeCopy)
+                
+    return loadingSheet
+    
       
-def calculateVariance(prog,resources,asignation,duration): 
+def calculateVariance(resources,asignation,duration, loadingSheet): 
     """
     Calculate the variance of the planning it receives
 
@@ -215,44 +271,36 @@ def calculateVariance(prog,resources,asignation,duration):
                 resources (returned by resourcesAvailability)
                 asignation (returned by resourcesPerActivity)
                 duration (duration of the planning)
+                loadingSheet (loadingSheet of the planning)
                 
-                
-
     Returned value: variance (the average of all resources' variance)
     """
     
-    # Calculate the loading sheet for each resource for prog1
-    loadingSheet = {}
     average = {}
     variance = {}
     finalVariance = 0
+
     for resource in resources:
         average[resource] = 0
-        #time = 0
-        for time in range(0,int(duration)): #while time < duration:
-            
-            amount = 0
-            for act in prog:
-                if act[1]<=time and time<act[2] and act[0] in asignation.keys():
-                    for r,c in asignation[act[0]]:
-                        if r == resource:
-                            amount += float(c)
-                            break
-            if resource in loadingSheet.keys():
-                loadingSheet[resource] += [(time,amount)]
-            else:
-                loadingSheet[resource] = [(time,amount)]  
-            average[resource] += amount
-        average[resource] = average[resource] / duration
-      
-    for resource in resources:
+        pre = 0
+        value = 0
+        for time,data in loadingSheet[resource]:
+            average[resource] += (time - pre) * value
+            pre = time
+            value = data
+        average[resource] = (average[resource] + (duration - pre) * value) / duration
+        
         variance[resource] = 0
-        for time,amount in loadingSheet:
-            variance[resource] += (float(amount) - average[resource])**2
-        variance[resource] = variance[resource] / (duration-1)
-        finalVariance += variance[resource]
-      
-    return (finalVariance / len(resources), loadingSheet)
+        pre = 0
+        value = 0
+        for time,data in loadingSheet[resource]:
+            variance[resource] += (time - pre) * (value - average[resource])**2
+            pre = time
+            value = data
+        variance[resource] = (variance[resource] + (duration - pre) * (value - average[resource])**2) / (duration - 1)
+        finalVariance += variance[resource] 
+    
+    return finalVariance / len(resources)
          
 
 def generateOrModify(asignation,resources,predecessors,activities,balance,possibles,executing,result,currentTime):
