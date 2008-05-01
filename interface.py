@@ -55,8 +55,10 @@ class Interface:
       self.ganttSA.set_header_height(20)
       self.ganttSA.set_cell_width(20)
 
-      vBoxGantt = self._widgets.get_widget('vBoxGantt')
-      vBoxGantt.pack_start(self.ganttSA)
+      vpGanttSA = self._widgets.get_widget('vpGanttSA')
+      vpGanttSA.add1(self.ganttSA)
+      self.ganttSA.show_all()
+      vpGanttSA.set_position(5)
       # Setting status message
       self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
       # Setting unsensitive GTKEntries

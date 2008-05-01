@@ -2880,7 +2880,7 @@ class PPCproject:
       self.ganttSA.clear()      
       self.ganttSA.update()
       for a in self.actividad:
-        self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,a[1])
+        self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
         
       self.wndSimAnnealing.show()
  
@@ -2900,8 +2900,8 @@ class PPCproject:
       sbMu.set_value(0.9)   
       sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
       sbMinTemperature.set_value(0.01) 
-      sbK = self._widgets.get_widget('sbKSA')
-      sbK.set_value(0.9)    
+      sbAlpha = self._widgets.get_widget('sbAlphaSA')
+      sbAlpha.set_value(0.9)    
       sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
       sbNumIterations.set_value(100)
       sbSlack = self._widgets.get_widget('sbSlackSA')
@@ -2946,18 +2946,22 @@ class PPCproject:
       mu = sbMu.get_value()   
       sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
       minTemperature = sbMinTemperature.get_value() 
-      sbK = self._widgets.get_widget('sbKSA')
-      k = sbK.get_value()    
+      sbAlpha = self._widgets.get_widget('sbAlphaSA')
+      alpha = sbAlpha.get_value()    
       sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
       numIterations = sbNumIterations.get_value() 
       
-      prog, loadingSheet, duration = simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,k,numIterations) 
+      prog, loadingSheet, duration, predecessors, maxIter = simulatedAnnealing   (asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations) 
 
+      entryMaxIter = self._widgets.get_widget('entryMaxIter')
+      entryMaxIter.set_text(str(maxIter))
       entryResult = self._widgets.get_widget('entryResult')
       entryResult.set_text(str(duration))
       
       for act,startTime,finalTime in prog:
          self.ganttSA.set_activity_start_time(act, startTime)
+         #XXX if act in predecessors.keys():
+             #XXX self.ganttSA.set_activity_prelations(act,predecessors[act])
         
       self.ganttSA.update()
       self.ganttSA.show_all()
