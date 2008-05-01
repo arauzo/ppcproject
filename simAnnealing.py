@@ -47,7 +47,7 @@ def resourcesPerActivities(initialAsignation):
      
     return asignation
       
-def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,k,numIterations):
+def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations):
     """
     Try to find the best planning of the project by
         the technique of simulated annealing
@@ -59,7 +59,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
                 balance (if 0 it will allocate else it will balance)
                 temperature (parameter to configure simulated annealing algorithm)
                 minTemperature ((parameter to configure simulated annealing algorithm)
-                k ((parameter to configure simulated annealing algorithm)
+                alpha ((parameter to configure simulated annealing algorithm)
                 numIterations ((parameter to configure simulated annealing algorithm)
 
     Returned value: (prog1,prog1Evaluated) or (progAux,progAuxEvaluated) (the best planning and the duration/variance of the project)
@@ -79,6 +79,9 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
     loadingSheetAux = loadingSheet1
     
     temperature = (mu/-log(phi)) * prog1Evaluated
+
+    maxIter = log(minTemperature / temperature) / log (alpha)
+    maxIter = int(maxIter) + 1
 
     while temperature > minTemperature and numIterations != 0: # XXX grafica?
       
@@ -101,12 +104,12 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
                 prog1 = prog2
                 prog1Evaluated = prog2Evaluated   
                     
-        temperature = k * temperature
+        temperature = alpha * temperature
 
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, loadingSheet1, prog1Evaluated)
+        return (prog1, loadingSheet1, duration1, predecessors, maxIter)
     else:
-        return (progAux, loadingSheetAux, progAuxEvaluated)
+        return (progAux, loadingSheetAux, durationAux, predecessors, maxIter)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
