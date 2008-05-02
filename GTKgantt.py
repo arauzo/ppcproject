@@ -314,11 +314,12 @@ class GanttHeader(gtk.Layout):
         #Setting Layout size
         self.set_size(self.width + self.cell_width, self.height) #An extra cell is needed in case the diagram vertical scrollbar is visible
         #Drawing cells with numbers inside
+        context.translate(0.5, 0.5)
         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         for i in range(0, max(self.available_width, self.width) / self.cell_width + 1):
-            context.rectangle(i * self.cell_width + 0.5, 0.5, self.cell_width, self.height - 1)
+            context.rectangle(i * self.cell_width, 0, self.cell_width, self.height - 1)
             x_bearing, y_bearing, txt_width, txt_height = context.text_extents(str(i+1))[:4]
-            context.move_to((i + 0.5) * self.cell_width + 0.5 - txt_width / 2 - x_bearing, self.height / 2 - txt_height / 2 - y_bearing + 0.5)
+            context.move_to((i + 0.5) * self.cell_width - txt_width / 2 - x_bearing, self.height / 2 - txt_height / 2 - y_bearing )
             context.show_text(str(i+1))
         context.set_line_width(1);
         context.stroke()
@@ -627,10 +628,11 @@ class GanttDrawing(gtk.Layout):
                 self.modified = 0
         height = self.row_height * len(self.graph.activities)
         self.set_size(self.width, height)
+        context.translate(0.5, 0.5)
         #Drawing cell lines
         for i in range(0, max(self.available_width, self.width) / self.cell_width + 1):
-            context.move_to(i * self.cell_width + 0.5,-0.5)
-            context.line_to(i * self.cell_width + 0.5, max(self.available_height, height, self.get_vadjustment().upper) + 0.5)
+            context.move_to(i * self.cell_width, -1)
+            context.line_to(i * self.cell_width, max(self.available_height, height, self.get_vadjustment().upper))
         context.set_line_width(1)
         red = float(self.get_style().fg[gtk.STATE_INSENSITIVE].red) / 65535
         green = float(self.get_style().fg[gtk.STATE_INSENSITIVE].green) / 65535
@@ -639,7 +641,7 @@ class GanttDrawing(gtk.Layout):
         context.stroke()
         #Drawing slacks
         for activity in self.graph.activities:
-            context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
+            context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
         context.set_line_width(1)
         if self.slack_color != None:
             red = float(self.slack_color.red) / 65535
@@ -655,9 +657,9 @@ class GanttDrawing(gtk.Layout):
         context.stroke()
         #Drawing activities and commentaries
         for activity in self.graph.activities:
-            context.rectangle(self.graph.start_time[activity]* self.cell_width + 0.5, self.graph.activities.index(activity) * self.row_height + 0.5, self.graph.durations[activity] * self.cell_width , self.row_height - 1 )
+            context.rectangle(self.graph.start_time[activity]* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.durations[activity] * self.cell_width , self.row_height - 1 )
             x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
-            context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + 0.5 + x_bearing, (self.graph.activities.index(activity)+ 1) * self.row_height - 0.5 + y_bearing + 0.5)
+            context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + x_bearing, (self.graph.activities.index(activity)+ 0.90) * self.row_height + y_bearing)
             context.show_text(self.graph.comments[activity])
         context.set_line_width(1)
         if self.activities_color != None:
@@ -674,8 +676,8 @@ class GanttDrawing(gtk.Layout):
         context.stroke()
         #Drawing prelation arrows
         for activity in self.graph.activities:
-            x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.cell_width + 0.5
-            y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 0.5
+            x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.cell_width
+            y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 1
             context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
             for children in self.graph.prelations[activity]:
                 try:
@@ -685,18 +687,18 @@ class GanttDrawing(gtk.Layout):
                     context.fill()
                     #draw an vertical line to the children activity row
                     context.move_to(x,y)
-                    y2 = ((id_actividad2) * self.row_height - 3.5) if id_actividad2 > self.graph.activities.index(activity) else ((id_actividad2 + 1) * self.row_height + 3.5)
+                    y2 = ((id_actividad2) * self.row_height - 4) if id_actividad2 > self.graph.activities.index(activity) else ((id_actividad2 + 1) * self.row_height + 3)
                     context.line_to(x, y2 )
                     context.move_to(x,y2)
                     #draw an horizontal line next to the children activity
-                    x2 = self.graph.start_time[children] * self.cell_width + 0.5
+                    x2 = self.graph.start_time[children] * self.cell_width
                     context.line_to(x2, y2)
                     context.stroke()
                     #draw a triangle
-                    v1 = x2 - 3.5
-                    v2 = x2 + 3.5
+                    v1 = x2 - 3
+                    v2 = x2 + 3
                     context.move_to(v1, y2)
-                    context.line_to(x2, (self.row_height *  id_actividad2 -0.5) if y < y2 else (self.row_height * (id_actividad2 + 1) + 0.5))
+                    context.line_to(x2, (self.row_height *  id_actividad2 -1) if y < y2 else (self.row_height * (id_actividad2 + 1)))
                     context.rel_line_to(3, (-3 if y < y2 else 3))
                     context.close_path()
                     context.fill_preserve()
