@@ -41,6 +41,7 @@ class GTKgantt(gtk.VBox):
 
         Interface:
             set_vadjustment(adjustment)
+            set_hadjustment(adjustment)
             set_policy(horizontal policy, vertical policy)
             set_cell_width(width)
             set_header_height(height)
@@ -86,6 +87,14 @@ class GTKgantt(gtk.VBox):
         adjustment: gtk.Adjustment to be set.
         """
         self.diagram.set_vadjustment(adjustment)
+    def set_hadjustment(self, adjustment):
+        """
+        Set horizontal adjustment to "adjustment"
+        
+        adjustment: gtk.Adjustment to be set.
+        """
+        self.diagram.set_hadjustment(adjustment)
+        self.header.set_hadjustment(adjustment)
     def set_policy(self, hpol, vpol):
         """
         Set scrollbars policy
@@ -351,7 +360,6 @@ class GanttDrawing(gtk.Layout):
             context
 
         Interface:
-            set_vadjustment(adjustment)
             set_policy(horizontal policy, vertical policy)
             set_cell_width(width)
             set_row_height(height)
