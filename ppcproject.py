@@ -30,6 +30,7 @@ import gtk
 import gtk.glade
 
 import GTKgantt
+import loadingSheet
 
 import scipy.stats
 from matplotlib import rcParams
@@ -71,6 +72,7 @@ class PPCproject:
       self.bufer=gtk.TextBuffer()
       self.directorio = gettext.gettext('Unnamed -PPC-Project')
       self.modified=0
+      self.ganttActLoaded = False
       self.interface = interface.Interface(self)
       self._widgets = self.interface._widgets
       self._widgets.signal_autoconnect(self)
@@ -100,6 +102,7 @@ class PPCproject:
       self.modelo = self.interface.modelo
       self.gantt = self.interface.gantt
       self.ganttSA = self.interface.ganttSA
+      self.loadingSheet = self.interface.loadingSheet
       self.modeloR = self.interface.modeloR
       self.modeloAR = self.interface.modeloAR
       self.modeloComboS = self.interface.modeloComboS
@@ -2798,11 +2801,16 @@ class PPCproject:
                   event
       Returns: -
       """
+      self.ganttActLoaded = False
+      self.ganttSA.clear()
       btReset = self._widgets.get_widget ('btnSimAnnealingReset')
       btReset.pressed()
       entryResult = self._widgets.get_widget ('entryResult')
       entryResult.set_text('')
+      entryMaxIter = self._widgets.get_widget('entryMaxIter')
+      entryMaxIter.set_text('')
       window.hide()
+
       return True
    
    def on_rbAllocation_pressed (self, menu_item):
@@ -2830,11 +2838,7 @@ class PPCproject:
       
       Returns: -
       """
-      self.ganttSA.clear()      
-      self.ganttSA.update()
-      for a in self.actividad:
-        self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
-        
+      
       self.wndSimAnnealing.show()
  
             
@@ -2869,6 +2873,7 @@ class PPCproject:
       
       Returns: -
       """
+
       # Add all activities in rest dictionary
       rest={}
       for a in self.actividad:
@@ -2876,9 +2881,14 @@ class PPCproject:
             self.dialogoError(gettext.gettext('You must introduce the average duration.'))
             return False
          rest[a[1]] = [float(a[6])]
-
+      
+      if not self.ganttActLoaded:
+        self.ganttActLoaded = True
+        self.ganttSA.clear()      
+        for a in self.actividad:
+            self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
+        
       balRadioButton = self._widgets.get_widget('rbBalance')
-      #alloRadioButton = self._widgets.get_widget('rbAllocation')
       if balRadioButton.get_active():
          balance = 1
       else:
@@ -2903,9 +2913,19 @@ class PPCproject:
       alpha = sbAlpha.get_value()    
       sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
       numIterations = sbNumIterations.get_value() 
+      sbExecuteTimesSA = self._widgets.get_widget('sbExecuteTimesSA')
+      times = sbExecuteTimesSA.get_value()
       
-      prog, loadingSheet, duration, predecessors, maxIter = simulatedAnnealing   (asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations) 
-
+      prog, progEvaluated, loadingSheet, duration, predecessors, maxIter = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations) 
+      
+      for a in range(0,int(times - 1)):
+          prog2, progEvaluated2, loadingSheet2, duration2, predecessors2, maxIter2 = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations) 
+          if progEvaluated > progEvaluated2:
+              prog = prog2
+              progEvaluated = progEvaluated2
+              loadingSheet = loadingSheet2
+              duration = duration2
+              
       entryMaxIter = self._widgets.get_widget('entryMaxIter')
       entryMaxIter.set_text(str(maxIter))
       entryResult = self._widgets.get_widget('entryResult')
@@ -2918,6 +2938,11 @@ class PPCproject:
         
       self.ganttSA.update()
       self.ganttSA.show_all()
+      
+      self.loadingSheet.set_loading(loadingSheet)
+      self.loadingSheet.set_duration(duration)
+      self.loadingSheet.update()
+      self.loadingSheet.show_all()
       
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):
