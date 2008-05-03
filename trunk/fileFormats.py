@@ -93,3 +93,23 @@ def leerPSPLIB(f):
         l=f.readline()  
             
     return (prelaciones, rec, asig)
+    
+def leerTxt(f):
+      """
+       Lectura de un fichero con extensión '.txt'
+
+       Parámetros: f (fichero)
+
+       Valor de retorno: tabla (datos leidos)
+      """
+      tabla=[]
+      l=f.readline()
+      while l:
+            linea=l.split('\t')
+            linea[1]=linea[1].split(',')
+            tabla.append(linea)
+            l=f.readline()
+
+      l=f.readline()
+      
+      return tabla
