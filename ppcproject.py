@@ -53,7 +53,7 @@ gtk.glade.textdomain(APP)
 import pert
 import graph
 import interface
-from fileFormats import leerPSPLIB, guardarCsv
+from fileFormats import leerPSPLIB, guardarCsv, leerTxt
 from zaderenko import mZad, early, last
 from simAnnealing import simulatedAnnealing
 from simAnnealing import resourcesAvailability
@@ -514,25 +514,7 @@ class PPCproject:
 
       #print "%s" % (tabla)
 
-   def leerTxt(self, f):
-      """
-       Lectura de un fichero con extensión '.txt'
-
-       Parámetros: f (fichero)
-
-       Valor de retorno: tabla (datos leidos)
-      """
-      tabla=[]
-      l=f.readline()
-      while l:
-            linea=l.split('\t')
-            linea[1]=linea[1].split(',')
-            tabla.append(linea)
-            l=f.readline()
-
-      l=f.readline()
-      
-      return tabla
+
    
 
    def cargarTxt(self, tabla):
@@ -2432,7 +2414,7 @@ class PPCproject:
                      # Se cargan los datos extraidos en las listas correspondientes
                      self.cargarPSPLIB(prelaciones, rec, asig)       
                   else: # Fichero de texto
-                     tabla=self.leerTxt(flectura)
+                     tabla=leerTxt(flectura)
                      self.cargarTxt(tabla)
                   response = True
                   flectura.close()
