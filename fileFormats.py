@@ -1,7 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# Importing PSPLIB files
+# Importing files
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
@@ -19,6 +17,39 @@
 # You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import gtk
+import gettext
+
+#********************************************************************************************************************  
+#-----------------------------------------------------------
+# Salva texto en formato CSV
+#
+# Parámetros: texto (texto a guardar)
+#
+# Valor de retorno: -
+#-----------------------------------------------------------   
+
+def guardarCsv(texto, principal):
+        dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+        dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
+        resultado = dialogoGuardar.run()
+        if resultado == gtk.RESPONSE_OK:
+            try:
+                nombre=dialogoGuardar.get_filename()
+                if nombre[-4:]=='.csv':
+                    fescritura=open(nombre,'w')
+                else:
+                    fescritura=open(nombre+'.csv','w')
+                fescritura.write(texto)
+
+            except IOError :
+                principal.dialogoError(gettext.gettext('Error saving the file'))    
+            fescritura.close()
+        #elif resultado == gtk.RESPONSE_CANCEL:  
+            #print "No hay elementos seleccionados"
+
+        dialogoGuardar.destroy() 
+        
 def leerPSPLIB(f):
     """
      Lectura de un proyecto de la librería de proyectos PSPLIB   
@@ -62,4 +93,3 @@ def leerPSPLIB(f):
         l=f.readline()  
             
     return (prelaciones, rec, asig)
-

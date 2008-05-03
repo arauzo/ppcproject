@@ -53,7 +53,7 @@ gtk.glade.textdomain(APP)
 import pert
 import graph
 import interface
-from PSPLIB import leerPSPLIB
+from fileFormats import leerPSPLIB, guardarCsv
 from zaderenko import mZad, early, last
 from simAnnealing import simulatedAnnealing
 from simAnnealing import resourcesAvailability
@@ -2491,36 +2491,7 @@ class PPCproject:
       fescritura.close()    
     
 
-#********************************************************************************************************************  
-#-----------------------------------------------------------
-# Salva texto en formato CSV
-#
-# Parámetros: texto (texto a guardar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------   
 
-   def guardarCsv(self, texto):
-        dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-        resultado = dialogoGuardar.run()
-        if resultado == gtk.RESPONSE_OK:
-            try:
-                nombre=dialogoGuardar.get_filename()
-                if nombre[-4:]=='.csv':
-                    fescritura=open(nombre,'w')
-                else:
-                    fescritura=open(nombre+'.csv','w')
-                fescritura.write(texto)
-
-            except IOError :
-                self.dialogoError(gettext.gettext('Error saving the file'))    
-            fescritura.close()
-        #elif resultado == gtk.RESPONSE_CANCEL:  
-            #print "No hay elementos seleccionados"
-
-        dialogoGuardar.destroy() 
-        
 
 
 
@@ -3636,7 +3607,7 @@ class PPCproject:
       simulacionCsv = simulation.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
       
       # Se muestra el diálogo para salvar el archivo
-      self.guardarCsv(simulacionCsv)
+      guardarCsv(simulacionCsv, self)
 
 
    def on_wndSimulacion_delete_event(self, ventana, evento):
@@ -3795,7 +3766,7 @@ class PPCproject:
       pathsInCSV = graph.royPaths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
       
       # Se muestra el diálogo para salvar el archivo
-      self.guardarCsv(pathsInCSV) 
+      guardarCsv(pathsInCSV, self) 
 
    def on_wndCaminos_delete_event(self, ventana, evento):
       """
