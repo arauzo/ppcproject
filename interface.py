@@ -26,6 +26,7 @@ import gtk
 import gtk.glade
 
 import GTKgantt
+import loadingSheet
 
 # Internationalization
 import gettext
@@ -49,16 +50,26 @@ class Interface:
       self.gantt.set_vadjustment(self._widgets.get_widget("scrolledwindow10").get_vadjustment())
       self.gantt.show_all()
       self.crearTreeViews()
-      # Adding Gantt Diagram to Simulated Annealing window.
+      
+      # Adding the loading sheet to simulated annealing window
+      vpGanttSA = self._widgets.get_widget('vpGanttSA')
+      self.loadingSheet = loadingSheet.loadingSheet()
+      self.loadingSheet.set_cell_width(20)
+      vpGanttSA.add2(self.loadingSheet)
+      self.loadingSheet.show_all()
+      
+      # Adding Gantt Diagram to Simulated Annealing window
       self.ganttSA = GTKgantt.GTKgantt()
       self.ganttSA.set_row_height(25)
       self.ganttSA.set_header_height(20)
       self.ganttSA.set_cell_width(20)
+      self.ganttSA.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
-      vpGanttSA = self._widgets.get_widget('vpGanttSA')
+      self.ganttSA.set_hadjustment(self.loadingSheet.scrolled_window.get_hadjustment())
+      
       vpGanttSA.add1(self.ganttSA)
       self.ganttSA.show_all()
-      vpGanttSA.set_position(5)
+      
       # Setting status message
       self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
       # Setting unsensitive GTKEntries
