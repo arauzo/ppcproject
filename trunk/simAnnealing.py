@@ -1,3 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Gantt diagram drawing GTK widget
+#-----------------------------------------------------------------------
+# PPC-PROJECT
+#   Multiplatform software tool for education and research in 
+#   project management
+#
+# Copyright 2007-8 Universidad de Córdoba
+# This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation, either version 3 of the License,
+#   or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import random
 import copy
 from math import exp,log
@@ -107,9 +128,9 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
         temperature = alpha * temperature
 
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, loadingSheet1, duration1, predecessors, maxIter)
+        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, maxIter)
     else:
-        return (progAux, loadingSheetAux, durationAux, predecessors, maxIter)
+        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, maxIter)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
