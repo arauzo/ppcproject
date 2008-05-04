@@ -131,11 +131,10 @@ class loadingSheetDiagram(gtk.Layout):
     def draw(self, ctx):    
         
         width = (int(self.duration) + 1) * self.cell_width 
-        if width != self.available_width:
-            self.available_width = width
-            #self.set_size_request(self.available_width, self.available_height)  
+        if width > self.available_width:
+            self.set_size(width, self.available_height)  
         #Drawing cell lines
-        for i in range(0, int(self.available_width / self.cell_width) + 1):
+        for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
             ctx.move_to(i * self.cell_width, 0)
             ctx.line_to(i * self.cell_width, self.available_height)
         ctx.set_line_width(1)
