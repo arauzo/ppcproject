@@ -2473,11 +2473,27 @@ class PPCproject:
          pickle.dump(tabla, fescritura)
       except IOError :
          self.dialogoError(gettext.gettext('Error saving the file'))    
-      fescritura.close()    
-    
+      fescritura.close()
 
+   def on_btnSaveRoy_clicked(self, button):
+      self.save_graph_image(self.grafoRoy.get_pixbuf())
 
+   def on_btnSavePert_clicked(self, button):
+      self.save_graph_image(self.grafoPert.get_pixbuf())
+      
+   def save_graph_image(self, pixbuf):
+         dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save Image"),
+                                                None,
+                                                gtk.FILE_CHOOSER_ACTION_SAVE,
+                                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                                gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+         dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
+         resultado = dialogoGuardar.run()
 
+         if resultado == gtk.RESPONSE_OK:
+            filename = dialogoGuardar.get_filename()
+            pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png","png")
+         dialogoGuardar.destroy()
 
 
 # --- DIÁLOGOS DE ADVERTENCIA Y ERRORES       
@@ -2711,6 +2727,7 @@ class PPCproject:
         
         # Se muestra la ventana
         self.vRoy.show()
+        
 
    def on_mnGrafoPert_activate(self, menu_item):
       # Se crea el grafo Pert y se renumera
@@ -2779,6 +2796,10 @@ class PPCproject:
       elif s>0 and m>0:
             self.dialogoError(gettext.gettext('You must introduce the durations: ')+'\n'+'\t'+gettext.gettext('- Optimistic')+'\n'+'\t'+gettext.gettext('- Most probable')+'\n'+'\t'+gettext.gettext('- Pessimistic')+'\n'+'\t'+gettext.gettext('- Average')+'\n'+'\t'+gettext.gettext('- Typical Dev.'))
       else:          
+            self._widgets.get_widget('btProbSim').set_sensitive(False)
+            self._widgets.get_widget('btGuardarSim').set_sensitive(False)
+            for column in self.vistaFrecuencias.get_columns()[1:]:
+               column.set_title("")
             self.vSimulacion.show()
             self.simTotales=[] # Lista con las simulaciones totales
             self.duraciones=[] # Lista con las duraciones de las simulaciones
@@ -3440,6 +3461,8 @@ class PPCproject:
 
       Valor de retorno: -
       """
+      self._widgets.get_widget('btProbSim').set_sensitive(True)
+      self._widgets.get_widget('btGuardarSim').set_sensitive(True)
       # Se extrae el número de iteraciones 
       iteracion=self._widgets.get_widget('iteracion')
       it=iteracion.get_value_as_int()
