@@ -28,19 +28,22 @@ import GTKgantt
 import copy
 import random
 
-class loadingSheet(gtk.VBox):
+class loadingSheet(gtk.HBox):
 
     def __init__(self):
-        gtk.VBox.__init__(self)
-        #self.scale = loadingSheetScale()
+        gtk.HBox.__init__(self)
         self.diagram = loadingSheetDiagram()
+        self.scale = loadingSheetScale()
+        
         self.scrolled_window = gtk.ScrolledWindow(self.diagram.get_hadjustment(), self.diagram.get_vadjustment())
-        self.set_homogeneous(False)
-        self.pack_start(self.scrolled_window, True, True, 0)
         self.scrolled_window.add(self.diagram)
-        #Setting scrollbars policy
         self.scrolled_window.set_policy(gtk.POLICY_ALWAYS,gtk.POLICY_NEVER)
-        #self.set_size_request(200,200)
+        
+        self.set_homogeneous(False)
+        self.pack_start(self.scale, False, False, 0)
+        self.pack_start(self.scrolled_window, True, True, 0)
+        
+        self.diagram.connect("greatest-calculated", self.scale.set_greatest)
         
     def set_cell_width(self, width):
         """
@@ -69,18 +72,67 @@ class loadingSheet(gtk.VBox):
         Redraw loading diagram.
         
         """
-        self.diagram.queue_draw()   
+        self.diagram.queue_draw()
+        self.scale.queue_draw()
+    def clear(self):
+        """
+        Clean loading diagram.
+        
+        """
+        self.diagram.clean()   
 
+class loadingSheetScale(gtk.Layout):
+    def __init__(self):
+        gtk.Layout.__init__(self)
+        #Connecting signals
+        self.greatest = 0
+        self.set_size_request(20,20)
+        self.connect("expose-event", self.expose)
+        
+    def set_greatest(self,widget,greatest):
+        self.greatest = greatest  
+        
+    def expose (self,widget,event):
+        """
+        Function called when the widget needs to be drawn
+        
+        widget:
+        event:
+
+        Returns: False
+        """
+        #Creating Cairo drawing context
+        self.ctx = self.bin_window.cairo_create()
+        #Setting context size to available size
+        #self.ctx.rectangle(event.area.x, event.area.y, self.width, event.area.height)
+        #self.ctx.clip()
+        self.ctx.translate(20.5,-0.5)
+        #Obtaining available width and height
+        self.available_width = event.area.width
+        self.available_height = event.area.height
+        #Drawing
+        self.draw(self.ctx)
+        return False
+              
+    def draw(self,ctx):
+        # Drawing the scale
+        ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+        for i in range(5, int(self.greatest),5):
+            x_bearing, y_bearing, txt_width, txt_height = ctx.text_extents(str(i))[:4]
+            ctx.move_to(-10.5 - txt_width / 2 - x_bearing, self.available_height - (self.available_height - 20) * i / self.greatest - txt_height / 2 - y_bearing )
+            ctx.show_text(str(i))
+            
+        ctx.set_line_width(1);
+        ctx.stroke()  
+        
 class loadingSheetDiagram(gtk.Layout):
+    __gsignals__ = {'greatest-calculated' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
     def __init__(self):
         gtk.Layout.__init__(self)
         self.cell_width = 0
         self.loading = {}
         self.duration = 0
-        self.randomValue = random.random()
         self.connect("expose-event", self.expose)
-        
-    
         
     def set_cell_width(self, width):
         """
@@ -105,7 +157,25 @@ class loadingSheetDiagram(gtk.Layout):
         duration: duration
         """
         self.duration = duration
+    
+    def calculate_greatest(self):
+        greatest = 0
+        for resourceList in self.loading.values():
+            for time, use in resourceList:
+                if use > greatest:
+                    greatest = use
+        self.emit("greatest_calculated",greatest)
+        return greatest
         
+    
+    def clean(self):
+        """
+        Clean loading diagram.
+        
+        """
+        self.loading = {}
+        self.duration = 0
+            
     def expose (self,widget,event):
         """
         Function called when the widget needs to be drawn
@@ -120,7 +190,7 @@ class loadingSheetDiagram(gtk.Layout):
         #Setting context size to available size
         self.ctx.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
         self.ctx.clip()
-        self.ctx.translate(20.5,-0.5)
+        self.ctx.translate(0.5,-0.5)
         #Obtaining available width and height
         self.available_width = event.area.width
         self.available_height = event.area.height
@@ -143,41 +213,37 @@ class loadingSheetDiagram(gtk.Layout):
         blue = float(self.get_style().fg[gtk.STATE_INSENSITIVE].blue) / 65535
         ctx.set_source_rgba(red, green, blue, 0.3)
         ctx.stroke()
-        # Calculate the greatest use of resources
-        greatest = 0
-        for resourceList in self.loading.values():
-            for time, use in resourceList:
-                if use > greatest:
-                    greatest = use
-        # Drawing the scale
-        ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-        for i in range(5, int(greatest),5):
-            x_bearing, y_bearing, txt_width, txt_height = ctx.text_extents(str(i))[:4]
-            ctx.move_to(-10.5 - txt_width / 2 - x_bearing, self.available_height - (self.available_height - 20) * i / greatest - txt_height / 2 - y_bearing )
-            ctx.show_text(str(i))
-        ctx.set_line_width(1);
-        ctx.stroke()      
+        greatest = self.calculate_greatest()          
         # Drawing the diagram      
         loadingCopy = copy.deepcopy(self.loading)
-        red = 1
-        green = 1
-        blue = 1
+        
+        redBG = float(self.get_style().bg[gtk.STATE_INSENSITIVE].red) / 65535
+        greenBG = float(self.get_style().bg[gtk.STATE_INSENSITIVE].green) / 65535
+        blueBG = float(self.get_style().bg[gtk.STATE_INSENSITIVE].blue) / 65535
+       
+        redAct = float(self.get_style().bg[gtk.STATE_SELECTED].red) / 65535
+        greenAct = float(self.get_style().bg[gtk.STATE_SELECTED].green) / 65535
+        blueAct = float(self.get_style().bg[gtk.STATE_SELECTED].blue) / 65535
+
+        redFactor = ((redBG - redAct) * (2 / 3.0) *  1) / (len(self.loading) - 1)
+        greenFactor = (greenBG - greenAct) * (2 / 3.0) *  1 / (len(self.loading) - 1)
+        blueFactor = (blueBG - blueAct) * (2 / 3.0) *  1 / (len(self.loading) - 1)
+
         for resourceList in loadingCopy.values():
-            red = self.randomValue * red
-            green = self.randomValue * green
-            blue = self.randomValue * blue
             while resourceList != []:
                 x1, y1 = resourceList.pop(0)
                 if resourceList != []:
                     x2, y2 = resourceList[0]
-                else:
-                    x2 = self.duration
                 ctx.line_to (x1 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
                 ctx.line_to (x2 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
                 
             ctx.set_line_width(2)
-            ctx.set_source_rgb(red, green, blue)
+            ctx.set_source_rgb(redAct, greenAct, blueAct)
             ctx.stroke()
+            
+            redAct = redAct + redFactor
+            greenAct = greenAct + greenFactor
+            blueAct = blueAct + blueFactor
                 
 def main():
     """

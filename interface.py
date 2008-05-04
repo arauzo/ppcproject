@@ -59,7 +59,7 @@ class Interface:
       self.loadingSheet.show_all()
       
       # Adding Gantt Diagram to Simulated Annealing window
-      fixedGanttSA = self._widgets.get_widget('fixedGanttSA')
+      fixedGanttSA = self._widgets.get_widget('hbox34')
       self.ganttSA = GTKgantt.GTKgantt()
       self.ganttSA.set_row_height(25)
       self.ganttSA.set_header_height(20)
@@ -68,7 +68,7 @@ class Interface:
 
       self.ganttSA.set_hadjustment(self.loadingSheet.scrolled_window.get_hadjustment())
       
-      fixedGanttSA.put(self.ganttSA,21,0)
+      fixedGanttSA.pack_end(self.ganttSA)
       self.ganttSA.show_all()
       
       # Setting status message

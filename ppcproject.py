@@ -2824,6 +2824,7 @@ class PPCproject:
       """
       self.ganttActLoaded = False
       self.ganttSA.clear()
+      self.loadingSheet.clear()
       btReset = self._widgets.get_widget ('btnSimAnnealingReset')
       btReset.pressed()
       entryResult = self._widgets.get_widget ('entryResult')
