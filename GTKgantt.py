@@ -59,6 +59,7 @@ class GTKgantt(gtk.VBox):
             set_thin_slack(value)
             remove_activity(activity)
             reorder(activities)
+            show_arrows(value)
             clear()
     """
     def __init__(self):
@@ -228,6 +229,13 @@ class GTKgantt(gtk.VBox):
         activities: list of strings containing activity names.
         """
         self.diagram.reorder(activities)
+    def show_arrows(self, value):
+        """
+        Set if the prelation arrows should be shown or not.
+
+        value (True or False)
+        """
+        self.diagram.show_arrows(value)
     def clear(self):
         """
         Clear all the activities information
@@ -359,6 +367,7 @@ class GanttDrawing(gtk.Layout):
             slack_color
             thin_slack
             context
+            arrows
 
         Interface:
             set_policy(horizontal policy, vertical policy)
@@ -377,6 +386,7 @@ class GanttDrawing(gtk.Layout):
             set_thin_slack(value)
             remove_activity(activity)
             reorder(activities)
+            show_arrows(value)
             clear()
 
         Signals:
@@ -395,6 +405,7 @@ class GanttDrawing(gtk.Layout):
         self.activities_color = None
         self.slack_color = None
         self.thin_slack = True
+        self.arrows = True
         #Connecting signals
         self.connect("expose-event", self.expose)
 
@@ -590,6 +601,9 @@ class GanttDrawing(gtk.Layout):
         activities: list of strings containing activity names.
         """
         self.graph.activities = activities
+        
+    def show_arrows(self, value):
+        self.arrows = value
 
     def expose (self,widget,event):
         """
@@ -675,36 +689,37 @@ class GanttDrawing(gtk.Layout):
         context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         context.stroke()
         #Drawing prelation arrows
-        for activity in self.graph.activities:
-            x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.cell_width
-            y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 1
-            context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-            for children in self.graph.prelations[activity]:
-                try:
-                    id_actividad2 = self.graph.activities.index(children)
-                    #Draw a circle at the end of the activity
-                    context.arc(x,y, max(self.cell_width, self.row_height) / 8, 0 , 2 * math.pi )
-                    context.fill()
-                    #draw an vertical line to the children activity row
-                    context.move_to(x,y)
-                    y2 = ((id_actividad2) * self.row_height - 4) if id_actividad2 > self.graph.activities.index(activity) else ((id_actividad2 + 1) * self.row_height + 3)
-                    context.line_to(x, y2 )
-                    context.move_to(x,y2)
-                    #draw an horizontal line next to the children activity
-                    x2 = self.graph.start_time[children] * self.cell_width
-                    context.line_to(x2, y2)
-                    context.stroke()
-                    #draw a triangle
-                    v1 = x2 - 3
-                    v2 = x2 + 3
-                    context.move_to(v1, y2)
-                    context.line_to(x2, (self.row_height *  id_actividad2 -1) if y < y2 else (self.row_height * (id_actividad2 + 1)))
-                    context.rel_line_to(3, (-3 if y < y2 else 3))
-                    context.close_path()
-                    context.fill_preserve()
-                    context.stroke()
-                except:
-                    pass
+        if self.arrows:
+            for activity in self.graph.activities:
+                x = (self.graph.start_time[activity] + self.graph.durations[activity]) * self.cell_width
+                y = (self.graph.activities.index(activity) + 0.5) * self.row_height - 1
+                context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+                for children in self.graph.prelations[activity]:
+                    try:
+                        id_actividad2 = self.graph.activities.index(children)
+                        #Draw a circle at the end of the activity
+                        context.arc(x,y, max(self.cell_width, self.row_height) / 8, 0 , 2 * math.pi )
+                        context.fill()
+                        #draw an vertical line to the children activity row
+                        context.move_to(x,y)
+                        y2 = ((id_actividad2) * self.row_height - 4) if id_actividad2 > self.graph.activities.index(activity) else ((id_actividad2 + 1) * self.row_height + 3)
+                        context.line_to(x, y2 )
+                        context.move_to(x,y2)
+                        #draw an horizontal line next to the children activity
+                        x2 = self.graph.start_time[children] * self.cell_width
+                        context.line_to(x2, y2)
+                        context.stroke()
+                        #draw a triangle
+                        v1 = x2 - 3
+                        v2 = x2 + 3
+                        context.move_to(v1, y2)
+                        context.line_to(x2, (self.row_height *  id_actividad2 -1) if y < y2 else (self.row_height * (id_actividad2 + 1)))
+                        context.rel_line_to(3, (-3 if y < y2 else 3))
+                        context.close_path()
+                        context.fill_preserve()
+                        context.stroke()
+                    except:
+                        pass
       
 def main():
     """
