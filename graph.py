@@ -26,22 +26,15 @@ from pert import *
 class Grafo:
 
     def __init__(self):
-        """ Creates an empty graph
-        Efficiency: O(1)
-        """
         self.successors = {}
         self.predecessors = {}
         self.arcs = {}
         
     def suc(self,nodo):
-        """
-        """
         successors = self.successors[nodo]
         return successors
 
     def pre(self,nodo):
-        """
-        """
         predecessors=self.predecessors[nodo]
         return predecessors
         
@@ -51,6 +44,10 @@ class Grafo:
         
     def addArc(self,arc,label):
         a,c=arc
+	if a not in self.successors:
+            self.addNode(a)
+        if c not in self.successors:
+            self.addNode(c)
         self.successors[a].append(c)
         self.predecessors[c].append(a)
         self.arcs[(a,c)]= [label]
@@ -87,7 +84,6 @@ class Grafo:
 
     def numArcs(self):
         return len(self.arcs)
-
 
 
 # ----------------
