@@ -102,7 +102,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
     temperature = (mu/-log(phi)) * prog1Evaluated
     
     alpha = (minTemperature / temperature) ** (1/maxIteration)
-  
+    it=0
     while temperature >= minTemperature and numIterations != 0: # XXX grafica?
         
         prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
@@ -125,7 +125,8 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
                 prog1Evaluated = prog2Evaluated   
                     
         temperature = alpha * temperature
-        
+        it += 1
+    #print i
     if prog1Evaluated <= progAuxEvaluated:
         return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, temperature)
     else:
