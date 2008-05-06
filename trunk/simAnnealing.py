@@ -68,7 +68,7 @@ def resourcesPerActivities(initialAsignation):
      
     return asignation
       
-def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations):
+def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,maxIteration,numIterations):
     """
     Try to find the best planning of the project by
         the technique of simulated annealing
@@ -100,12 +100,11 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
     loadingSheetAux = loadingSheet1
     
     temperature = (mu/-log(phi)) * prog1Evaluated
-
-    maxIter = log(minTemperature / temperature) / log (alpha)
-    maxIter = int(maxIter) + 1
-
-    while temperature > minTemperature and numIterations != 0: # XXX grafica?
-      
+    
+    alpha = (minTemperature / temperature) ** (1/maxIteration)
+  
+    while temperature >= minTemperature and numIterations != 0: # XXX grafica?
+        
         prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
         prog2Evaluated, loadingSheet2, duration2 = evaluate(prog2,balance,asignation,resources)
         if prog2Evaluated <= prog1Evaluated:
@@ -126,11 +125,11 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
                 prog1Evaluated = prog2Evaluated   
                     
         temperature = alpha * temperature
-
+        
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, maxIter)
+        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, temperature)
     else:
-        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, maxIter)
+        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, alpha, temperature)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
@@ -175,7 +174,7 @@ def modify(asignation,resources,predecessors,activities,prog1,balance):
 
    
     # The modification will start at this time
-    currentTime = random.randint(0, int(prog1[-3][1]))
+    currentTime = random.randint(0, int(prog1[-1][1]))
    
     # Update the state of result, executing, resources and activities to the state they would be at currentTime
     for act,startTime,endTime in prog1:
