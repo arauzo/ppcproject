@@ -66,7 +66,15 @@ class Interface:
       self.sbNoImproveIterSA = self._widgets.get_widget('sbNoImproveIterSA')
       self.sbExecuteTimesSA = self._widgets.get_widget('sbExecuteTimesSA')
       
+      self.sbPhi.set_range(0.001,0.999)
       self.sbPhi.set_increments(0.001,0.01)
+      self.sbPhi.set_value(0.9)
+      self.sbMu.set_range(0.001,1)
+      self.sbMu.set_increments(0.001,0.01)
+      self.sbMu.set_value(0.9)
+      self.sbMinTempSA.set_range(0.001,100)
+      self.sbMinTempSA.set_increments(0.001,0.01)
+      self.sbMinTempSA.set_value(0.1)
       # Adding the loading sheet to simulated annealing window
       vpaned1 = self._widgets.get_widget('vpaned1')
       
