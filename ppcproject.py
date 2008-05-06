@@ -2836,11 +2836,8 @@ class PPCproject:
                   event
       Returns: -
       """
-      self.ganttActLoaded = False
-      self.ganttSA.clear()
-      self.loadingSheet.clear()
-      self.btResetSA.pressed() #XXX con esto borrar todo y quitar las demas self de aqui
-      self.entryResultSA.set_text('')
+      
+      self.btResetSA.pressed() 
       window.hide()
 
       return True
@@ -2881,10 +2878,21 @@ class PPCproject:
       Returns: -
       """
       
+      self.ganttActLoaded = False
+      self.ganttSA.clear()
+      self.loadingSheet.clear()
+      self.ganttSA.update()
+      self.loadingSheet.update()
+      self.entryResultSA.set_text('')
+      self.entryMaxTempSA.set_text('')
+      self.entryAlpha.set_text('')
+      self.cbIterationSA.set_active(False)
       self.sbPhi.set_value(0.9)
       self.sbMu.set_value(0.9) 
-      self.sbMinTempSA.set_value(0.01)    
+      self.sbMinTempSA.set_value(0.1)    
       self.sbNoImproveIterSA.set_value(100)
+      self.sbMaxIterationSA.set_value(100)
+      self.sbExecuteTimesSA.set_value(1)
       self.sbSlackSA.set_value(0)    
       
    
