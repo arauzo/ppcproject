@@ -115,6 +115,9 @@ class loadingSheetScale(gtk.Layout):
         return False
               
     def draw(self,ctx):
+        #ctx.rectangle(0,0,self.available_width, self.available_height)
+        #ctx.set_source_rgb(1,1,1)
+        #ctx.fill()
         # Drawing the scale
         ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
         for i in range(5, int(self.greatest),5):

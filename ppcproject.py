@@ -96,7 +96,21 @@ class PPCproject:
       self.vPert=self._widgets.get_widget('wndGrafoPert')
       self.dAyuda=self._widgets.get_widget('dAyuda')
       self.bHerramientas=self._widgets.get_widget('bHerramientas')
-
+      
+      self.rbBalance = self.interface.rbBalance
+      self.btResetSA = self.interface.btResetSA
+      self.entryResultSA = self.interface.entryResultSA
+      self.entryAlpha = self.interface.entryAlpha
+      self.entryMaxTempSA = self.interface.entryMaxTempSA
+      self.cbIterationSA = self.interface.cbIterationSA
+      self.sbSlackSA = self.interface.sbSlackSA
+      self.sbPhi = self.interface.sbPhi
+      self.sbMu = self.interface.sbMu
+      self.sbMinTempSA = self.interface.sbMinTempSA  
+      self.sbMaxIterationSA = self.interface.sbMaxIterationSA
+      self.sbNoImproveIterSA = self.interface.sbNoImproveIterSA
+      self.sbExecuteTimesSA = self.interface.sbExecuteTimesSA
+      
       self.zadViewList = self._widgets.get_widget('vistaZad')
       self.vistaLista = self._widgets.get_widget('vistaListaDatos')
       self.modelo = self.interface.modelo
@@ -2825,32 +2839,26 @@ class PPCproject:
       self.ganttActLoaded = False
       self.ganttSA.clear()
       self.loadingSheet.clear()
-      btReset = self._widgets.get_widget ('btnSimAnnealingReset')
-      btReset.pressed()
-      entryResult = self._widgets.get_widget ('entryResult')
-      entryResult.set_text('')
-      entryMaxIter = self._widgets.get_widget('entryMaxIter')
-      entryMaxIter.set_text('')
+      self.btResetSA.pressed() #XXX con esto borrar todo y quitar las demas self de aqui
+      self.entryResultSA.set_text('')
       window.hide()
 
       return True
    
    def on_rbAllocation_pressed (self, menu_item):
-      sbSlack = self._widgets.get_widget('sbSlackSA')
-      sbSlack.set_sensitive(False)
+      
+      self.sbSlackSA.set_sensitive(False)
       
    def on_rbBalance_pressed (self, menu_item):
-      sbSlack = self._widgets.get_widget('sbSlackSA')
-      sbSlack.set_sensitive(True)
+     
+      self.sbSlackSA.set_sensitive(True)
    
    def on_cbIterationSA_toggled (self, menu_item):
-      cbIterationSA = self._widgets.get_widget('cbIterationSA')
-      sbMaxIterSA = self._widgets.get_widget('sbMaxIterSA')
       
-      if cbIterationSA.get_active():
-         sbMaxIterSA.set_sensitive(False)
+      if self.cbIterationSA.get_active():
+         self.sbNoImproveIterSA.set_sensitive(False)
       else:
-         sbMaxIterSA.set_sensitive(True)
+         self.sbNoImproveIterSA.set_sensitive(True)
    
    def on_mnCOMSOAL_activate(self, menu_item):
       """ 
@@ -2873,18 +2881,11 @@ class PPCproject:
       Returns: -
       """
       
-      sbPhi = self._widgets.get_widget('sbPhi')
-      sbPhi.set_value(0.9)
-      sbMu = self._widgets.get_widget('sbMu')
-      sbMu.set_value(0.9)   
-      sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
-      sbMinTemperature.set_value(0.01) 
-      sbAlpha = self._widgets.get_widget('sbAlphaSA')
-      sbAlpha.set_value(0.9)    
-      sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
-      sbNumIterations.set_value(100)
-      sbSlack = self._widgets.get_widget('sbSlackSA')
-      sbSlack.set_value(0)    
+      self.sbPhi.set_value(0.9)
+      self.sbMu.set_value(0.9) 
+      self.sbMinTempSA.set_value(0.01)    
+      self.sbNoImproveIterSA.set_value(100)
+      self.sbSlackSA.set_value(0)    
       
    
    def on_btnSimAnnealingCalculate_clicked(self, menu_item):
@@ -2910,8 +2911,8 @@ class PPCproject:
         for a in self.actividad:
             self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
         
-      balRadioButton = self._widgets.get_widget('rbBalance')
-      if balRadioButton.get_active():
+      #balRadioButton = self._widgets.get_widget('rbBalance')
+      if self.rbBalance.get_active():
          balance = 1
       else:
          balance = 0
@@ -2925,38 +2926,34 @@ class PPCproject:
       successors = self.tablaSucesoras(self.actividad)
       activities = self.alteredLast(rest)
       
-      sbPhi = self._widgets.get_widget('sbPhi')
-      phi = sbPhi.get_value()
-      sbMu = self._widgets.get_widget('sbMu')
-      mu = sbMu.get_value()   
-      sbMinTemperature = self._widgets.get_widget('sbMinTempSA')   
-      minTemperature = sbMinTemperature.get_value() 
-      sbAlpha = self._widgets.get_widget('sbAlphaSA')
-      alpha = sbAlpha.get_value()    
-      sbNumIterations = self._widgets.get_widget('sbMaxIterSA')
-      numIterations = sbNumIterations.get_value() 
-      sbExecuteTimesSA = self._widgets.get_widget('sbExecuteTimesSA')
-      times = sbExecuteTimesSA.get_value()
-      
-      prog, progEvaluated, loadingSheet, duration, predecessors, maxIter = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations) 
+      phi = self.sbPhi.get_value()
+      mu = self.sbMu.get_value()  
+      minTemperature = self.sbMinTempSA.get_value() 
+      maxIteration = self.sbMaxIterationSA.get_value()           
+      times = self.sbExecuteTimesSA.get_value()
+
+      if self.cbIterationSA.get_active():
+        noImproveIter = -1
+      else:
+        noImproveIter = self.sbNoImproveIterSA.get_value()
+
+      prog, progEvaluated, loadingSheet, duration, predecessors, alpha, temp = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,maxIteration,noImproveIter) 
       
       for a in range(0,int(times - 1)):
-          prog2, progEvaluated2, loadingSheet2, duration2, predecessors2, maxIter2 = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,alpha,numIterations) 
+          prog2, progEvaluated2, loadingSheet2, duration2, predecessors, alpha, temp = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,maxIteration,noImproveIter) 
           if progEvaluated > progEvaluated2:
               prog = prog2
               progEvaluated = progEvaluated2
               loadingSheet = loadingSheet2
               duration = duration2
               
-      entryMaxIter = self._widgets.get_widget('entryMaxIter')
-      entryMaxIter.set_text(str(maxIter))
-      entryResult = self._widgets.get_widget('entryResult')
-      entryResult.set_text(str(duration))
-      
+      self.entryResultSA.set_text(str(duration))
+      self.entryAlpha.set_text(str(alpha))
+      self.entryMaxTempSA.set_text(str(temp))
       for act,startTime,finalTime in prog:
          self.ganttSA.set_activity_start_time(act, startTime)
-         #XXX if act in predecessors.keys():
-             #XXX self.ganttSA.set_activity_prelations(act,predecessors[act])
+         if act in successors.keys():
+             self.ganttSA.set_activity_prelations(act,successors[act])
         
       self.ganttSA.update()
       self.ganttSA.show_all()
@@ -2990,8 +2987,7 @@ class PPCproject:
       tearly = early(nodosN, matrizZad)      
       tlast = last(nodosN, tearly, matrizZad)
       
-      sbSlack = self._widgets.get_widget('sbSlackSA')
-      slack = sbSlack.get_value()      
+      slack = self.sbSlackSA.get_value()      
       # Calculate altered last time
       for a in grafoRenumerado.activities:
          if grafoRenumerado.activities[a][0] != 'dummy':

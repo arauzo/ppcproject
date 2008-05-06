@@ -51,12 +51,34 @@ class Interface:
       self.gantt.show_all()
       self.crearTreeViews()
       
+      # Obtaining the widget of allocation/balance window
+      self.rbBalance = self._widgets.get_widget('rbBalance')
+      self.btResetSA = self._widgets.get_widget ('btnSimAnnealingReset')
+      self.entryResultSA = self._widgets.get_widget ('entryResult')
+      self.entryAlpha = self._widgets.get_widget('entryAlpha')
+      self.entryMaxTempSA = self._widgets.get_widget('entryMaxTempSA')
+      self.cbIterationSA = self._widgets.get_widget('cbIterationSA')
+      self.sbSlackSA = self._widgets.get_widget('sbSlackSA')
+      self.sbPhi = self._widgets.get_widget('sbPhi')
+      self.sbMu = self._widgets.get_widget('sbMu') 
+      self.sbMinTempSA = self._widgets.get_widget('sbMinTempSA')   
+      self.sbMaxIterationSA = self._widgets.get_widget('sbMaxIterationSA') 
+      self.sbNoImproveIterSA = self._widgets.get_widget('sbNoImproveIterSA')
+      self.sbExecuteTimesSA = self._widgets.get_widget('sbExecuteTimesSA')
+      
+      self.sbPhi.set_increments(0.001,0.01)
       # Adding the loading sheet to simulated annealing window
+      vpaned1 = self._widgets.get_widget('vpaned1')
+      
       vpGanttSA = self._widgets.get_widget('vpGanttSA')
       self.loadingSheet = loadingSheet.loadingSheet()
       self.loadingSheet.set_cell_width(20)
-      vpGanttSA.add2(self.loadingSheet)
+      vpaned1.add1(self.loadingSheet)
       self.loadingSheet.show_all()
+      #label =gtk.Label('hola')
+      #vpaned1.add2(label)
+      #label.show()
+      
       
       # Adding Gantt Diagram to Simulated Annealing window
       fixedGanttSA = self._widgets.get_widget('hbox34')
