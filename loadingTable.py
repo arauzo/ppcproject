@@ -24,26 +24,17 @@ import math
 import gtk
 import gtk.gdk
 import gobject
-import GTKgantt
 import copy
-import random
 
-class loadingSheet(gtk.HBox):
+class loadingTable(gtk.HBox):
 
     def __init__(self):
         gtk.HBox.__init__(self)
-        self.diagram = loadingSheetDiagram()
-        self.scale = loadingSheetScale()
-        
-  #      self.scrolled_window = gtk.ScrolledWindow(self.diagram.get_hadjustment(), self.diagram.get_vadjustment())
-   #     self.scrolled_window.add(self.diagram)
-    #    self.scrolled_window.set_policy(gtk.POLICY_ALWAYS,gtk.POLICY_NEVER)
+        self.table = table()
         
         self.set_homogeneous(False)
-        self.pack_start(self.scale, False, False, 0)
-        self.pack_start(self.diagram, True, True, 0)
-        
-        self.diagram.connect("greatest-calculated", self.scale.set_greatest)
+        self.pack_start(self.table, True, True, 0)
+
         
     def set_cell_width(self, width):
         """
@@ -51,90 +42,42 @@ class loadingSheet(gtk.HBox):
         
         width: width (pixels)
         """
-        self.diagram.cell_width = width
-    
+        self.table.cell_width = width    
     def set_loading(self, loading):
         """
         Set loading
         
         loading: loading (pixels)
         """
-        self.diagram.loading = loading
+        self.table.loading = loading
     def set_duration(self, duration):
         """
         Set duration
         
         duration: duration
         """
-        self.diagram.duration = duration
+        self.table.duration = duration
     def set_hadjustment(self, adjustment):
         """
         Set horizontal adjustment to "adjustment"
         
         adjustment: gtk.Adjustment to be set.
         """
-        self.diagram.set_hadjustment(adjustment)     
+        self.table.set_hadjustment(adjustment)
     def update(self):
         """
         Redraw loading diagram.
         
         """
-        self.diagram.queue_draw()
-        self.scale.queue_draw()
+        self.table.queue_draw()
     def clear(self):
         """
         Clean loading diagram.
         
         """
-        self.diagram.clean()   
+        self.table.clean()   
 
-class loadingSheetScale(gtk.Layout):
-    def __init__(self):
-        gtk.Layout.__init__(self)
-        #Connecting signals
-        self.greatest = 0
-        self.set_size_request(20,20)
-        self.connect("expose-event", self.expose)
-        
-    def set_greatest(self,widget,greatest):
-        self.greatest = greatest  
-        
-    def expose (self,widget,event):
-        """
-        Function called when the widget needs to be drawn
-        
-        widget:
-        event:
-
-        Returns: False
-        """
-        #Creating Cairo drawing context
-        self.ctx = self.bin_window.cairo_create()
-        #Setting context size to available size
-        #self.ctx.rectangle(event.area.x, event.area.y, self.width, event.area.height)
-        #self.ctx.clip()
-        self.ctx.translate(20.5,-0.5)
-        #Obtaining available width and height
-        self.available_width = event.area.width
-        self.available_height = event.area.height
-        #Drawing
-        self.draw(self.ctx)
-        return False
-              
-    def draw(self,ctx):
-        step = self.greatest / 5
-        # Drawing the scale
-        ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-        for i in range(step, int(self.greatest),5):
-            x_bearing, y_bearing, txt_width, txt_height = ctx.text_extents(str(i))[:4]
-            ctx.move_to(-10.5 - txt_width / 2 - x_bearing, self.available_height - (self.available_height - 20) * i / self.greatest - txt_height / 2 - y_bearing )
-            ctx.show_text(str(i))
-            
-        ctx.set_line_width(1);
-        ctx.stroke()  
-        
-class loadingSheetDiagram(gtk.Layout):
-    __gsignals__ = {'greatest-calculated' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
+class table(gtk.Layout):
     def __init__(self):
         gtk.Layout.__init__(self)
         self.colors = [gtk.gdk.color_parse("#ff0000"), gtk.gdk.color_parse("#00ff00"), gtk.gdk.color_parse("#0000ff"), gtk.gdk.color_parse("#ffff00"), gtk.gdk.color_parse("#8b4513"), gtk.gdk.color_parse("#ffa500"), gtk.gdk.color_parse("#d02090"), gtk.gdk.color_parse("#006400"), gtk.gdk.color_parse("#191970"), gtk.gdk.color_parse("#ffb5c5"), gtk.gdk.color_parse("#9f79ee")]
@@ -165,17 +108,7 @@ class loadingSheetDiagram(gtk.Layout):
         
         duration: duration
         """
-        self.duration = duration
-    
-    def calculate_greatest(self):
-        greatest = 0
-        for resourceList in self.loading.values():
-            for time, use in resourceList:
-                if use > greatest:
-                    greatest = use
-        self.emit("greatest_calculated",greatest)
-        return greatest
-        
+        self.duration = duration        
     
     def clean(self):
         """
@@ -199,7 +132,7 @@ class loadingSheetDiagram(gtk.Layout):
         #Setting context size to available size
         self.ctx.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
         self.ctx.clip()
-        self.ctx.translate(0.5,-0.5)
+        self.ctx.translate(20.5,-0.5)
         #Obtaining available width and height
         self.available_width = event.area.width
         self.available_height = event.area.height
@@ -208,23 +141,14 @@ class loadingSheetDiagram(gtk.Layout):
         return False
 
     def draw(self, ctx):    
+        rowHeight = (self.available_height - 1) / len(self.loading)
         width = (int(self.duration) + 1) * self.cell_width 
         if width > self.available_width:
-            self.set_size(width, self.available_height)  
-        #Drawing cell lines
-        for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
-            ctx.move_to(i * self.cell_width, 0)
-            ctx.line_to(i * self.cell_width, self.available_height)
-        ctx.set_line_width(1)
-        red = float(self.get_style().fg[gtk.STATE_INSENSITIVE].red) / 65535
-        green = float(self.get_style().fg[gtk.STATE_INSENSITIVE].green) / 65535
-        blue = float(self.get_style().fg[gtk.STATE_INSENSITIVE].blue) / 65535
-        ctx.set_source_rgba(red, green, blue, 0.3)
-        ctx.stroke()
-        greatest = self.calculate_greatest()          
-        # Drawing the diagram
+            self.set_size(width, self.available_height)       
+        # Drawing the table     
         loadingCopy = copy.deepcopy(self.loading)
         colorIndex = 0
+        heightIndex = 1
         for resourceList in loadingCopy.values():
             while resourceList != []:
                 x1, y1 = resourceList.pop(0)
@@ -232,13 +156,21 @@ class loadingSheetDiagram(gtk.Layout):
                     x2, y2 = resourceList[0]
                 else:
                     x2 = self.duration
-                ctx.line_to (x1 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
-                ctx.line_to (x2 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
+                # Drawing the rectangle
+                ctx.rectangle (x1 * self.cell_width, heightIndex, x2 * self.cell_width - x1 * self.cell_width, rowHeight)
+                ctx.set_source_color(self.colors[colorIndex])
+                ctx.fill_preserve()
+                ctx.set_line_width(1)
+                ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+                ctx.stroke()
+                # Drawing the use of resource
+                x_bearing, y_bearing, txt_width, txt_height = ctx.text_extents(str(int(y1)))[:4]
+                ctx.move_to(x2 * self.cell_width - (x2 * self.cell_width - x1 * self.cell_width) / 2 - txt_width / 2 - x_bearing, heightIndex + rowHeight / 2 - txt_height / 2 - y_bearing )
+                ctx.show_text(str(int(y1)))
                 
-            ctx.set_line_width(1)
-            ctx.set_source_color(self.colors[colorIndex])
-            ctx.stroke()
+            
             colorIndex = (colorIndex + 1) % 12
+            heightIndex += rowHeight
 
                 
 def main():
@@ -246,9 +178,9 @@ def main():
         Example of use.
     """
     window = gtk.Window()
-    ls = loadingSheet()
-    ls.set_cell_width(20)
-    window.add(ls)
+    lt = loadingTable()
+    lt.set_cell_width(20)
+    window.add(lt)
     window.connect("destroy", gtk.main_quit)
     window.show_all()
     gtk.main()

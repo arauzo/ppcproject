@@ -117,6 +117,7 @@ class PPCproject:
       self.gantt = self.interface.gantt
       self.ganttSA = self.interface.ganttSA
       self.loadingSheet = self.interface.loadingSheet
+      self.loadingTable = self.interface.loadingTable
       self.modeloR = self.interface.modeloR
       self.modeloAR = self.interface.modeloAR
       self.modeloComboS = self.interface.modeloComboS
@@ -2958,6 +2959,7 @@ class PPCproject:
       self.entryResultSA.set_text(str(duration))
       self.entryAlpha.set_text(str(alpha))
       self.entryMaxTempSA.set_text(str(temp))
+      
       for act,startTime,finalTime in prog:
          self.ganttSA.set_activity_start_time(act, startTime)
          if act in successors.keys():
@@ -2970,6 +2972,11 @@ class PPCproject:
       self.loadingSheet.set_duration(duration)
       self.loadingSheet.update()
       self.loadingSheet.show_all()
+      
+      self.loadingTable.set_loading(loadingSheet)
+      self.loadingTable.set_duration(duration)
+      self.loadingTable.update()
+      self.loadingTable.show_all()
       
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):

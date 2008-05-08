@@ -27,6 +27,7 @@ import gtk.glade
 
 import GTKgantt
 import loadingSheet
+import loadingTable
 
 # Internationalization
 import gettext
@@ -75,18 +76,21 @@ class Interface:
       self.sbMinTempSA.set_range(0.001,100)
       self.sbMinTempSA.set_increments(0.001,0.01)
       self.sbMinTempSA.set_value(0.1)
+      
+      hsbSA = self._widgets.get_widget('hsbSA')
       # Adding the loading sheet to simulated annealing window
       vpaned1 = self._widgets.get_widget('vpaned1')
       
-      vpGanttSA = self._widgets.get_widget('vpGanttSA')
       self.loadingSheet = loadingSheet.loadingSheet()
       self.loadingSheet.set_cell_width(20)
       vpaned1.add1(self.loadingSheet)
       self.loadingSheet.show_all()
-      #label =gtk.Label('hola')
-      #vpaned1.add2(label)
-      #label.show()
       
+      # Adding the loading table to simulated annealing window
+      self.loadingTable = loadingTable.loadingTable()
+      self.loadingTable.set_cell_width(20)
+      vpaned1.add2(self.loadingTable)
+      self.loadingTable.show()      
       
       # Adding Gantt Diagram to Simulated Annealing window
       fixedGanttSA = self._widgets.get_widget('hbox34')
@@ -96,7 +100,9 @@ class Interface:
       self.ganttSA.set_cell_width(20)
       self.ganttSA.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 
-      self.ganttSA.set_hadjustment(self.loadingSheet.scrolled_window.get_hadjustment())
+      self.ganttSA.set_hadjustment(hsbSA.get_adjustment())
+      self.loadingSheet.set_hadjustment(hsbSA.get_adjustment())
+      self.loadingTable.set_hadjustment(hsbSA.get_adjustment())
       
       fixedGanttSA.pack_end(self.ganttSA)
       self.ganttSA.show_all()
