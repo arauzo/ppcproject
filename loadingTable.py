@@ -75,7 +75,7 @@ class loadingTable(gtk.HBox):
         Clean loading diagram.
         
         """
-        self.table.clean()   
+        self.table.clear()   
 
 class table(gtk.Layout):
     def __init__(self):
@@ -110,7 +110,7 @@ class table(gtk.Layout):
         """
         self.duration = duration        
     
-    def clean(self):
+    def clear(self):
         """
         Clean loading diagram.
         
@@ -143,9 +143,12 @@ class table(gtk.Layout):
     def draw(self, ctx):   
         if len(self.loading) != 0: 
             rowHeight = (self.available_height - 1) / len(self.loading)
-        width = (int(self.duration) + 1) * self.cell_width 
+        width2 = (int(self.duration) + 1) * self.cell_width
+        #print width2
+        width = self.get_hadjustment().upper + 1
+        #print width 
         if width > self.available_width:
-            self.set_size(width, self.available_height)  
+            self.set_size(int(width), self.available_height)  
         #Drawing cell lines
         for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
             ctx.move_to(i * self.cell_width, 0)

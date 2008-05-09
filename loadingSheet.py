@@ -82,7 +82,7 @@ class loadingSheet(gtk.HBox):
         Clean loading diagram.
         
         """
-        self.diagram.clean()   
+        self.diagram.clear()   
 
 class loadingSheetScale(gtk.Layout):
     def __init__(self):
@@ -174,7 +174,7 @@ class loadingSheetDiagram(gtk.Layout):
         return greatest
         
     
-    def clean(self):
+    def clear(self):
         """
         Clean loading diagram.
         
@@ -204,10 +204,13 @@ class loadingSheetDiagram(gtk.Layout):
         self.draw(self.ctx)
         return False
 
-    def draw(self, ctx):    
-        width = (int(self.duration) + 1) * self.cell_width 
+    def draw(self, ctx):  
+        width2 = (int(self.duration) + 1) * self.cell_width
+        #print width2
+        width = self.get_hadjustment().upper + 1
+        #print width 
         if width > self.available_width:
-            self.set_size(width, self.available_height)  
+            self.set_size(int(width), self.available_height)  
         #Drawing cell lines
         for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
             ctx.move_to(i * self.cell_width, 0)

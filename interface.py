@@ -103,7 +103,7 @@ class Interface:
       self.ganttSA.set_hadjustment(hsbSA.get_adjustment())
       self.loadingSheet.set_hadjustment(hsbSA.get_adjustment())
       self.loadingTable.set_hadjustment(hsbSA.get_adjustment())
-      
+
       fixedGanttSA.pack_end(self.ganttSA)
       self.ganttSA.show_all()
       
