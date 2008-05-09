@@ -140,11 +140,22 @@ class table(gtk.Layout):
         self.draw(self.ctx)
         return False
 
-    def draw(self, ctx):    
-        rowHeight = (self.available_height - 1) / len(self.loading)
+    def draw(self, ctx):   
+        if len(self.loading) != 0: 
+            rowHeight = (self.available_height - 1) / len(self.loading)
         width = (int(self.duration) + 1) * self.cell_width 
         if width > self.available_width:
-            self.set_size(width, self.available_height)       
+            self.set_size(width, self.available_height)  
+        #Drawing cell lines
+        for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
+            ctx.move_to(i * self.cell_width, 0)
+            ctx.line_to(i * self.cell_width, self.available_height)
+        ctx.set_line_width(1)
+        red = float(self.get_style().fg[gtk.STATE_INSENSITIVE].red) / 65535
+        green = float(self.get_style().fg[gtk.STATE_INSENSITIVE].green) / 65535
+        blue = float(self.get_style().fg[gtk.STATE_INSENSITIVE].blue) / 65535
+        ctx.set_source_rgba(red, green, blue, 0.3)
+        ctx.stroke()              
         # Drawing the table     
         loadingCopy = copy.deepcopy(self.loading)
         colorIndex = 0
@@ -158,7 +169,7 @@ class table(gtk.Layout):
                     x2 = self.duration
                 # Drawing the rectangle
                 ctx.rectangle (x1 * self.cell_width, heightIndex, x2 * self.cell_width - x1 * self.cell_width, rowHeight)
-                ctx.set_source_rgba(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2],0.5)
+                ctx.set_source_rgba(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2],0.3)
                 ctx.fill_preserve()
                 ctx.set_line_width(1)
                 ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
