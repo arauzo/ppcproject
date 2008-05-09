@@ -2966,17 +2966,14 @@ class PPCproject:
              self.ganttSA.set_activity_prelations(act,successors[act])
         
       self.ganttSA.update()
-      self.ganttSA.show_all()
       
       self.loadingSheet.set_loading(loadingSheet)
       self.loadingSheet.set_duration(duration)
       self.loadingSheet.update()
-      self.loadingSheet.show_all()
       
       self.loadingTable.set_loading(loadingSheet)
       self.loadingTable.set_duration(duration)
       self.loadingTable.update()
-      self.loadingTable.show_all()
       
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):
