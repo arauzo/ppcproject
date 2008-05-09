@@ -80,7 +80,7 @@ class loadingTable(gtk.HBox):
 class table(gtk.Layout):
     def __init__(self):
         gtk.Layout.__init__(self)
-        self.colors = [gtk.gdk.color_parse("#ff0000"), gtk.gdk.color_parse("#00ff00"), gtk.gdk.color_parse("#0000ff"), gtk.gdk.color_parse("#ffff00"), gtk.gdk.color_parse("#8b4513"), gtk.gdk.color_parse("#ffa500"), gtk.gdk.color_parse("#d02090"), gtk.gdk.color_parse("#006400"), gtk.gdk.color_parse("#191970"), gtk.gdk.color_parse("#ffb5c5"), gtk.gdk.color_parse("#9f79ee")]
+        self.colors = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0, 0.0), (0.5, 0.3, 0.1), (1.0, 0.6, 0.0), (0.8, 0.1, 0.5), (0.0, 0.4, 0.0), (0.1, 0.1, 0.4), (1.0, 0.7, 0.8), (0.6, 0.5, 0.9)]
         self.cell_width = 0
         self.loading = {}
         self.duration = 0
@@ -132,7 +132,7 @@ class table(gtk.Layout):
         #Setting context size to available size
         self.ctx.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
         self.ctx.clip()
-        self.ctx.translate(20.5,-0.5)
+        self.ctx.translate(0.5,-0.5)
         #Obtaining available width and height
         self.available_width = event.area.width
         self.available_height = event.area.height
@@ -158,7 +158,7 @@ class table(gtk.Layout):
                     x2 = self.duration
                 # Drawing the rectangle
                 ctx.rectangle (x1 * self.cell_width, heightIndex, x2 * self.cell_width - x1 * self.cell_width, rowHeight)
-                ctx.set_source_color(self.colors[colorIndex])
+                ctx.set_source_rgba(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2],0.5)
                 ctx.fill_preserve()
                 ctx.set_line_width(1)
                 ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
@@ -169,7 +169,7 @@ class table(gtk.Layout):
                 ctx.show_text(str(int(y1)))
                 
             
-            colorIndex = (colorIndex + 1) % 12
+            colorIndex = (colorIndex + 1) % 11
             heightIndex += rowHeight
 
                 

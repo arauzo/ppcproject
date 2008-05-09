@@ -79,17 +79,17 @@ class Interface:
       
       hsbSA = self._widgets.get_widget('hsbSA')
       # Adding the loading sheet to simulated annealing window
-      vpaned1 = self._widgets.get_widget('vpaned1')
+      vpLoadingTable = self._widgets.get_widget('vpLoadingTable')
       
       self.loadingSheet = loadingSheet.loadingSheet()
       self.loadingSheet.set_cell_width(20)
-      vpaned1.add1(self.loadingSheet)
+      vpLoadingTable.add1(self.loadingSheet)
       self.loadingSheet.show_all()
       
       # Adding the loading table to simulated annealing window
       self.loadingTable = loadingTable.loadingTable()
       self.loadingTable.set_cell_width(20)
-      vpaned1.add2(self.loadingTable)
+      vpLoadingTable.add2(self.loadingTable)
       self.loadingTable.show()      
       
       # Adding Gantt Diagram to Simulated Annealing window
