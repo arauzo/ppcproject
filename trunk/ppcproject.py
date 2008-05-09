@@ -2838,7 +2838,7 @@ class PPCproject:
       Returns: -
       """
       
-      self.btResetSA.pressed() 
+      self.btResetSA.clicked() 
       window.hide()
 
       return True
@@ -2882,8 +2882,10 @@ class PPCproject:
       self.ganttActLoaded = False
       self.ganttSA.clear()
       self.loadingSheet.clear()
+      self.loadingTable.clear()
       self.ganttSA.update()
       self.loadingSheet.update()
+      self.loadingTable.update()
       self.entryResultSA.set_text('')
       self.entryMaxTempSA.set_text('')
       self.entryAlpha.set_text('')
