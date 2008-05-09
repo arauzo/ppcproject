@@ -35,10 +35,6 @@ class loadingSheet(gtk.HBox):
         self.diagram = loadingSheetDiagram()
         self.scale = loadingSheetScale()
         
-  #      self.scrolled_window = gtk.ScrolledWindow(self.diagram.get_hadjustment(), self.diagram.get_vadjustment())
-   #     self.scrolled_window.add(self.diagram)
-    #    self.scrolled_window.set_policy(gtk.POLICY_ALWAYS,gtk.POLICY_NEVER)
-        
         self.set_homogeneous(False)
         self.pack_start(self.scale, False, False, 0)
         self.pack_start(self.diagram, True, True, 0)
@@ -97,7 +93,8 @@ class loadingSheetScale(gtk.Layout):
         self.connect("expose-event", self.expose)
         
     def set_greatest(self,widget,greatest):
-        self.greatest = greatest  
+        self.greatest = greatest
+        self.queue_draw()  
         
     def expose (self,widget,event):
         """
@@ -111,7 +108,7 @@ class loadingSheetScale(gtk.Layout):
         #Creating Cairo drawing context
         self.ctx = self.bin_window.cairo_create()
         #Setting context size to available size
-        #self.ctx.rectangle(event.area.x, event.area.y, self.width, event.area.height)
+        #self.ctx.rectangle(event.area.x, event.area.y, 20, event.area.height)
         #self.ctx.clip()
         self.ctx.translate(20.5,-0.5)
         #Obtaining available width and height
@@ -137,7 +134,7 @@ class loadingSheetDiagram(gtk.Layout):
     __gsignals__ = {'greatest-calculated' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
     def __init__(self):
         gtk.Layout.__init__(self)
-        self.colors = [gtk.gdk.color_parse("#ff0000"), gtk.gdk.color_parse("#00ff00"), gtk.gdk.color_parse("#0000ff"), gtk.gdk.color_parse("#ffff00"), gtk.gdk.color_parse("#8b4513"), gtk.gdk.color_parse("#ffa500"), gtk.gdk.color_parse("#d02090"), gtk.gdk.color_parse("#006400"), gtk.gdk.color_parse("#191970"), gtk.gdk.color_parse("#ffb5c5"), gtk.gdk.color_parse("#9f79ee")]
+        self.colors = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0, 0.0), (0.5, 0.3, 0.1), (1.0, 0.6, 0.0), (0.8, 0.1, 0.5), (0.0, 0.4, 0.0), (0.1, 0.1, 0.4), (1.0, 0.7, 0.8), (0.6, 0.5, 0.9)]
         self.cell_width = 0
         self.loading = {}
         self.duration = 0
@@ -236,9 +233,9 @@ class loadingSheetDiagram(gtk.Layout):
                 ctx.line_to (x2 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
                 
             ctx.set_line_width(1)
-            ctx.set_source_color(self.colors[colorIndex])
+            ctx.set_source_rgb(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2])
             ctx.stroke()
-            colorIndex = (colorIndex + 1) % 12
+            colorIndex = (colorIndex + 1) % 11
 
                 
 def main():

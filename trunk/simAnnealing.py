@@ -100,10 +100,12 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
     loadingSheetAux = loadingSheet1
     
     temperature = (mu/-log(phi)) * prog1Evaluated
-    
     alpha = (minTemperature / temperature) ** (1/maxIteration)
-    it=0
-    while temperature >= minTemperature and numIterations != 0: # XXX grafica?
+    
+    it=0 #XXX mostrar numero de iteraciones realizado?
+    numIterationsAux = numIterations
+    
+    while temperature >= minTemperature and numIterations != 0:
         
         prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
         prog2Evaluated, loadingSheet2, duration2 = evaluate(prog2,balance,asignation,resources)
@@ -112,6 +114,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
             duration1 = duration2
             prog1 = prog2
             prog1Evaluated = prog2Evaluated
+            numIterations = numIterationsAux # Set numIterations to initial value
         else:
             numIterations -= 1 
             r = random.random()
