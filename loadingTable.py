@@ -31,8 +31,9 @@ class loadingTable(gtk.HBox):
     def __init__(self):
         gtk.HBox.__init__(self)
         self.table = table()
-        
+        #self.names = loadingTableNames()
         self.set_homogeneous(False)
+        #self.pack_start(self.names, False, False, 0)
         self.pack_start(self.table, True, True, 0)
 
         
@@ -64,6 +65,13 @@ class loadingTable(gtk.HBox):
         adjustment: gtk.Adjustment to be set.
         """
         self.table.set_hadjustment(adjustment)
+    def set_width(self, widget, width):
+        """
+        Set width
+        
+        width: width
+        """
+        self.table.set_width(width)
     def update(self):
         """
         Redraw loading diagram.
@@ -77,11 +85,44 @@ class loadingTable(gtk.HBox):
         """
         self.table.clear()   
 
+class loadingTableNames(gtk.Layout):
+    def __init__(self):
+        gtk.Layout.__init__(self)
+        #Connecting signals
+        self.set_size_request(20,20)
+        self.connect("expose-event", self.expose)
+        
+    def expose (self,widget,event):
+        """
+        Function called when the widget needs to be drawn
+        
+        widget:
+        event:
+
+        Returns: False
+        """
+        #Creating Cairo drawing context
+        self.ctx = self.bin_window.cairo_create()
+        #Setting context size to available size
+        #self.ctx.rectangle(event.area.x, event.area.y, 20, event.area.height)
+        #self.ctx.clip()
+        self.ctx.translate(20.5,-0.5)
+        #Obtaining available width and height
+        self.available_width = event.area.width
+        self.available_height = event.area.height
+        #Drawing
+        self.draw(self.ctx)
+        return False
+              
+    def draw(self,ctx):
+        pass
+        
 class table(gtk.Layout):
     def __init__(self):
         gtk.Layout.__init__(self)
         self.colors = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0, 0.0), (0.5, 0.3, 0.1), (1.0, 0.6, 0.0), (0.8, 0.1, 0.5), (0.0, 0.4, 0.0), (0.1, 0.1, 0.4), (1.0, 0.7, 0.8), (0.6, 0.5, 0.9)]
         self.cell_width = 0
+        self.width = 0
         self.loading = {}
         self.duration = 0
         self.connect("expose-event", self.expose)
@@ -108,8 +149,17 @@ class table(gtk.Layout):
         
         duration: duration
         """
-        self.duration = duration        
-    
+        self.duration = duration
+                
+    def set_width(self, width):
+        """
+        Set width
+        
+        width: width
+        """
+        self.width = width
+        self.queue_draw()
+        
     def clear(self):
         """
         Clean loading diagram.
@@ -143,14 +193,9 @@ class table(gtk.Layout):
     def draw(self, ctx):   
         if len(self.loading) != 0: 
             rowHeight = (self.available_height - 1) / len(self.loading)
-        width2 = (int(self.duration) + 1) * self.cell_width
-        #print width2
-        width = self.get_hadjustment().upper + 1
-        #print width 
-        if width > self.available_width:
-            self.set_size(int(width), self.available_height)  
+        self.set_size(self.width, self.available_height)  
         #Drawing cell lines
-        for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
+        for i in range(0, (max(self.available_width,int(self.width)) / self.cell_width) + 1):
             ctx.move_to(i * self.cell_width, 0)
             ctx.line_to(i * self.cell_width, self.available_height)
         ctx.set_line_width(1)

@@ -70,6 +70,13 @@ class loadingSheet(gtk.HBox):
         adjustment: gtk.Adjustment to be set.
         """
         self.diagram.set_hadjustment(adjustment)     
+    def set_width(self, widget, width):
+        """
+        Set width
+        
+        width: width
+        """
+        self.diagram.set_width(width)
     def update(self):
         """
         Redraw loading diagram.
@@ -137,6 +144,7 @@ class loadingSheetDiagram(gtk.Layout):
         self.colors = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0, 0.0), (0.5, 0.3, 0.1), (1.0, 0.6, 0.0), (0.8, 0.1, 0.5), (0.0, 0.4, 0.0), (0.1, 0.1, 0.4), (1.0, 0.7, 0.8), (0.6, 0.5, 0.9)]
         self.cell_width = 0
         self.loading = {}
+        self.width = 0
         self.duration = 0
         self.connect("expose-event", self.expose)
         
@@ -164,6 +172,15 @@ class loadingSheetDiagram(gtk.Layout):
         """
         self.duration = duration
     
+    def set_width(self, width):
+        """
+        Set width
+        
+        width: width
+        """
+        self.width = width
+        self.queue_draw()
+    
     def calculate_greatest(self):
         greatest = 0
         for resourceList in self.loading.values():
@@ -172,7 +189,6 @@ class loadingSheetDiagram(gtk.Layout):
                     greatest = use
         self.emit("greatest_calculated",greatest)
         return greatest
-        
     
     def clear(self):
         """
@@ -205,14 +221,9 @@ class loadingSheetDiagram(gtk.Layout):
         return False
 
     def draw(self, ctx):  
-        width2 = (int(self.duration) + 1) * self.cell_width
-        #print width2
-        width = self.get_hadjustment().upper + 1
-        #print width 
-        if width > self.available_width:
-            self.set_size(int(width), self.available_height)  
+        self.set_size(self.width, self.available_height)  
         #Drawing cell lines
-        for i in range(0, (max(self.available_width,int(width)) / self.cell_width) + 1):
+        for i in range(0, (max(self.available_width,int(self.width)) / self.cell_width) + 1):
             ctx.move_to(i * self.cell_width, 0)
             ctx.line_to(i * self.cell_width, self.available_height)
         ctx.set_line_width(1)
