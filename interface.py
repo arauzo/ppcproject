@@ -39,10 +39,9 @@ gtk.glade.bindtextdomain(APP, DIR)
 gtk.glade.textdomain(APP)
 
 class Interface:
+   __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
    def __init__(self, parent_application):
       self._widgets = gtk.glade.XML('ppcproject.glade')
-
-
 
       self.parent_application = parent_application
       # Adding Gantt Diagram
@@ -77,21 +76,6 @@ class Interface:
       self.sbMinTempSA.set_increments(0.001,0.01)
       self.sbMinTempSA.set_value(0.1)
       
-      hsbSA = self._widgets.get_widget('hsbSA')
-      # Adding the loading sheet to simulated annealing window
-      hbLoadingSheet = self._widgets.get_widget('hbox20')
-      self.loadingSheet = loadingSheet.loadingSheet()
-      self.loadingSheet.set_cell_width(20)
-      hbLoadingSheet.pack_start(self.loadingSheet)
-      self.loadingSheet.show_all()
-      
-      # Adding the loading table to simulated annealing window
-      hbLoadingTable = self._widgets.get_widget('hbox31')
-      self.loadingTable = loadingTable.loadingTable()
-      self.loadingTable.set_cell_width(20)
-      hbLoadingTable.pack_end(self.loadingTable)
-      self.loadingTable.show_all()      
-      
       # Adding Gantt Diagram to Simulated Annealing window
       fixedGanttSA = self._widgets.get_widget('hbox34')
       self.ganttSA = GTKgantt.GTKgantt()
@@ -99,13 +83,28 @@ class Interface:
       self.ganttSA.set_header_height(20)
       self.ganttSA.set_cell_width(20)
       self.ganttSA.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-
-      self.ganttSA.set_hadjustment(hsbSA.get_adjustment())
-      self.loadingSheet.set_hadjustment(hsbSA.get_adjustment())
-      self.loadingTable.set_hadjustment(hsbSA.get_adjustment())
-
+      hsbSA = self._widgets.get_widget('hsbSA')
+      hsbSA.set_adjustment(self.ganttSA.diagram.get_hadjustment())
       fixedGanttSA.pack_end(self.ganttSA)
       self.ganttSA.show_all()
+      
+      # Adding the loading sheet to simulated annealing window
+      hbLoadingSheet = self._widgets.get_widget('hbox37')
+      self.loadingSheet = loadingSheet.loadingSheet()
+      self.loadingSheet.set_cell_width(20)
+      hbLoadingSheet.pack_start(self.loadingSheet)
+      self.loadingSheet.set_hadjustment(hsbSA.get_adjustment())
+      self.loadingSheet.show_all()
+      self.ganttSA.diagram.connect("gantt-width-changed", self.loadingSheet.set_width)
+      # Adding the loading table to simulated annealing window
+      hbLoadingTable = self._widgets.get_widget('hbox30')
+      self.loadingTable = loadingTable.loadingTable()
+      self.loadingTable.set_cell_width(20)
+      hbLoadingTable.pack_end(self.loadingTable)
+      self.loadingTable.set_hadjustment(hsbSA.get_adjustment())
+      self.loadingTable.show_all()      
+      self.ganttSA.diagram.connect("gantt-width-changed", self.loadingTable.set_width)
+
       
       # Setting status message
       self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
