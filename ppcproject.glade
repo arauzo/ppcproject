@@ -1781,7 +1781,7 @@ Alejandro Villagrán Marín
     <property name="title" translatable="yes">Ballance or Allocation</property>
     <property name="window_position">GTK_WIN_POS_CENTER</property>
     <property name="default_width">800</property>
-    <property name="default_height">400</property>
+    <property name="default_height">500</property>
     <signal name="delete_event" handler="on_wndSimAnnealing_delete_event"/>
     <child>
       <widget class="GtkHBox" id="hbox1">
@@ -2343,7 +2343,7 @@ Alejandro Villagrán Marín
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                <property name="position">150</property>
+                <property name="position">200</property>
                 <child>
                   <widget class="GtkHBox" id="hbox34">
                     <property name="visible">True</property>
@@ -2371,7 +2371,7 @@ Alejandro Villagrán Marín
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="position">125</property>
+                    <property name="position">200</property>
                     <child>
                       <widget class="GtkHBox" id="hbox20">
                         <property name="visible">True</property>
