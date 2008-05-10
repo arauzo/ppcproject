@@ -99,10 +99,10 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
     durationAux = duration1
     loadingSheetAux = loadingSheet1
     
-    temperature = (mu/-log(phi)) * prog1Evaluated
+    tempAux = temperature = (mu/-log(phi)) * prog1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
     
-    it=0 #XXX mostrar numero de iteraciones realizado?
+    #it=0 #XXX mostrar numero de iteraciones realizado?
     numIterationsAux = numIterations
     
     while temperature >= minTemperature and numIterations != 0:
@@ -128,12 +128,12 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
                 prog1Evaluated = prog2Evaluated   
                     
         temperature = alpha * temperature
-        it += 1
-    #print i
+        #it += 1 #XXX iteraciones?
+    #print it
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, temperature)
+        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, tempAux)
     else:
-        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, alpha, temperature)
+        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, alpha, tempAux)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
