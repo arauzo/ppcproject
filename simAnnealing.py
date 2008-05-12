@@ -68,7 +68,7 @@ def resourcesPerActivities(initialAsignation):
      
     return asignation
       
-def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi,minTemperature,maxIteration,numIterations):
+def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,numIterations):
     """
     Try to find the best planning of the project by
         the technique of simulated annealing
@@ -92,21 +92,21 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
         if predecessors[a] == []:
             del predecessors[a]
 
-    # prog1 will store the best planning
+    # prog1 will store the best plannings
     progAux = prog1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),balance)
     prog1Evaluated, loadingSheet1, duration1 = evaluate(prog1,balance,asignation,resources)
     progAuxEvaluated = prog1Evaluated
     durationAux = duration1
     loadingSheetAux = loadingSheet1
     
-    tempAux = temperature = (mu/-log(phi)) * prog1Evaluated
+    tempAux = temperature = (nu/-log(phi)) * prog1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
     
-    #it=0 #XXX mostrar numero de iteraciones realizado?
+    it=0
     numIterationsAux = numIterations
     
-    while temperature >= minTemperature and numIterations != 0:
-        
+    while temperature > minTemperature and numIterations != 0:
+        it += 1
         prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
         prog2Evaluated, loadingSheet2, duration2 = evaluate(prog2,balance,asignation,resources)
         if prog2Evaluated <= prog1Evaluated:
@@ -120,20 +120,22 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,mu,phi
             r = random.random()
             m = exp(-(prog2Evaluated-prog1Evaluated) / temperature)
             if r < m:
-                loadingSheetAux = loadingSheet1
-                durationAux = duration1
-                progAux = prog1 
-                progAuxEvaluated = prog1Evaluated
+                if progAuxEvaluated > prog1Evaluated:
+                    loadingSheetAux = loadingSheet1
+                    durationAux = duration1
+                    progAux = prog1 
+                    progAuxEvaluated = prog1Evaluated              
                 prog1 = prog2
-                prog1Evaluated = prog2Evaluated   
+                prog1Evaluated = prog2Evaluated
+                loadingSheet1 = loadingSheet2
+                duration1 = duration2   
                     
         temperature = alpha * temperature
-        #it += 1 #XXX iteraciones?
-    #print it
+
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, tempAux)
+        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, tempAux, it)
     else:
-        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, alpha, tempAux)
+        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, alpha, tempAux, it)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
@@ -354,18 +356,18 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
    
     resourcesUsedUp = 0 
    
-    while activities != {} or possibles != {} or executing != {}: # Until all the activities have finished
+    while activities != {} or possibles != {}: # Until all the activities have finished
         # Choose activities with no predecessors
         for a in activities.copy():
             if a not in predecessors.keys():
                 possibles[a] = activities.pop(a)
       
-        if possibles != {}:
-
+        if possibles != {}:           
             # If it balance, pop the activities with maximum time to start = currentTime 
             if balance == 1:
                 for act in possibles.copy():
-                    if possibles[act][1] == currentTime:                     
+                    if possibles[act][1] == currentTime:
+                        ##print 'se ejecuta indiscutiblemente: ',act                     
                         executing[act] = possibles[act][0]
                         result += [(act, currentTime, currentTime + possibles[act][0])]
                         del possibles[act]
@@ -377,19 +379,23 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
                     numActivities = random.randint(0,len(possibles))
             else:
                 numActivities = -1
-       
+            #print 'numero actividades: ', numActivities
+            #print 'possibles0: ', possibles
+            #print 'executing0: ', executing
+            #print 'result0: ',result
             possiblesCopy = possibles.copy()
-         
             # Execute activities until a number of activities have executed, no more possibles activities or no more resources 
             while numActivities != 0 and possiblesCopy != {} and lengthResources != resourcesUsedUp:
             
                 noExecute = 0
-
+                
+                #print 'predecesors: ',predecessors
+                #print 'possibles: ',possibles 
                 # Pop a random item of possiblesCopy
                 possiblesKeys = possiblesCopy.keys()
                 key = random.choice(possiblesKeys)
                 act = possiblesCopy.pop(key)
- 
+                #print 'actividad: ',act
                 # If resources are required            
                 if key in asignation.keys() and balance == 0:
                     for resource,amount in asignation[key]:
@@ -409,20 +415,20 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
                     executing[key] = act[0]
                     result += [(key, currentTime, currentTime + act[0])]
                     del possibles[key] #remove the activity from possibles dictionary
-                    numActivities -= 1      
-        
+                    numActivities -= 1
+                #print 'ejecutando: ',executing      
+                #print 'resultado: ',result
         
         time = min(executing.values())
-            
         if balance == 0:
             currentTime += time
         else:
-            if time < (int(currentTime) + 1):
+            if time <= 1:
                 currentTime += time 
             else:
                 time = 1
                 currentTime = int(currentTime) + time
-
+        #print 'currentTime: ',currentTime
         # Update the remaining time of all activities executing
         for a in executing.copy():
             executing[a] = float(executing[a]) - time
