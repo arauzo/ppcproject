@@ -140,7 +140,7 @@ class Interface:
       self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaLista.columna=[None]*11
       self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('ID'))
-      self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activities'))
+      self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaLista.columna[2] = gtk.TreeViewColumn(gettext.gettext('Following Act.'))
       self.vistaLista.columna[3] = gtk.TreeViewColumn(gettext.gettext('Optimistic Dur.'))
       self.vistaLista.columna[4] = gtk.TreeViewColumn(gettext.gettext('Most Probable Dur.'))
@@ -183,14 +183,13 @@ class Interface:
       self.vistaLista.columna[10] = gtk.TreeViewColumn()
       self.vistaLista.columna[10].set_widget(self.imagen)
       self.vistaLista.render = gtk.CellRendererText()
-      self.vistaLista.render.set_property('cell-background', 'lightGoldenRodYellow')
       self.vistaLista.append_column(self.vistaLista.columna[10])
       self.vistaLista.columna[10].pack_start(self.vistaLista.render, True)
       self.vistaLista.columna[10].set_attributes(self.vistaLista.render)
       self.vistaLista.columna[10].set_clickable(True)      self.vistaLista.columna[10].connect('clicked', self.parent_application.columna_press, self.menu) 
       self.vistaLista.columna[10].set_expand(False)
       self.checkColum=[None]*9
-      self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activities'), True)
+      self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activity'), True)
       self.checkColum[1] = gtk.CheckMenuItem(gettext.gettext('Following Act.'), True)
       self.checkColum[2] = gtk.CheckMenuItem(gettext.gettext('Optimistic Dur.'), True)
       self.checkColum[3] = gtk.CheckMenuItem(gettext.gettext('Most Probable Dur.'), True)
@@ -254,7 +253,7 @@ class Interface:
       self.ordenH=gtk.TreeModelSort(self.modeloH)
       self.ordenH.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaH.columna=[None]*4
-      self.vistaListaH.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activities'))
+      self.vistaListaH.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaListaH.columna[1] = gtk.TreeViewColumn(gettext.gettext('Total Sl.'))
       self.vistaListaH.columna[2] = gtk.TreeViewColumn(gettext.gettext('Free Sl.'))
       self.vistaListaH.columna[3] = gtk.TreeViewColumn(gettext.gettext('Independent Sl.'))
@@ -357,7 +356,6 @@ class Interface:
       """
       self.vistaLista.renderer[n] = gtk.CellRendererText()
       self.vistaLista.renderer[n].set_property('editable', False)
-      self.vistaLista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
       self.vistaLista.append_column(self.vistaLista.columna[n])
       self.vistaLista.columna[n].set_sort_column_id(n)
       self.vistaLista.columna[n].pack_start(self.vistaLista.renderer[n], True)
@@ -402,7 +400,6 @@ class Interface:
       """
       vista.renderer[n] = gtk.CellRendererText()
       vista.renderer[n].set_property('editable', True)
-      vista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
       vista.renderer[n].connect('edited', self.parent_application.col_edited_cb, modelo, n)
       vista.append_column(vista.columna[n])
       vista.columna[n].set_sort_column_id(n)
@@ -431,7 +428,6 @@ class Interface:
       vista.renderer[n].set_property('model', modeloCombo)
       #vista.renderer[n].set_property('has-entry', False)
       vista.renderer[n].set_property('text-column', 0)
-      vista.renderer[n].set_property('cell-background', 'lightGoldenRodYellow')
       vista.append_column(vista.columna[n])
       vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
