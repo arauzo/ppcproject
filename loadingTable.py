@@ -31,11 +31,8 @@ class loadingTable(gtk.HBox):
     def __init__(self):
         gtk.HBox.__init__(self)
         self.table = table()
-        #self.names = loadingTableNames()
         self.set_homogeneous(False)
-        #self.pack_start(self.names, False, False, 0)
         self.pack_start(self.table, True, True, 0)
-
         
     def set_cell_width(self, width):
         """
@@ -85,37 +82,6 @@ class loadingTable(gtk.HBox):
         """
         self.table.clear()   
 
-class loadingTableNames(gtk.Layout):
-    def __init__(self):
-        gtk.Layout.__init__(self)
-        #Connecting signals
-        self.set_size_request(20,20)
-        self.connect("expose-event", self.expose)
-        
-    def expose (self,widget,event):
-        """
-        Function called when the widget needs to be drawn
-        
-        widget:
-        event:
-
-        Returns: False
-        """
-        #Creating Cairo drawing context
-        self.ctx = self.bin_window.cairo_create()
-        #Setting context size to available size
-        #self.ctx.rectangle(event.area.x, event.area.y, 20, event.area.height)
-        #self.ctx.clip()
-        self.ctx.translate(20.5,-0.5)
-        #Obtaining available width and height
-        self.available_width = event.area.width
-        self.available_height = event.area.height
-        #Drawing
-        self.draw(self.ctx)
-        return False
-              
-    def draw(self,ctx):
-        pass
         
 class table(gtk.Layout):
     def __init__(self):
@@ -123,8 +89,11 @@ class table(gtk.Layout):
         self.colors = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0, 0.0), (0.5, 0.3, 0.1), (1.0, 0.6, 0.0), (0.8, 0.1, 0.5), (0.0, 0.4, 0.0), (0.1, 0.1, 0.4), (1.0, 0.7, 0.8), (0.6, 0.5, 0.9)]
         self.cell_width = 0
         self.width = 0
+        self.rowHeight = 0
         self.loading = {}
         self.duration = 0
+        self.set_tooltip_text("")
+        self.connect("query-tooltip", self.set_tooltip)
         self.connect("expose-event", self.expose)
         
     def set_cell_width(self, width):
@@ -167,6 +136,18 @@ class table(gtk.Layout):
         """
         self.loading = {}
         self.duration = 0
+    
+    def set_tooltip(self, widget, x, y, keyboard_mode, tooltip):
+        #XXX poner normal sin try y sin queuedraw
+        keys = self.loading.keys()
+        keys.sort()
+        if self.rowHeight != 0:
+            try:
+                tooltip.set_text(keys[int(y) / self.rowHeight])
+            except:
+                pass
+        self.queue_draw()    
+        return True
             
     def expose (self,widget,event):
         """
@@ -192,7 +173,7 @@ class table(gtk.Layout):
 
     def draw(self, ctx):   
         if len(self.loading) != 0: 
-            rowHeight = (self.available_height - 1) / len(self.loading)
+            self.rowHeight = (self.available_height - 1) / len(self.loading)
         self.set_size(self.width, self.available_height)  
         #Drawing cell lines
         for i in range(0, (max(self.available_width,int(self.width)) / self.cell_width) + 1):
@@ -208,15 +189,17 @@ class table(gtk.Layout):
         loadingCopy = copy.deepcopy(self.loading)
         colorIndex = 0
         heightIndex = 1
-        for resourceList in loadingCopy.values():
-            while resourceList != []:
-                x1, y1 = resourceList.pop(0)
-                if resourceList != []:
-                    x2, y2 = resourceList[0]
+        loadingKeys = loadingCopy.keys()
+        loadingKeys.sort()
+        for key in loadingKeys:
+            while loadingCopy[key] != []:
+                x1, y1 = loadingCopy[key].pop(0)
+                if loadingCopy[key] != []:
+                    x2, y2 = loadingCopy[key][0]
                 else:
                     x2 = self.duration
                 # Drawing the rectangle
-                ctx.rectangle (x1 * self.cell_width, heightIndex, x2 * self.cell_width - x1 * self.cell_width, rowHeight)
+                ctx.rectangle (x1 * self.cell_width, heightIndex, x2 * self.cell_width - x1 * self.cell_width, self.rowHeight)
                 ctx.set_source_rgba(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2],0.3)
                 ctx.fill_preserve()
                 ctx.set_line_width(1)
@@ -224,12 +207,12 @@ class table(gtk.Layout):
                 ctx.stroke()
                 # Drawing the use of resource
                 x_bearing, y_bearing, txt_width, txt_height = ctx.text_extents(str(int(y1)))[:4]
-                ctx.move_to(x2 * self.cell_width - (x2 * self.cell_width - x1 * self.cell_width) / 2 - txt_width / 2 - x_bearing, heightIndex + rowHeight / 2 - txt_height / 2 - y_bearing )
+                ctx.move_to(x2 * self.cell_width - (x2 * self.cell_width - x1 * self.cell_width) / 2 - txt_width / 2 - x_bearing, heightIndex + self.rowHeight / 2 - txt_height / 2 - y_bearing )
                 ctx.show_text(str(int(y1)))
                 
             
             colorIndex = (colorIndex + 1) % 11
-            heightIndex += rowHeight
+            heightIndex += self.rowHeight
 
                 
 def main():

@@ -101,11 +101,12 @@ class PPCproject:
       self.btResetSA = self.interface.btResetSA
       self.entryResultSA = self.interface.entryResultSA
       self.entryAlpha = self.interface.entryAlpha
+      self.entryIterations = self.interface.entryIterations
       self.entryMaxTempSA = self.interface.entryMaxTempSA
       self.cbIterationSA = self.interface.cbIterationSA
       self.sbSlackSA = self.interface.sbSlackSA
       self.sbPhi = self.interface.sbPhi
-      self.sbMu = self.interface.sbMu
+      self.sbNu = self.interface.sbNu
       self.sbMinTempSA = self.interface.sbMinTempSA  
       self.sbMaxIterationSA = self.interface.sbMaxIterationSA
       self.sbNoImproveIterSA = self.interface.sbNoImproveIterSA
@@ -2769,9 +2770,9 @@ class PPCproject:
    def on_mnZaderenko_activate(self, menu_item):
       s=0
       for a in self.actividad:
-         if a[6]=='' or a[7]=='':
+         if a[6]=='':# or a[7]=='':
                s+=1
-               
+      print self.actividad      
       if s>0:
          self.dialogoError(gettext.gettext('There are uncomplete activities'))
       else:
@@ -2891,7 +2892,7 @@ class PPCproject:
       self.entryAlpha.set_text('')
       self.cbIterationSA.set_active(False)
       self.sbPhi.set_value(0.9)
-      self.sbMu.set_value(0.9) 
+      self.sbNu.set_value(0.9) 
       self.sbMinTempSA.set_value(0.1)    
       self.sbNoImproveIterSA.set_value(100)
       self.sbMaxIterationSA.set_value(100)
@@ -2938,7 +2939,7 @@ class PPCproject:
       activities = self.alteredLast(rest)
       
       phi = self.sbPhi.get_value()
-      mu = self.sbMu.get_value()  
+      nu = self.sbNu.get_value()  
       minTemperature = self.sbMinTempSA.get_value() 
       maxIteration = self.sbMaxIterationSA.get_value()           
       times = self.sbExecuteTimesSA.get_value()
@@ -2948,10 +2949,10 @@ class PPCproject:
       else:
         noImproveIter = self.sbNoImproveIterSA.get_value()
 
-      prog, progEvaluated, loadingSheet, duration, predecessors, alpha, temp = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,maxIteration,noImproveIter) 
+      prog, progEvaluated, loadingSheet, duration, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter) 
       
       for a in range(0,int(times - 1)):
-          prog2, progEvaluated2, loadingSheet2, duration2, predecessors, alpha, temp = simulatedAnnealing      (asignation,resources,successors,activities,balance,mu,phi,minTemperature,maxIteration,noImproveIter) 
+          prog2, progEvaluated2, loadingSheet2, duration2, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter) 
           if progEvaluated > progEvaluated2:
               prog = prog2
               progEvaluated = progEvaluated2
@@ -2961,6 +2962,7 @@ class PPCproject:
       self.entryResultSA.set_text(str(duration))
       self.entryAlpha.set_text(str(alpha))
       self.entryMaxTempSA.set_text(str(temp))
+      self.entryIterations.set_text(str(it))
       
       for act,startTime,finalTime in prog:
          self.ganttSA.set_activity_start_time(act, startTime)

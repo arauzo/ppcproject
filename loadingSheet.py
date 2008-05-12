@@ -63,6 +63,8 @@ class loadingSheet(gtk.HBox):
         duration: duration
         """
         self.diagram.duration = duration
+        self.scale.duration = duration
+        
     def set_hadjustment(self, adjustment):
         """
         Set horizontal adjustment to "adjustment"
@@ -96,6 +98,7 @@ class loadingSheetScale(gtk.Layout):
         gtk.Layout.__init__(self)
         #Connecting signals
         self.greatest = 0
+        self.duration = 0
         self.set_size_request(20,20)
         self.connect("expose-event", self.expose)
         
@@ -129,13 +132,12 @@ class loadingSheetScale(gtk.Layout):
         step = self.greatest / 5
         # Drawing the scale
         ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-        for i in range(step, int(self.greatest),5):
+        for i in range(int(step), int(self.greatest),5):
             x_bearing, y_bearing, txt_width, txt_height = ctx.text_extents(str(i))[:4]
             ctx.move_to(-10.5 - txt_width / 2 - x_bearing, self.available_height - (self.available_height - 20) * i / self.greatest - txt_height / 2 - y_bearing )
+
             ctx.show_text(str(i))
             
-        ctx.set_line_width(1);
-        ctx.stroke()  
         
 class loadingSheetDiagram(gtk.Layout):
     __gsignals__ = {'greatest-calculated' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
@@ -232,22 +234,32 @@ class loadingSheetDiagram(gtk.Layout):
         blue = float(self.get_style().fg[gtk.STATE_INSENSITIVE].blue) / 65535
         ctx.set_source_rgba(red, green, blue, 0.3)
         ctx.stroke()
-        greatest = self.calculate_greatest()          
+        greatest = self.calculate_greatest()   
+        # Drawing scale lines
+        step = greatest / 5
+        for i in range(int(step), int(greatest),5):
+            ctx.move_to(0, self.available_height - (self.available_height - 20) * i / greatest)
+            ctx.line_to(self.duration * self.cell_width, self.available_height - (self.available_height - 20) * i / greatest)
+            ctx.set_source_rgba(red,green,blue,0.3)
+            ctx.stroke()
+     
         # Drawing the diagram
         loadingCopy = copy.deepcopy(self.loading)
         colorIndex = 0
-        for resourceList in loadingCopy.values():
-            while resourceList != []:
-                x1, y1 = resourceList.pop(0)
-                if resourceList != []:
-                    x2, y2 = resourceList[0]
+        loadingKeys = loadingCopy.keys()
+        loadingKeys.sort()
+        for key in loadingKeys:
+            while loadingCopy[key] != []:
+                x1, y1 = loadingCopy[key].pop(0)
+                if loadingCopy[key] != []:
+                    x2, y2 = loadingCopy[key][0]
                 else:
                     x2 = self.duration
                 ctx.line_to (x1 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
                 ctx.line_to (x2 * self.cell_width, self.available_height - (self.available_height - 20) * y1 / greatest)
                 
-            ctx.set_line_width(1)
-            ctx.set_source_rgb(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2])
+            ctx.set_line_width(2)
+            ctx.set_source_rgba(self.colors[colorIndex][0], self.colors[colorIndex][1], self.colors[colorIndex][2],0.5)
             ctx.stroke()
             colorIndex = (colorIndex + 1) % 11
 
