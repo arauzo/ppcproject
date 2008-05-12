@@ -237,12 +237,15 @@ class loadingSheetDiagram(gtk.Layout):
         greatest = self.calculate_greatest()   
         # Drawing scale lines
         step = greatest / 5
+        ctx.save()
+        ctx.set_dash([5],5)
         for i in range(int(step), int(greatest),5):
             ctx.move_to(0, self.available_height - (self.available_height - 20) * i / greatest)
-            ctx.line_to(self.duration * self.cell_width, self.available_height - (self.available_height - 20) * i / greatest)
+            ctx.line_to(max(self.available_width,int(self.width)), self.available_height - (self.available_height - 20) * i / greatest)
             ctx.set_source_rgba(red,green,blue,0.3)
             ctx.stroke()
-     
+
+        ctx.restore()
         # Drawing the diagram
         loadingCopy = copy.deepcopy(self.loading)
         colorIndex = 0
