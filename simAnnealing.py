@@ -101,7 +101,8 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
     
     tempAux = temperature = (nu/-log(phi)) * prog1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
-    
+    if alpha >= 1:
+        return (None,None,None,None,None,None,None,None) #XXX algo menos chapucero?
     it=0
     numIterationsAux = numIterations
     
@@ -371,21 +372,20 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
                         executing[act] = possibles[act][0]
                         result += [(act, currentTime, currentTime + possibles[act][0])]
                         del possibles[act]
-                # Calculate a number of activities to execute       
-                # A minimum of one activity has to be executing
-                if executing == {}:
-                    numActivities = random.randint(1,len(possibles))
-                else:
-                    numActivities = random.randint(0,len(possibles))
+            # Calculate a number of activities to execute       
+            # A minimum of one activity has to be executing
+            if executing == {}:
+                numActivities = random.randint(1,len(possibles))
             else:
-                numActivities = -1
+                numActivities = random.randint(0,len(possibles))
+
             #print 'numero actividades: ', numActivities
             #print 'possibles0: ', possibles
             #print 'executing0: ', executing
             #print 'result0: ',result
             possiblesCopy = possibles.copy()
             # Execute activities until a number of activities have executed, no more possibles activities or no more resources 
-            while numActivities != 0 and possiblesCopy != {} and lengthResources != resourcesUsedUp:
+            while numActivities != 0 and lengthResources != resourcesUsedUp:
             
                 noExecute = 0
                 
@@ -415,7 +415,8 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
                     executing[key] = act[0]
                     result += [(key, currentTime, currentTime + act[0])]
                     del possibles[key] #remove the activity from possibles dictionary
-                    numActivities -= 1
+                
+                numActivities -= 1
                 #print 'ejecutando: ',executing      
                 #print 'resultado: ',result
         

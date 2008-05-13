@@ -2916,12 +2916,6 @@ class PPCproject:
             self.dialogoError(gettext.gettext('You must introduce the average duration.'))
             return False
          rest[a[1]] = [float(a[6])]
-      
-      if not self.ganttActLoaded:
-        self.ganttActLoaded = True
-        self.ganttSA.clear()      
-        for a in self.actividad:
-            self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
         
       #balRadioButton = self._widgets.get_widget('rbBalance')
       if self.rbBalance.get_active():
@@ -2951,34 +2945,43 @@ class PPCproject:
 
       prog, progEvaluated, loadingSheet, duration, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter) 
       
-      for a in range(0,int(times - 1)):
-          prog2, progEvaluated2, loadingSheet2, duration2, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter) 
-          if progEvaluated > progEvaluated2:
-              prog = prog2
-              progEvaluated = progEvaluated2
-              loadingSheet = loadingSheet2
-              duration = duration2
-              
-      self.entryResultSA.set_text(str(duration))
-      self.entryAlpha.set_text(str(alpha))
-      self.entryMaxTempSA.set_text(str(temp))
-      self.entryIterations.set_text(str(it))
-      
-      for act,startTime,finalTime in prog:
-         self.ganttSA.set_activity_start_time(act, startTime)
-         if act in successors.keys():
-             self.ganttSA.set_activity_prelations(act,successors[act])
-        
-      self.ganttSA.update()
-      
-      self.loadingSheet.set_loading(loadingSheet)
-      self.loadingSheet.set_duration(duration)
-      self.loadingSheet.update()
-      
-      self.loadingTable.set_loading(loadingSheet)
-      self.loadingTable.set_duration(duration)
-      self.loadingTable.update()
-      
+      if prog != None:
+          if not self.ganttActLoaded:
+              self.ganttActLoaded = True
+              self.ganttSA.clear()      
+              for a in self.actividad:
+                  self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
+          
+          for a in range(0,int(times - 1)):
+              prog2, progEvaluated2, loadingSheet2, duration2, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter) 
+              if progEvaluated > progEvaluated2:
+                  prog = prog2
+                  progEvaluated = progEvaluated2
+                  loadingSheet = loadingSheet2
+                  duration = duration2
+                  
+          self.entryResultSA.set_text(str(duration))
+          self.entryAlpha.set_text(str(alpha))
+          self.entryMaxTempSA.set_text(str(temp))
+          self.entryIterations.set_text(str(it))
+          
+          for act,startTime,finalTime in prog:
+             self.ganttSA.set_activity_start_time(act, startTime)
+             if act in successors.keys():
+                 self.ganttSA.set_activity_prelations(act,successors[act])
+            
+          self.ganttSA.update()
+          
+          self.loadingSheet.set_loading(loadingSheet)
+          self.loadingSheet.set_duration(duration)
+          self.loadingSheet.update()
+          
+          self.loadingTable.set_loading(loadingSheet)
+          self.loadingTable.set_duration(duration)
+          self.loadingTable.update()
+      else:
+        self.dialogoError(gettext.gettext('Initial temperature not high enough.'))
+        return False
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):
       """ 
