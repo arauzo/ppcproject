@@ -2770,7 +2770,7 @@ class PPCproject:
    def on_mnZaderenko_activate(self, menu_item):
       s=0
       for a in self.actividad:
-         if a[6]=='':# or a[7]=='':
+         if a[6]=='':
                s+=1
       print self.actividad      
       if s>0:
@@ -2782,7 +2782,7 @@ class PPCproject:
       """ User ask for slacks """
       s=0
       for a in self.actividad:
-         if a[6]=='' or a[7]=='':
+         if a[6]=='':
                s+=1
                
       if s>0:
