@@ -72,10 +72,10 @@ class Interface:
       
       self.sbPhi.set_range(0.001,0.999)
       self.sbPhi.set_increments(0.001,0.01)
-      self.sbPhi.set_value(0.9)
+      self.sbPhi.set_value(0.1)
       self.sbNu.set_range(0.001,1)
       self.sbNu.set_increments(0.001,0.01)
-      self.sbNu.set_value(0.9)
+      self.sbNu.set_value(0.1)
       self.sbMinTempSA.set_range(0.001,100)
       self.sbMinTempSA.set_increments(0.001,0.01)
       self.sbMinTempSA.set_value(0.1)
