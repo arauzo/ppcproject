@@ -352,7 +352,7 @@ class Diagram_graph():
     slacks = {}
     comments = {}
 
-class GanttDrawing(gtk.Layout):
+class GanttDrawing(gtk.Layout, gtk.EventBox):
     """
     Class GanttDrawing(gtk.Layout)
 
@@ -373,7 +373,6 @@ class GanttDrawing(gtk.Layout):
             set_policy(horizontal policy, vertical policy)
             set_cell_width(width)
             set_row_height(height)
-            update()
             add_activity(name, prelations, duration = 0 , start_time = 0, slack = 0, comment = "")
             rename_activity(old name, new name)
             set_activity_duration(activity, duration)
@@ -395,6 +394,7 @@ class GanttDrawing(gtk.Layout):
     __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
     def __init__(self):
         gtk.Layout.__init__(self)
+        gtk.EventBox.__init__(self)
         #Creating objects
         self.graph = Diagram_graph()
         #Initialising values
@@ -406,8 +406,41 @@ class GanttDrawing(gtk.Layout):
         self.slack_color = None
         self.thin_slack = True
         self.arrows = True
+        self.selected = None
+        #Events
+        self.set_property('events',
+                           gtk.gdk.EXPOSURE_MASK |
+                           gtk.gdk.ENTER_NOTIFY_MASK|
+                           gtk.gdk.POINTER_MOTION_MASK |
+                           gtk.gdk.BUTTON_RELEASE_MASK |
+                           gtk.gdk.BUTTON_PRESS_MASK )
+        self.add_events(
+                           gtk.gdk.EXPOSURE_MASK |
+                           gtk.gdk.ENTER_NOTIFY_MASK|
+                           gtk.gdk.POINTER_MOTION_MASK |
+                           gtk.gdk.BUTTON_RELEASE_MASK |
+                           gtk.gdk.BUTTON_PRESS_MASK )
         #Connecting signals
         self.connect("expose-event", self.expose)
+        self.connect("motion-notify-event", self.set_selected)
+
+    def set_selected(self, widget, event):
+        previous = self.selected
+        try:
+            act = self.graph.activities[int(event.y / self.row_height)]
+            if (self.graph.start_time[act] * self.cell_width <= event.x <= (self.graph.start_time[act] + self.graph.durations[act]) * self.cell_width):
+                if act != previous:
+                    self.selected = act
+                    self.queue_draw()
+            else:
+                self.selected = None
+                if previous != None:
+                    self.queue_draw()
+        except:
+            self.selected = None
+            if previous != None:
+                self.queue_draw()
+        return False
 
     def set_activities_color(self, color):
         """
@@ -524,7 +557,7 @@ class GanttDrawing(gtk.Layout):
                 self.graph.prelations[act].remove(activity)
                 self.graph.prelations[act].append(name)
         self.graph.prelations[name] = self.graph.prelations[activity]
-        del  self.graph.prelations[activity]         
+        del self.graph.prelations[activity]         
         self.graph.activities[self.graph.activities.index(activity)] = name
 
     def set_activity_duration(self, activity, duration):
@@ -653,9 +686,14 @@ class GanttDrawing(gtk.Layout):
         blue = float(self.get_style().fg[gtk.STATE_INSENSITIVE].blue) / 65535
         context.set_source_rgba(red, green, blue, 0.3)
         context.stroke()
+        #Setting selected activities
+        selected_activities = []
+        if self.selected != None:
+            selected_activities += [self.selected] + self.graph.prelations[self.selected]
+            for activity in self.graph.activities:
+                if self.selected in self.graph.prelations[activity]:
+                    selected_activities.append(activity)
         #Drawing slacks
-        for activity in self.graph.activities:
-            context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
         context.set_line_width(1)
         if self.slack_color != None:
             red = float(self.slack_color.red) / 65535
@@ -665,16 +703,13 @@ class GanttDrawing(gtk.Layout):
             red = float(self.get_style().bg[gtk.STATE_ACTIVE].red) / 65535
             green = float(self.get_style().bg[gtk.STATE_ACTIVE].green) / 65535
             blue = float(self.get_style().bg[gtk.STATE_ACTIVE].blue) / 65535
-        context.set_source_rgba(red, green, blue, 0.5)
-        context.fill_preserve()
-        context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-        context.stroke()
-        #Drawing activities and commentaries
         for activity in self.graph.activities:
-            context.rectangle(self.graph.start_time[activity]* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.durations[activity] * self.cell_width , self.row_height - 1 )
-            x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
-            context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + x_bearing, (self.graph.activities.index(activity)+ 0.90) * self.row_height + y_bearing)
-            context.show_text(self.graph.comments[activity])
+            context.rectangle((self.graph.start_time[activity]+self.graph.durations[activity])* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.slacks[activity] * self.cell_width , ((self.row_height / 4 ) if self.thin_slack == True else self.row_height)  - 1 )
+            context.set_source_rgba(red, green, blue, 0.2 if activity in selected_activities else 0.5 )
+            context.fill_preserve()
+            context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+            context.stroke()
+        #Drawing activities and commentaries
         context.set_line_width(1)
         if self.activities_color != None:
             red = float(self.activities_color.red) / 65535
@@ -684,10 +719,16 @@ class GanttDrawing(gtk.Layout):
             red = float(self.get_style().bg[gtk.STATE_SELECTED].red) / 65535
             green = float(self.get_style().bg[gtk.STATE_SELECTED].green) / 65535
             blue = float(self.get_style().bg[gtk.STATE_SELECTED].blue) / 65535
-        context.set_source_rgba(red, green, blue, 0.5)
-        context.fill_preserve()
-        context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
-        context.stroke()
+        for activity in self.graph.activities:
+            context.rectangle(self.graph.start_time[activity]* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.durations[activity] * self.cell_width , self.row_height - 1 )
+            x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
+            context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + x_bearing, (self.graph.activities.index(activity)+ 0.90) * self.row_height + y_bearing)
+            context.show_text(self.graph.comments[activity])
+            context.set_source_rgba(red, green, blue, 0.2 if activity in selected_activities else 0.5 )
+            context.fill_preserve()
+            context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
+            context.stroke()
+
         #Drawing prelation arrows
         if self.arrows:
             for activity in self.graph.activities:
