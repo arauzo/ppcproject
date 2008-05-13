@@ -412,34 +412,42 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
                            gtk.gdk.EXPOSURE_MASK |
                            gtk.gdk.ENTER_NOTIFY_MASK|
                            gtk.gdk.POINTER_MOTION_MASK |
+                           gtk.gdk.LEAVE_NOTIFY_MASK |
                            gtk.gdk.BUTTON_RELEASE_MASK |
                            gtk.gdk.BUTTON_PRESS_MASK )
         self.add_events(
                            gtk.gdk.EXPOSURE_MASK |
                            gtk.gdk.ENTER_NOTIFY_MASK|
                            gtk.gdk.POINTER_MOTION_MASK |
+                           gtk.gdk.LEAVE_NOTIFY_MASK |
                            gtk.gdk.BUTTON_RELEASE_MASK |
                            gtk.gdk.BUTTON_PRESS_MASK )
         #Connecting signals
         self.connect("expose-event", self.expose)
         self.connect("motion-notify-event", self.set_selected)
+        self.connect("leave-notify-event", self.set_selected)
 
     def set_selected(self, widget, event):
         previous = self.selected
-        try:
-            act = self.graph.activities[int(event.y / self.row_height)]
-            if (self.graph.start_time[act] * self.cell_width <= event.x <= (self.graph.start_time[act] + self.graph.durations[act]) * self.cell_width):
-                if act != previous:
-                    self.selected = act
-                    self.queue_draw()
-            else:
-                self.selected = None
-                if previous != None:
-                    self.queue_draw()
-        except:
+        if event == gtk.gdk.LEAVE_NOTIFY:
             self.selected = None
             if previous != None:
                 self.queue_draw()
+        else:
+            try:
+                act = self.graph.activities[int(event.y / self.row_height)]
+                if (self.graph.start_time[act] * self.cell_width <= event.x <= (self.graph.start_time[act] + self.graph.durations[act]) * self.cell_width):
+                    if act != previous:
+                        self.selected = act
+                        self.queue_draw()
+                else:
+                    self.selected = None
+                    if previous != None:
+                        self.queue_draw()
+            except:
+                self.selected = None
+                if previous != None:
+                    self.queue_draw()
         return False
 
     def set_activities_color(self, color):
@@ -508,6 +516,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.graph.start_time = {}
         self.graph.slacks = {}
         self.graph.comments = {}
+        self.selected = None
 
     def add_activity(self, name, prelations, duration, start_time, slack, comment):
         """
@@ -559,6 +568,8 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.graph.prelations[name] = self.graph.prelations[activity]
         del self.graph.prelations[activity]         
         self.graph.activities[self.graph.activities.index(activity)] = name
+        if activity = self.selected:
+            self.selected = name
 
     def set_activity_duration(self, activity, duration):
         """
@@ -625,6 +636,8 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
                     self.graph.prelations[act].remove(activity)
             del  self.graph.prelations[activity]         
             self.graph.activities.remove(activity)
+            if activity = self.selected:
+                self.selected = None
             self.modified = 1
 
     def reorder(self,activities):
