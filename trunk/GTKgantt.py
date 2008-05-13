@@ -568,7 +568,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.graph.prelations[name] = self.graph.prelations[activity]
         del self.graph.prelations[activity]         
         self.graph.activities[self.graph.activities.index(activity)] = name
-        if activity = self.selected:
+        if activity == self.selected:
             self.selected = name
 
     def set_activity_duration(self, activity, duration):
@@ -636,7 +636,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
                     self.graph.prelations[act].remove(activity)
             del  self.graph.prelations[activity]         
             self.graph.activities.remove(activity)
-            if activity = self.selected:
+            if activity == self.selected:
                 self.selected = None
             self.modified = 1
 
