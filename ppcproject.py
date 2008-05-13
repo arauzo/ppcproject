@@ -2772,7 +2772,6 @@ class PPCproject:
       for a in self.actividad:
          if a[6]=='':
                s+=1
-      print self.actividad      
       if s>0:
          self.dialogoError(gettext.gettext('There are uncomplete activities'))
       else:
@@ -3416,7 +3415,6 @@ class PPCproject:
                    suma+=self.Fa[n]/float(itTotales)
                    if suma>float(dato3) or suma==float(dato3):
                       x=intervalos[n][1]
-                      print x, 'x'
                       break
                
          if x==0:
