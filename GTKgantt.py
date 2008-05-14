@@ -429,7 +429,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
 
     def set_selected(self, widget, event):
         previous = self.selected
-        if event == gtk.gdk.LEAVE_NOTIFY:
+        if event.type == gtk.gdk.LEAVE_NOTIFY:
             self.selected = None
             if previous != None:
                 self.queue_draw()
