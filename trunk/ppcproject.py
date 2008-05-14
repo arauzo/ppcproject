@@ -95,7 +95,7 @@ class PPCproject:
       self.vRoy=self._widgets.get_widget('wndGrafoRoy')
       self.vPert=self._widgets.get_widget('wndGrafoPert')
       self.dAyuda=self._widgets.get_widget('dAyuda')
-      self.bHerramientas=self._widgets.get_widget('bHerramientas')
+      self.bHerramientas=self._widgets.get_widget('bHerramientas1')
       
       self.rbBalance = self.interface.rbBalance
       self.btResetSA = self.interface.btResetSA
