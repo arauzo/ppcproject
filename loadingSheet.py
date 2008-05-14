@@ -24,7 +24,6 @@ import math
 import gtk
 import gtk.gdk
 import gobject
-import GTKgantt
 import copy
 import random
 
