@@ -69,6 +69,7 @@ class PPCproject:
       self.recurso    = []
       self.asignacion = []
       self.tabla      = []
+      self.programaciones = []
       self.bufer=gtk.TextBuffer()
       self.directorio = gettext.gettext('Unnamed -PPC-Project')
       self.modified=0
@@ -129,8 +130,8 @@ class PPCproject:
       self.modeloC = self.interface.modeloC
       self.modeloF = self.interface.modeloF
       self.vistaFrecuencias = self.interface.vistaFrecuencias
-      self.checkColum=[None]*9
-      for n in range(9):
+      self.checkColum=[None]*11
+      for n in range(11):
          self.checkColum[n] = self.interface.checkColum[n]
       self._widgets.get_widget('mnSalirPantComp').hide()
       self.enableProjectControls(False)
@@ -178,7 +179,7 @@ class PPCproject:
       """
       menu.show_all()
       menu.popup(None, None, None, 1, 0)
-      for n in range(9):
+      for n in range(11):
          self.checkColum[n].connect('activate', self.activarItem, n)
 
 
@@ -222,7 +223,7 @@ class PPCproject:
       self.asignacion=[]
       self.tabla=[]
       cont=1
-      self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])  # Se inserta una fila vacia
+      self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia
 
 
    def col_edited_cb( self, renderer, path, new_text, modelo, n):
@@ -288,11 +289,11 @@ class PPCproject:
          # Actividades
          if modelo==self.modelo:                
             if len(modelo)!=len(self.actividad): #siempre debe existir un elemento más en modelo que en actividades     
-               modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])     
-               fila=['', '', [], '', '', '', '', '', '', gettext.gettext('Beta')]
+               modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
+               fila=['', '', [], '', '', '', '', '', '', gettext.gettext('Beta'),0]
                self.actividad.append(fila) 
             else:
-               modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta')])
+               modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
                #print self.actividad 
                 
          # Recursos
@@ -493,6 +494,12 @@ class PPCproject:
       for dato in tabla[0]:      
          dato[0]=cont
          cont+=1
+         # (XXX Temporary fix while programations are not fully supported)
+         
+         dato += ["0"]
+         
+         # (XXX Fix end)
+         
          self.modelo.append(dato)
          self.actualizarColSig(tabla[0])
          self.modeloComboS.append([dato[1]])
@@ -556,7 +563,7 @@ class PPCproject:
             fila=[cont, linea[0], [], linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
          else:
             fila=[cont, linea[0], linea[1], linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
-         fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
+         fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta'), ""]
          self.actividad.append(fila)
          self.modelo.append(fila1)
          act_list.append(fila[1])
@@ -743,11 +750,11 @@ class PPCproject:
          for prelacion in prelaciones:   
              if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:  
                  if prelacion[1]==[str(longitud)]:  #controlamos las actividades cuya siguiente es la última  
-                     fila=[cont, prelacion[0], [], '', '', '', '', '', '', gettext.gettext('Beta')]  #fila para lista actividad
-                     fila1=[cont, prelacion[0], '', '', '', '', '', '', '', gettext.gettext('Beta')] #fila para interfaz
+                     fila=[cont, prelacion[0], [], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para lista actividad
+                     fila1=[cont, prelacion[0], '', '', '', '', '', '', '', gettext.gettext('Beta'),""] #fila para interfaz
                  else:
-                     fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta')]   #fila para lista actividad
-                     fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta')]  #fila para interfaz
+                     fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]   #fila para lista actividad
+                     fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para interfaz
                  
                  self.actividad.append(fila)
                  self.modelo.append(fila1)
