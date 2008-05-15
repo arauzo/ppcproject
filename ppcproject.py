@@ -410,7 +410,7 @@ class PPCproject:
                act_list.append(self.actividad[i][1])
                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])  
                pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-            for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+            for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
                self.gantt.set_activity_start_time(activity, time)
             self.gantt.update()
          #print self.actividad, 'ya modificada'
@@ -516,7 +516,7 @@ class PPCproject:
                self.actividad[i][2]=[]   
          pre_dic[self.actividad[i][1]] = self.actividad[i][2]
          self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]) if self.actividad[i][6] != "" else 0)
-      for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+      for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
          self.gantt.set_activity_start_time(activity, time)
       self.gantt.update()      
       # Se actualizan la interfaz y la lista de los recursos
@@ -571,7 +571,7 @@ class PPCproject:
          pre_dic[fila[1]] = fila[2]
          self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
          cont+=1
-      for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+      for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
          self.gantt.set_activity_start_time(activity, time)
       self.gantt.update() 
    
@@ -779,7 +779,7 @@ class PPCproject:
              pre_dic[row[1]] = row[2]
              dur_dic[row[1]] = float(row[6])
              self.gantt.add_activity(row[1], row[2], float(row[6]))         
-         for activity, time in get_start_time(act_list, dur_dic, pre_dic).iteritems():
+         for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
             self.gantt.set_activity_start_time(activity, time)
          self.gantt.update() 
 
@@ -3857,37 +3857,6 @@ class PPCproject:
       """
       self.dAyuda.hide()
       return True
-
-#XXX This function will be moved to graph package.
-
-def get_start_time(activities, durations, prelations):
-   open_list = []
-   inv_prelations = {}
-   closed_list = []
-   start_time = {}
-   for activity in activities:
-      inv_prelations[activity] = []
-   for activity in activities:
-      for children in prelations[activity]:
-         inv_prelations[children].append(activity)
-   for activity in activities:
-      if inv_prelations[activity] == []:
-         open_list.append(activity)
-   while open_list != []:
-      chosen = open_list.pop()
-      closed_list.append(chosen)
-      time = [0]
-      for activity in inv_prelations[chosen]:
-         time.append(start_time[activity] + durations[activity])
-      start_time[chosen] = max(time)
-      for activity in prelations[chosen]:
-         pending = False
-         for parent in inv_prelations[activity]:
-            if parent not in closed_list:
-               pending = True
-         if not pending:
-            open_list.append(activity)
-   return(start_time)
 
 # --- Start running as a program
 

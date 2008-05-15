@@ -410,6 +410,34 @@ def royPaths2csv2(royGraph):
                
    return s
 
+def get_start_time(activities, durations, prelations):
+   open_list = []
+   inv_prelations = {}
+   closed_list = []
+   start_time = {}
+   for activity in activities:
+      inv_prelations[activity] = []
+   for activity in activities:
+      for children in prelations[activity]:
+         inv_prelations[children].append(activity)
+   for activity in activities:
+      if inv_prelations[activity] == []:
+         open_list.append(activity)
+   while open_list != []:
+      chosen = open_list.pop()
+      closed_list.append(chosen)
+      time = [0]
+      for activity in inv_prelations[chosen]:
+         time.append(start_time[activity] + durations[activity])
+      start_time[chosen] = max(time)
+      for activity in prelations[chosen]:
+         pending = False
+         for parent in inv_prelations[activity]:
+            if parent not in closed_list:
+               pending = True
+         if not pending:
+            open_list.append(activity)
+   return(start_time)
 
 
 #
