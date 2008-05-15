@@ -138,11 +138,11 @@ class Interface:
       self.selec.set_mode(gtk.SELECTION_MULTIPLE)
       mode=self.selec.get_mode()   
       self.menu=gtk.Menu()
-      self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
+      self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str, str)
       self.vistaLista.set_model(self.modelo)
       self.orden=gtk.TreeModelSort(self.modelo)
       self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
-      self.vistaLista.columna=[None]*11
+      self.vistaLista.columna=[None]*13
       self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('ID'))
       self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaLista.columna[2] = gtk.TreeViewColumn(gettext.gettext('Following Act.'))
@@ -153,8 +153,11 @@ class Interface:
       self.vistaLista.columna[7] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
       self.vistaLista.columna[8] = gtk.TreeViewColumn(gettext.gettext('Resources'))
       self.vistaLista.columna[9] = gtk.TreeViewColumn(gettext.gettext('Distribution'))
-      self.vistaLista.renderer=[None]*10 
-         
+      self.vistaLista.columna[10] = gtk.TreeViewColumn(gettext.gettext('Start Time'))
+      self.vistaLista.columna[11] = gtk.TreeViewColumn(gettext.gettext('End Time'))
+      self.vistaLista.columna[12] = gtk.TreeViewColumn()
+      self.vistaLista.renderer=[None]*12 
+
       self.columnaNoEditableColor(0)
       self.columnaEditable(self.vistaLista, self.modelo, 1)
       self.modeloComboS=self.columnaCombo(self.vistaLista, self.modelo, 2)
@@ -164,7 +167,9 @@ class Interface:
       self.columnaEditable(self.vistaLista, self.modelo, 6)
       self.columnaEditable(self.vistaLista, self.modelo, 7)
       self.columnaNoEditableColor(8)
-      self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9)  
+      self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9)
+      self.columnaEditable(self.vistaLista, self.modelo, 10)
+      self.endTimeColumn()
       
       # Se añaden los tipos de distribución
       self.modeloComboD.append([gettext.gettext('Normal')])
@@ -178,21 +183,21 @@ class Interface:
       self.vistaLista.columna[5].set_visible(False)  
       self.vistaLista.columna[8].set_visible(False) 
       self.vistaLista.columna[9].set_visible(False) 
+      self.vistaLista.columna[11].set_visible(False) 
 
       # Columna menu
       self.menu=gtk.Menu()
       self.imagen=gtk.Image()
       self.imagen.set_from_file('icono076.gif')
       self.imagen.show()
-      self.vistaLista.columna[10] = gtk.TreeViewColumn()
-      self.vistaLista.columna[10].set_widget(self.imagen)
+      self.vistaLista.columna[12].set_widget(self.imagen)
       self.vistaLista.render = gtk.CellRendererText()
-      self.vistaLista.append_column(self.vistaLista.columna[10])
-      self.vistaLista.columna[10].pack_start(self.vistaLista.render, True)
-      self.vistaLista.columna[10].set_attributes(self.vistaLista.render)
-      self.vistaLista.columna[10].set_clickable(True)      self.vistaLista.columna[10].connect('clicked', self.parent_application.columna_press, self.menu) 
-      self.vistaLista.columna[10].set_expand(False)
-      self.checkColum=[None]*9
+      self.vistaLista.append_column(self.vistaLista.columna[12])
+      self.vistaLista.columna[12].pack_start(self.vistaLista.render, True)
+      self.vistaLista.columna[12].set_attributes(self.vistaLista.render)
+      self.vistaLista.columna[12].set_clickable(True)      self.vistaLista.columna[12].connect('clicked', self.parent_application.columna_press, self.menu) 
+      self.vistaLista.columna[12].set_expand(False)
+      self.checkColum=[None]*11
       self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activity'), True)
       self.checkColum[1] = gtk.CheckMenuItem(gettext.gettext('Following Act.'), True)
       self.checkColum[2] = gtk.CheckMenuItem(gettext.gettext('Optimistic Dur.'), True)
@@ -202,7 +207,9 @@ class Interface:
       self.checkColum[6] = gtk.CheckMenuItem(gettext.gettext('Typical Dev.'), True)
       self.checkColum[7] = gtk.CheckMenuItem(gettext.gettext('Resources'), True)
       self.checkColum[8] = gtk.CheckMenuItem(gettext.gettext('Distribution'), True)
-      for n in range(9):
+      self.checkColum[9] = gtk.CheckMenuItem(gettext.gettext('Start Time'), True)
+      self.checkColum[10] = gtk.CheckMenuItem(gettext.gettext('End Time'), True)
+      for n in range(11):
          self.menu.add(self.checkColum[n])
          self.checkColum[n].set_active(True)
 
@@ -212,6 +219,7 @@ class Interface:
       self.checkColum[4].set_active(False)
       self.checkColum[7].set_active(False)
       self.checkColum[8].set_active(False)
+      self.checkColum[10].set_active(False)
 
       # TREEVIEW para los caminos (ventana de ZADERENKO)
       self.vistaListaZ = self._widgets.get_widget('vistaListaZad')
@@ -368,6 +376,40 @@ class Interface:
       self.vistaLista.columna[n].set_expand(True)
       self.vistaLista.columna[0].set_expand(False)
       self.vistaLista.columna[n].set_resizable(True)
+
+   def endTimeColumn(self):
+       """
+        Creates End times column.
+        Parameters: -
+        Returns: -
+       """
+       self.vistaLista.renderer[11] = gtk.CellRendererText()
+       self.vistaLista.renderer[11].set_property('editable', False)
+       self.vistaLista.append_column(self.vistaLista.columna[11])
+       self.vistaLista.columna[11].set_sort_column_id(11)
+       self.vistaLista.columna[11].pack_start(self.vistaLista.renderer[11], True)
+       self.vistaLista.columna[11].set_cell_data_func(self.vistaLista.renderer[11], self.endTimeRendererFunc)
+       self.vistaLista.columna[11].set_spacing(8)
+       self.vistaLista.columna[11].set_expand(True)
+       self.vistaLista.columna[0].set_expand(False)
+       self.vistaLista.columna[11].set_resizable(True)
+
+   def endTimeRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
+       start = model.get_value(iter, 10)
+       duration = model.get_value(iter, 6)
+       if start == "" and duration == "":
+           cell_renderer.set_property('text', "")
+       else:
+           try:
+               start = float(start)
+           except:
+               start = 0
+           try:
+               duration = float(duration)
+           except:
+               duration = 0
+           cell_renderer.set_property('text', str(start + duration))
+       return
 
 
    def columnaNoEditable(self, vista, n):
