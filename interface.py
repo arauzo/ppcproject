@@ -121,7 +121,7 @@ class Interface:
       self._widgets.get_widget('resultado1Prob').set_sensitive(False)
       self._widgets.get_widget('resultado2Prob').set_sensitive(False)
 
-#########  CREAMOS TODOS LOS TREEVIEWS DE LA APLICACIÓN  ##############
+
    def crearTreeViews(self):
       """
       Creación de todos los TreeViews que se utilizarán
@@ -358,7 +358,7 @@ class Interface:
          column.add_attribute(cell, 'text', interval)
          column.set_min_width(50)
 
-##################### FUNCIONES RELACIONADAS CON LOS TREEVIEW ###########################
+### FUNCIONES RELACIONADAS CON LOS TREEVIEW
 
    def columnaNoEditableColor(self, n):  
       """
