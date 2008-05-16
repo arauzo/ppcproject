@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Gantt diagram drawing GTK widget
+# XXX Falta comentario indicando el proposito de este fichero!! XXX
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
@@ -27,6 +27,7 @@ import gobject
 import copy
 
 class loadingTable(gtk.HBox):
+    """ XXX Falta comentario indicando el proposito de esta clase """
 
     def __init__(self):
         gtk.HBox.__init__(self)
@@ -84,6 +85,8 @@ class loadingTable(gtk.HBox):
 
         
 class table(gtk.Layout):
+    """ XXX Falta comentario indicando el proposito de esta clase """
+
     def __init__(self):
         gtk.Layout.__init__(self)
         self.colors = [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0, 0.0), (0.5, 0.3, 0.1), (1.0, 0.6, 0.0), (0.8, 0.1, 0.5), (0.0, 0.4, 0.0), (0.1, 0.1, 0.4), (1.0, 0.7, 0.8), (0.6, 0.5, 0.9)]

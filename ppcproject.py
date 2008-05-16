@@ -62,8 +62,8 @@ from simAnnealing import resourcesPerActivities
 
 
 class PPCproject:
-   def __init__(self):
 
+   def __init__(self):
       # Estructuras de datos básicas de la aplicación
       self.actividad  = []
       self.recurso    = []
@@ -201,7 +201,7 @@ class PPCproject:
 
 
 
-###################### FUNCIONES DE INTRODUCCIÓN, CARGA Y ACTUALIZACIÓN DATOS ############
+### FUNCIONES DE INTRODUCCIÓN, CARGA Y ACTUALIZACIÓN DATOS
 
    def introduccionDatos(self):
       """
@@ -549,9 +549,7 @@ class PPCproject:
          self.actualizarColR(mostrarColumnaRes)
 
       #print "%s" % (tabla)
-
 
-   
 
    def cargarTxt(self, tabla):
       """
@@ -600,6 +598,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def comprobarSig(self, modelo, path, new_text):
+        """
+        """
         # Se introducen en una lista las etiquetas de las actividades
         actividades=self.actividades2Lista()
 
@@ -661,6 +661,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def modificarSig(self, modelo, original, nuevo):
+         """
+         """
          for a in range(len(self.actividad)):
              if original in self.actividad[a][2]: # Si original está como siguiente de alguna actividad
                  #print '1'
@@ -692,18 +694,21 @@ class PPCproject:
 #----------------------------------------------------------- 
 
    def actualizarColSig(self, datos):
-          for m in range(len(self.modelo)):
-             if datos[m][2]==[]:
-                self.modelo[m][2]=''
-             else:
-                s=''
-                for n in datos[m][2]:
-                    if s!='':
-                        s+=', '
-                        s+=n
-                    else:
-                        s+=n 
-                    self.modelo[m][2]=s
+        """
+        """
+
+        for m in range(len(self.modelo)):
+            if datos[m][2]==[]:
+            self.modelo[m][2]=''
+            else:
+            s=''
+            for n in datos[m][2]:
+                if s!='':
+                    s+=', '
+                    s+=n
+                else:
+                    s+=n 
+                self.modelo[m][2]=s
 
 
 #*******************************************************************************************************************   
@@ -719,6 +724,8 @@ class PPCproject:
 #-----------------------------------------------------------      
      
    def actualizarColR(self, columnaRec):
+        """
+        """
         # Se actualiza la lista de actividades
         for n in range(len(self.actividad)):
             self.actividad[n][8]=columnaRec[n]
@@ -752,118 +759,120 @@ class PPCproject:
 #----------------------------------------------------------- 
      
    def cargarPSPLIB(self, prelaciones, rec, asig):
-         # Se actualizan las actividades
-         self.modelo.clear()
-         self.actividad=[]
-         cont=1
-         longitud=len(prelaciones)
-         self._widgets.get_widget('vistaListaDatos').show()
-         #Se actualizan actividades y prelaciones, ignorando la primera y la última
-         for prelacion in prelaciones:   
-             if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:  
-                 if prelacion[1]==[str(longitud)]:  #controlamos las actividades cuya siguiente es la última  
-                     fila=[cont, prelacion[0], [], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para lista actividad
-                     fila1=[cont, prelacion[0], '', '', '', '', '', '', '', gettext.gettext('Beta'),""] #fila para interfaz
-                 else:
-                     fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]   #fila para lista actividad
-                     fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para interfaz
-                 
-                 self.actividad.append(fila)
-                 self.modelo.append(fila1)
-                 # Se actualiza la columna de siguientes en la interfaz
-                 self.actualizarColSigPSPLIB(prelaciones)
-                 
-                 cont+=1  
-         
-         # Se actualiza la duración de las actividades
-         for n in range(len(asig)-1):   
-             if asig[n][2]!='0' and asig[n][2]!='0':
-                 m=n-1
-                 self.actividad[m][6]=float(asig[n][2])
-                 self.modelo[m][6]=asig[n][2]
+        """
+        """
+        # Se actualizan las actividades
+        self.modelo.clear()
+        self.actividad=[]
+        cont=1
+        longitud=len(prelaciones)
+        self._widgets.get_widget('vistaListaDatos').show()
+        #Se actualizan actividades y prelaciones, ignorando la primera y la última
+        for prelacion in prelaciones:   
+            if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:  
+                if prelacion[1]==[str(longitud)]:  #controlamos las actividades cuya siguiente es la última  
+                    fila=[cont, prelacion[0], [], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para lista actividad
+                    fila1=[cont, prelacion[0], '', '', '', '', '', '', '', gettext.gettext('Beta'),""] #fila para interfaz
+                else:
+                    fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]   #fila para lista actividad
+                    fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para interfaz
+                
+                self.actividad.append(fila)
+                self.modelo.append(fila1)
+                # Se actualiza la columna de siguientes en la interfaz
+                self.actualizarColSigPSPLIB(prelaciones)
+                
+                cont+=1  
+        
+        # Se actualiza la duración de las actividades
+        for n in range(len(asig)-1):   
+            if asig[n][2]!='0' and asig[n][2]!='0':
+                m=n-1
+                self.actividad[m][6]=float(asig[n][2])
+                self.modelo[m][6]=asig[n][2]
 
-         # Update Gantt Diagram
-         act_list = []
-         dur_dic = {}
-         pre_dic = {}
-         for row in self.actividad:
-             act_list.append(row[1])
-             pre_dic[row[1]] = row[2]
-             dur_dic[row[1]] = float(row[6])
-             self.gantt.add_activity(row[1], row[2], float(row[6]))
-         time_dics = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
-         for n in range(len(asig)-1):
-            self.actividad[n-1][10] = self.modelo[n-1][10] = str(time_dics[self.actividad[n-1][1]])
-            self.gantt.set_activity_start_time(self.actividad[n-1][1], time_dics[self.actividad[n-1][1]])
-         self.gantt.update() 
+        # Update Gantt Diagram
+        act_list = []
+        dur_dic = {}
+        pre_dic = {}
+        for row in self.actividad:
+            act_list.append(row[1])
+            pre_dic[row[1]] = row[2]
+            dur_dic[row[1]] = float(row[6])
+            self.gantt.add_activity(row[1], row[2], float(row[6]))
+        time_dics = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
+        for n in range(len(asig)-1):
+        self.actividad[n-1][10] = self.modelo[n-1][10] = str(time_dics[self.actividad[n-1][1]])
+        self.gantt.set_activity_start_time(self.actividad[n-1][1], time_dics[self.actividad[n-1][1]])
+        self.gantt.update() 
 
-         # Se actualizan los recursos
-         i=1
-         m=0
-         self.modeloR.clear()
-         self.recurso=[]
-         for n in range(len(rec[1])):
-             # Si el recurso es Renovable
-             if rec[0][m]=='R' or rec[0][m][0]=='R':
-                 if rec[0][m]=='R':
-                     filaR=[rec[0][m]+rec[0][i], gettext.gettext('Renewable'), '', rec[1][n]] 
-                     m+=2
-                 else:
-                     filaR=[rec[0][m], gettext.gettext('Renewable'), '', rec[1][n]] 
-                     m+=1
-                 self.recurso.append(filaR)
-                 self.modeloR.append(filaR)
-                 i+=2
-                 
+        # Se actualizan los recursos
+        i=1
+        m=0
+        self.modeloR.clear()
+        self.recurso=[]
+        for n in range(len(rec[1])):
+            # Si el recurso es Renovable
+            if rec[0][m]=='R' or rec[0][m][0]=='R':
+                if rec[0][m]=='R':
+                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Renewable'), '', rec[1][n]] 
+                    m+=2
+                else:
+                    filaR=[rec[0][m], gettext.gettext('Renewable'), '', rec[1][n]] 
+                    m+=1
+                self.recurso.append(filaR)
+                self.modeloR.append(filaR)
+                i+=2
+                
 
-             # Si el recurso es No Renovable
-             elif rec[0][m]=='N' or rec[0][m][0]=='N':
-                 if rec[0][m]=='N':
-                     filaR=[rec[0][m]+rec[0][i], gettext.gettext('Non renewable'), rec[1][n], '']
-                     m+=2
-                 else:
-                     filaR=[rec[0][m], gettext.gettext('Non renewable'), rec[1][n], ''] 
-                     m+=1
-               
-                 self.recurso.append(filaR)
-                 self.modeloR.append(filaR)
-                 i+=2
+            # Si el recurso es No Renovable
+            elif rec[0][m]=='N' or rec[0][m][0]=='N':
+                if rec[0][m]=='N':
+                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Non renewable'), rec[1][n], '']
+                    m+=2
+                else:
+                    filaR=[rec[0][m], gettext.gettext('Non renewable'), rec[1][n], ''] 
+                    m+=1
+            
+                self.recurso.append(filaR)
+                self.modeloR.append(filaR)
+                i+=2
 
-             # Si el recurso es Doblemente restringido
-             elif rec[0][m]=='D' or rec[0][m][0]=='D':
-                 if rec[0][m]=='D':
-                     filaR=[rec[0][m]+rec[0][i], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]]
-                     m+=2
-                 else:
-                     filaR=[rec[0][m], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]] 
-                     m+=1
-                 
-                 self.recurso.append(filaR)
-                 self.modeloR.append(filaR)
-                 i+=2
- 
-              # NOTA: no tenemos en cuenta si el recurso es Ilimitado porque éste tipo de recurso no existe en 
-              #       en la librería de proyectos PSPLIB
-           
-    
+            # Si el recurso es Doblemente restringido
+            elif rec[0][m]=='D' or rec[0][m][0]=='D':
+                if rec[0][m]=='D':
+                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]]
+                    m+=2
+                else:
+                    filaR=[rec[0][m], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]] 
+                    m+=1
+                
+                self.recurso.append(filaR)
+                self.modeloR.append(filaR)
+                i+=2
 
-         # Se actualizan los recursos necesarios por actividad
-         self.modeloAR.clear()
-         self.asignacion=[]
-         for n in range(len(asig)):                     
-             for m in range(3, 3+len(rec[1])):  #len(self.rec[1]): número de recursos 
-                 if asig[n][m] != '0':          #los recursos no usados no se muestran
-                     i=m-3
-                     filaAR=[asig[n][0], self.recurso[i][0], asig[n][m]] 
-                     self.asignacion.append(filaAR)
-                     self.modeloAR.append(filaAR)
+            # NOTA: no tenemos en cuenta si el recurso es Ilimitado porque éste tipo de recurso no existe en 
+            #       en la librería de proyectos PSPLIB
+        
 
 
+        # Se actualizan los recursos necesarios por actividad
+        self.modeloAR.clear()
+        self.asignacion=[]
+        for n in range(len(asig)):                     
+            for m in range(3, 3+len(rec[1])):  #len(self.rec[1]): número de recursos 
+                if asig[n][m] != '0':          #los recursos no usados no se muestran
+                    i=m-3
+                    filaAR=[asig[n][0], self.recurso[i][0], asig[n][m]] 
+                    self.asignacion.append(filaAR)
+                    self.modeloAR.append(filaAR)
 
-         #Se actualiza la columna de los recursos en la interfaz y en la lista de actividades 
-         if self.asignacion!=[]:
-             mostrarColumnaRec=self.mostrarRec(self.asignacion, 0)
-             self.actualizarColR(mostrarColumnaRec)
+
+
+        #Se actualiza la columna de los recursos en la interfaz y en la lista de actividades 
+        if self.asignacion!=[]:
+            mostrarColumnaRec=self.mostrarRec(self.asignacion, 0)
+            self.actualizarColR(mostrarColumnaRec)
 
 #*****************************************************************************
 #-----------------------------------------------------------
@@ -877,6 +886,8 @@ class PPCproject:
 #----------------------------------------------------------- 
      
    def actualizarColSigPSPLIB(self, prelacion):
+          """
+          """   
           longitud=len(prelacion)
           for m in range(len(self.modelo)):
               if prelacion[m]!=prelacion[0] and prelacion[m]!=prelacion[longitud-1]:
@@ -906,6 +917,8 @@ class PPCproject:
 #----------------------------------------------------------- 
      
    def comprobarDuraciones(self, a, b, m):
+         """
+         """
          if ( (a<b and m<=b and m>=a) or (a==b and b==m)):
              return 1 
          else:
@@ -923,6 +936,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def actividadesRepetidas(self, actividad):
+        """
+        """
         error=0
         actividades=[]
         repetidas=[]
@@ -949,6 +964,8 @@ class PPCproject:
 #----------------------------------------------------------- 
 
    def comprobarActExisten(self, actividad):
+         """
+         """
          error=0
          actividades=[]
          for n in range(len(actividad)):
@@ -981,6 +998,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def comprobarRecExisten(self, recurso):
+         """
+         """
          error=0
          recursos=[]
          for n in range(len(recurso)):
@@ -1017,6 +1036,8 @@ class PPCproject:
 #-----------------------------------------------------------  
  
    def sumarUnidadesRec(self, asignacion):
+         """
+         """
          unidadesRec=[]
          for n in range(len(self.recurso)): 
              if self.recurso[n][1]==gettext.gettext('Non renewable') or self.recurso[n][1]==gettext.gettext('Double restricted'):
@@ -1048,6 +1069,8 @@ class PPCproject:
 #-----------------------------------------------------------    
      
    def mostrarRec(self, asignacion, num): 
+        """
+        """
         mostrarR=[]
         i=asignacion.index(asignacion[0])
         # Si el archivo tiene extensión '.sm' (PSPLIB)
@@ -1081,6 +1104,8 @@ class PPCproject:
 #-----------------------------------------------------------    
      
    def colR(self, m, asignacion, num):
+        """
+        """
         mostrar=[]
         for n in range(len(asignacion)): 
             # Si el archivo tiene extensión '.sm' (PSPLIB)   
@@ -1111,6 +1136,8 @@ class PPCproject:
 #------------------------------------------------------------
 
    def insertamosSiguiente(self, modelo, path, texto):
+         """
+         """
          if self.actividad[int(path)][2]!=[]:  # Si hay alguna siguiente colocada
                 modelo[path][2] = modelo[path][2] + ', ' + texto
                 self.actividad[int(path)][2]=modelo[path][2] 
@@ -1130,14 +1157,16 @@ class PPCproject:
 #----------------------------------------------------------- 
 
    def lista2Cadena(self, listaCadenas, m):
-            cadena=''
-            for n in listaCadenas[m]:
-                if cadena!='':
-                    cadena+=', '
-                    cadena+=n
-                else:
-                    cadena+=n 
-            return cadena
+        """
+        """
+        cadena=''
+        for n in listaCadenas[m]:
+            if cadena!='':
+                cadena+=', '
+                cadena+=n
+            else:
+                cadena+=n 
+        return cadena
  
 #********************************************************************************************************************   
 #-----------------------------------------------------------
@@ -1149,15 +1178,17 @@ class PPCproject:
 #----------------------------------------------------------- 
 
    def lista2Cadena2(self, lista):
-          cadena=''
-          for n in lista:
-                if cadena!='':
-                   cadena+=', '
-                   cadena+=n
-                else:
-                   cadena+=n 
-     
-          return cadena
+        """
+        """
+        cadena=''
+        for n in lista:
+            if cadena!='':
+                cadena+=', '
+                cadena+=n
+            else:
+                cadena+=n 
+    
+        return cadena
            
 #********************************************************************************************************************
 #-----------------------------------------------------------
@@ -1169,12 +1200,14 @@ class PPCproject:
 #----------------------------------------------------------- 
    
    def texto2Lista(self, texto):
-         lista = []
-         if texto!='':
-            for a in texto.split(','):
-               if a!='':
-                 lista.append(a.strip())
-         return lista
+        """
+        """
+        lista = []
+        if texto!='':
+        for a in texto.split(','):
+            if a!='':
+                lista.append(a.strip())
+        return lista
 
 
 #**********************************************************************************************************************
@@ -1187,6 +1220,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def actividades2Lista(self):
+        """
+        """
         listaAct=[]
         for n in self.actividad:
              listaAct.append(n[1])
@@ -1209,28 +1244,30 @@ class PPCproject:
 #----------------------------------------------------------- 
      
    def calcularMediaYDTipica(self, distribucion, a, b, m):
-         # Si el tipo de distribución es Beta
-         if distribucion==gettext.gettext('Beta'):
-                 #print 'beta'
-                 media=(a+b+4.0*m)/6.0
-                 dTipica=(b-a)/6.0
+        """
+        """
+        # Si el tipo de distribución es Beta
+        if distribucion==gettext.gettext('Beta'):
+                #print 'beta'
+                media=(a+b+4.0*m)/6.0
+                dTipica=(b-a)/6.0
 
-         # Si el tipo de distribución es Triangular
-         elif distribucion==gettext.gettext('Triangular'):
-                 #print 'triangular'
-                 media=(a+b+m)/3.0
-                 dTipica=(a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0
-      
-         # Si el tipo de distribución es Uniforme
-         else: 
-                 #print 'uniforme'
-                 media=(a+b)/2.0
-                 dTipica=((b-a)**2.0)/12.0
+        # Si el tipo de distribución es Triangular
+        elif distribucion==gettext.gettext('Triangular'):
+                #print 'triangular'
+                media=(a+b+m)/3.0
+                dTipica=(a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0
+    
+        # Si el tipo de distribución es Uniforme
+        else: 
+                #print 'uniforme'
+                media=(a+b)/2.0
+                dTipica=((b-a)**2.0)/12.0
 
-         # NOTA: La media y la desviación típica de la distribución Normal
-         #       no se calculan, se deben introducir manualmente
+        # NOTA: La media y la desviación típica de la distribución Normal
+        #       no se calculan, se deben introducir manualmente
 
-         return media, dTipica
+        return media, dTipica
 
 #***********************************************************************************************************************       
 #-----------------------------------------------------------
@@ -1243,6 +1280,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def mostrarTextView(self, widget, valor):
+        """
+        """
         bufer=gtk.TextBuffer()
         widget.set_buffer(bufer)
         iterator=bufer.get_iter_at_line(0)
@@ -1259,21 +1298,19 @@ class PPCproject:
 #----------------------------------------------------------- 
       
    def asignarTitulo(self, directorio):
-         titulo=os.path.basename(directorio)
-         ubicacion=directorio[:-(len(titulo)+1)]
-         if ubicacion=='': 
-              self.vPrincipal.set_title(titulo+' - PPC-Project')
-         else:
-              self.vPrincipal.set_title(titulo+' ('+ubicacion+')'+ ' - PPC-Project')
+        """
+        """
+        titulo=os.path.basename(directorio)
+        ubicacion=directorio[:-(len(titulo)+1)]
+        if ubicacion=='': 
+            self.vPrincipal.set_title(titulo+' - PPC-Project')
+        else:
+            self.vPrincipal.set_title(titulo+' ('+ubicacion+')'+ ' - PPC-Project')
 
                
-#####################################################################################################################
-                                      # FUNCIONES VENTANAS DE ACCIÓN #
-##################################################################################################################### 
+### FUNCIONES VENTANAS DE ACCIÓN
 
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #          GRAFO PERT                     #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
+# GRAFO PERT                     
 
 #-----------------------------------------------------------
 # Creación del grafo Pert y renumeración del mismo 
@@ -1284,6 +1321,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def pertFinal(self):
+        """
+        """
         # Se genera el grafo Pert
         successors = self.tablaSucesoras(self.actividad)
         grafo = pert.Pert()
@@ -1313,10 +1352,12 @@ class PPCproject:
 #-----------------------------------------------------------             
     
    def tablaSucesoras(self, actividades):
-         successors={}
-         for n in range(len(actividades)):
-             successors[actividades[n][1]]=actividades[n][2]
-         return successors
+        """
+        """
+        successors={}
+        for n in range(len(actividades)):
+            successors[actividades[n][1]]=actividades[n][2]
+        return successors
  
 #***********************************************************************************
 #-----------------------------------------------------------
@@ -1328,6 +1369,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def listaNodos(self, actividadesGrafo):
+        """
+        """
         # Se crea una lista con los nodos del grafo
         nodos=[]
         for g in actividadesGrafo:
@@ -1360,6 +1403,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def tablaPrelaciones(self, actividadesGrafo, nodos):
+        """
+        """
         dPrelaciones={}
         for n in nodos:
            #print n, 'n'
@@ -1387,61 +1432,63 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def demoucron(self, actividadesGrafo, nodos):
-         # Se obtiene un diccionario con las prelaciones
-         tPrelaciones=self.tablaPrelaciones(actividadesGrafo, nodos)
- 
-         # Se obtiene un diccionario con la suma de '1' de cada nodo
-         v={}       
-         for n in nodos:
-           cont=0
-           for m in nodos:
-               if tPrelaciones[n,m]==1:
-                  v[n]=cont+1
-                  cont+=1
-           if n not in v:
-                v[n]=0
-         #print v, 'v'
+        """
+        """
+        # Se obtiene un diccionario con las prelaciones
+        tPrelaciones=self.tablaPrelaciones(actividadesGrafo, nodos)
 
-         # Se van realizando los respectivos cálculos del algoritmo 
-         num=1
-         nivel={}
-         valor=c=0
-         for d in nodos:
-            if nivel!={} and valor==c:
-               n=nivel[valor]
-               #print n, 'n'
-               for m in v:
-                  if v[m]!='x':
-                     for a in n:
-                       #print a, 'a'
-                       #print v[m], tPrelaciones[m,n], 'antes'
-                       v[m]=v[m]-tPrelaciones[m,a]
-                       #print v[m], 'despues'
-            valor+=1
+        # Se obtiene un diccionario con la suma de '1' de cada nodo
+        v={}       
+        for n in nodos:
+        cont=0
+        for m in nodos:
+            if tPrelaciones[n,m]==1:
+                v[n]=cont+1
+                cont+=1
+        if n not in v:
+            v[n]=0
+        #print v, 'v'
 
-            # Se establecen los niveles a cada nodo
-            for i in v:
-               if v[i]==0:
-                  c=num
-                  v[i]='x'
-                  if num not in nivel:
-                      nivel[num]=[i]
-                  else:
-                      nivel[num].append(i)
-            num+=1
-            #print nivel
+        # Se van realizando los respectivos cálculos del algoritmo 
+        num=1
+        nivel={}
+        valor=c=0
+        for d in nodos:
+        if nivel!={} and valor==c:
+            n=nivel[valor]
+            #print n, 'n'
+            for m in v:
+                if v[m]!='x':
+                    for a in n:
+                    #print a, 'a'
+                    #print v[m], tPrelaciones[m,n], 'antes'
+                    v[m]=v[m]-tPrelaciones[m,a]
+                    #print v[m], 'despues'
+        valor+=1
 
-         #print nivel, 'nivel'
+        # Se establecen los niveles a cada nodo
+        for i in v:
+            if v[i]==0:
+                c=num
+                v[i]='x'
+                if num not in nivel:
+                    nivel[num]=[i]
+                else:
+                    nivel[num].append(i)
+        num+=1
+        #print nivel
 
-         # Se reordena el diccionario de los niveles 
-         reordenado={}
-         n=len(nivel)
-         for m in range(1, len(nivel)+1):
-             reordenado[n]=nivel[m]
-             n-=1
-             
-         #print reordenado, 'reordenado'
-         return reordenado
+        #print nivel, 'nivel'
+
+        # Se reordena el diccionario de los niveles 
+        reordenado={}
+        n=len(nivel)
+        for m in range(1, len(nivel)+1):
+            reordenado[n]=nivel[m]
+            n-=1
+            
+        #print reordenado, 'reordenado'
+        return reordenado
          
 
 #*************************************************************************************
@@ -1455,70 +1502,69 @@ class PPCproject:
 #-----------------------------------------------------------
            
    def renumerar(self, grafo, niveles):
-         # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
-         s=1
-         nuevosNodos={}
-         for m in niveles:
-            if len(niveles[m])==1:
-                nuevosNodos[niveles[m][0]]=s
+        """
+        """
+        # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
+        s=1
+        nuevosNodos={}
+        for m in niveles:
+        if len(niveles[m])==1:
+            nuevosNodos[niveles[m][0]]=s
+            s+=1
+        else:
+            for a in niveles[m]:
+                nuevosNodos[a]=s            
                 s+=1
-            else:
-               for a in niveles[m]:
-                  nuevosNodos[a]=s            
-                  s+=1
 
-         # Se crea un nuevo grafo
-         nuevoGrafo = pert.Pert()
-         
-         # Se modifica 'grafo.graph'
-         for n in grafo.graph:
-             #print n, 'n'
-             for m in nuevosNodos:            
-                #print  m, 'm'
-                if n==m:
-                   if grafo.graph[n]!=[]:
-                       for i in range(len(grafo.graph[n])):
-                          for a in nuevosNodos:
-                             if grafo.graph[n][i]==a:
-                                if i==0:
-                                   nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
-                                else:                                   
-                                   nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
-                   else: 
-                       nuevoGrafo.graph[nuevosNodos[m]]=[]
-         #print nuevoGrafo.graph, 'graph'
+        # Se crea un nuevo grafo
+        nuevoGrafo = pert.Pert()
+        
+        # Se modifica 'grafo.graph'
+        for n in grafo.graph:
+            #print n, 'n'
+            for m in nuevosNodos:            
+            #print  m, 'm'
+            if n==m:
+                if grafo.graph[n]!=[]:
+                    for i in range(len(grafo.graph[n])):
+                        for a in nuevosNodos:
+                            if grafo.graph[n][i]==a:
+                            if i==0:
+                                nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
+                            else:                                   
+                                nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
+                else: 
+                    nuevoGrafo.graph[nuevosNodos[m]]=[]
+        #print nuevoGrafo.graph, 'graph'
 
 
-         # Se modifica 'grafo.activities'
-         for n in grafo.activities:
-             #print n, 'n'
-             for m in nuevosNodos:            
-                #print  m, 'm'
-                if n[0]==m:
-                    for a in nuevosNodos:
-                       if n[1]==a:
-                           #print a, 'a1'
-                           nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=grafo.activities[n]
-                           #print nuevoGrafo
+        # Se modifica 'grafo.activities'
+        for n in grafo.activities:
+            #print n, 'n'
+            for m in nuevosNodos:            
+            #print  m, 'm'
+            if n[0]==m:
+                for a in nuevosNodos:
+                    if n[1]==a:
+                        #print a, 'a1'
+                        nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=grafo.activities[n]
+                        #print nuevoGrafo
 
-                elif n[1]==m:
-                    for a in nuevosNodos:
-                       if n[0]==a:
-                           #print a, 'a2'
-                           nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=grafo.activities[n]
-                           #print nuevoGrafo
+            elif n[1]==m:
+                for a in nuevosNodos:
+                    if n[0]==a:
+                        #print a, 'a2'
+                        nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=grafo.activities[n]
+                        #print nuevoGrafo
 
 
-         #print nuevoGrafo.activities, 'activities'
-         #print nuevoGrafo, 'grafo renumerado'
-         return nuevoGrafo   
+        #print nuevoGrafo.activities, 'activities'
+        #print nuevoGrafo, 'grafo renumerado'
+        return nuevoGrafo   
                  
 
     
-#**********************************************************************************************************************
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #          ZADERENKO                      #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
+#          ZADERENKO                     
 
 #-----------------------------------------------------------
 # Acción usuario para calcular todos los datos relacionados con Zaderenko 
@@ -1529,6 +1575,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def ventanaZaderenko(self):
+        """
+        """
         informacionCaminos=[]
 
         # Se crea el grafo Pert y se renumera
@@ -1644,6 +1692,8 @@ class PPCproject:
 #----------------------------------------------------------- 
 
    def mostrarCaminosZad(self, modelo, criticos, informacionCaminos):
+        """
+        """
         #Se cambia el formato de los caminos para mostrarlos en la interfaz
         camino=[]
         for n in range(len(informacionCaminos)):
@@ -1687,20 +1737,22 @@ class PPCproject:
 #LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
       
    def actCriticas(self, holguras, actividadesGrafo):  
-         actividades=actividadesGrafo.values()         
-         nuevas=[]
-         for n in range(len(actividadesGrafo)):
-              nuevas.append(round(float(holguras[n][1])))
-         #print nuevas
-         criticas=[]
-         for n in range(len(actividadesGrafo)):
-             #if holguras[n][1]=='%5.2f'%(0):
-             if nuevas[n] == 0.0:
-                  #print actividades[n]
-                  a=actividades[n]
-                  criticas.append(a)
-         
-         return criticas
+        """
+        """
+        actividades=actividadesGrafo.values()         
+        nuevas=[]
+        for n in range(len(actividadesGrafo)):
+            nuevas.append(round(float(holguras[n][1])))
+        #print nuevas
+        criticas=[]
+        for n in range(len(actividadesGrafo)):
+            #if holguras[n][1]=='%5.2f'%(0):
+            if nuevas[n] == 0.0:
+                #print actividades[n]
+                a=actividades[n]
+                criticas.append(a)
+        
+        return criticas
 
   
 #*************************************************************************
@@ -1714,18 +1766,20 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def grafoCriticas(self, actCriticas):
-          # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
-          sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
-          #print sucesorasCriticas, 'suc criticas'
-          gCritico=graph.roy(sucesorasCriticas)
-          #print gCritico
-          caminosCriticos=[]
-          caminos=graph.findAllPaths(gCritico, 'Begin', 'End')
+        """
+        """
+        # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
+        sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
+        #print sucesorasCriticas, 'suc criticas'
+        gCritico=graph.roy(sucesorasCriticas)
+        #print gCritico
+        caminosCriticos=[]
+        caminos=graph.findAllPaths(gCritico, 'Begin', 'End')
 
-          # Se eliminan 'begin' y 'end' de todos los caminos
-          caminosCriticos=[c[1:-1]for c in caminos]
+        # Se eliminan 'begin' y 'end' de todos los caminos
+        caminosCriticos=[c[1:-1]for c in caminos]
 
-          return caminosCriticos
+        return caminosCriticos
 
 
 #*************************************************************************************************************************
@@ -1740,28 +1794,30 @@ class PPCproject:
 #-----------------------------------------------------------       
 
    def tablaSucesorasCriticas(self, criticas):
-         cr=[]
-         for n in criticas:
-             cr.append(n[0])
-         #print cr, 'cr'
+        """
+        """
+        cr=[]
+        for n in criticas:
+            cr.append(n[0])
+        #print cr, 'cr'
 
-         sucesorasCriticas={}
-         for n in cr:
-            for m in range(len(self.actividad)):
-              #print n, 'n', self.actividad[m][1]
-              if n==self.actividad[m][1]:
-                 for a in self.actividad[m][2]:
-                    #print a
-                    if a in cr:
-                       if n not in sucesorasCriticas:
-                           sucesorasCriticas[n]=[a]
-                       else:
-                           sucesorasCriticas[n].append(a)
+        sucesorasCriticas={}
+        for n in cr:
+        for m in range(len(self.actividad)):
+            #print n, 'n', self.actividad[m][1]
+            if n==self.actividad[m][1]:
+                for a in self.actividad[m][2]:
+                #print a
+                if a in cr:
+                    if n not in sucesorasCriticas:
+                        sucesorasCriticas[n]=[a]
+                    else:
+                        sucesorasCriticas[n].append(a)
 
-            if n not in sucesorasCriticas:  
-                sucesorasCriticas[n]=[]
-   
-         return sucesorasCriticas
+        if n not in sucesorasCriticas:  
+            sucesorasCriticas[n]=[]
+
+        return sucesorasCriticas
 
 
 #************************************************************************************************************************
@@ -1777,6 +1833,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def caminosCriticos(self, caminos, caminosCriticos):
+        """
+        """
         # Se buscan los caminos criticos entre todos los caminos y se marca en la lista con un 1
         # Esta lista de 0 y 1 nos servirá para saber cuáles son los criticos a la hora de mostrarlos
 
@@ -1808,38 +1866,36 @@ class PPCproject:
 #----------------------------------------------------------- 
       
    def mediaYdTipica(self, camino):
+        """
+        """
+        # Se calcula la duración de cada camino. Se suman las duraciones de
+        # todas las actividades que forman dicho camino.
 
-         # Se calcula la duración de cada camino. Se suman las duraciones de
-         # todas las actividades que forman dicho camino.
+        d=0
+        for a in camino:
+            for n in range(len(self.actividad)):
+            if a==self.actividad[n][1] and self.actividad[n][6]!='':
+                d+=float(self.actividad[n][6])
+            else:  #controlamos las ficticias
+                d+=0
+        #print d
 
-         d=0
-         for a in camino:
-             for n in range(len(self.actividad)):
-                if a==self.actividad[n][1] and self.actividad[n][6]!='':
-                    d+=float(self.actividad[n][6])
-                else:  #controlamos las ficticias
-                    d+=0
-         #print d
+        # Se calcula la desviación típica de cada camino. Se suman las desviaciones
+        # tí­picas de todas las actividades que forman dicho camino.
 
-         # Se calcula la desviación típica de cada camino. Se suman las desviaciones
-         # tí­picas de todas las actividades que forman dicho camino.
+        t=0
+        for a in camino:
+            for n in range(len(self.actividad)):
+            if a==self.actividad[n][1] and self.actividad[n][7]!='':
+                t+=float(self.actividad[n][7])
+            else:  #controlamos las ficticias
+                t+=0
+        #print t
 
-         t=0
-         for a in camino:
-             for n in range(len(self.actividad)):
-                if a==self.actividad[n][1] and self.actividad[n][7]!='':
-                    t+=float(self.actividad[n][7])
-                else:  #controlamos las ficticias
-                    t+=0
-         #print t
-
-         return '%5.2f'%(d), '%5.2f'%(t)
+        return '%5.2f'%(d), '%5.2f'%(t)
     
 
-#********************************************************************************************************************         
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #              ACTIVIDADES                     #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+#              ACTIVIDADES                 
 
 #-----------------------------------------------------------
 # Acción usuario para mostrar la etiqueta de cada actividad con su
@@ -1853,6 +1909,8 @@ class PPCproject:
 #----------------------------------------------------------- 
     
    def mostrarActividades(self, modelo, actividadesGrafo, grafo):
+        """
+        """
         self.vActividades.show()         
 
         # Se muestran las actividades y sus nodos inicio y fin
@@ -1882,10 +1940,7 @@ class PPCproject:
 
 
 
-#********************************************************************************************************************  
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #               HOLGURAS                       #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#      
+#               HOLGURAS                      
   
 #-----------------------------------------------------------
 # Acción usuario para mostrar los tres tipos de
@@ -1897,6 +1952,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def ventanaHolguras(self):
+        """
+        """
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
     
@@ -1931,6 +1988,8 @@ class PPCproject:
 #-----------------------------------------------------------
     
    def holguras(self, grafo, early, last, duraciones):  
+        """
+        """
         holguras=[]
         #print grafo
         for g in grafo:
@@ -1978,6 +2037,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def mostrarHolguras(self, modelo, holguras):
+        """
+        """
         self.vHolguras.hide()  
         self.vHolguras.show()  
 
@@ -2001,6 +2062,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def calcularCaminos(self):
+        """
+        """
         # Se comprueba que exista algún grafo
         if self.actividad==[]:
            self.dialogoError(gettext.gettext('A graph is needed to calculate its paths'))
@@ -2041,6 +2104,8 @@ class PPCproject:
 # Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
 
    def asignarRecursos(self):
+        """
+        """
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
             self.dialogoError(gettext.gettext('No activities introduced'))
@@ -2057,10 +2122,7 @@ class PPCproject:
 
 
          
-#*******************************************************************************************************************
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #              SIMULACIÓN                      #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+#              SIMULACIÓN                      
 
 #-----------------------------------------------------------
 # Simulación de duraciones de cada actividad según  
@@ -2072,6 +2134,8 @@ class PPCproject:
 #----------------------------------------------------------- 
 
    def simulacion(self, n):
+        """
+        """
         simulacion=[]
         for i in range(n):
             #print i+1, 'nº iteracion'
@@ -2145,6 +2209,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
+      """
+      """
       #Se extraen los caminos crí­ticos
       holguras=self.holguras(grafo.activities, early, last, duraciones)  # Holguras de cada actividad
       actCriticas=self.actCriticas(holguras, grafo.activities)  # Se extraen las act. crí­ticas
@@ -2200,6 +2266,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def limpiarVentanaSim(self):
+        """
+        """
         # Se limpian los datos
         iteracion=self._widgets.get_widget('iteracion')
         iteracion.set_text('')
@@ -2216,10 +2284,7 @@ class PPCproject:
            self.hBoxSim.remove(self.boxS)
 
 
-#*******************************************************************************************************************
-                #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #            PROBABILIDADES                    #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
+#            PROBABILIDADES                    
 
 #-----------------------------------------------------------
 # Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
@@ -2232,14 +2297,16 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def extraerMediaYDTipica(self):
-         vistaListaZ = self._widgets.get_widget('vistaListaZad')
-         sel = vistaListaZ.get_selection()
-         modo= sel.get_mode()
-         modelo, it = sel.get_selected()
-         media=modelo.get_value(it, 0)
-         dTipica=modelo.get_value(it, 1)
+        """
+        """
+        vistaListaZ = self._widgets.get_widget('vistaListaZad')
+        sel = vistaListaZ.get_selection()
+        modo= sel.get_mode()
+        modelo, it = sel.get_selected()
+        media=modelo.get_value(it, 0)
+        dTipica=modelo.get_value(it, 1)
 
-         return media, dTipica
+        return media, dTipica
 
 
 #************************************************************************
@@ -2255,30 +2322,32 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def calcularProb(self, dato1, dato2, media, dTipica):
-         # Se hacen los cálculos
-         if dato1=='': # Si no se introduce el dato1
-              x=(float(dato2)-float(media))/float(dTipica)
-              p=float(scipy.stats.distributions.norm.cdf(x))
+        """
+        """
+        # Se hacen los cálculos
+        if dato1=='': # Si no se introduce el dato1
+            x=(float(dato2)-float(media))/float(dTipica)
+            p=float(scipy.stats.distributions.norm.cdf(x))
 
 
-         elif dato2=='': # Si no se introduce el dato2
-              x=(float(dato1)-float(media))/float(dTipica)
-              p=float(scipy.stats.distributions.norm.cdf(x))
+        elif dato2=='': # Si no se introduce el dato2
+            x=(float(dato1)-float(media))/float(dTipica)
+            p=float(scipy.stats.distributions.norm.cdf(x))
 
 
-         else: # Si se introducen los dos datos
-            if float(dato1)>float(dato2):
-               self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
-            else:
-               x1=(float(dato1)-float(media))/float(dTipica)
-               p1=float(scipy.stats.distributions.norm.cdf(x1))
-               x2=(float(dato2)-float(media))/float(dTipica)
-               p2=float(scipy.stats.distributions.norm.cdf(x2))
-               p=p2-p1
-      
+        else: # Si se introducen los dos datos
+        if float(dato1)>float(dato2):
+            self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
+        else:
+            x1=(float(dato1)-float(media))/float(dTipica)
+            p1=float(scipy.stats.distributions.norm.cdf(x1))
+            x2=(float(dato2)-float(media))/float(dTipica)
+            p2=float(scipy.stats.distributions.norm.cdf(x2))
+            p=p2-p1
+    
 
-         #print p
-         return p
+        #print p
+        return p
   
 
 #************************************************************************
@@ -2294,6 +2363,8 @@ class PPCproject:
 #-----------------------------------------------------------
 
    def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
+      """
+      """
       x=0
       if dato1=='':
            for n in range(len(intervalos)):
@@ -2348,15 +2419,17 @@ class PPCproject:
 #-----------------------------------------------------------  
          
    def escribirProb(self, dato):
-         prob=self._widgets.get_widget('tvProbabilidades')
-         prob.set_buffer(self.bufer)
-         it1=self.bufer.get_start_iter()
-         it2=self.bufer.get_end_iter()
-         textoBufer=self.bufer.get_text(it1, it2)
-         #print textoBufer, 'bufer'
-         completo=textoBufer+'\n'+dato
-         #print completo
-         self.bufer.set_text(completo) 
+        """
+        """
+        prob=self._widgets.get_widget('tvProbabilidades')
+        prob.set_buffer(self.bufer)
+        it1=self.bufer.get_start_iter()
+        it2=self.bufer.get_end_iter()
+        textoBufer=self.bufer.get_text(it1, it2)
+        #print textoBufer, 'bufer'
+        completo=textoBufer+'\n'+dato
+        #print completo
+        self.bufer.set_text(completo) 
 
 
 #***********************************************************************
@@ -2370,6 +2443,8 @@ class PPCproject:
 #-----------------------------------------------------------  
 
    def limpiarVentanaProb(self, c):
+        """
+        """
         # Se limpia el bufer
         probabilidades=self._widgets.get_widget('tvProbabilidades')
         probabilidades.set_buffer(self.bufer)
@@ -2592,6 +2667,8 @@ class PPCproject:
 # Valor de retorno: -
 #-----------------------------------------------------------
    def dialogoRec(self, tipo):
+        """
+        """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
         if tipo==gettext.gettext('Renewable'):
@@ -2614,6 +2691,8 @@ class PPCproject:
 #-----------------------------------------------------------
      
    def dialogoError(self, cadena):
+        """
+        """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         label=gtk.Label(cadena)
         dialogo.vbox.pack_start(label,True,True,10)
@@ -2632,6 +2711,8 @@ class PPCproject:
 # Valor de retorno: -
 #-----------------------------------------------------------
    def errorActividadesRepetidas(self, repetidas):
+        """
+        """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
             label=gtk.Label(gettext.gettext('The activity ')+' "'+actividad+'"'+gettext.gettext(' is repeated\n'))
@@ -2653,6 +2734,8 @@ class PPCproject:
 # Valor de retorno: -
 #-----------------------------------------------------------
    def errorRecNecAct(self, datosErroneos, cadena):
+        """
+        """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
             label=gtk.Label(cadena+' "'+dato+'"'+ gettext.gettext(' does not exist\n'))
@@ -3002,6 +3085,7 @@ class PPCproject:
       else:
         self.dialogoError(gettext.gettext('Initial temperature not high enough.'))
         return False
+
    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
    def alteredLast(self,rest):
       """ 
@@ -3033,9 +3117,7 @@ class PPCproject:
             rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + slack - float(rest[grafoRenumerado.activities[a][0]][0])]
      
       return rest
-      
-
-#XXX XXX XXX XXX
+      
 
 # Help menu actions
 
