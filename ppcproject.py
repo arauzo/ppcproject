@@ -397,7 +397,8 @@ class PPCproject:
                         self.actividad[int(path)][2] = self.texto2Lista(self.modelo[path][2])
                         self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
                         gantt_modified = True
-
+               elif n==10:
+                        gantt_modified = True
                # Si no es ningún caso de los anteriores, se actualiza normalmente
                else:  
                   self.actividad[int(path)][n]=self.modelo[path][n]
@@ -410,8 +411,14 @@ class PPCproject:
                act_list.append(self.actividad[i][1])
                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])  
                pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-            for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
-               self.gantt.set_activity_start_time(activity, time)
+            if n == 10:
+               start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.modelo[path][1], float(self.modelo[path][10]))
+            else:
+               start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
+            for i in range(len(self.actividad)):
+               if self.actividad[i][1] in start_times.keys():
+                  self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
+                  self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
             self.gantt.update()
          #print self.actividad, 'ya modificada'
 
@@ -516,9 +523,12 @@ class PPCproject:
                self.actividad[i][2]=[]   
          pre_dic[self.actividad[i][1]] = self.actividad[i][2]
          self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]) if self.actividad[i][6] != "" else 0)
-      for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
-         self.gantt.set_activity_start_time(activity, time)
-      self.gantt.update()      
+      start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
+      for i in range(len(self.actividad)):
+         if self.actividad[i][1] in start_times.keys():
+            self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
+            self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
+      self.gantt.update()
       # Se actualizan la interfaz y la lista de los recursos
       self.modeloR.clear()
       self.recurso=tabla[1]   
@@ -571,10 +581,12 @@ class PPCproject:
          pre_dic[fila[1]] = fila[2]
          self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
          cont+=1
-      for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
-         self.gantt.set_activity_start_time(activity, time)
-      self.gantt.update() 
-   
+      start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
+      for i in range(len(self.actividad)):
+         if self.actividad[i][1] in start_times.keys():
+            self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
+            self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
+      self.gantt.update()
 
 #********************************************************************************************************************
 #-----------------------------------------------------------
@@ -778,9 +790,11 @@ class PPCproject:
              act_list.append(row[1])
              pre_dic[row[1]] = row[2]
              dur_dic[row[1]] = float(row[6])
-             self.gantt.add_activity(row[1], row[2], float(row[6]))         
-         for activity, time in graph.get_start_time(act_list, dur_dic, pre_dic).iteritems():
-            self.gantt.set_activity_start_time(activity, time)
+             self.gantt.add_activity(row[1], row[2], float(row[6]))
+         time_dics = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
+         for n in range(len(asig)-1):
+            self.actividad[n-1][10] = self.modelo[n-1][10] = str(time_dics[self.actividad[n-1][1]])
+            self.gantt.set_activity_start_time(self.actividad[n-1][1], time_dics[self.actividad[n-1][1]])
          self.gantt.update() 
 
          # Se actualizan los recursos
