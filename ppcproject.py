@@ -1231,230 +1231,36 @@ class PPCproject:
 # GRAFO PERT                     
    def pertFinal(self):
         """
- Creación del grafo Pert y renumeración del mismo 
-
- Parámetros: - 
-
- Valor de retorno: grafoRenumerado (grafo final)
+         Creación del grafo Pert numerado en orden
+         Valor de retorno: grafoRenumerado (grafo final)
         """
-        # Se genera el grafo Pert
         successors = self.tablaSucesoras(self.actividad)
         grafo = pert.Pert()
         grafo.pert(successors)
-        
-        # Se extraen los nodos en una lista
-        nodos=self.listaNodos(grafo.activities)
-        #print nodos, 'nodos'
-
-        # Se calculan los niveles de cada nodo
-        niveles=self.demoucron(grafo.activities, nodos)
-
-        # Se renumera el grafo
-        grafoRenumerado=self.renumerar(grafo, niveles)
-        #print grafoRenumerado, 'grafo renumerado'
-        
+        grafoRenumerado = grafo.renumerar()
         return grafoRenumerado
 
    def tablaSucesoras(self, actividades):
         """
- Obtiene un diccionario que contiene las actividades 
-          y sus sucesoras  
+         Obtiene un diccionario que contiene las actividades 
+                  y sus sucesoras  
 
- Parámetros: actividades (lista de actividades)
+         Parámetros: actividades (lista de actividades)
 
- Valor de retorno: successors(diccionario con las actividades y sus sucesoras)
+         Valor de retorno: successors(diccionario con las actividades y sus sucesoras)
         """
         successors={}
         for n in range(len(actividades)):
             successors[actividades[n][1]]=actividades[n][2]
         return successors
- 
-
-   def listaNodos(self, actividadesGrafo):
-        """
- Creación de una lista que contenga los nodos del grafo
-
- Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-
- Valor de retorno: nodos (lista de nodos)
-        """
-        # Se crea una lista con los nodos del grafo
-        nodos=[]
-        for g in actividadesGrafo:
-            #print g[0], g[1]
-            if g[0] not in nodos:
-                nodos.append(g[0])
-            if g[1] not in nodos:
-                nodos.append(g[1])
-
-        # Se ordena la lista que contiene los nodos del grafo
-        for i in range(1, len(nodos)):
-            for j in range(0, len(nodos)-i):
-               if nodos[j] > nodos[j+1]:
-                   elemento = nodos[j]
-                   nodos[j] = nodos[j+1]
-                   nodos[j+1] = elemento
-
-        return nodos
-
-
-   def tablaPrelaciones(self, actividadesGrafo, nodos):
-        """
- xxx Sustituir esta función por usar directamente el diccionario donde es usada xxx
- Creación de un diccionario que representa las prelaciones 
-          entre los nodos del grafo Pert  
-
- Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-             nodos (lista con los nodos del grafo)
-
- Valor de retorno: dPrelaciones (diccionario con las prelaciones)
-        """
-        dPrelaciones={}
-        for n in nodos:
-           #print n, 'n'
-           for m in nodos:
-               #print m, 'm'
-               if (n,m) in actividadesGrafo:
-                   #print '1'
-                   dPrelaciones[n,m]=1
-               else:
-                   #print '0'
-                   dPrelaciones[n,m]=0
-          
-        #print dPrelaciones, 'prelaciones'
-        return dPrelaciones
-        
-
-   def demoucron(self, actividadesGrafo, nodos):
-        """
-         Calcula el algoritmo de Demoucron: divide el grafo Pert en niveles
-
-         Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-                     nodos (lista con los nodos del grafo)
-
-         Valor de retorno: reordenado (diccionario con los niveles del grafo)
-        """
-        # Se obtiene un diccionario con las prelaciones
-        tPrelaciones=self.tablaPrelaciones(actividadesGrafo, nodos)
-        print 'Pre:', tPrelaciones#xxx
-        # v inicial, se obtiene un diccionario con la suma de '1' de cada nodo
-        v={}       
-        for n in nodos:
-            v[n]=0
-            for m in nodos:
-                if tPrelaciones[n,m]==1:
-                    v[n]+=1
-        print v, 'v'#xxx
-
-        num = 0
-        niveles = {}
-        # Mientras haya un nodo no marcado
-        while [e for e in v if v[e]!='x']:
-            # Se establecen los nodos del nivel
-            niveles[num]=[]
-            for i in v:
-                if v[i]==0:
-                    v[i] = 'x'
-                    niveles[num].append(i)
-
-            # Actualiza v quitando el nivel procesado
-            for m in v:
-                if v[m] != 'x':
-                    for a in niveles[num]:
-                        v[m] = v[m]-tPrelaciones[m,a]
-
-            print 'nivel:', num, niveles[num]
-            print 'v', v
-            num+=1
-
-        # Se reordena el diccionario de los niveles 
-        reordenado={}
-        n=len(niveles)
-        for m in range(len(niveles)):
-            reordenado[n]=niveles[m]
-            n-=1
-            
-        print reordenado, 'reordenado'#xxx
-        return reordenado
-         
-           
-   def renumerar(self, grafo, niveles):
-        """
-         Se renumera el grafo Pert 
-
-         Parámetros: grafo (grafo Pert)
-                     niveles (niveles de cada nodo del grafo)
-
-         Valor de retorno: nuevoGrafo (grafo renumerardo)
-        """
-        # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
-        s=1
-        nuevosNodos={}
-        for m in niveles:
-            if len(niveles[m])==1:
-                nuevosNodos[niveles[m][0]]=s
-                s+=1
-            else:
-                for a in niveles[m]:
-                    nuevosNodos[a]=s            
-                    s+=1
-
-        # Se crea un nuevo grafo
-        nuevoGrafo = pert.Pert()
-        
-        # Se modifica 'grafo.graph'
-        for n in grafo.graph:
-            #print n, 'n'
-            for m in nuevosNodos:            
-                #print  m, 'm'
-                if n==m:
-                    if grafo.graph[n]!=[]:
-                        for i in range(len(grafo.graph[n])):
-                            for a in nuevosNodos:
-                                if grafo.graph[n][i]==a:
-                                    if i==0:
-                                        nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
-                                    else:                                   
-                                        nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
-                    else: 
-                        nuevoGrafo.graph[nuevosNodos[m]]=[]
-        #print nuevoGrafo.graph, 'graph'
-
-
-        # Se modifica 'grafo.activities'
-        for n in grafo.activities:
-            #print n, 'n'
-            for m in nuevosNodos:            
-                #print  m, 'm'
-                if n[0]==m:
-                    for a in nuevosNodos:
-                        if n[1]==a:
-                            #print a, 'a1'
-                            nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=grafo.activities[n]
-                            #print nuevoGrafo
-
-                elif n[1]==m:
-                    for a in nuevosNodos:
-                        if n[0]==a:
-                            #print a, 'a2'
-                            nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=grafo.activities[n]
-                            #print nuevoGrafo
-
-
-        #print nuevoGrafo.activities, 'activities'
-        #print nuevoGrafo, 'grafo renumerado'
-        return nuevoGrafo   
                  
 
     
 #          ZADERENKO                     
    def ventanaZaderenko(self):
         """
- Acción usuario para calcular todos los datos relacionados con Zaderenko 
-
- Parámetros: -
-
- Valor de retorno: -
+         Acción usuario para calcular todos los datos relacionados con Zaderenko 
+         Valor de retorno: -
         """
         informacionCaminos=[]
 
