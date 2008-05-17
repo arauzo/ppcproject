@@ -62,9 +62,10 @@ from simAnnealing import resourcesPerActivities
 
 
 class PPCproject:
+   """ Controler of all events in application """
 
    def __init__(self):
-      # Estructuras de datos básicas de la aplicación
+      # Data globaly used in application
       self.actividad  = []
       self.recurso    = []
       self.asignacion = []
@@ -140,6 +141,9 @@ class PPCproject:
       self.modelo.connect('rows-reordered', self.reorder_gantt)
 
    def cbtreeview (self, container, widget):
+      """
+        xxx lacks comment
+      """
       self.gantt.set_header_height(self.vistaLista.convert_tree_to_widget_coords(0,1)[1])
       if len (self.modelo) > 0 and self.modelo[0][1] != "":
          self.gantt.set_row_height(self.vistaLista.get_background_area(0,self.vistaLista.columna[0]).height)
@@ -147,6 +151,9 @@ class PPCproject:
       return False
 
    def enableProjectControls(self, value):
+      """
+        xxx lacks comment
+      """
       self._widgets.get_widget('mnGuardar').set_sensitive(value)
       self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
       self._widgets.get_widget('mnCerrar').set_sensitive(value)
@@ -158,6 +165,9 @@ class PPCproject:
          self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
 
    def set_modified(self, value):
+      """
+        xxx lacks comment
+      """
       self._widgets.get_widget('mnGuardar').set_sensitive(value)
       self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
       self._widgets.get_widget('tbGuardar').set_sensitive(value)
@@ -337,7 +347,7 @@ class PPCproject:
          if self.modelo[path][n]=='':
                if n==2:
                   self.actividad[int(path)][2]=[]
-                  self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
+                  self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.actString2actList(self.modelo[path][2]))
                   gantt_modified = True
                else:
                   self.actividad[int(path)][n]=self.modelo[path][n]
@@ -394,8 +404,8 @@ class PPCproject:
                         self.modelo[path][2]==''
                         self.actividad[int(path)][2]=[]
                   else: 
-                        self.actividad[int(path)][2] = self.texto2Lista(self.modelo[path][2])
-                        self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.texto2Lista(self.modelo[path][2]))
+                        self.actividad[int(path)][2] = self.actString2actList(self.modelo[path][2])
+                        self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.actString2actList(self.modelo[path][2]))
                         gantt_modified = True
                elif n==10:
                         gantt_modified = True
@@ -601,11 +611,11 @@ class PPCproject:
         actividades=self.actividades2Lista()
 
    # Se pasa a una lista las actividades que tengo como siguientes antes de la modificación
-        anterior=self.texto2Lista(modelo[path][2]) 
+        anterior=self.actString2actList(modelo[path][2]) 
         #print anterior, 'anterior' 
 
         # Se pasa el nuevo texto a una lista
-        modificacion=self.texto2Lista(new_text)
+        modificacion=self.actString2actList(new_text)
         #print modificacion, 'modificacion'
        
         if modificacion==[]:  # Si no se introduce texto (estamos borrando todas las siguientes)
@@ -663,7 +673,7 @@ class PPCproject:
                  if len(self.actividad[a][2])==1: # Si original es la única siguiente, se modifica por nuevo
                     #print '2'
                     modelo[a][2]=nuevo
-                    self.actividad[a][2]=self.texto2Lista(nuevo)
+                    self.actividad[a][2]=self.actString2actList(nuevo)
  
                  else: # Si original no es la única siguiente
                     for m in range(len(self.actividad[a][2])):
@@ -678,15 +688,14 @@ class PPCproject:
 
    def actualizarColSig(self, datos):
         """
- Actualización de la columna de las siguientes en   
-          la interfaz para los proyectos con extensión '.prj'
+         Actualización de la columna de las siguientes en   
+                  la interfaz para los proyectos con extensión '.prj'
 
- Parámetros: datos (lista que almacena los datos de 
-                    las actividades)
+         Parámetros: datos (lista que almacena los datos de 
+                            las actividades)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
-
         for m in range(len(self.modelo)):
             if datos[m][2]==[]:
                 self.modelo[m][2]=''
@@ -703,14 +712,14 @@ class PPCproject:
 
    def actualizarColR(self, columnaRec):
         """
- Actualización de la columna de recursos en la lista de    
-          actividades y en la interfaz
+         Actualización de la columna de recursos en la lista de    
+                  actividades y en la interfaz
 
- Parámetros: columnaRec (lista que almacena una lista por
-                   cada actividad con la relacion 
-                   actividad-recurso-unidad necesaria)
+         Parámetros: columnaRec (lista que almacena una lista por
+                           cada actividad con la relacion 
+                           actividad-recurso-unidad necesaria)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         # Se actualiza la lista de actividades
         for n in range(len(self.actividad)):
@@ -724,21 +733,21 @@ class PPCproject:
 
 
 
-#                    PSPLIB                        #
+#                    PSPLIB                        
      
    def cargarPSPLIB(self, prelaciones, rec, asig):
         """
- Actualización de los datos con los obtenidos de la   
-          lectura de un fichero con extensión '.sm' de la librería 
-          de proyectos PSPLIB
- Parámetros: prelaciones (lista que almacena las actividades 
-                                y sus siguientes)
-             rec (lista que almacena el nombre y las unidades
-                       de recurso)
-             asig (lista que almacena las duraciones y las 
-                         unid. de recurso necesarias por cada actividad)
+         Actualización de los datos con los obtenidos de la   
+                  lectura de un fichero con extensión '.sm' de la librería 
+                  de proyectos PSPLIB
+         Parámetros: prelaciones (lista que almacena las actividades 
+                                        y sus siguientes)
+                     rec (lista que almacena el nombre y las unidades
+                               de recurso)
+                     asig (lista que almacena las duraciones y las 
+                                 unid. de recurso necesarias por cada actividad)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         # Se actualizan las actividades
         self.modelo.clear()
@@ -1129,29 +1138,18 @@ class PPCproject:
         return cadena
            
    
-   def texto2Lista(self, texto):
+   def actString2actList(self, s):
         """
- Pasa un texto a formato lista 
-
- Parámetros: texto (texto)
-
- Valor de retorno: lista (lista resultado)
+         Splits activities separated in a string by ','
+         Returns: list of activity names
         """
-        lista = []
-        if texto!='':
-            for a in texto.split(','):
-                if a!='':
-                    lista.append(a.strip())
-        return lista
+        return [a.strip() for a in s.split(',')]
 
 
    def actividades2Lista(self):
         """
- Introduce en una lista todas las etiquetas de las actividades  
-
- Parámetros: -
-
- Valor de retorno: listaAct (lista de actividades)
+         Introduce en una lista todas las etiquetas de las actividades  
+         Valor de retorno: listaAct (lista de actividades)
         """
         listaAct=[]
         for n in self.actividad:
@@ -1302,6 +1300,7 @@ class PPCproject:
 
    def tablaPrelaciones(self, actividadesGrafo, nodos):
         """
+ xxx Sustituir esta función por usar directamente el diccionario donde es usada xxx
  Creación de un diccionario que representa las prelaciones 
           entre los nodos del grafo Pert  
 
@@ -1328,8 +1327,7 @@ class PPCproject:
 
    def demoucron(self, actividadesGrafo, nodos):
         """
-         Calcula el algoritmo de Demoucron, es decir, divide  
-                  el grafo Pert en niveles
+         Calcula el algoritmo de Demoucron: divide el grafo Pert en niveles
 
          Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
                      nodos (lista con los nodos del grafo)
@@ -1338,69 +1336,56 @@ class PPCproject:
         """
         # Se obtiene un diccionario con las prelaciones
         tPrelaciones=self.tablaPrelaciones(actividadesGrafo, nodos)
-
-        # Se obtiene un diccionario con la suma de '1' de cada nodo
+        print 'Pre:', tPrelaciones#xxx
+        # v inicial, se obtiene un diccionario con la suma de '1' de cada nodo
         v={}       
         for n in nodos:
-            cont=0
+            v[n]=0
             for m in nodos:
                 if tPrelaciones[n,m]==1:
-                    v[n]=cont+1
-                    cont+=1
-            if n not in v:
-                v[n]=0
-            #print v, 'v'
+                    v[n]+=1
+        print v, 'v'#xxx
 
-        # Se van realizando los respectivos cálculos del algoritmo 
-        num=1
-        nivel={}
-        valor=c=0
-        for d in nodos:
-            if nivel!={} and valor==c:
-                n=nivel[valor]
-                #print n, 'n'
-                for m in v:
-                    if v[m]!='x':
-                        for a in n:
-                            #print a, 'a'
-                            #print v[m], tPrelaciones[m,n], 'antes'
-                            v[m]=v[m]-tPrelaciones[m,a]
-                            #print v[m], 'despues'
-            valor+=1
+        num = 0
+        niveles = {}
+        # Mientras haya un nodo no marcado
+        while [e for e in v if v[e]!='x']:
+            # Se establecen los nodos del nivel
+            niveles[num]=[]
+            for i in v:
+                if v[i]==0:
+                    v[i] = 'x'
+                    niveles[num].append(i)
 
-        # Se establecen los niveles a cada nodo
-        for i in v:
-            if v[i]==0:
-                c=num
-                v[i]='x'
-                if num not in nivel:
-                    nivel[num]=[i]
-                else:
-                    nivel[num].append(i)
-        num+=1
-        #print nivel
+            # Actualiza v quitando el nivel procesado
+            for m in v:
+                if v[m] != 'x':
+                    for a in niveles[num]:
+                        v[m] = v[m]-tPrelaciones[m,a]
 
-        #print nivel, 'nivel'
+            print 'nivel:', num, niveles[num]
+            print 'v', v
+            num+=1
 
         # Se reordena el diccionario de los niveles 
         reordenado={}
-        n=len(nivel)
-        for m in range(1, len(nivel)+1):
-            reordenado[n]=nivel[m]
+        n=len(niveles)
+        for m in range(len(niveles)):
+            reordenado[n]=niveles[m]
             n-=1
             
-        #print reordenado, 'reordenado'
+        print reordenado, 'reordenado'#xxx
         return reordenado
          
            
    def renumerar(self, grafo, niveles):
         """
- Se renumera el grafo Pert 
+         Se renumera el grafo Pert 
 
- Parámetros: grafo (grafo Pert)
-             niveles (niveles de cada nodo del grafo)
+         Parámetros: grafo (grafo Pert)
+                     niveles (niveles de cada nodo del grafo)
 
- Valor de retorno: nuevoGrafo (grafo renumerardo)
+         Valor de retorno: nuevoGrafo (grafo renumerardo)
         """
         # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
         s=1
