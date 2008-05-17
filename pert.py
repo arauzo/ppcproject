@@ -417,5 +417,97 @@ class Pert:
          self.removeDummy(dummy3)
          #window.images.append( pert2image(self) )
 
+   def demoucron(self):
+        """
+         Divide un grafo PERT en niveles usando el algoritmo de Demoucron
+         Return: lista de listas de nodos representando los niveles de inicio a fin
+        """
+        nodos = self.graph.keys()
+
+        # v inicial, se obtiene un diccionario con la suma de '1' de cada nodo
+        v={}       
+        for n in nodos:
+            v[n]=0
+            for m in nodos:
+                if (n,m) in self.activities:
+                    v[n]+=1
+
+        num = 0
+        niveles = []
+        # Mientras haya un nodo no marcado
+        while [e for e in v if v[e]!='x']:
+            # Se establecen los nodos del nivel
+            niveles.append([])
+            for i in v:
+                if v[i]==0:
+                    v[i] = 'x'
+                    niveles[num].append(i)
+
+            # Actualiza v quitando el nivel procesado
+            for m in v:
+                if v[m] != 'x':
+                    for a in niveles[num]:
+                        if (m,a) in self.activities:
+                            v[m] -= 1
+            num+=1
+
+        niveles.reverse()
+        return niveles
+         
+           
+   def renumerar(self):
+        """
+         Renumera un grafo Pert para que sus nodos vayan desde 1 a N, donde N 
+         es el número total de nodos. Cumple que un nodo anterior a otro siempre 
+         tenta un número menor.
+         Valor de retorno: nuevoGrafo (grafo renumerardo)
+        """
+        niveles = self.demoucron()
+        # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
+        s=1
+        nuevosNodos={}
+        for m in range(len(niveles)):
+            if len(niveles[m])==1:
+                nuevosNodos[niveles[m][0]]=s
+                s+=1
+            else:
+                for a in niveles[m]:
+                    nuevosNodos[a]=s            
+                    s+=1
+
+        # Se crea un nuevo grafo
+        nuevoGrafo = Pert()
+        
+        # New graph
+        for n in self.graph:
+            #print n, 'n'
+            for m in nuevosNodos:            
+                #print  m, 'm'
+                if n==m:
+                    if self.graph[n]!=[]:
+                        for i in range(len(self.graph[n])):
+                            for a in nuevosNodos:
+                                if self.graph[n][i]==a:
+                                    if i==0:
+                                        nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
+                                    else:                                   
+                                        nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
+                    else: 
+                        nuevoGrafo.graph[nuevosNodos[m]]=[]
+
+        # New activities'
+        for n in self.activities:
+            for m in nuevosNodos:            
+                if n[0]==m:
+                    for a in nuevosNodos:
+                        if n[1]==a:
+                            nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=self.activities[n]
+
+                elif n[1]==m:
+                    for a in nuevosNodos:
+                        if n[0]==a:
+                            nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=self.activities[n]
+
+        return nuevoGrafo   
 
 
