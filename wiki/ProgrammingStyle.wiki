@@ -8,6 +8,8 @@ This page intents to describe the programming style to follow on PPC-project.
 
 We will try to adhere to [http://www.python.org/doc/essays/styleguide.html official Python style guide] ([http://mundogeek.net/traducciones/guia-estilo-python.htm spanish translation]).
 
+Better explained and more interesting ideas in [http://python.net/~goodger/projects/pycon/2007/idiomatic/handout.html Code Like a Pythonista].
+
 Remember some main ideas:
  * Use the standard syntax for pydoc in comments.
  * Use 4 spaces for indenting (never use tabs).
