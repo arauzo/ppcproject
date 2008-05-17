@@ -124,10 +124,7 @@ def last(nodos, early, mZad):
                 mZad[n][m]=mZad[m][n]
 
     # Se crea una la lista de tiempos last y se inicializa a 0
-    last=[]
-    for n in range(len(nodos)):
-        a=0
-        last.append(a)
+    last = [0]*len(nodos)
         
     # Se calculan los tiempos last y se van introduciendo a la lista
     l=len(nodos)-1

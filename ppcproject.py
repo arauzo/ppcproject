@@ -586,19 +586,16 @@ class PPCproject:
             self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
       self.gantt.update()
 
-#********************************************************************************************************************
-#-----------------------------------------------------------
-# Control de la introducción de las siguientes  
-#
-# Parámetros: modelo (interfaz)
-#             path (fila)
-#             new_tex (nuevo texto introducido)
-#
-# Valor de retorno: modelo (interfaz)
-#-----------------------------------------------------------
 
    def comprobarSig(self, modelo, path, new_text):
         """
+ Control de la introducción de las siguientes  
+
+ Parámetros: modelo (interfaz)
+             path (fila)
+             new_tex (nuevo texto introducido)
+
+ Valor de retorno: modelo (interfaz)
         """
         # Se introducen en una lista las etiquetas de las actividades
         actividades=self.actividades2Lista()
@@ -648,20 +645,17 @@ class PPCproject:
        
         return modelo
 
-#*************************************************************************************************************************
-#-----------------------------------------------------------
-# Al modificar la etiqueta de alguna actividad, se modifica  
-#          también cuando ésta sea siguiente de alguna otra actividad
-#
-# Parámetros: modelo (interfaz) 
-#             original (etiqueta original)
-#             nuevo (etiqueta nueva)
-#
-# Valor de retorno: modelo (interfaz modificada)
-#-----------------------------------------------------------
 
    def modificarSig(self, modelo, original, nuevo):
          """
+ Al modificar la etiqueta de alguna actividad, se modifica  
+          también cuando ésta sea siguiente de alguna otra actividad
+
+ Parámetros: modelo (interfaz) 
+             original (etiqueta original)
+             nuevo (etiqueta nueva)
+
+ Valor de retorno: modelo (interfaz modificada)
          """
          for a in range(len(self.actividad)):
              if original in self.actividad[a][2]: # Si original está como siguiente de alguna actividad
@@ -682,49 +676,41 @@ class PPCproject:
     
 
 
-#*************************************************************************************************************************
-#-----------------------------------------------------------
-# Actualización de la columna de las siguientes en   
-#          la interfaz para los proyectos con extensión '.prj'
-#
-# Parámetros: datos (lista que almacena los datos de 
-#                    las actividades)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
-
    def actualizarColSig(self, datos):
         """
+ Actualización de la columna de las siguientes en   
+          la interfaz para los proyectos con extensión '.prj'
+
+ Parámetros: datos (lista que almacena los datos de 
+                    las actividades)
+
+ Valor de retorno: -
         """
 
         for m in range(len(self.modelo)):
             if datos[m][2]==[]:
-            self.modelo[m][2]=''
+                self.modelo[m][2]=''
             else:
-            s=''
-            for n in datos[m][2]:
-                if s!='':
-                    s+=', '
-                    s+=n
-                else:
-                    s+=n 
-                self.modelo[m][2]=s
+                s=''
+                for n in datos[m][2]:
+                    if s!='':
+                        s+=', '
+                        s+=n
+                    else:
+                        s+=n 
+                    self.modelo[m][2]=s
 
 
-#*******************************************************************************************************************   
-#-----------------------------------------------------------
-# Actualización de la columna de recursos en la lista de    
-#          actividades y en la interfaz
-#
-# Parámetros: columnaRec (lista que almacena una lista por
-#                   cada actividad con la relacion 
-#                   actividad-recurso-unidad necesaria)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------      
-     
    def actualizarColR(self, columnaRec):
         """
+ Actualización de la columna de recursos en la lista de    
+          actividades y en la interfaz
+
+ Parámetros: columnaRec (lista que almacena una lista por
+                   cada actividad con la relacion 
+                   actividad-recurso-unidad necesaria)
+
+ Valor de retorno: -
         """
         # Se actualiza la lista de actividades
         for n in range(len(self.actividad)):
@@ -738,28 +724,21 @@ class PPCproject:
 
 
 
-#********************************************************************************************************************** 
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #                    PSPLIB                        #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-
-#-----------------------------------------------------------
-# Actualización de los datos con los obtenidos de la   
-#          lectura de un fichero con extensión '.sm' de la librería 
-#          de proyectos PSPLIB
-#
-# Parámetros: prelaciones (lista que almacena las actividades 
-#                                y sus siguientes)
-#             rec (lista que almacena el nombre y las unidades
-#                       de recurso)
-#             asig (lista que almacena las duraciones y las 
-#                         unid. de recurso necesarias por cada actividad)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
+#                    PSPLIB                        #
      
    def cargarPSPLIB(self, prelaciones, rec, asig):
         """
+ Actualización de los datos con los obtenidos de la   
+          lectura de un fichero con extensión '.sm' de la librería 
+          de proyectos PSPLIB
+ Parámetros: prelaciones (lista que almacena las actividades 
+                                y sus siguientes)
+             rec (lista que almacena el nombre y las unidades
+                       de recurso)
+             asig (lista que almacena las duraciones y las 
+                         unid. de recurso necesarias por cada actividad)
+
+ Valor de retorno: -
         """
         # Se actualizan las actividades
         self.modelo.clear()
@@ -802,9 +781,9 @@ class PPCproject:
             self.gantt.add_activity(row[1], row[2], float(row[6]))
         time_dics = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
         for n in range(len(asig)-1):
-        self.actividad[n-1][10] = self.modelo[n-1][10] = str(time_dics[self.actividad[n-1][1]])
-        self.gantt.set_activity_start_time(self.actividad[n-1][1], time_dics[self.actividad[n-1][1]])
-        self.gantt.update() 
+            self.actividad[n-1][10] = self.modelo[n-1][10] = str(time_dics[self.actividad[n-1][1]])
+            self.gantt.set_activity_start_time(self.actividad[n-1][1], time_dics[self.actividad[n-1][1]])
+            self.gantt.update() 
 
         # Se actualizan los recursos
         i=1
@@ -874,19 +853,16 @@ class PPCproject:
             mostrarColumnaRec=self.mostrarRec(self.asignacion, 0)
             self.actualizarColR(mostrarColumnaRec)
 
-#*****************************************************************************
-#-----------------------------------------------------------
-# Actualización de la columna de las siguientes en   
-#          la interfaz para los proyectos de la librería PSPLIB
-#
-# Parámetros: prelacion (lista que almacena las actividades 
-#                                y sus siguientes)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
      
    def actualizarColSigPSPLIB(self, prelacion):
           """
+ Actualización de la columna de las siguientes en   
+          la interfaz para los proyectos de la librería PSPLIB
+
+ Parámetros: prelacion (lista que almacena las actividades 
+                                y sus siguientes)
+
+ Valor de retorno: -
           """   
           longitud=len(prelacion)
           for m in range(len(self.modelo)):
@@ -900,43 +876,35 @@ class PPCproject:
                       self.modelo[m-1][2]=s
 
 
-#####################################################################################################################
-                                        # FUNCIONES DE COMPROBACIÓN #
-#####################################################################################################################
-
-#-----------------------------------------------------------
-# Comprobación de que los tiempos optimista, pesimista y
-#          más probable son correctos
-#
-# Parámetros: a (d.optimista)
-#             b (d.pesimista)
-#             m (d.mas probable)
-#
-# Valor de retorno: 0 (valores incorrectos)
-#                   1 (valores correctos)
-#----------------------------------------------------------- 
+# FUNCIONES DE COMPROBACIÓN #
      
    def comprobarDuraciones(self, a, b, m):
          """
+ Comprobación de que los tiempos optimista, pesimista y
+          más probable son correctos
+
+ Parámetros: a (d.optimista)
+             b (d.pesimista)
+             m (d.mas probable)
+
+ Valor de retorno: 0 (valores incorrectos)
+                   1 (valores correctos)
          """
          if ( (a<b and m<=b and m>=a) or (a==b and b==m)):
              return 1 
          else:
              return 0
 
-#*************************************************************************************************************************
-#-----------------------------------------------------------
-# Comprueba si se han introducido actividades repetidas 
-#
-# Parámetros: actividad (lista de actividades)
-#
-# Valor de retorno: error (0 si no hay error
-#                          1 si hay error) 
-#                   repetidas (lista de actividades repetidas)
-#-----------------------------------------------------------
 
    def actividadesRepetidas(self, actividad):
         """
+ Comprueba si se han introducido actividades repetidas 
+
+ Parámetros: actividad (lista de actividades)
+
+ Valor de retorno: error (0 si no hay error
+                          1 si hay error) 
+                   repetidas (lista de actividades repetidas)
         """
         error=0
         actividades=[]
@@ -951,20 +919,17 @@ class PPCproject:
 
         return error, repetidas
 
-#************************************************************************************************************************
-#-----------------------------------------------------------
-# Comprobación de que las actividades 
-#           introducidas en la ventana 'recursos necesarios por 
-#           actividad' existen
-#
-# Parámetros: actividad (lista de actividades)
-#
-# Valor de retorno: error (0 si no hay error
-#                          1 si hay error) 
-#----------------------------------------------------------- 
 
    def comprobarActExisten(self, actividad):
          """
+ Comprobación de que las actividades 
+           introducidas en la ventana 'recursos necesarios por 
+           actividad' existen
+
+ Parámetros: actividad (lista de actividades)
+
+ Valor de retorno: error (0 si no hay error
+                          1 si hay error) 
          """
          error=0
          actividades=[]
@@ -985,20 +950,16 @@ class PPCproject:
          return error
 
 
-#************************************************************************************************************************
-#-----------------------------------------------------------
-# Comprobación de que los recursos
-#          introducidos en la ventana 'recursos necesarios por 
-#          actividad' existen
-#
-# Parámetros: recurso (lista de recursos)
-#
-# Valor de retorno: error (0 si no hay error
-#                          1 si hay error) 
-#-----------------------------------------------------------  
-
    def comprobarRecExisten(self, recurso):
          """
+ Comprobación de que los recursos
+          introducidos en la ventana 'recursos necesarios por 
+          actividad' existen
+
+ Parámetros: recurso (lista de recursos)
+
+ Valor de retorno: error (0 si no hay error
+                          1 si hay error) 
          """
          error=0
          recursos=[]
@@ -1019,24 +980,19 @@ class PPCproject:
          return error
 
          
-#####################################################################################################################
-                                              # OTRAS FUNCIONES #
-#####################################################################################################################
- 
-#-----------------------------------------------------------
-# Suma de las unidades de recurso disponibles
-#          por proyecto usadas por las actividades
-#
-# Parámetros: asignacion (lista que almacena actividad,
-#                         recurso y unidades necesarias por actividad)
-#
-# Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de 
-#                               las unidades de dicho recurso disponibles 
-#                               por proyecto usadas por las actividades)
-#-----------------------------------------------------------  
+# OTRAS FUNCIONES #
  
    def sumarUnidadesRec(self, asignacion):
          """
+ Suma de las unidades de recurso disponibles
+          por proyecto usadas por las actividades
+
+ Parámetros: asignacion (lista que almacena actividad,
+                         recurso y unidades necesarias por actividad)
+
+ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de 
+                               las unidades de dicho recurso disponibles 
+                               por proyecto usadas por las actividades)
          """
          unidadesRec=[]
          for n in range(len(self.recurso)): 
@@ -1051,25 +1007,21 @@ class PPCproject:
          #print unidadesRec
          return unidadesRec
 
-
-#*************************************************************************************************************************     
-#-----------------------------------------------------------
-# Almacenamiento en una lista de listas (filas) las relaciones entre    
-#          actividades, recursos y unidades de recurso 
-#          necesarias por actividad
-#
-# Parámetros: asignacion (lista que almacena actividad,
-#                         recurso y unid. necesarias por act.)
-#             num (0: fichero con extensión '.sm'
-#                  1: fichero con extensión '.prj')
-#
-# Valor de retorno: mostrarR (lista que almacena una lista por
-#                  cada actividad con la relacion 
-#                  actividad-recurso-unidad necesaria)
-#-----------------------------------------------------------    
      
    def mostrarRec(self, asignacion, num): 
         """
+ Almacenamiento en una lista de listas (filas) las relaciones entre    
+          actividades, recursos y unidades de recurso 
+          necesarias por actividad
+
+ Parámetros: asignacion (lista que almacena actividad,
+                         recurso y unid. necesarias por act.)
+             num (0: fichero con extensión '.sm'
+                  1: fichero con extensión '.prj')
+
+ Valor de retorno: mostrarR (lista que almacena una lista por
+                  cada actividad con la relacion 
+                  actividad-recurso-unidad necesaria)
         """
         mostrarR=[]
         i=asignacion.index(asignacion[0])
@@ -1086,25 +1038,22 @@ class PPCproject:
 
         return mostrarR
 
-#*******************************************************************************************************************   
-#-----------------------------------------------------------
-# Extracción en una lista las relaciones entre    
-#          actividades, recursos y unidades de recurso 
-#          necesarias por actividad
-#
-# Parámetros: m (fila)
-#             asignacion (lista que almacena actividad,
-#                         recurso y unidades necesarias por actividad)
-#             num (0: fichero con extensión '.sm'
-#                  1: fichero con extensión '.prj')
-#
-# Valor de retorno: mostrar (lista que almacena una lista por
-#                   cada actividad con la relacion 
-#                   actividad-recurso-unidad necesaria)
-#-----------------------------------------------------------    
      
    def colR(self, m, asignacion, num):
         """
+ Extracción en una lista las relaciones entre    
+          actividades, recursos y unidades de recurso 
+          necesarias por actividad
+
+ Parámetros: m (fila)
+             asignacion (lista que almacena actividad,
+                         recurso y unidades necesarias por actividad)
+             num (0: fichero con extensión '.sm'
+                  1: fichero con extensión '.prj')
+
+ Valor de retorno: mostrar (lista que almacena una lista por
+                   cada actividad con la relacion 
+                   actividad-recurso-unidad necesaria)
         """
         mostrar=[]
         for n in range(len(asignacion)): 
@@ -1124,19 +1073,15 @@ class PPCproject:
         return mostrar
 
 
-#*************************************************************************************************************************
-#-----------------------------------------------------------
-# Se inserta una o varias actividades siguientes  
-#
-# Parámetros: modelo (interfaz)
-#             path (fila)
-#             texto (nuevo texto a introducir)
-#
-# Valor de retorno: -
-#------------------------------------------------------------
-
    def insertamosSiguiente(self, modelo, path, texto):
          """
+ Se inserta una o varias actividades siguientes  
+
+ Parámetros: modelo (interfaz)
+             path (fila)
+             texto (nuevo texto a introducir)
+
+ Valor de retorno: -
          """
          if self.actividad[int(path)][2]!=[]:  # Si hay alguna siguiente colocada
                 modelo[path][2] = modelo[path][2] + ', ' + texto
@@ -1146,18 +1091,14 @@ class PPCproject:
                 self.actividad[int(path)][2]=modelo[path][2]
 
 
-#*******************************************************************************************************************   
-#-----------------------------------------------------------
-# Pasa una lista de listas a formato cadena
-#
-# Parámetros: listaCadenas (lista de listas)
-#             m (posición)
-#
-# Valor de retorno: cadena (cadena resultado)
-#----------------------------------------------------------- 
-
    def lista2Cadena(self, listaCadenas, m):
         """
+ Pasa una lista de listas a formato cadena
+
+ Parámetros: listaCadenas (lista de listas)
+             m (posición)
+
+ Valor de retorno: cadena (cadena resultado)
         """
         cadena=''
         for n in listaCadenas[m]:
@@ -1168,17 +1109,14 @@ class PPCproject:
                 cadena+=n 
         return cadena
  
-#********************************************************************************************************************   
-#-----------------------------------------------------------
-# Pasa una lista a formato cadena
-#
-# Parámetros: lista (lista)
-#
-# Valor de retorno: cadena (cadena resultado)
-#----------------------------------------------------------- 
 
    def lista2Cadena2(self, lista):
         """
+ Pasa una lista a formato cadena
+
+ Parámetros: lista (lista)
+
+ Valor de retorno: cadena (cadena resultado)
         """
         cadena=''
         for n in lista:
@@ -1190,37 +1128,30 @@ class PPCproject:
     
         return cadena
            
-#********************************************************************************************************************
-#-----------------------------------------------------------
-# Pasa un texto a formato lista 
-#
-# Parámetros: texto (texto)
-#
-# Valor de retorno: lista (lista resultado)
-#----------------------------------------------------------- 
    
    def texto2Lista(self, texto):
         """
+ Pasa un texto a formato lista 
+
+ Parámetros: texto (texto)
+
+ Valor de retorno: lista (lista resultado)
         """
         lista = []
         if texto!='':
-        for a in texto.split(','):
-            if a!='':
-                lista.append(a.strip())
+            for a in texto.split(','):
+                if a!='':
+                    lista.append(a.strip())
         return lista
 
 
-#**********************************************************************************************************************
-#-----------------------------------------------------------
-# Introduce en una lista todas las etiquetas de las actividades  
-#
-# Parámetros: -
-#
-# Valor de retorno: listaAct (lista de actividades)
-#-----------------------------------------------------------
-
    def actividades2Lista(self):
         """
+ Introduce en una lista todas las etiquetas de las actividades  
+
+ Parámetros: -
+
+ Valor de retorno: listaAct (lista de actividades)
         """
         listaAct=[]
         for n in self.actividad:
@@ -1228,23 +1159,19 @@ class PPCproject:
         #print listaAct, 'actividades'
         return listaAct
 
-
-#***********************************************************************************************************************
-#-----------------------------------------------------------
-# Cálculo de la media y la desviación típica a partir de la distribución, 
-#          del tiempo optimista, pesimista y más probable 
-#
-# Parámetros: distribucion (tipo de distribución)
-#             a (d.optimista)
-#             b (d.pesimista)
-#             m (d.más probable)
-#
-# Valor de retorno: media (media calculada)
-#                   dTipica (desviación típica calculada)
-#----------------------------------------------------------- 
      
    def calcularMediaYDTipica(self, distribucion, a, b, m):
         """
+ Cálculo de la media y la desviación típica a partir de la distribución, 
+          del tiempo optimista, pesimista y más probable 
+
+ Parámetros: distribucion (tipo de distribución)
+             a (d.optimista)
+             b (d.pesimista)
+             m (d.más probable)
+
+ Valor de retorno: media (media calculada)
+                   dTipica (desviación típica calculada)
         """
         # Si el tipo de distribución es Beta
         if distribucion==gettext.gettext('Beta'):
@@ -1269,18 +1196,15 @@ class PPCproject:
 
         return media, dTipica
 
-#***********************************************************************************************************************       
-#-----------------------------------------------------------
-# Muestra datos en el Text View correspondiente 
-#
-# Parámetros: widget (lugar donde mostrar el dato)
-#             valor (dato a mostrar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
 
    def mostrarTextView(self, widget, valor):
         """
+ Muestra datos en el Text View correspondiente 
+
+ Parámetros: widget (lugar donde mostrar el dato)
+             valor (dato a mostrar)
+
+ Valor de retorno: -
         """
         bufer=gtk.TextBuffer()
         widget.set_buffer(bufer)
@@ -1288,17 +1212,13 @@ class PPCproject:
         bufer.set_text(valor) 
                     
 
-#*******************************************************************************************************************
-#-----------------------------------------------------------
-# Asignación de tí­tulo al proyecto actual
-#
-# Parámetros: directorio (tí­tulo+directorio)
-#
-# Valor de retorno: - 
-#----------------------------------------------------------- 
-      
    def asignarTitulo(self, directorio):
         """
+ Asignación de tí­tulo al proyecto actual
+
+ Parámetros: directorio (tí­tulo+directorio)
+
+ Valor de retorno: - 
         """
         titulo=os.path.basename(directorio)
         ubicacion=directorio[:-(len(titulo)+1)]
@@ -1311,17 +1231,13 @@ class PPCproject:
 ### FUNCIONES VENTANAS DE ACCIÓN
 
 # GRAFO PERT                     
-
-#-----------------------------------------------------------
-# Creación del grafo Pert y renumeración del mismo 
-#
-# Parámetros: - 
-#
-# Valor de retorno: grafoRenumerado (grafo final)
-#-----------------------------------------------------------  
-
    def pertFinal(self):
         """
+ Creación del grafo Pert y renumeración del mismo 
+
+ Parámetros: - 
+
+ Valor de retorno: grafoRenumerado (grafo final)
         """
         # Se genera el grafo Pert
         successors = self.tablaSucesoras(self.actividad)
@@ -1341,35 +1257,28 @@ class PPCproject:
         
         return grafoRenumerado
 
-#**********************************************************************************
-#-----------------------------------------------------------
-# Obtiene un diccionario que contiene las actividades 
-#          y sus sucesoras  
-#
-# Parámetros: actividades (lista de actividades)
-#
-# Valor de retorno: successors(diccionario con las actividades y sus sucesoras)
-#-----------------------------------------------------------             
-    
    def tablaSucesoras(self, actividades):
         """
+ Obtiene un diccionario que contiene las actividades 
+          y sus sucesoras  
+
+ Parámetros: actividades (lista de actividades)
+
+ Valor de retorno: successors(diccionario con las actividades y sus sucesoras)
         """
         successors={}
         for n in range(len(actividades)):
             successors[actividades[n][1]]=actividades[n][2]
         return successors
  
-#***********************************************************************************
-#-----------------------------------------------------------
-# Creación de una lista que contenga los nodos del grafo
-#
-# Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-#
-# Valor de retorno: nodos (lista de nodos)
-#-----------------------------------------------------------  
 
    def listaNodos(self, actividadesGrafo):
         """
+ Creación de una lista que contenga los nodos del grafo
+
+ Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
+
+ Valor de retorno: nodos (lista de nodos)
         """
         # Se crea una lista con los nodos del grafo
         nodos=[]
@@ -1391,19 +1300,15 @@ class PPCproject:
         return nodos
 
 
-#***********************************************************************************
-#-----------------------------------------------------------
-# Creación de un diccionario que representa las prelaciones 
-#          entre los nodos del grafo Pert  
-#
-# Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-#             nodos (lista con los nodos del grafo)
-#
-# Valor de retorno: dPrelaciones (diccionario con las prelaciones)
-#-----------------------------------------------------------
-
    def tablaPrelaciones(self, actividadesGrafo, nodos):
         """
+ Creación de un diccionario que representa las prelaciones 
+          entre los nodos del grafo Pert  
+
+ Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
+             nodos (lista con los nodos del grafo)
+
+ Valor de retorno: dPrelaciones (diccionario con las prelaciones)
         """
         dPrelaciones={}
         for n in nodos:
@@ -1420,19 +1325,16 @@ class PPCproject:
         #print dPrelaciones, 'prelaciones'
         return dPrelaciones
         
-#***********************************************************************************
-#-----------------------------------------------------------
-# Calcula el algoritmo de Demoucron, es decir, divide  
-#          el grafo Pert en niveles
-#
-# Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
-#             nodos (lista con los nodos del grafo)
-#
-# Valor de retorno: reordenado (diccionario con los niveles del grafo)
-#-----------------------------------------------------------
 
    def demoucron(self, actividadesGrafo, nodos):
         """
+         Calcula el algoritmo de Demoucron, es decir, divide  
+                  el grafo Pert en niveles
+
+         Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
+                     nodos (lista con los nodos del grafo)
+
+         Valor de retorno: reordenado (diccionario con los niveles del grafo)
         """
         # Se obtiene un diccionario con las prelaciones
         tPrelaciones=self.tablaPrelaciones(actividadesGrafo, nodos)
@@ -1440,31 +1342,31 @@ class PPCproject:
         # Se obtiene un diccionario con la suma de '1' de cada nodo
         v={}       
         for n in nodos:
-        cont=0
-        for m in nodos:
-            if tPrelaciones[n,m]==1:
-                v[n]=cont+1
-                cont+=1
-        if n not in v:
-            v[n]=0
-        #print v, 'v'
+            cont=0
+            for m in nodos:
+                if tPrelaciones[n,m]==1:
+                    v[n]=cont+1
+                    cont+=1
+            if n not in v:
+                v[n]=0
+            #print v, 'v'
 
         # Se van realizando los respectivos cálculos del algoritmo 
         num=1
         nivel={}
         valor=c=0
         for d in nodos:
-        if nivel!={} and valor==c:
-            n=nivel[valor]
-            #print n, 'n'
-            for m in v:
-                if v[m]!='x':
-                    for a in n:
-                    #print a, 'a'
-                    #print v[m], tPrelaciones[m,n], 'antes'
-                    v[m]=v[m]-tPrelaciones[m,a]
-                    #print v[m], 'despues'
-        valor+=1
+            if nivel!={} and valor==c:
+                n=nivel[valor]
+                #print n, 'n'
+                for m in v:
+                    if v[m]!='x':
+                        for a in n:
+                            #print a, 'a'
+                            #print v[m], tPrelaciones[m,n], 'antes'
+                            v[m]=v[m]-tPrelaciones[m,a]
+                            #print v[m], 'despues'
+            valor+=1
 
         # Se establecen los niveles a cada nodo
         for i in v:
@@ -1490,31 +1392,27 @@ class PPCproject:
         #print reordenado, 'reordenado'
         return reordenado
          
-
-#*************************************************************************************
-#-----------------------------------------------------------
-# Se renumera el grafo Pert 
-#
-# Parámetros: grafo (grafo Pert)
-#             niveles (niveles de cada nodo del grafo)
-#
-# Valor de retorno: nuevoGrafo (grafo renumerardo)
-#-----------------------------------------------------------
            
    def renumerar(self, grafo, niveles):
         """
+ Se renumera el grafo Pert 
+
+ Parámetros: grafo (grafo Pert)
+             niveles (niveles de cada nodo del grafo)
+
+ Valor de retorno: nuevoGrafo (grafo renumerardo)
         """
         # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
         s=1
         nuevosNodos={}
         for m in niveles:
-        if len(niveles[m])==1:
-            nuevosNodos[niveles[m][0]]=s
-            s+=1
-        else:
-            for a in niveles[m]:
-                nuevosNodos[a]=s            
+            if len(niveles[m])==1:
+                nuevosNodos[niveles[m][0]]=s
                 s+=1
+            else:
+                for a in niveles[m]:
+                    nuevosNodos[a]=s            
+                    s+=1
 
         # Se crea un nuevo grafo
         nuevoGrafo = pert.Pert()
@@ -1523,18 +1421,18 @@ class PPCproject:
         for n in grafo.graph:
             #print n, 'n'
             for m in nuevosNodos:            
-            #print  m, 'm'
-            if n==m:
-                if grafo.graph[n]!=[]:
-                    for i in range(len(grafo.graph[n])):
-                        for a in nuevosNodos:
-                            if grafo.graph[n][i]==a:
-                            if i==0:
-                                nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
-                            else:                                   
-                                nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
-                else: 
-                    nuevoGrafo.graph[nuevosNodos[m]]=[]
+                #print  m, 'm'
+                if n==m:
+                    if grafo.graph[n]!=[]:
+                        for i in range(len(grafo.graph[n])):
+                            for a in nuevosNodos:
+                                if grafo.graph[n][i]==a:
+                                    if i==0:
+                                        nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
+                                    else:                                   
+                                        nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
+                    else: 
+                        nuevoGrafo.graph[nuevosNodos[m]]=[]
         #print nuevoGrafo.graph, 'graph'
 
 
@@ -1542,20 +1440,20 @@ class PPCproject:
         for n in grafo.activities:
             #print n, 'n'
             for m in nuevosNodos:            
-            #print  m, 'm'
-            if n[0]==m:
-                for a in nuevosNodos:
-                    if n[1]==a:
-                        #print a, 'a1'
-                        nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=grafo.activities[n]
-                        #print nuevoGrafo
+                #print  m, 'm'
+                if n[0]==m:
+                    for a in nuevosNodos:
+                        if n[1]==a:
+                            #print a, 'a1'
+                            nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=grafo.activities[n]
+                            #print nuevoGrafo
 
-            elif n[1]==m:
-                for a in nuevosNodos:
-                    if n[0]==a:
-                        #print a, 'a2'
-                        nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=grafo.activities[n]
-                        #print nuevoGrafo
+                elif n[1]==m:
+                    for a in nuevosNodos:
+                        if n[0]==a:
+                            #print a, 'a2'
+                            nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=grafo.activities[n]
+                            #print nuevoGrafo
 
 
         #print nuevoGrafo.activities, 'activities'
@@ -1565,17 +1463,13 @@ class PPCproject:
 
     
 #          ZADERENKO                     
-
-#-----------------------------------------------------------
-# Acción usuario para calcular todos los datos relacionados con Zaderenko 
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-
    def ventanaZaderenko(self):
         """
+ Acción usuario para calcular todos los datos relacionados con Zaderenko 
+
+ Parámetros: -
+
+ Valor de retorno: -
         """
         informacionCaminos=[]
 
@@ -1679,20 +1573,17 @@ class PPCproject:
         self.vZaderenko.hide()
         self.vZaderenko.show()
 
-#******************************************************************************
-#-----------------------------------------------------------
-# Muestra los caminos del grafo en la interfaz (ventana Zaderenko)
-#
-# Parámetros: modelo (lista donde se muestran los caminos)
-#             criticos (lista caminos criticos)
-#             informacionCaminos (lista caminos del grafo, sus duraciones
-#                          y sus desviaciones tí­picas)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
 
    def mostrarCaminosZad(self, modelo, criticos, informacionCaminos):
         """
+ Muestra los caminos del grafo en la interfaz (ventana Zaderenko)
+
+ Parámetros: modelo (lista donde se muestran los caminos)
+             criticos (lista caminos criticos)
+             informacionCaminos (lista caminos del grafo, sus duraciones
+                          y sus desviaciones tí­picas)
+
+ Valor de retorno: -
         """
         #Se cambia el formato de los caminos para mostrarlos en la interfaz
         camino=[]
@@ -1725,19 +1616,15 @@ class PPCproject:
             
                
        
-#**************************************************************************        
-#-----------------------------------------------------------
-# Cálculo de las actividades criticas 
-#
-# Parámetros: holguras (lista con las hoguras de cada actividad)
-#             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
-
-# Valor de retorno: criticas (lista de actividades criticas)
-#----------------------------------------------------------- 
-#LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
-      
    def actCriticas(self, holguras, actividadesGrafo):  
         """
+ Cálculo de las actividades criticas 
+
+ Parámetros: holguras (lista con las hoguras de cada actividad)
+             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
+
+ Valor de retorno: criticas (lista de actividades criticas)
+LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
         """
         actividades=actividadesGrafo.values()         
         nuevas=[]
@@ -1755,18 +1642,14 @@ class PPCproject:
         return criticas
 
   
-#*************************************************************************
-#-----------------------------------------------------------
-# Creación de un grafo sólo con actividades crí­ticas y extracción de
-#          los caminos de dicho grafo, que serán todos crí­ticos 
-#
-# Parámetros: actCriticas (lista de actividades crí­ticas)
-#
-# Valor de retorno: caminosCriticos (lista de caminos crí­ticos)
-#-----------------------------------------------------------  
-
    def grafoCriticas(self, actCriticas):
         """
+ Creación de un grafo sólo con actividades crí­ticas y extracción de
+          los caminos de dicho grafo, que serán todos crí­ticos 
+
+ Parámetros: actCriticas (lista de actividades crí­ticas)
+
+ Valor de retorno: caminosCriticos (lista de caminos crí­ticos)
         """
         # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
         sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
@@ -1782,19 +1665,15 @@ class PPCproject:
         return caminosCriticos
 
 
-#*************************************************************************************************************************
-#-----------------------------------------------------------
-# Obtiene un diccionario que contiene las actividades 
-#          crí­ticas y sus sucesoras  
-#
-# Parámetros: criticas (lista de actividades crí­ticas)
-#
-# Valor de retorno: sucesorasCriticas(diccionario que almacena 
-#                   las actividades críticas y sus sucesoras)
-#-----------------------------------------------------------       
-
    def tablaSucesorasCriticas(self, criticas):
         """
+ Obtiene un diccionario que contiene las actividades 
+          crí­ticas y sus sucesoras  
+
+ Parámetros: criticas (lista de actividades crí­ticas)
+
+ Valor de retorno: sucesorasCriticas(diccionario que almacena 
+                   las actividades críticas y sus sucesoras)
         """
         cr=[]
         for n in criticas:
@@ -1803,16 +1682,16 @@ class PPCproject:
 
         sucesorasCriticas={}
         for n in cr:
-        for m in range(len(self.actividad)):
-            #print n, 'n', self.actividad[m][1]
-            if n==self.actividad[m][1]:
-                for a in self.actividad[m][2]:
-                #print a
-                if a in cr:
-                    if n not in sucesorasCriticas:
-                        sucesorasCriticas[n]=[a]
-                    else:
-                        sucesorasCriticas[n].append(a)
+            for m in range(len(self.actividad)):
+                #print n, 'n', self.actividad[m][1]
+                if n==self.actividad[m][1]:
+                    for a in self.actividad[m][2]:
+                        #print a
+                        if a in cr:
+                            if n not in sucesorasCriticas:
+                                sucesorasCriticas[n]=[a]
+                            else:
+                                sucesorasCriticas[n].append(a)
 
         if n not in sucesorasCriticas:  
             sucesorasCriticas[n]=[]
@@ -1820,20 +1699,16 @@ class PPCproject:
         return sucesorasCriticas
 
 
-#************************************************************************************************************************
-#-----------------------------------------------------------
-# Búsqueda de los caminos criticos en todos los caminos
-#          del grafo. Se marca con un 1 los crí­ticos y con un 0
-#          los no crí­ticos
-#
-# Parámetros: caminos (lista todos los caminos)
-#             caminosCriticos (lista caminos criticos)
-#
-# Valor de retorno: criticos (lista con los caminos marcados)
-#-----------------------------------------------------------  
-
    def caminosCriticos(self, caminos, caminosCriticos):
         """
+ Búsqueda de los caminos criticos en todos los caminos
+          del grafo. Se marca con un 1 los crí­ticos y con un 0
+          los no crí­ticos
+
+ Parámetros: caminos (lista todos los caminos)
+             caminosCriticos (lista caminos criticos)
+
+ Valor de retorno: criticos (lista con los caminos marcados)
         """
         # Se buscan los caminos criticos entre todos los caminos y se marca en la lista con un 1
         # Esta lista de 0 y 1 nos servirá para saber cuáles son los criticos a la hora de mostrarlos
@@ -1854,19 +1729,15 @@ class PPCproject:
         return criticos
 
 
-#************************************************************************************************************************
-#-----------------------------------------------------------
-# Cálculo de la duración media y la desviación tí­pica
-#          de un camino del grafo
-#
-# Parámetros: camino (camino del grafo)
-#
-# Valor de retorno: d (duración media)
-#                   t (desviación tí­pica)
-#----------------------------------------------------------- 
-      
    def mediaYdTipica(self, camino):
         """
+ Cálculo de la duración media y la desviación tí­pica
+          de un camino del grafo
+
+ Parámetros: camino (camino del grafo)
+
+ Valor de retorno: d (duración media)
+                   t (desviación tí­pica)
         """
         # Se calcula la duración de cada camino. Se suman las duraciones de
         # todas las actividades que forman dicho camino.
@@ -1874,10 +1745,10 @@ class PPCproject:
         d=0
         for a in camino:
             for n in range(len(self.actividad)):
-            if a==self.actividad[n][1] and self.actividad[n][6]!='':
-                d+=float(self.actividad[n][6])
-            else:  #controlamos las ficticias
-                d+=0
+                if a==self.actividad[n][1] and self.actividad[n][6]!='':
+                    d+=float(self.actividad[n][6])
+                else:  #controlamos las ficticias
+                    d+=0
         #print d
 
         # Se calcula la desviación típica de cada camino. Se suman las desviaciones
@@ -1886,10 +1757,10 @@ class PPCproject:
         t=0
         for a in camino:
             for n in range(len(self.actividad)):
-            if a==self.actividad[n][1] and self.actividad[n][7]!='':
-                t+=float(self.actividad[n][7])
-            else:  #controlamos las ficticias
-                t+=0
+                if a==self.actividad[n][1] and self.actividad[n][7]!='':
+                    t+=float(self.actividad[n][7])
+                else:  #controlamos las ficticias
+                    t+=0
         #print t
 
         return '%5.2f'%(d), '%5.2f'%(t)
@@ -1897,19 +1768,16 @@ class PPCproject:
 
 #              ACTIVIDADES                 
 
-#-----------------------------------------------------------
-# Acción usuario para mostrar la etiqueta de cada actividad con su
-#          nodo inicio y fin en la interfaz
-#
-# Parámetros: modelo (interfaz)
-#             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
-#             grafo (grafo Pert)
-#
-# Valor de retorno: -
-#----------------------------------------------------------- 
-    
    def mostrarActividades(self, modelo, actividadesGrafo, grafo):
         """
+ Acción usuario para mostrar la etiqueta de cada actividad con su
+          nodo inicio y fin en la interfaz
+
+ Parámetros: modelo (interfaz)
+             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
+             grafo (grafo Pert)
+
+ Valor de retorno: -
         """
         self.vActividades.show()         
 
@@ -1941,18 +1809,15 @@ class PPCproject:
 
 
 #               HOLGURAS                      
-  
-#-----------------------------------------------------------
-# Acción usuario para mostrar los tres tipos de
-#          holguras: total, libre e independiente
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
 
    def ventanaHolguras(self):
         """
+ Acción usuario para mostrar los tres tipos de
+          holguras: total, libre e independiente
+
+ Parámetros: -
+
+ Valor de retorno: -
         """
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
@@ -1974,21 +1839,18 @@ class PPCproject:
         self.mostrarHolguras(self.modeloH, holguras) 
 
 
-#*****************************************************************        
-#-----------------------------------------------------------
-# Cálculo de los tres tipos de holguras
-#
-# Parámetros: grafo (grafo Pert)
-#             early (lista con los tiempos early)
-#             last (lista con los tiempos last)
-#         duraciones (duraciones simuladas)
-#
-# Valor de retorno: holguras (lista que contiene cada actividad y sus tres
-#                              tipos de holguras)
-#-----------------------------------------------------------
-    
+
    def holguras(self, grafo, early, last, duraciones):  
         """
+ Cálculo de los tres tipos de holguras
+
+ Parámetros: grafo (grafo Pert)
+             early (lista con los tiempos early)
+             last (lista con los tiempos last)
+         duraciones (duraciones simuladas)
+
+ Valor de retorno: holguras (lista que contiene cada actividad y sus tres
+                              tipos de holguras)
         """
         holguras=[]
         #print grafo
@@ -2026,18 +1888,15 @@ class PPCproject:
  
         return holguras
       
-#********************************************************************         
-#-----------------------------------------------------------
-# Muestra las hoguras en la interfaz
-#
-# Parámetros: modelo (lista de actividades)
-#             hoguras (lista con los tres tipos de holguras de cada actividad)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
 
    def mostrarHolguras(self, modelo, holguras):
         """
+ Muestra las hoguras en la interfaz
+
+ Parámetros: modelo (lista de actividades)
+             hoguras (lista con los tres tipos de holguras de cada actividad)
+
+ Valor de retorno: -
         """
         self.vHolguras.hide()  
         self.vHolguras.show()  
@@ -2047,22 +1906,16 @@ class PPCproject:
             modelo.append([holguras[n][0], holguras[n][1], holguras[n][2], holguras[n][3]])
 
 
-#********************************************************************************************************************         
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #           CAMINOS DEL GRAFO                  #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Acción usuario para calcular y mostrar todos los 
-#          caminos de un grafo 
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+#           CAMINOS DEL GRAFO                  #
 
    def calcularCaminos(self):
         """
+ Acción usuario para calcular y mostrar todos los 
+          caminos de un grafo 
+
+ Parámetros: -
+
+ Valor de retorno: -
         """
         # Se comprueba que exista algún grafo
         if self.actividad==[]:
@@ -2087,24 +1940,17 @@ class PPCproject:
            self.vCaminos.show()
            widget=self._widgets.get_widget('tvCaminos')
            self.mostrarTextView(widget, camino)
-#*******************************************************************************************************************
-      #++++++++++++++++++++++++++++++++++++++++++++++++++#
-      #     RECUROS NECESARIOS POR ACTIVIDAD         #
-      #++++++++++++++++++++++++++++++++++++++++++++++++++# 
-
-#-----------------------------------------------------------
-# Acción usuario para acceder a la ventana de 
-#          'recursos necesarios por actividad'
-#
-# Parámetros: -
-#
-# Valor de retorno: - 
-#----------------------------------------------------------- 
-
-# Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
+#     RECUROS NECESARIOS POR ACTIVIDAD         #
 
    def asignarRecursos(self):
         """
+ Acción usuario para acceder a la ventana de 
+          'recursos necesarios por actividad'
+
+ Parámetros: -
+
+ Valor de retorno: - 
+ Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
         """
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
@@ -2124,17 +1970,14 @@ class PPCproject:
          
 #              SIMULACIÓN                      
 
-#-----------------------------------------------------------
-# Simulación de duraciones de cada actividad según  
-#          su tipo de distribución
-#
-# Parámetros: n (número de iteraciones)
-#
-# Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
-#----------------------------------------------------------- 
-
    def simulacion(self, n):
         """
+ Simulación de duraciones de cada actividad según  
+          su tipo de distribución
+
+ Parámetros: n (número de iteraciones)
+
+ Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
         """
         simulacion=[]
         for i in range(n):
@@ -2194,22 +2037,19 @@ class PPCproject:
 
         return simulacion
 
-#*******************************************************************
-#-----------------------------------------------------------
-# Extrae los caminos crí­ticos, calcula su í­ndice de
-#          criticidad y muestra el resultado en la interfaz
-#
-# Parámetros: grafo (grafo Pert)
-#         duraciones (duraciones simuladas)
-#             early (lista con los tiempos early)
-#             last (lista con los tiempos last)
-#         itTotales (iteraciones totales)
-#
-# Valor de retorno: - 
-#-----------------------------------------------------------
 
    def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
       """
+ Extrae los caminos crí­ticos, calcula su í­ndice de
+          criticidad y muestra el resultado en la interfaz
+
+ Parámetros: grafo (grafo Pert)
+         duraciones (duraciones simuladas)
+             early (lista con los tiempos early)
+             last (lista con los tiempos last)
+         itTotales (iteraciones totales)
+
+ Valor de retorno: - 
       """
       #Se extraen los caminos crí­ticos
       holguras=self.holguras(grafo.activities, early, last, duraciones)  # Holguras de cada actividad
@@ -2256,17 +2096,14 @@ class PPCproject:
          n=self.criticidad[c]
          self.modeloC.append([n, str('%3.2f'%((float(n)/itTotales)*100))+'%', c])
 
-#********************************************************************
-#-----------------------------------------------------------
-# Limpia los datos de la ventana de simulación 
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
 
    def limpiarVentanaSim(self):
         """
+ Limpia los datos de la ventana de simulación 
+
+ Parámetros: -
+
+ Valor de retorno: -
         """
         # Se limpian los datos
         iteracion=self._widgets.get_widget('iteracion')
@@ -2286,18 +2123,16 @@ class PPCproject:
 
 #            PROBABILIDADES                    
 
-#-----------------------------------------------------------
-# Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
-#          cálculo de probabilidades, es decir, el camino seleccionado
-#
-# Parámetros: -
-#
-# Valor de retorno: media (duración media)
-#                   dTipica (desviación tí­pica)
-#-----------------------------------------------------------  
 
    def extraerMediaYDTipica(self):
         """
+ Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
+          cálculo de probabilidades, es decir, el camino seleccionado
+
+ Parámetros: -
+
+ Valor de retorno: media (duración media)
+                   dTipica (desviación tí­pica)
         """
         vistaListaZ = self._widgets.get_widget('vistaListaZad')
         sel = vistaListaZ.get_selection()
@@ -2309,20 +2144,17 @@ class PPCproject:
         return media, dTipica
 
 
-#************************************************************************
-#-----------------------------------------------------------
-# Cálculo de probabilidades       
-#
-# Parámetros: dato1 (dato primer Entry)
-#             dato2 (dato segundo Entry)
-#             media (duración media)
-#             dTipica (desviación tí­pica)
-#
-# Valor de retorno: p (probabilidad calculada)
-#-----------------------------------------------------------  
 
    def calcularProb(self, dato1, dato2, media, dTipica):
         """
+ Cálculo de probabilidades       
+
+ Parámetros: dato1 (dato primer Entry)
+             dato2 (dato segundo Entry)
+             media (duración media)
+             dTipica (desviación tí­pica)
+
+ Valor de retorno: p (probabilidad calculada)
         """
         # Se hacen los cálculos
         if dato1=='': # Si no se introduce el dato1
@@ -2336,34 +2168,31 @@ class PPCproject:
 
 
         else: # Si se introducen los dos datos
-        if float(dato1)>float(dato2):
-            self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
-        else:
-            x1=(float(dato1)-float(media))/float(dTipica)
-            p1=float(scipy.stats.distributions.norm.cdf(x1))
-            x2=(float(dato2)-float(media))/float(dTipica)
-            p2=float(scipy.stats.distributions.norm.cdf(x2))
-            p=p2-p1
+            if float(dato1)>float(dato2):
+                self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
+            else:
+                x1=(float(dato1)-float(media))/float(dTipica)
+                p1=float(scipy.stats.distributions.norm.cdf(x1))
+                x2=(float(dato2)-float(media))/float(dTipica)
+                p2=float(scipy.stats.distributions.norm.cdf(x2))
+                p=p2-p1
     
 
         #print p
         return p
   
 
-#************************************************************************
-#-----------------------------------------------------------
-# Cálculo de probabilidades para la simulación      
-#
-# Parámetros: dato1 (dato primer Entry)
-#             dato2 (dato segundo Entry)
-#             intervalos (lista de intervalos)
-#             itTotales (iteraciones totales)
-#
-# Valor de retorno: x (probabilidad calculada)
-#-----------------------------------------------------------
 
    def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
       """
+ Cálculo de probabilidades para la simulación      
+
+ Parámetros: dato1 (dato primer Entry)
+             dato2 (dato segundo Entry)
+             intervalos (lista de intervalos)
+             itTotales (iteraciones totales)
+
+ Valor de retorno: x (probabilidad calculada)
       """
       x=0
       if dato1=='':
@@ -2409,17 +2238,14 @@ class PPCproject:
                   #print x, 'suma'
       return x           
 
-#************************************************************************
-#-----------------------------------------------------------
-# Escribe en el TextView las probabilidades calculadas        
-#
-# Parámetros: dato (probabilidad a escribir)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
-         
+
    def escribirProb(self, dato):
         """
+ Escribe en el TextView las probabilidades calculadas        
+
+ Parámetros: dato (probabilidad a escribir)
+
+ Valor de retorno: -
         """
         prob=self._widgets.get_widget('tvProbabilidades')
         prob.set_buffer(self.bufer)
@@ -2432,18 +2258,15 @@ class PPCproject:
         self.bufer.set_text(completo) 
 
 
-#***********************************************************************
-#-----------------------------------------------------------
-# Limpia los datos de la ventana de probabilidades 
-#
-# Parámetros: c (0: llamada desde la ventana Zaderenko
-#       1: llamada desde la ventana Simulación)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------  
 
    def limpiarVentanaProb(self, c):
         """
+ Limpia los datos de la ventana de probabilidades 
+
+ Parámetros: c (0: llamada desde la ventana Zaderenko
+       1: llamada desde la ventana Simulación)
+
+ Valor de retorno: -
         """
         # Se limpia el bufer
         probabilidades=self._widgets.get_widget('tvProbabilidades')
@@ -2658,16 +2481,15 @@ class PPCproject:
 
       return close
 
-#-----------------------------------------------------------
-# Muestra un mensaje de advertencia si no se han
-#          introducido bien las unidades de recurso
-#
-# Parámetros: tipo (tipo de recurso)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+
    def dialogoRec(self, tipo):
         """
+ Muestra un mensaje de advertencia si no se han
+          introducido bien las unidades de recurso
+
+ Parámetros: tipo (tipo de recurso)
+
+ Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
@@ -2682,16 +2504,15 @@ class PPCproject:
 
         dialogo.destroy()   
 
-#-----------------------------------------------------------
-# Muestra un mensaje de error en la apertura del fichero
-#
-# Parámetros: -
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+
      
    def dialogoError(self, cadena):
         """
+ Muestra un mensaje de error en la apertura del fichero
+
+ Parámetros: -
+
+ Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         label=gtk.Label(cadena)
@@ -2702,16 +2523,15 @@ class PPCproject:
         dialogo.destroy()   
 
 
-#-----------------------------------------------------------
-# Muestra un mensaje de error si en la introducción
-#          de datos hay alguna actividad repetida
-#
-# Parámetros: repetidas (lista con las actividades repetidas)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
+
    def errorActividadesRepetidas(self, repetidas):
         """
+ Muestra un mensaje de error si en la introducción
+          de datos hay alguna actividad repetida
+
+ Parámetros: repetidas (lista con las actividades repetidas)
+
+ Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
@@ -2723,18 +2543,16 @@ class PPCproject:
         dialogo.destroy() 
 
 
-#-----------------------------------------------------------
-# Muestra un mensaje de error si en la ventana
-#          'recursos necesarios por actividad' hay alguna
-#          actividad o algun recurso inexistente
-#
-# Parámetros: datosErroneos (lista con los datos erróneos)
-#             cadena (cadena de texto)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------
    def errorRecNecAct(self, datosErroneos, cadena):
         """
+ Muestra un mensaje de error si en la ventana
+          'recursos necesarios por actividad' hay alguna
+          actividad o algun recurso inexistente
+
+ Parámetros: datosErroneos (lista con los datos erróneos)
+             cadena (cadena de texto)
+
+ Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
