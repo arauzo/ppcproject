@@ -1,8 +1,9 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Importing files
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 # PPC-PROJECT
-#   Multiplatform software tool for education and research in 
+#   Multiplatform software tool for education and research in
 #   project management
 #
 # Copyright 2007-8 Universidad de Córdoba
@@ -20,36 +21,39 @@
 import gtk
 import gettext
 
-#********************************************************************************************************************  
-#-----------------------------------------------------------
-# Salva texto en formato CSV
-#
-# Parámetros: texto (texto a guardar)
-#
-# Valor de retorno: -
-#-----------------------------------------------------------   
 
 def guardarCsv(texto, principal):
-        dialogoGuardar = gtk.FileChooserDialog (gettext.gettext("Save"),None,gtk.FILE_CHOOSER_ACTION_SAVE,(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-        resultado = dialogoGuardar.run()
-        if resultado == gtk.RESPONSE_OK:
-            try:
-                nombre=dialogoGuardar.get_filename()
-                if nombre[-4:]=='.csv':
-                    fescritura=open(nombre,'w')
-                else:
-                    fescritura=open(nombre+'.csv','w')
-                fescritura.write(texto)
+    """
+     Salva texto en formato CSV
 
-            except IOError :
-                principal.dialogoError(gettext.gettext('Error saving the file'))    
-            fescritura.close()
-        #elif resultado == gtk.RESPONSE_CANCEL:  
-            #print "No hay elementos seleccionados"
+     Parámetros: texto (texto a guardar)
 
-        dialogoGuardar.destroy() 
-        
+     Valor de retorno: -
+    """
+    dialogoGuardar = gtk.FileChooserDialog(gettext.gettext('Save'), None,
+                                           gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL,
+                                           gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE,
+                                           gtk.RESPONSE_OK))
+    dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
+    resultado = dialogoGuardar.run()
+    if resultado == gtk.RESPONSE_OK:
+        try:
+            nombre = dialogoGuardar.get_filename()
+            if nombre[-4:] == '.csv':
+                fescritura = open(nombre, 'w')
+            else:
+                fescritura = open(nombre + '.csv', 'w')
+            fescritura.write(texto)
+        except IOError:
+
+            principal.dialogoError(gettext.gettext('Error saving the file'))
+        fescritura.close()
+    # elif resultado == gtk.RESPONSE_CANCEL:
+        # print "No hay elementos seleccionados"
+
+    dialogoGuardar.destroy()
+
+
 def leerPSPLIB(f):
     """
      Lectura de un proyecto de la librería de proyectos PSPLIB   
@@ -63,53 +67,58 @@ def leerPSPLIB(f):
                        asig (lista que almacena las duraciones y las 
                              unid. de recurso necesarias por cada actividad)
     """
-    prelaciones=[]
-    asig=[]
-    rec=[]
-    l=f.readline()         
+
+    prelaciones = []
+    asig = []
+    rec = []
+    l = f.readline()
     while l:
-        # Lectura de las actividades y sus siguientes
-        if l[0]=='j' and l[10]=='#':
-            l=f.readline()
-            while l[0]!='*':                   
-                prel=l.split()[0], l.split()[3:]
+    # Lectura de las actividades y sus siguientes
+        if l[0] == 'j' and l[10] == '#':
+            l = f.readline()
+            while l[0] != '*':
+                prel = (l.split()[0], l.split()[3:])
                 prelaciones.append(prel)
-                l=f.readline()
-            
+                l = f.readline()
+
         # Lectura de la duración de las actividades y de las unidades de recursos necesarias por actividad
-        if l[0]=='-':
-            l=f.readline()
-            while l[0]!='*': 
+        if l[0] == '-':
+            l = f.readline()
+            while l[0] != '*':
                 asig.append(l.split())
-                l=f.readline()
-            
+                l = f.readline()
+
         # Lectura del nombre, tipo y unidad de los recursos
-        if l[0:22]=='RESOURCEAVAILABILITIES':
-            l=f.readline()
-            while l[0]!='*': 
+        if l[0:22] == 'RESOURCEAVAILABILITIES':
+            l = f.readline()
+            while l[0] != '*':
                 rec.append(l.split())
-                l=f.readline()
-            
-        l=f.readline()  
-            
+                l = f.readline()
+
+        l = f.readline()
+
     return (prelaciones, rec, asig)
-    
+
+
 def leerTxt(f):
-      """
-       Lectura de un fichero con extensión '.txt'
+    """
+     Lectura de un fichero con extensión '.txt'
 
-       Parámetros: f (fichero)
+     Parámetros: f (fichero)
 
-       Valor de retorno: tabla (datos leidos)
-      """
-      tabla=[]
-      l=f.readline()
-      while l:
-            linea=l.split('\t')
-            linea[1]=linea[1].split(',')
-            tabla.append(linea)
-            l=f.readline()
+     Valor de retorno: tabla (datos leidos)
+    """
 
-      l=f.readline()
-      
-      return tabla
+    tabla = []
+    l = f.readline()
+    while l:
+        linea = l.split('\t')
+        linea[1] = linea[1].split(',')
+        tabla.append(linea)
+        l = f.readline()
+
+    l = f.readline()
+
+    return tabla
+
+
