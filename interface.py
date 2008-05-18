@@ -90,6 +90,7 @@ class Interface:
       self.ganttSA.set_header_height(20)
       self.ganttSA.set_cell_width(20)
       self.ganttSA.set_policy(gtk.POLICY_NEVER, gtk.POLICY_ALWAYS)
+      self.ganttSA.show_extra_row(False)
       hsbSA = self._widgets.get_widget('hsbSA')
       hsbSA.set_adjustment(self.ganttSA.diagram.get_hadjustment())
       fixedGanttSA.pack_end(self.ganttSA)

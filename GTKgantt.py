@@ -46,6 +46,7 @@ class GTKgantt(gtk.VBox):
             set_cell_width(width)
             set_header_height(height)
             set_row_height(height)
+            show_extra_row(value)
             update()
             add_activity(name, prelations, duration = 0 , start_time = 0, slack = 0, comment = "")
             rename_activity(old name, new name)
@@ -236,6 +237,13 @@ class GTKgantt(gtk.VBox):
         value (True or False)
         """
         self.diagram.show_arrows(value)
+    def show_extra_row(self, value):
+        """
+        Set if an extra row should be shown or not.
+
+        value (True or False)
+        """
+        self.diagram.show_extra_row(value)
     def clear(self):
         """
         Clear all the activities information
@@ -368,6 +376,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
             thin_slack
             context
             arrows
+            extra_row
 
         Interface:
             set_policy(horizontal policy, vertical policy)
@@ -407,6 +416,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.thin_slack = True
         self.arrows = True
         self.selected = None
+        self.extra_row = True
         #Events
         self.set_property('events',
                            gtk.gdk.EXPOSURE_MASK |
@@ -649,7 +659,20 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.graph.activities = activities
         
     def show_arrows(self, value):
+        """
+        Set if the prelation arrows should be shown or not.
+
+        value (True or False)
+        """
         self.arrows = value
+
+    def show_extra_row(self, value):
+        """
+        Set if an extra row should be shown or not.
+
+        value (True or False)
+        """
+        self.extra_row = value
 
     def expose (self,widget,event):
         """
@@ -687,6 +710,8 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
                 self.emit("gantt-width-changed",width)
                 self.modified = 0
         height = self.row_height * len(self.graph.activities)
+        if (self.extra_row):
+            height += self.row_height
         self.set_size(self.width, height)
         context.translate(0.5, 0.5)
         #Drawing cell lines
