@@ -4,7 +4,7 @@
 # Graph functions
 #-----------------------------------------------------------------------
 # PPC-PROJECT
-#   Multiplatform software tool for education and research in 
+#   Multiplatform software tool for education and research in
 #   project management
 #
 # Copyright 2007-8 Universidad de Córdoba
@@ -44,7 +44,7 @@ class Grafo:
         
     def addArc(self,arc,label):
         a,c=arc
-	if a not in self.successors:
+        if a not in self.successors:
             self.addNode(a)
         if c not in self.successors:
             self.addNode(c)
@@ -164,284 +164,284 @@ roy = {'a': ['c', 'e'],
 
 
 def reversedGraph(graph):
-   """
-   Returns a new directed graph data structure with all arcs
-   reversed. Can be used as a table of inputs to nodes instead of
-   outputs (following nodes).
-   """
-   reverted = {}
-   for node in graph:
-      inputs = []
-      for n,out in graph.items():
-         if node in out:
-            inputs.append(n)
-      reverted[node] = inputs
-   return reverted    
+    """
+    Returns a new directed graph data structure with all arcs
+    reversed. Can be used as a table of inputs to nodes instead of
+    outputs (following nodes).
+    """
+    reverted = {}
+    for node in graph:
+        inputs = []
+        for n,out in graph.items():
+            if node in out:
+                inputs.append(n)
+        reverted[node] = inputs
+    return reverted
 
 def successors2precedents(successors):
-   """
-   Given a successors table returns the precedents table
-   """
-   return reversedGraph(successors)    
+    """
+    Given a successors table returns the precedents table
+    """
+    return reversedGraph(successors)
 
 def precedents2successors(precedents):
-   """
-   Given a precedents table returns the successors table
-   """
-   return reversedGraph(precedents)
+    """
+    Given a precedents table returns the successors table
+    """
+    return reversedGraph(precedents)
 
 
 def roy(successors):
-   """
-   Generates an AON graph (ROY) from succesors table by adding 'Begin'
-   and 'End' activities
+    """
+    Generates an AON graph (ROY) from succesors table by adding 'Begin'
+    and 'End' activities
 
-   returns: ROY graph data structure
-   """
+    returns: ROY graph data structure
+    """
 
-   g = {'End':[]}
+    g = {'End':[]}
 
-   begining = set( successors.keys() )
-   for (act, next) in successors.items():
-      begining -= set(next)
-      if next:
-         g[act] = list(next)
-      else:
-         g[act] = ['End']
-   g['Begin'] = list(begining)
-   return g
+    begining = set( successors.keys() )
+    for (act, next) in successors.items():
+        begining -= set(next)
+        if next:
+            g[act] = list(next)
+        else:
+            g[act] = ['End']
+    g['Begin'] = list(begining)
+    return g
 
 def beginingActivities(successors):
-   """
-   Returns a set with the name of activities that are not preceded by
-   any other
-   """
-   begining = set( successors.keys() )
-   for act,next in successors.iteritems():
-      begining -= set(next)
+    """
+    Returns a set with the name of activities that are not preceded by
+    any other
+    """
+    begining = set( successors.keys() )
+    for act,next in successors.iteritems():
+        begining -= set(next)
 
-   return begining
+    return begining
 
 def endingActivities(successors):
-   """
-   Returns a set with the name of activities that do not precede to
-   any other
-   """
-   ending = set()
-   for act,next in successors.iteritems():
-      if not next:
-         ending.add(act)
+    """
+    Returns a set with the name of activities that do not precede to
+    any other
+    """
+    ending = set()
+    for act,next in successors.iteritems():
+        if not next:
+            ending.add(act)
 
-   return ending
+    return ending
 
 
 #
 # Drawing graphs
 #
 def pert2dot(pert):
-   """
-   Graph to txt dot format
+    """
+    Graph to txt dot format
 
-   returns: string with text of dot language to draw the graph
-   """
-   txt = """digraph G {
-            rankdir=LR;
-            """
-   for node in pert.graph:
-      txt += str(node) + ';'
-   txt += '\n'
-   
-   for act,sig in pert.graph.iteritems():
-      for s in sig:
-         txt += str(act) + '->' + str(s)
-         txt += ' [label="' + pert.activities[(act,s)][0] + '"'
-         if pert.activities[(act,s)][1]:
-            txt += ',style=dashed'
-         txt += '];\n'
-   txt += '}\n'
-   return txt
+    returns: string with text of dot language to draw the graph
+    """
+    txt = """digraph G {
+             rankdir=LR;
+             """
+    for node in pert.graph:
+        txt += str(node) + ';'
+    txt += '\n'
+
+    for act,sig in pert.graph.iteritems():
+        for s in sig:
+            txt += str(act) + '->' + str(s)
+            txt += ' [label="' + pert.activities[(act,s)][0] + '"'
+            if pert.activities[(act,s)][1]:
+                txt += ',style=dashed'
+            txt += '];\n'
+    txt += '}\n'
+    return txt
 
 def pert2image(pert, format='svg'):
-   """
-   Graph drawed to a image data string in the format specified as a
-   format string supported by dot.
-   """
-   dotIn, dotOut = os.popen2('dot -T' + format)
-   dotIn.write( pert2dot(pert) )
-   dotIn.close()
-   graphImage = dotOut.read()
-   dotOut.close()
-   return graphImage
+    """
+    Graph drawed to a image data string in the format specified as a
+    format string supported by dot.
+    """
+    dotIn, dotOut = os.popen2('dot -T' + format)
+    dotIn.write( pert2dot(pert) )
+    dotIn.close()
+    graphImage = dotOut.read()
+    dotOut.close()
+    return graphImage
 
 
 def graph2dot(graph):
-   """
-   Graph to txt dot format
+    """
+    Graph to txt dot format
 
-   returns: string with text of dot language to draw the graph
-   """
-   txt = """digraph G {
-            rankdir=LR;
-            """
-   for act in graph:
-         txt += '"'+str(act)+'"' + ';'
-   txt += '\n'
-   
-   for (act,sig) in graph.iteritems():
-      for s in sig:
-         txt += '"'+str(act)+'"' + '->' + '"'+str(s)+'"' + ';\n'
-   txt += '}\n'
-   return txt
+    returns: string with text of dot language to draw the graph
+    """
+    txt = """digraph G {
+             rankdir=LR;
+             """
+    for act in graph:
+        txt += '"'+str(act)+'"' + ';'
+    txt += '\n'
+
+    for (act,sig) in graph.iteritems():
+        for s in sig:
+            txt += '"'+str(act)+'"' + '->' + '"'+str(s)+'"' + ';\n'
+    txt += '}\n'
+    return txt
 
 def graph2image(graph, format='svg'):
-   """
-   Graph drawed to a image data string in the format specified as a
-   format string supported by dot.
-   """
-   dotIn, dotOut = os.popen2('dot -T' + format)
-   dotIn.write( graph2dot(graph) )
-   dotIn.close()
-   graphImage = dotOut.read()
-   dotOut.close()
-   return graphImage
+    """
+    Graph drawed to a image data string in the format specified as a
+    format string supported by dot.
+    """
+    dotIn, dotOut = os.popen2('dot -T' + format)
+    dotIn.write( graph2dot(graph) )
+    dotIn.close()
+    graphImage = dotOut.read()
+    dotOut.close()
+    return graphImage
 
 
 #
 # Finding graph paths
 #
 def findPath(graph, start, end, path=[]):
-   """
-   Search for one path between start and end in a graph
+    """
+    Search for one path between start and end in a graph
 
-   returns: the path as a the list of nodes including start and end nodes
-   """
-   path = path + [start]
-   if start == end:
-      return path
-   if not graph.has_key(start):
-      return None
-   for node in graph[start]:
-      if node not in path:
-         newpath = findPath(graph, node, end, path)
-         if newpath: return newpath
-   return None
+    returns: the path as a the list of nodes including start and end nodes
+    """
+    path = path + [start]
+    if start == end:
+        return path
+    if not graph.has_key(start):
+        return None
+    for node in graph[start]:
+        if node not in path:
+            newpath = findPath(graph, node, end, path)
+            if newpath: return newpath
+    return None
 
 
 def findAllPaths(graph, start, end, path=[]):
-   """
-   Search for all paths between start and end in an acyclic graph
+    """
+    Search for all paths between start and end in an acyclic graph
 
-   Preconditions: graph must not have cycles (XXX not fully considered yet)
-                  start and end must be nodes in graph
-   returns: a list of paths given as list of nodes including start and end nodes
-            example: [[1,2,3], [1,4,3], [1,3]]
-   """
-   path = path + [start]
-   if start == end:  
-      return [path]
-   paths = []
-   for node in graph[start]:
-      if node in path:
-         raise Exception("CYCLIC GRAPH!!") # XXX remove when tested outside
-      newPaths = findAllPaths(graph, node, end, path)
-      for newPath in newPaths:
-         paths.append(newPath)
-              
-   return paths
+    Preconditions: graph must not have cycles (XXX not fully considered yet)
+                   start and end must be nodes in graph
+    returns: a list of paths given as list of nodes including start and end nodes
+             example: [[1,2,3], [1,4,3], [1,3]]
+    """
+    path = path + [start]
+    if start == end:
+        return [path]
+    paths = []
+    for node in graph[start]:
+        if node in path:
+            raise Exception("CYCLIC GRAPH!!") # XXX remove when tested outside
+        newPaths = findAllPaths(graph, node, end, path)
+        for newPath in newPaths:
+            paths.append(newPath)
+
+    return paths
 
 
 def royPaths2csv(orderedActivityList, paths):
-   """
-   Prepares the csv text to export a matrix of graph paths given by
-   activities in columns and paths in rows, with each cell crossed if
-   activity belongs to path
-   """
-   s = ''
-   
-   # Header
-   s += 'Paths,'
-   for a in orderedActivityList:
-      if a not in ['Begin','End']:
-         s += str(a) + ','
-   s += '\n'
-         
-   # Body
-   for path in paths:
-      p = path[1:-1]
-      s += '"' + str(p) + '",'
-      for a in orderedActivityList:
-         if a not in ['Begin','End']:
-            if a in p:
-               s += 'x,'
-            else:
-               s += ' ,'
-      s += '\n'
-               
-   return s
+    """
+    Prepares the csv text to export a matrix of graph paths given by
+    activities in columns and paths in rows, with each cell crossed if
+    activity belongs to path
+    """
+    s = ''
+
+    # Header
+    s += 'Paths,'
+    for a in orderedActivityList:
+        if a not in ['Begin','End']:
+            s += str(a) + ','
+    s += '\n'
+
+    # Body
+    for path in paths:
+        p = path[1:-1]
+        s += '"' + str(p) + '",'
+        for a in orderedActivityList:
+            if a not in ['Begin','End']:
+                if a in p:
+                    s += 'x,'
+                else:
+                    s += ' ,'
+        s += '\n'
+
+    return s
 
 
 def royPaths2csv2(royGraph):
-   """
-   Prepares the csv text to export a matrix of graph paths given by
-   activities in columns and paths in rows, with each cell crossed if
-   activity belongs to path
-   """
-   s = ''
-   
-   # Header
-   s += 'Paths,'
-   for a in sorted(royGraph):
-      if a not in ['Begin','End']:
-         s += str(a) + ','
-   s += '\n'
-         
-   # Body
-   paths = findAllPaths(royGraph, 'Begin', 'End')
-   for path in paths:
-      p = path[1:-1]
-      s += '"' + str(p) + '",'
-      for a in sorted(royGraph):
-         if a not in ['Begin','End']:
-            if a in p:
-               s += 'x,'
-            else:
-               s += ' ,'
-      s += '\n'
-               
-   return s
-   
+    """
+    Prepares the csv text to export a matrix of graph paths given by
+    activities in columns and paths in rows, with each cell crossed if
+    activity belongs to path
+    """
+    s = ''
+
+    # Header
+    s += 'Paths,'
+    for a in sorted(royGraph):
+        if a not in ['Begin','End']:
+            s += str(a) + ','
+    s += '\n'
+
+    # Body
+    paths = findAllPaths(royGraph, 'Begin', 'End')
+    for path in paths:
+        p = path[1:-1]
+        s += '"' + str(p) + '",'
+        for a in sorted(royGraph):
+            if a not in ['Begin','End']:
+                if a in p:
+                    s += 'x,'
+                else:
+                    s += ' ,'
+        s += '\n'
+
+    return s
+
 def get_activities_start_time(activities, durations, prelations, root_activity = None, root_activity_start_time = 0):
-   open_list = []
-   inv_prelations = {}
-   closed_list = []
-   start_time = {}
-   for activity in activities:
-      inv_prelations[activity] = []
-   for activity in activities:
-      for children in prelations[activity]:
-         inv_prelations[children].append(activity)
-   if root_activity == None:
-      for activity in activities:
-         if inv_prelations[activity] == []:
-            open_list.append(activity)
-   else:
-      open_list.append(root_activity)
-      inv_prelations[root_activity] = []
-   while open_list != []:
-      chosen = open_list.pop()
-      closed_list.append(chosen)
-      time = [0] if root_activity == None else [root_activity_start_time]
-      for activity in inv_prelations[chosen]:
-         time.append(start_time[activity] + durations[activity])
-      start_time[chosen] = max(time)
-      for activity in prelations[chosen]:
-         pending = False
-         for parent in inv_prelations[activity]:
-            if parent not in closed_list:
-               pending = True
-         if not pending:
-            open_list.append(activity)
-   return(start_time)
+    open_list = []
+    inv_prelations = {}
+    closed_list = []
+    start_time = {}
+    for activity in activities:
+        inv_prelations[activity] = []
+    for activity in activities:
+        for children in prelations[activity]:
+            inv_prelations[children].append(activity)
+    if root_activity == None:
+        for activity in activities:
+            if inv_prelations[activity] == []:
+                open_list.append(activity)
+    else:
+        open_list.append(root_activity)
+        inv_prelations[root_activity] = []
+    while open_list != []:
+        chosen = open_list.pop()
+        closed_list.append(chosen)
+        time = [0] if root_activity == None else [root_activity_start_time]
+        for activity in inv_prelations[chosen]:
+            time.append(start_time[activity] + durations[activity])
+        start_time[chosen] = max(time)
+        for activity in prelations[chosen]:
+            pending = False
+            for parent in inv_prelations[activity]:
+                if parent not in closed_list:
+                    pending = True
+            if not pending:
+                open_list.append(activity)
+    return(start_time)
 
 
 #
@@ -453,50 +453,50 @@ import gtk
 
 class Test:
 
-   def delete_event(self, widget, event, data=None):
-      return False
+    def delete_event(self, widget, event, data=None):
+        return False
 
-   def destroy(self, widget, data=None):
-      gtk.main_quit()
+    def destroy(self, widget, data=None):
+        gtk.main_quit()
 
-   def pinta(self, widget, data=None):
-      pixbufloader = gtk.gdk.PixbufLoader()
-      pixbufloader.write( self.images[self.imageIndex] )
-      pixbufloader.close()
-      self.grafoGTK.set_from_pixbuf( pixbufloader.get_pixbuf() )
-      self.imageIndex = (self.imageIndex + 1) % len(self.images)
+    def pinta(self, widget, data=None):
+        pixbufloader = gtk.gdk.PixbufLoader()
+        pixbufloader.write( self.images[self.imageIndex] )
+        pixbufloader.close()
+        self.grafoGTK.set_from_pixbuf( pixbufloader.get_pixbuf() )
+        self.imageIndex = (self.imageIndex + 1) % len(self.images)
 
-   def __init__(self):
-       self.images = []
-       self.imageIndex = 0
+    def __init__(self):
+        self.images = []
+        self.imageIndex = 0
 
-       self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-       self.window.connect("delete_event", self.delete_event)
-       self.window.connect("destroy", self.destroy)
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.connect("delete_event", self.delete_event)
+        self.window.connect("destroy", self.destroy)
 
-       self.grafoGTK = gtk.Image()
+        self.grafoGTK = gtk.Image()
 
-       self.button = gtk.Button("Pintar grafo")
-       self.button.connect("clicked", self.pinta, None)
-    
-       self.vBox = gtk.VBox(homogeneous=False, spacing=0)
-       self.vBox.pack_start(self.grafoGTK, expand=True, fill=True, padding=0)
-       self.vBox.pack_start(self.button,   expand=False, fill=False, padding=4)
-       self.window.add(self.vBox)
-        
-       self.grafoGTK.show()
-       self.button.show()
-       self.vBox.show()
-       self.window.show()
+        self.button = gtk.Button("Pintar grafo")
+        self.button.connect("clicked", self.pinta, None)
 
-   def main(self):
-       gtk.main()
+        self.vBox = gtk.VBox(homogeneous=False, spacing=0)
+        self.vBox.pack_start(self.grafoGTK, expand=True, fill=True, padding=0)
+        self.vBox.pack_start(self.button,   expand=False, fill=False, padding=4)
+        self.window.add(self.vBox)
+
+        self.grafoGTK.show()
+        self.button.show()
+        self.vBox.show()
+        self.window.show()
+
+    def main(self):
+        gtk.main()
 
 # Pruebas:
 window = None
 
 if __name__ == "__main__":
-   window = Test()
+    window = Test()
 
 ##   print reversedGraph(pert2[0])
 ##   for n in range(1,6):
@@ -516,14 +516,14 @@ if __name__ == "__main__":
 ##   makePrelation( pertP, (1,2), (7,8) )
 ##   makePrelation( pertP, (9,8), (6,4) )
 
-   window.images.append( graph2image(successors2) )
-   pertP = Pert()
-   pertP.pert(successors2)
-   #print pertP
+    window.images.append( graph2image(successors2) )
+    pertP = Pert()
+    pertP.pert(successors2)
+    #print pertP
 
-   window.images.append( pert2image(pertP) )
+    window.images.append( pert2image(pertP) )
 
 ##   s = pertSuccessors(pertP)
 ##   window.images.append( graph2image( roy(s) ) )
 
-   window.main()
+    window.main()
