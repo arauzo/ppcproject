@@ -2393,6 +2393,8 @@ class PPCproject:
             if self.asignacion[index][0] == model[path][0] and self.asignacion[index][1] == model[path][1]:
                del self.asignacion[index]
       model.remove(model.get_iter(path))
+      self.modified=1   # Controlamos que el proyecto ha cambiado
+      self.set_modified(True)
 
 # MANEJADORES #
 # --- Menu actions
