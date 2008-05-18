@@ -141,7 +141,11 @@ class PPCproject:
       self.row_height_signal = self.vistaLista.connect("expose-event", self.cbtreeview)
       self.vistaLista.connect('drag-end', self.reorder_gantt)
       self.modelo.connect('rows-reordered', self.reorder_gantt)
-
+      self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
+      self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
+      self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
+      self._widgets.get_widget('vistaListaRec').connect('button-press-event', self.treeview_menu_invoked, self._widgets.get_widget('vistaListaRec'))
+      self._widgets.get_widget('vistaListaAR').connect('button-press-event', self.treeview_menu_invoked, self._widgets.get_widget('vistaListaAR'))
    def cbtreeview (self, container, widget):
       """
         xxx lacks comment
@@ -2339,8 +2343,19 @@ class PPCproject:
 
         dialogo.destroy() 
 
+   def treeview_menu_invoked(self, widget, event, treeview):
+      """
+        xxx lacks comment
+      """
+      if event.button == 3 and treeview.get_selection().count_selected_rows() != 0:
+         self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
+         self.treemenu_invoker = treeview
 
-
+   def delete_tree_row(self, widget):
+      """
+        xxx lacks comment
+      """
+      print "TODO: delete"
 
 # MANEJADORES #
 # --- Menu actions
