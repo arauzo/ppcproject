@@ -599,13 +599,13 @@ class PPCproject:
 
    def comprobarSig(self, modelo, path, new_text):
         """
- Control de la introducción de las siguientes  
+         Control de la introducción de las siguientes  
 
- Parámetros: modelo (interfaz)
-             path (fila)
-             new_tex (nuevo texto introducido)
+         Parámetros: modelo (interfaz)
+                     path (fila)
+                     new_tex (nuevo texto introducido)
 
- Valor de retorno: modelo (interfaz)
+         Valor de retorno: modelo (interfaz)
         """
         # Se introducen en una lista las etiquetas de las actividades
         actividades=self.actividades2Lista()
@@ -658,14 +658,14 @@ class PPCproject:
 
    def modificarSig(self, modelo, original, nuevo):
          """
- Al modificar la etiqueta de alguna actividad, se modifica  
-          también cuando ésta sea siguiente de alguna otra actividad
+         Al modificar la etiqueta de alguna actividad, se modifica  
+                  también cuando ésta sea siguiente de alguna otra actividad
 
- Parámetros: modelo (interfaz) 
-             original (etiqueta original)
-             nuevo (etiqueta nueva)
+         Parámetros: modelo (interfaz) 
+                     original (etiqueta original)
+                     nuevo (etiqueta nueva)
 
- Valor de retorno: modelo (interfaz modificada)
+         Valor de retorno: modelo (interfaz modificada)
          """
          for a in range(len(self.actividad)):
              if original in self.actividad[a][2]: # Si original está como siguiente de alguna actividad
@@ -1050,19 +1050,19 @@ class PPCproject:
      
    def colR(self, m, asignacion, num):
         """
- Extracción en una lista las relaciones entre    
-          actividades, recursos y unidades de recurso 
-          necesarias por actividad
+         Extracción en una lista las relaciones entre    
+                  actividades, recursos y unidades de recurso 
+                  necesarias por actividad
 
- Parámetros: m (fila)
-             asignacion (lista que almacena actividad,
-                         recurso y unidades necesarias por actividad)
-             num (0: fichero con extensión '.sm'
-                  1: fichero con extensión '.prj')
+         Parámetros: m (fila)
+                     asignacion (lista que almacena actividad,
+                                 recurso y unidades necesarias por actividad)
+                     num (0: fichero con extensión '.sm'
+                          1: fichero con extensión '.prj')
 
- Valor de retorno: mostrar (lista que almacena una lista por
-                   cada actividad con la relacion 
-                   actividad-recurso-unidad necesaria)
+         Valor de retorno: mostrar (lista que almacena una lista por
+                           cada actividad con la relacion 
+                           actividad-recurso-unidad necesaria)
         """
         mostrar=[]
         for n in range(len(asignacion)): 
@@ -1084,13 +1084,13 @@ class PPCproject:
 
    def insertamosSiguiente(self, modelo, path, texto):
          """
- Se inserta una o varias actividades siguientes  
+         Se inserta una o varias actividades siguientes  
 
- Parámetros: modelo (interfaz)
-             path (fila)
-             texto (nuevo texto a introducir)
+         Parámetros: modelo (interfaz)
+                     path (fila)
+                     texto (nuevo texto a introducir)
 
- Valor de retorno: -
+         Valor de retorno: -
          """
          if self.actividad[int(path)][2]!=[]:  # Si hay alguna siguiente colocada
                 modelo[path][2] = modelo[path][2] + ', ' + texto
@@ -1102,44 +1102,30 @@ class PPCproject:
 
    def lista2Cadena(self, listaCadenas, m):
         """
- Pasa una lista de listas a formato cadena
+        xxx Puede eliminarse??
+         Pasa una lista de listas a formato cadena
 
- Parámetros: listaCadenas (lista de listas)
+         Parámetros: listaCadenas (lista de listas)
              m (posición)
 
- Valor de retorno: cadena (cadena resultado)
+         Valor de retorno: cadena (cadena resultado)
         """
-        cadena=''
-        for n in listaCadenas[m]:
-            if cadena!='':
-                cadena+=', '
-                cadena+=n
-            else:
-                cadena+=n 
-        return cadena
- 
+        return ', '.join(listaCadenas[m])
 
    def lista2Cadena2(self, lista):
         """
- Pasa una lista a formato cadena
+        xxx Puede eliminarse??
+         Pasa una lista a formato cadena
 
- Parámetros: lista (lista)
+         Parámetros: lista (lista)
 
- Valor de retorno: cadena (cadena resultado)
+         Valor de retorno: cadena (cadena resultado)
         """
-        cadena=''
-        for n in lista:
-            if cadena!='':
-                cadena+=', '
-                cadena+=n
-            else:
-                cadena+=n 
-    
-        return cadena
-           
+        return ', '.join(lista)           
    
    def actString2actList(self, s):
         """
+        xxx Puede eliminarse??
          Splits activities separated in a string by ','
          Returns: list of activity names
         """
@@ -1151,25 +1137,21 @@ class PPCproject:
          Introduce en una lista todas las etiquetas de las actividades  
          Valor de retorno: listaAct (lista de actividades)
         """
-        listaAct=[]
-        for n in self.actividad:
-             listaAct.append(n[1])
-        #print listaAct, 'actividades'
-        return listaAct
+        return [n[1] for n in self.actividad]
 
      
    def calcularMediaYDTipica(self, distribucion, a, b, m):
         """
- Cálculo de la media y la desviación típica a partir de la distribución, 
-          del tiempo optimista, pesimista y más probable 
+         Cálculo de la media y la desviación típica a partir de la distribución, 
+                  del tiempo optimista, pesimista y más probable 
 
- Parámetros: distribucion (tipo de distribución)
-             a (d.optimista)
-             b (d.pesimista)
-             m (d.más probable)
+         Parámetros: distribucion (tipo de distribución)
+                     a (d.optimista)
+                     b (d.pesimista)
+                     m (d.más probable)
 
- Valor de retorno: media (media calculada)
-                   dTipica (desviación típica calculada)
+         Valor de retorno: media (media calculada)
+                           dTipica (desviación típica calculada)
         """
         # Si el tipo de distribución es Beta
         if distribucion==gettext.gettext('Beta'):
@@ -1197,12 +1179,12 @@ class PPCproject:
 
    def mostrarTextView(self, widget, valor):
         """
- Muestra datos en el Text View correspondiente 
+         Muestra datos en el Text View correspondiente 
 
- Parámetros: widget (lugar donde mostrar el dato)
-             valor (dato a mostrar)
+         Parámetros: widget (lugar donde mostrar el dato)
+                     valor (dato a mostrar)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         bufer=gtk.TextBuffer()
         widget.set_buffer(bufer)
@@ -1212,11 +1194,11 @@ class PPCproject:
 
    def asignarTitulo(self, directorio):
         """
- Asignación de tí­tulo al proyecto actual
+         Asignación de tí­tulo al proyecto actual
 
- Parámetros: directorio (tí­tulo+directorio)
+         Parámetros: directorio (tí­tulo+directorio)
 
- Valor de retorno: - 
+         Valor de retorno: - 
         """
         titulo=os.path.basename(directorio)
         ubicacion=directorio[:-(len(titulo)+1)]
@@ -1409,13 +1391,13 @@ class PPCproject:
        
    def actCriticas(self, holguras, actividadesGrafo):  
         """
- Cálculo de las actividades criticas 
+         Cálculo de las actividades criticas 
 
- Parámetros: holguras (lista con las hoguras de cada actividad)
-             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
+         Parámetros: holguras (lista con las hoguras de cada actividad)
+                     actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
 
- Valor de retorno: criticas (lista de actividades criticas)
-LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
+         Valor de retorno: criticas (lista de actividades criticas)
+        LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
         """
         actividades=actividadesGrafo.values()         
         nuevas=[]
@@ -1435,12 +1417,12 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
   
    def grafoCriticas(self, actCriticas):
         """
- Creación de un grafo sólo con actividades crí­ticas y extracción de
-          los caminos de dicho grafo, que serán todos crí­ticos 
+         Creación de un grafo sólo con actividades crí­ticas y extracción de
+                  los caminos de dicho grafo, que serán todos crí­ticos 
 
- Parámetros: actCriticas (lista de actividades crí­ticas)
+         Parámetros: actCriticas (lista de actividades crí­ticas)
 
- Valor de retorno: caminosCriticos (lista de caminos crí­ticos)
+         Valor de retorno: caminosCriticos (lista de caminos crí­ticos)
         """
         # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
         sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
@@ -1448,6 +1430,7 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
         gCritico=graph.roy(sucesorasCriticas)
         #print gCritico
         caminosCriticos=[]
+        print gCritico#xxx
         caminos=graph.findAllPaths(gCritico, 'Begin', 'End')
 
         # Se eliminan 'begin' y 'end' de todos los caminos
@@ -1458,13 +1441,13 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def tablaSucesorasCriticas(self, criticas):
         """
- Obtiene un diccionario que contiene las actividades 
-          crí­ticas y sus sucesoras  
+         Obtiene un diccionario que contiene las actividades 
+                  crí­ticas y sus sucesoras  
 
- Parámetros: criticas (lista de actividades crí­ticas)
+         Parámetros: criticas (lista de actividades crí­ticas)
 
- Valor de retorno: sucesorasCriticas(diccionario que almacena 
-                   las actividades críticas y sus sucesoras)
+         Valor de retorno: sucesorasCriticas(diccionario que almacena 
+                           las actividades críticas y sus sucesoras)
         """
         cr=[]
         for n in criticas:
@@ -1492,14 +1475,14 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def caminosCriticos(self, caminos, caminosCriticos):
         """
- Búsqueda de los caminos criticos en todos los caminos
-          del grafo. Se marca con un 1 los crí­ticos y con un 0
-          los no crí­ticos
+         Búsqueda de los caminos criticos en todos los caminos
+                  del grafo. Se marca con un 1 los crí­ticos y con un 0
+                  los no crí­ticos
 
- Parámetros: caminos (lista todos los caminos)
-             caminosCriticos (lista caminos criticos)
+         Parámetros: caminos (lista todos los caminos)
+                     caminosCriticos (lista caminos criticos)
 
- Valor de retorno: criticos (lista con los caminos marcados)
+         Valor de retorno: criticos (lista con los caminos marcados)
         """
         # Se buscan los caminos criticos entre todos los caminos y se marca en la lista con un 1
         # Esta lista de 0 y 1 nos servirá para saber cuáles son los criticos a la hora de mostrarlos
@@ -1522,13 +1505,13 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def mediaYdTipica(self, camino):
         """
- Cálculo de la duración media y la desviación tí­pica
-          de un camino del grafo
+         Cálculo de la duración media y la desviación tí­pica
+                  de un camino del grafo
 
- Parámetros: camino (camino del grafo)
+         Parámetros: camino (camino del grafo)
 
- Valor de retorno: d (duración media)
-                   t (desviación tí­pica)
+         Valor de retorno: d (duración media)
+                           t (desviación tí­pica)
         """
         # Se calcula la duración de cada camino. Se suman las duraciones de
         # todas las actividades que forman dicho camino.
@@ -1561,14 +1544,14 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def mostrarActividades(self, modelo, actividadesGrafo, grafo):
         """
- Acción usuario para mostrar la etiqueta de cada actividad con su
-          nodo inicio y fin en la interfaz
+         Acción usuario para mostrar la etiqueta de cada actividad con su
+                  nodo inicio y fin en la interfaz
 
- Parámetros: modelo (interfaz)
-             actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
-             grafo (grafo Pert)
+         Parámetros: modelo (interfaz)
+                     actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
+                     grafo (grafo Pert)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         self.vActividades.show()         
 
@@ -1603,12 +1586,12 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def ventanaHolguras(self):
         """
- Acción usuario para mostrar los tres tipos de
-          holguras: total, libre e independiente
+         Acción usuario para mostrar los tres tipos de
+                  holguras: total, libre e independiente
 
- Parámetros: -
+         Parámetros: -
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
@@ -1633,15 +1616,15 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def holguras(self, grafo, early, last, duraciones):  
         """
- Cálculo de los tres tipos de holguras
+         Cálculo de los tres tipos de holguras
 
- Parámetros: grafo (grafo Pert)
-             early (lista con los tiempos early)
-             last (lista con los tiempos last)
-         duraciones (duraciones simuladas)
+         Parámetros: grafo (grafo Pert)
+                     early (lista con los tiempos early)
+                     last (lista con los tiempos last)
+                 duraciones (duraciones simuladas)
 
- Valor de retorno: holguras (lista que contiene cada actividad y sus tres
-                              tipos de holguras)
+         Valor de retorno: holguras (lista que contiene cada actividad y sus tres
+                                      tipos de holguras)
         """
         holguras=[]
         #print grafo
@@ -1682,12 +1665,12 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def mostrarHolguras(self, modelo, holguras):
         """
- Muestra las hoguras en la interfaz
+         Muestra las hoguras en la interfaz
 
- Parámetros: modelo (lista de actividades)
-             hoguras (lista con los tres tipos de holguras de cada actividad)
+         Parámetros: modelo (lista de actividades)
+                     hoguras (lista con los tres tipos de holguras de cada actividad)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         self.vHolguras.hide()  
         self.vHolguras.show()  
@@ -1701,12 +1684,12 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def calcularCaminos(self):
         """
- Acción usuario para calcular y mostrar todos los 
-          caminos de un grafo 
+         Acción usuario para calcular y mostrar todos los 
+                  caminos de un grafo 
 
- Parámetros: -
+         Parámetros: -
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         # Se comprueba que exista algún grafo
         if self.actividad==[]:
@@ -1735,13 +1718,13 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def asignarRecursos(self):
         """
- Acción usuario para acceder a la ventana de 
-          'recursos necesarios por actividad'
+         Acción usuario para acceder a la ventana de 
+                  'recursos necesarios por actividad'
 
- Parámetros: -
+         Parámetros: -
 
- Valor de retorno: - 
- Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
+         Valor de retorno: - 
+         Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
         """
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
@@ -1763,12 +1746,12 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def simulacion(self, n):
         """
- Simulación de duraciones de cada actividad según  
-          su tipo de distribución
+         Simulación de duraciones de cada actividad según  
+                  su tipo de distribución
 
- Parámetros: n (número de iteraciones)
+         Parámetros: n (número de iteraciones)
 
- Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
+         Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
         """
         simulacion=[]
         for i in range(n):
@@ -1831,16 +1814,16 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
       """
- Extrae los caminos crí­ticos, calcula su í­ndice de
-          criticidad y muestra el resultado en la interfaz
+         Extrae los caminos crí­ticos, calcula su í­ndice de
+                  criticidad y muestra el resultado en la interfaz
 
- Parámetros: grafo (grafo Pert)
-         duraciones (duraciones simuladas)
-             early (lista con los tiempos early)
-             last (lista con los tiempos last)
-         itTotales (iteraciones totales)
+         Parámetros: grafo (grafo Pert)
+                 duraciones (duraciones simuladas)
+                     early (lista con los tiempos early)
+                     last (lista con los tiempos last)
+                 itTotales (iteraciones totales)
 
- Valor de retorno: - 
+         Valor de retorno: - 
       """
       #Se extraen los caminos crí­ticos
       holguras=self.holguras(grafo.activities, early, last, duraciones)  # Holguras de cada actividad
@@ -1890,11 +1873,11 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def limpiarVentanaSim(self):
         """
- Limpia los datos de la ventana de simulación 
+         Limpia los datos de la ventana de simulación 
 
- Parámetros: -
+         Parámetros: -
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         # Se limpian los datos
         iteracion=self._widgets.get_widget('iteracion')
@@ -1917,13 +1900,13 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def extraerMediaYDTipica(self):
         """
- Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
-          cálculo de probabilidades, es decir, el camino seleccionado
+         Se extraen los valores de la media y la desviación típica del camino que va a ser objeto del
+                  cálculo de probabilidades, es decir, el camino seleccionado
 
- Parámetros: -
+         Parámetros: -
 
- Valor de retorno: media (duración media)
-                   dTipica (desviación tí­pica)
+         Valor de retorno: media (duración media)
+                           dTipica (desviación tí­pica)
         """
         vistaListaZ = self._widgets.get_widget('vistaListaZad')
         sel = vistaListaZ.get_selection()
@@ -1938,14 +1921,14 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def calcularProb(self, dato1, dato2, media, dTipica):
         """
- Cálculo de probabilidades       
+         Cálculo de probabilidades       
 
- Parámetros: dato1 (dato primer Entry)
-             dato2 (dato segundo Entry)
-             media (duración media)
-             dTipica (desviación tí­pica)
+         Parámetros: dato1 (dato primer Entry)
+                     dato2 (dato segundo Entry)
+                     media (duración media)
+                     dTipica (desviación tí­pica)
 
- Valor de retorno: p (probabilidad calculada)
+         Valor de retorno: p (probabilidad calculada)
         """
         # Se hacen los cálculos
         if dato1=='': # Si no se introduce el dato1
@@ -1976,14 +1959,14 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
       """
- Cálculo de probabilidades para la simulación      
+        Cálculo de probabilidades para la simulación      
 
- Parámetros: dato1 (dato primer Entry)
-             dato2 (dato segundo Entry)
-             intervalos (lista de intervalos)
-             itTotales (iteraciones totales)
+        Parámetros: dato1 (dato primer Entry)
+                    dato2 (dato segundo Entry)
+                    intervalos (lista de intervalos)
+                    itTotales (iteraciones totales)
 
- Valor de retorno: x (probabilidad calculada)
+        Valor de retorno: x (probabilidad calculada)
       """
       x=0
       if dato1=='':
@@ -2032,11 +2015,11 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def escribirProb(self, dato):
         """
- Escribe en el TextView las probabilidades calculadas        
+         Escribe en el TextView las probabilidades calculadas        
 
- Parámetros: dato (probabilidad a escribir)
+         Parámetros: dato (probabilidad a escribir)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         prob=self._widgets.get_widget('tvProbabilidades')
         prob.set_buffer(self.bufer)
@@ -2052,12 +2035,12 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
 
    def limpiarVentanaProb(self, c):
         """
- Limpia los datos de la ventana de probabilidades 
+         Limpia los datos de la ventana de probabilidades 
 
- Parámetros: c (0: llamada desde la ventana Zaderenko
-       1: llamada desde la ventana Simulación)
+         Parámetros: c (0: llamada desde la ventana Zaderenko
+               1: llamada desde la ventana Simulación)
 
- Valor de retorno: -
+         Valor de retorno: -
         """
         # Se limpia el bufer
         probabilidades=self._widgets.get_widget('tvProbabilidades')
@@ -3563,11 +3546,10 @@ LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
       self.dAyuda.hide()
       return True
 
-# --- Start running as a program
 
+# --- Start running as a program
 if __name__ == '__main__':
    app = PPCproject()
-   # Se crean todos los TreeViews
 
    if   len(sys.argv) == 1:
       gtk.main()   elif len(sys.argv) == 2:
@@ -3580,6 +3562,8 @@ if __name__ == '__main__':
          # Se cargan los datos en la lista 
          tabla = []             
          tabla = pickle.load(fichero)
+#         for e in tabla:
+#            print e
          app.cargaDatos(tabla) 
          fichero.close()
          gtk.main()
