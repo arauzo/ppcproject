@@ -2347,7 +2347,7 @@ class PPCproject:
       """
         xxx lacks comment
       """
-      if event.button == 3 and treeview.get_selection().count_selected_rows() != 0:
+      if event.button == 3 and treeview.get_selection().count_selected_rows() != 0 and treeview.get_model()[treeview.get_selection().get_selected_rows()[1][0]][1] != "":
          self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
          self.treemenu_invoker = treeview
 
@@ -2360,7 +2360,6 @@ class PPCproject:
       if self.treemenu_invoker == self.vistaLista:
          for index in range(len(self.actividad)-1,-1, -1):
             if self.actividad[index][1] == model[path][1]:
-               print "borrar ", self.actividad[index]
                del self.actividad[index]
          for index in range(len(self.asignacion)-1,-1, -1):
             if self.asignacion[index][1] == model[path][1]:
