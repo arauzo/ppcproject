@@ -691,6 +691,18 @@ class PPCproject:
          return modelo
     
 
+   def add_program(self, name, prog_dic):
+      self.programaciones.append((name, prog_dic))
+      self.ntbProgram.append_page(gtk.Fixed(), gtk.Label(name))
+
+   def set_program(self, program):
+      for row in self.modelo:
+         if row[1] != "":
+            row[10] = program[row[1]]
+      for row in self.actividad:
+         row[10] = program[row[1]]
+         self.gantt.set_activity_start_time(row[1], row[10])
+      self.gantt.update()
 
    def actualizarColSig(self, datos):
         """
