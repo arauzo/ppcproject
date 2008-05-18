@@ -1,9 +1,10 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Functions for simulation of project duration
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 # PPC-PROJECT
-#   Multiplatform software tool for education and research in 
+#   Multiplatform software tool for education and research in
 #   project management
 #
 # Copyright 2007-8 Universidad de Córdoba
@@ -21,12 +22,12 @@
 import random
 
 # Internationalization
+
 import gettext
-APP='PPC-Project' #Program name
-DIR='po' #Directory containing translations, usually /usr/share/locale
+APP = 'PPC-Project'  # Program name
+DIR = 'po'  # Directory containing translations, usually /usr/share/locale
 gettext.bindtextdomain(APP, DIR)
 gettext.textdomain(APP)
-
 
 
 def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
@@ -41,23 +42,23 @@ def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
      Valor de retorno: fa (frecuencias absolutas)
                        fr (frecuencias relativas)
     """
-    fa=[]
-    fr=[]
+
+    fr = []
+
     # Se inicializa el vector de F.Absolutas
-    for n in range(N):
-        fa.append(0)
+    fa = [0] * N
 
     # Se calculan las F.Absolutas
     for d in duraciones:
-        x=posicion(d, dMax, dMin, N)
-        fa[x]+=1
+        x = posicion(d, dMax, dMin, N)
+        fa[x] += 1
 
     # Se calculan las F.Relativas
     for a in fa:
-        r = '%2.2f'%(float(a)/itTotales)
+        r = '%2.2f' % (float(a) / itTotales)
         fr.append(r)
 
-    return fa, fr
+    return (fa, fr)
 
 
 def posicion(d, dMax, dMin, N):
@@ -72,7 +73,8 @@ def posicion(d, dMax, dMin, N):
 
      Valor de retorno: x (posición)
     """
-    x = int ( ((d-dMin)/(dMax-dMin)) * N )
+
+    x = int(((d - dMin) / (dMax - dMin)) * N)
     return x
 
 
@@ -88,11 +90,12 @@ def duracion(x, dMax, dMin, N):
 
      Valor de retorno: d (duración)
     """
-    d = ( x*(dMax-dMin)/N ) + dMin
+
+    d = (x * (dMax - dMin)) / N + dMin
     return d
 
 
-def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticidad): 
+def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticidad):
     """
      Prepara los datos de la simulación para ser mostrados
               en formato CSV
@@ -105,35 +108,36 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
 
      Valor de retorno: s (texto a mostrar en formato CSV) 
     """
-    s=''
-    s+=gettext.gettext('SIMULATION DATA')
-    s+='\n'
-    s+='\n'
-    s+=gettext.gettext('N, I.CRITICIDAD, PATH')
-    s+='\n'
-    for n in range(len(modeloCriticidad)):
-        s+= modeloCriticidad[n][0]+','+ modeloCriticidad[n][1]+','+'"'+modeloCriticidad[n][2]+'"'
-        s+='\n'
-    s+='\n'
-    s+='\n'
-    s+=gettext.gettext('AVERAGE, TYPICAL DEV.')
-    s+='\n'
-    s+= media+','+dTipica
-    s+='\n'
-    s+='\n'
-    s+=gettext.gettext('TOTAL SIMULATIONS')
-    s+='\n'
-    s+= iteraciones
-    s+='\n'
-    s+='\n'
-    s+=gettext.gettext('DURATIONS')
-    s+='\n'
-    for d in duraciones:
-        s+= str(d)
-        s+='\n'
 
-    #print s
-    return s        
+    s = ''
+    s += gettext.gettext('SIMULATION DATA')
+    s += '\n'
+    s += '\n'
+    s += gettext.gettext('N, I.CRITICIDAD, PATH')
+    s += '\n'
+    for n in range(len(modeloCriticidad)):
+        s += modeloCriticidad[n][0] + ',' + modeloCriticidad[n][1] + ',' + '"'\
+             + modeloCriticidad[n][2] + '"'
+        s += '\n'
+    s += '\n'
+    s += '\n'
+    s += gettext.gettext('AVERAGE, TYPICAL DEV.')
+    s += '\n'
+    s += media + ',' + dTipica
+    s += '\n'
+    s += '\n'
+    s += gettext.gettext('TOTAL SIMULATIONS')
+    s += '\n'
+    s += iteraciones
+    s += '\n'
+    s += '\n'
+    s += gettext.gettext('DURATIONS')
+    s += '\n'
+    for d in duraciones:
+        s += str(d)
+        s += '\n'
+
+    return s
 
 
 def datosBeta(op, mode, pes):
@@ -147,53 +151,57 @@ def datosBeta(op, mode, pes):
 
     Returned value: (mean, std deviation, shape factor a, shape factor b)
     """
-    mean  = (op + 4*mode + pes) / 6.0
-    stdev = (pes - op) / 6.0
-    shape_a = ((mean - op) / (pes-op)) * ((mean-op)*(pes-mean)/stdev**2 - 1)
-    shape_b = ((pes-mean)/(mean-op)) * shape_a
 
-    return mean, stdev, shape_a, shape_b
+    mean = (op + 4 * mode + pes) / 6.0
+    stdev = (pes - op) / 6.0
+    shape_a = ((mean - op) / (pes - op)) * (((mean - op) * (pes - mean)) / stdev ** 2 - 1)
+    shape_b = ((pes - mean) / (mean - op)) * shape_a
+
+    return (mean, stdev, shape_a, shape_b)
 
 
 def generaAleatoriosUniforme(op, pes):
     """
-    Generates a random number in a Uniform distribution in [op, pes]    """
-    #print "\n *** Uniform(",op,pes,")"
-    unif=random.uniform(op,pes)
+    Generates a random number in a Uniform distribution in [op, pes]
+    """
+
+    unif = random.uniform(op, pes)
     return unif
+
 
 def generaAleatoriosBeta(op, pes, shape_a, shape_b):
     """
-    Generates a random number in a Beta distribution in [op, pes]    """
-    #mean, stdev, shape_a, shape_b=self.datosBeta(op, mode, pes)
-    #print "Mean=", mean, "Stdev=", stdev
-    #print "shape_a=", shape_a, "shape_b=", shape_b
-    #for i in range(n):
-    beta=random.betavariate(shape_a,shape_b)*(pes-op) + op
+    Generates a random number in a Beta distribution in [op, pes]
+    """
+
+    beta = random.betavariate(shape_a, shape_b) * (pes - op) + op
     return beta
+
 
 def generaAleatoriosTriangular(op, mode, pes):
     """
     Generates a random number in a triangular distribution in [op, pes]
     with mode
     """
-    #print "\n *** Triangle(",op,mode,pes,")"
-    unif = random.random()  #[0,1]
-    
-    if unif <= (mode-op) / (pes-op):
-        aux = unif * (pes-op) * (mode-op)
+
+    unif = random.random()  # [0,1]
+
+    if unif <= (mode - op) / (pes - op):
+        aux = (unif * (pes - op)) * (mode - op)
         triang = op + math.sqrt(aux)
     else:
-        aux = (pes-op) * (pes-mode) * (1-unif)
+        aux = ((pes - op) * (pes - mode)) * (1 - unif)
         triang = pes - math.sqrt(aux)
 
     return triang
+
 
 def generaAleatoriosNormal(mean, stdev):
     """
     Generates a number from a Normal random variate with mean and stdev
     """
-    norm=random.gauss(mean,stdev)
+    
+    norm = random.gauss(mean, stdev)
     return norm
-      
+
 
