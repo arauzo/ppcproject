@@ -2355,7 +2355,24 @@ class PPCproject:
       """
         xxx lacks comment
       """
-      print "TODO: delete"
+      path = self.treemenu_invoker.get_selection().get_selected_rows()[1][0]
+      model = self.treemenu_invoker.get_model()
+      if self.treemenu_invoker == self.vistaLista:
+         print "TODO: delete"
+      elif self.treemenu_invoker == self._widgets.get_widget('vistaListaRec'):
+         for index in range(len(self.recurso)-1,-1, -1):
+            if self.recurso[index][0] == model[path][0]:
+               del self.recurso[index]
+         for index in range(len(self.asignacion)-1,-1, -1):
+            if self.asignacion[index][1] == model[path][0]:
+               del self.asignacion[index]
+            if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
+               self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
+      else:
+         for index in range(len(self.asignacion)-1,-1, -1):
+            if self.asignacion[index][0] == model[path][0] and self.asignacion[index][1] == model[path][1]:
+               del self.asignacion[index]
+      model.remove(model.get_iter(path))
 
 # MANEJADORES #
 # --- Menu actions
