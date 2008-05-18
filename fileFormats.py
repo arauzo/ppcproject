@@ -81,7 +81,8 @@ def leerPSPLIB(f):
                 prelaciones.append(prel)
                 l = f.readline()
 
-        # Lectura de la duración de las actividades y de las unidades de recursos necesarias por actividad
+        # Lectura de la duración de las actividades y de las unidades de recursos 
+        # necesarias por actividad
         if l[0] == '-':
             l = f.readline()
             while l[0] != '*':
