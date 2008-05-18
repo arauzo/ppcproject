@@ -114,6 +114,8 @@ class PPCproject:
       self.sbNoImproveIterSA = self.interface.sbNoImproveIterSA
       self.sbExecuteTimesSA = self.interface.sbExecuteTimesSA
       
+      self.ntbProgram = self.interface.ntbProgram
+      
       self.zadViewList = self._widgets.get_widget('vistaZad')
       self.vistaLista = self._widgets.get_widget('vistaListaDatos')
       self.modelo = self.interface.modelo
@@ -2350,6 +2352,7 @@ class PPCproject:
       self.enableProjectControls(True)
       self.set_modified(True)
       self.modified = 1
+      self.ntbProgram.show()
 
    def on_Open_activate(self, item):
       """ User ask for open file (from menu or toolbar) """
@@ -2357,6 +2360,7 @@ class PPCproject:
          self.enableProjectControls(True)
          self.set_modified(False)
          self.modified = 0
+         self.ntbProgram.show()
 
    def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
@@ -2388,6 +2392,7 @@ class PPCproject:
    def on_Close_activate(self, menu_item):
       if self.closeProject():
          self.enableProjectControls(False)
+         self.ntbProgram.hide()
 
    def on_Exit_activate(self, *args):
       closed = self.closeProject()
