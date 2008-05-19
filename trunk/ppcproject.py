@@ -115,7 +115,7 @@ class PPCproject:
         self.sbNoImproveIterSA = self.interface.sbNoImproveIterSA
         self.sbExecuteTimesSA = self.interface.sbExecuteTimesSA
 
-        self.ntbProgram = self.interface.ntbProgram
+        self.ntbSchedule = self.interface.ntbSchedule
 
         self.zadViewList = self._widgets.get_widget('vistaZad')
         self.vistaLista = self._widgets.get_widget('vistaListaDatos')
@@ -518,7 +518,7 @@ class PPCproject:
         for dato in tabla[0]:      
             dato[0]=cont
             cont+=1
-            # (XXX Temporary fix while programations are not fully supported)
+            # (XXX Temporary fix while Schedules are not fully supported)
 
             dato += ["0"]
 
@@ -698,7 +698,7 @@ class PPCproject:
         self.schedules.append((name, sch_dic))
         label = gtk.Label(name)
         fixed = gtk.Fixed()
-        self.ntbProgram.append_page(fixed, label)
+        self.ntbSchedule.append_page(fixed, label)
         fixed.show()
         label.show()
 
@@ -2385,7 +2385,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     del self.asignacion[index]
                 if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                     self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
-            #xxx TODO: Update gantt diagram and programations.
+            #xxx TODO: Update gantt diagram and Schedules.
         elif self.treemenu_invoker == self._widgets.get_widget('vistaListaRec'):
             for index in range(len(self.recurso)-1,-1, -1):
                 if self.recurso[index][0] == model[path][0]:
@@ -2413,7 +2413,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.enableProjectControls(True)
         self.set_modified(True)
         self.modified = 1
-        self.ntbProgram.show()
+        self.ntbSchedule.show()
   
     def on_Open_activate(self, item):
         """ User ask for open file (from menu or toolbar) """
@@ -2421,7 +2421,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.enableProjectControls(True)
             self.set_modified(False)
             self.modified = 0
-            self.ntbProgram.show()
+            self.ntbSchedule.show()
 
     def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
@@ -2453,7 +2453,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_Close_activate(self, menu_item):
         if self.closeProject():
             self.enableProjectControls(False)
-            self.ntbProgram.hide()
+            self.ntbSchedule.hide()
    
     def on_Exit_activate(self, *args):
         closed = self.closeProject()
