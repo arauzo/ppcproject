@@ -21,6 +21,30 @@
 import gtk
 import gettext
 
+class ProjectFileFormat:
+    """
+    Base class for general project loader
+    """
+    def filenameExtension(self):
+        """
+        Returns a string with the filename extension of this format
+        """
+        pass
+
+    def load(self, filename):
+        """
+        Returns project data: (activities, schedules, resources, resourceAsignaments)
+        
+        
+        """
+        pass    
+
+    def save(self, projectData, filename):
+        """
+        """
+        pass
+    
+
 
 def guardarCsv(texto, principal):
     """

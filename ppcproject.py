@@ -69,7 +69,6 @@ class PPCproject:
         self.actividad  = []
         self.recurso    = []
         self.asignacion = []
-        self.tabla      = []
         self.programaciones = []
         self.bufer=gtk.TextBuffer()
         self.directorio = gettext.gettext('Unnamed -PPC-Project')
@@ -237,7 +236,6 @@ class PPCproject:
         self.recurso=[]
         self.modeloAR.clear()
         self.asignacion=[]
-        self.tabla=[]
         cont=1
         self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia
 
