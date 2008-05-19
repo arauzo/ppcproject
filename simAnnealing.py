@@ -24,6 +24,13 @@ import copy
 from math import exp,log
 from graph import successors2precedents
 
+# Internationalization
+import gettext
+APP='PPC-Project' #Program name
+DIR='po' #Directory containing translations, usually /usr/share/locale
+gettext.bindtextdomain(APP, DIR)
+gettext.textdomain(APP)
+
 
 def resourcesAvailability(availableResources):
     """
@@ -34,14 +41,13 @@ def resourcesAvailability(availableResources):
 
     Returned value: resources
     """
-
     resources={} 
    
     #Create a dictionary with the resources' name and number available   
     for a in availableResources:
-        if a[1] == 'Renovable':
+        if a[1] == gettext.gettext('Renewable'):
             resources[a[0]] = a[3]
-        elif a[1] == 'Doblemente restringido':
+        elif a[1] == gettext.gettext('Double restricted'):
             resources[a[0]] = a[2]
    
     return resources
@@ -85,7 +91,6 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
 
     Returned value: (prog1,prog1Evaluated) or (progAux,progAuxEvaluated) (the best planning and the duration/variance of the project)
     """
-    
     predecessors = successors2precedents(successors)
 
     for a in predecessors.copy():
@@ -305,7 +310,6 @@ def calculateVariance(resources,asignation,duration, loadingSheet):
                 
     Returned value: variance (the average of all resources' variance)
     """
-    
     average = {}
     variance = {}
     finalVariance = 0
@@ -329,7 +333,7 @@ def calculateVariance(resources,asignation,duration, loadingSheet):
             value = data
         variance[resource] = (variance[resource] + (duration - pre) * (value - average[resource])**2) / (duration - 1)
         finalVariance += variance[resource] 
-    
+
     return finalVariance / len(resources)
          
 
