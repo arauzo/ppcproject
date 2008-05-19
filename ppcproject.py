@@ -165,6 +165,7 @@ class PPCproject:
         self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
         self._widgets.get_widget('mnCerrar').set_sensitive(value)
         self._widgets.get_widget('mnAccion').set_sensitive(value)
+        self._widgets.get_widget('mnResources').set_sensitive(value)
         self._widgets.get_widget('tbGuardar').set_sensitive(value)
         self._widgets.get_widget('tbCerrar').set_sensitive(value)
         if (not value):
@@ -425,7 +426,7 @@ class PPCproject:
                 pre_dic = {}
                 for i in range(len(self.actividad)):
                     act_list.append(self.actividad[i][1])
-                    dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])
+                    dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                     pre_dic[self.actividad[i][1]] = self.actividad[i][2]
                 if n == 10:
                     start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.modelo[path][1], float(self.modelo[path][10]))
@@ -3442,31 +3443,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         return True
 
 # --- Resources
-
-    def on_btAceptarRec_clicked(self, boton):
-        """
-        Acción usuario para aceptar la información que
-                 muestra la ventana de recursos: nombre, tipo, unidad disponible 
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
-        """
-        self.vRecursos.hide()
-          
-    def on_btCancelarRec_clicked(self, boton):
-        """
-        Acción usuario para cancelar la información que
-                 muestra la ventana de recursos: nombre, tipo, unidad disponible. 
-                 Si se cancelan los datos, se borran definitivamente
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
-        """
-        if self.recurso==[]:
-            self.modeloR.append()
-        self.vRecursos.hide()
   
     def on_btAsignarRec_clicked(self, boton):
         """
