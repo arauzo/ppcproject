@@ -53,7 +53,8 @@ class Interface:
       
       # Obtaining the widget of allocation/balance window
       self.rbBalance = self._widgets.get_widget('rbBalance')
-      self.btResetSA = self._widgets.get_widget ('btnSimAnnealingReset')
+      self.btResetSA = self._widgets.get_widget('btnSimAnnealingReset')
+      self.btSaveSA = self._widgets.get_widget('btnSaveSA')
       self.entryResultSA = self._widgets.get_widget ('entryResult')
       self.entryAlpha = self._widgets.get_widget('entryAlpha')
       self.entryMaxTempSA = self._widgets.get_widget('entryMaxTempSA')
@@ -66,6 +67,7 @@ class Interface:
       self.sbMaxIterationSA = self._widgets.get_widget('sbMaxIterationSA') 
       self.sbNoImproveIterSA = self._widgets.get_widget('sbNoImproveIterSA')
       self.sbExecuteTimesSA = self._widgets.get_widget('sbExecuteTimesSA')
+      
       
       self.ntbProgram = self._widgets.get_widget('ntbProgram')
       self.ntbProgram.hide()

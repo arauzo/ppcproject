@@ -2377,22 +2377,23 @@ Alejandro Villagrán Marín
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="label" translatable="yes">Reset</property>
+                    <property name="label" translatable="yes">gtk-clear</property>
+                    <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_btnSimAnnealingReset_clicked"/>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="padding">35</property>
+                    <property name="padding">17</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkButton" id="btnSimAnnealingCalculate">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Calculate</property>
-                    <property name="use_underline">True</property>
+                    <property name="label" translatable="yes">gtk-execute</property>
+                    <property name="use_stock">True</property>
                     <property name="response_id">0</property>
                     <signal name="clicked" handler="on_btnSimAnnealingCalculate_clicked"/>
                   </widget>
@@ -2408,6 +2409,32 @@ Alejandro Villagrán Marín
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">16</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkHBox" id="hbox40">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkButton" id="btnSaveSA">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="label" translatable="yes">gtk-save</property>
+                    <property name="use_stock">True</property>
+                    <property name="response_id">0</property>
+                    <signal name="clicked" handler="on_btnSaveSA_clicked"/>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">65</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">17</property>
               </packing>
             </child>
           </widget>
