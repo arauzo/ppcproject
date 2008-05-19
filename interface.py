@@ -144,6 +144,7 @@ class Interface:
       self.selec.set_mode(gtk.SELECTION_MULTIPLE)
       mode=self.selec.get_mode()   
       self.menu=gtk.Menu()
+      #XXX resources column should be removed from ListStore
       self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str, str)
       self.vistaLista.set_model(self.modelo)
       self.orden=gtk.TreeModelSort(self.modelo)
@@ -172,7 +173,7 @@ class Interface:
       self.columnaEditable(self.vistaLista, self.modelo, 5)
       self.columnaEditable(self.vistaLista, self.modelo, 6)
       self.columnaEditable(self.vistaLista, self.modelo, 7)
-      self.columnaNoEditableColor(8)
+      self.resourcesColumn()
       self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9)
       self.columnaEditable(self.vistaLista, self.modelo, 10)
       self.endTimeColumn()
@@ -399,8 +400,41 @@ class Interface:
        self.vistaLista.columna[11].set_expand(True)
        self.vistaLista.columna[0].set_expand(False)
        self.vistaLista.columna[11].set_resizable(True)
+       
+   def resourcesColumn(self):
+       """
+        Creates Resources column.
+        Parameters: -
+        Returns: -
+       """
+       self.vistaLista.renderer[8] = gtk.CellRendererText()
+       self.vistaLista.renderer[8].set_property('editable', False)
+       self.vistaLista.append_column(self.vistaLista.columna[8])
+       self.vistaLista.columna[8].set_sort_column_id(11)
+       self.vistaLista.columna[8].pack_start(self.vistaLista.renderer[8], True)
+       self.vistaLista.columna[8].set_cell_data_func(self.vistaLista.renderer[8], self.resourcesRendererFunc)
+       self.vistaLista.columna[8].set_spacing(8)
+       self.vistaLista.columna[8].set_expand(True)
+       self.vistaLista.columna[0].set_expand(False)
+       self.vistaLista.columna[8].set_resizable(True)
+
+   def resourcesRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
+       """
+        xxx needs to be commented.
+       """
+       activity = model.get_value(iter, 1)
+       text = ""
+       if activity != "":
+           for row in self.modeloAR:
+               if row[0] == activity:
+                   text += row[1] + ": " + row[2] + "; " 
+       cell_renderer.set_property('text', text)
+       return
 
    def endTimeRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
+       """
+        xxx needs to be commented.
+       """
        start = model.get_value(iter, 10)
        duration = model.get_value(iter, 6)
        if start == "" and duration == "":
