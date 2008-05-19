@@ -3611,7 +3611,7 @@ if __name__ == '__main__':
     app = PPCproject()
 
     if   len(sys.argv) == 1:
-        gtk.main()   elif len(sys.argv) == 2:
+        gtk.main()    elif len(sys.argv) == 2:
         nombre = sys.argv[1]
         try:
             fichero = open(nombre, 'r')
