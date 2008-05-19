@@ -69,7 +69,8 @@ class PPCproject:
         self.actividad  = []
         self.recurso    = []
         self.asignacion = []
-        self.programaciones = []
+        self.optimumSchedule = []
+        self.schedules = []
         self.bufer=gtk.TextBuffer()
         self.directorio = gettext.gettext('Unnamed -PPC-Project')
         self.modified=0
@@ -100,6 +101,7 @@ class PPCproject:
 
         self.rbBalance = self.interface.rbBalance
         self.btResetSA = self.interface.btResetSA
+        self.btSaveSA = self.interface.btSaveSA
         self.entryResultSA = self.interface.entryResultSA
         self.entryAlpha = self.interface.entryAlpha
         self.entryIterations = self.interface.entryIterations
@@ -689,16 +691,22 @@ class PPCproject:
         return modelo
    
 
-    def add_program(self, name, prog_dic):
-        self.programaciones.append((name, prog_dic))
-        self.ntbProgram.append_page(gtk.Fixed(), gtk.Label(name))
+    def add_schedule(self, name , sch_dic):
+        if name == None:
+            name = "P" + str(len(self.schedules))
+        self.schedules.append((name, sch_dic))
+        label = gtk.Label(name)
+        fixed = gtk.Fixed()
+        self.ntbProgram.append_page(fixed, label)
+        fixed.show()
+        label.show()
 
-    def set_program(self, program):
+    def set_schedule(self, schedule):
         for row in self.modelo:
             if row[1] != "":
-                row[10] = program[row[1]]
+                row[10] = schedule[row[1]]
         for row in self.actividad:
-            row[10] = program[row[1]]
+            row[10] = schedule[row[1]]
             self.gantt.set_activity_start_time(row[1], row[10])
         self.gantt.update()
   
@@ -2595,7 +2603,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         window.hide()
 
         return True
-
+    def on_btnSaveSA_clicked (self, menu_item):
+        
+        optSchDic = {}
+        if self.optimumSchedule == []:
+            self.dialogoError(gettext.gettext('There is no schedule.'))
+            return False
+        else:
+            for act,startTime,endTime in self.optimumSchedule:
+                optSchDic[act] = startTime
+        self.add_schedule(None, optSchDic)
+            
     def on_rbAllocation_pressed (self, menu_item):
 
         self.sbSlackSA.set_sensitive(False)
@@ -2643,8 +2661,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.entryMaxTempSA.set_text('')
         self.entryAlpha.set_text('')
         self.cbIterationSA.set_active(False)
-        self.sbPhi.set_value(0.9)
-        self.sbNu.set_value(0.9)
+        self.sbPhi.set_value(0.1)
+        self.sbNu.set_value(0.1)
         self.sbMinTempSA.set_value(0.1)
         self.sbNoImproveIterSA.set_value(100)
         self.sbMaxIterationSA.set_value(100)
@@ -2695,9 +2713,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
-        prog, progEvaluated, loadingSheet, duration, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+        self.optimumSchedule, optSchEvaluated, optSchLoadingSheet, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
 
-        if prog != None:
+        if self.optimumSchedule != None:
             if not self.ganttActLoaded:
                 self.ganttActLoaded = True
                 self.ganttSA.clear()
@@ -2705,31 +2723,34 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
 
             for a in range(0,int(times - 1)):
-                prog2, progEvaluated2, loadingSheet2, duration2, predecessors, alpha, temp, it = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
-                if progEvaluated > progEvaluated2:
-                    prog = prog2
-                    progEvaluated = progEvaluated2
-                    loadingSheet = loadingSheet2
-                    duration = duration2
+                schedule, schEvaluated, schLoadingSheet, schDuration, schAlpha, schTemp, schIt = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+                if optSchEvaluated > schEvaluated2:
+                    self.optimumSchedule = schedule
+                    optSchEvaluated = schEvaluated
+                    optSchLoadingSheet = schloadingSheet
+                    optSchDuration = schDuration
+                    optSchAlpha = schAlpha
+                    optSchTemp = schTemp
+                    optSchIt = schIt
 
-            self.entryResultSA.set_text(str(duration))
-            self.entryAlpha.set_text(str(alpha))
-            self.entryMaxTempSA.set_text(str(temp))
-            self.entryIterations.set_text(str(it))
+            self.entryResultSA.set_text(str(optSchDuration))
+            self.entryAlpha.set_text(str(optSchAlpha))
+            self.entryMaxTempSA.set_text(str(optSchTemp))
+            self.entryIterations.set_text(str(optSchIt))
 
-            for act,startTime,finalTime in prog:
+            for act,startTime,finalTime in self.optimumSchedule:
                 self.ganttSA.set_activity_start_time(act, startTime)
                 if act in successors.keys():
                     self.ganttSA.set_activity_prelations(act,successors[act])
 
             self.ganttSA.update()
 
-            self.loadingSheet.set_loading(loadingSheet)
-            self.loadingSheet.set_duration(duration)
+            self.loadingSheet.set_loading(optSchLoadingSheet)
+            self.loadingSheet.set_duration(optSchDuration)
             self.loadingSheet.update()
 
-            self.loadingTable.set_loading(loadingSheet)
-            self.loadingTable.set_duration(duration)
+            self.loadingTable.set_loading(optSchLoadingSheet)
+            self.loadingTable.set_duration(optSchDuration)
             self.loadingTable.update()
         else:
             self.dialogoError(gettext.gettext('Initial temperature not high enough.'))

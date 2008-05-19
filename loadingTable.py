@@ -141,15 +141,11 @@ class table(gtk.Layout):
         self.duration = 0
     
     def set_tooltip(self, widget, x, y, keyboard_mode, tooltip):
-        #XXX poner normal sin try y sin queuedraw
         keys = self.loading.keys()
         keys.sort()
         if self.rowHeight != 0:
-            try:
-                tooltip.set_text(keys[int(y) / self.rowHeight])
-            except:
-                pass
-        self.queue_draw()    
+            tooltip.set_text(keys[int(y) / self.rowHeight])
+   
         return True
             
     def expose (self,widget,event):
