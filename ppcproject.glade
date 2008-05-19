@@ -123,6 +123,34 @@
               </widget>
             </child>
             <child>
+              <widget class="GtkMenuItem" id="mnResources">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">_Resources</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <widget class="GtkMenu" id="menu1">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkMenuItem" id="mnCrearRecursos">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">_Edit</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnCrearRecursos_activate"/>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="mnAssignResources">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Assi_gn</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_btAsignarRec_clicked"/>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
               <widget class="GtkMenuItem" id="mnAccion">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Action</property>
@@ -130,14 +158,6 @@
                 <signal name="activate" handler="on_mnAcción_activate"/>
                 <child>
                   <widget class="GtkMenu" id="mnAccion_menu">
-                    <child>
-                      <widget class="GtkMenuItem" id="mnCrearRecursos">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Create resources</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnCrearRecursos_activate"/>
-                      </widget>
-                    </child>
                     <child>
                       <widget class="GtkMenuItem" id="mnCalcularCaminos">
                         <property name="visible">True</property>
@@ -841,85 +861,18 @@
     <property name="default_height">500</property>
     <signal name="delete_event" handler="on_wndRecursos_delete_event"/>
     <child>
-      <widget class="GtkVBox" id="vbox18">
+      <widget class="GtkScrolledWindow" id="scrolledwindow25">
         <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+        <property name="shadow_type">GTK_SHADOW_IN</property>
         <child>
-          <widget class="GtkScrolledWindow" id="scrolledwindow25">
+          <widget class="GtkTreeView" id="vistaListaRec">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="shadow_type">GTK_SHADOW_IN</property>
-            <child>
-              <widget class="GtkTreeView" id="vistaListaRec">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="reorderable">True</property>
-              </widget>
-            </child>
+            <property name="reorderable">True</property>
           </widget>
-        </child>
-        <child>
-          <widget class="GtkHBox" id="hbox19">
-            <property name="visible">True</property>
-            <property name="border_width">10</property>
-            <property name="spacing">10</property>
-            <child>
-              <widget class="GtkButton" id="btAceptarRec">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip" translatable="yes">Aceptar</property>
-                <property name="label">gtk-ok</property>
-                <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="on_btAceptarRec_clicked"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkButton" id="btAsignarRec">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip" translatable="yes">Recursos necesarios por actividad</property>
-                <property name="label" translatable="yes">Needed resources per activity</property>
-                <property name="use_underline">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="on_btAsignarRec_clicked"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkButton" id="btCancelarRec">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip" translatable="yes">Cancelar</property>
-                <property name="label">gtk-cancel</property>
-                <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="on_btCancelarRec_clicked"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </widget>
     </child>
@@ -1117,73 +1070,18 @@
     <property name="default_height">500</property>
     <signal name="delete_event" handler="on_wndAsignarRec_delete_event"/>
     <child>
-      <widget class="GtkVBox" id="vbox20">
+      <widget class="GtkScrolledWindow" id="scrolledwindow24">
         <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+        <property name="shadow_type">GTK_SHADOW_IN</property>
         <child>
-          <widget class="GtkScrolledWindow" id="scrolledwindow24">
+          <widget class="GtkTreeView" id="vistaListaAR">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="shadow_type">GTK_SHADOW_IN</property>
-            <child>
-              <widget class="GtkTreeView" id="vistaListaAR">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="reorderable">True</property>
-              </widget>
-            </child>
+            <property name="reorderable">True</property>
           </widget>
-        </child>
-        <child>
-          <widget class="GtkHBox" id="hbox21">
-            <property name="visible">True</property>
-            <property name="border_width">10</property>
-            <child>
-              <widget class="GtkHBox" id="hbox22">
-                <property name="visible">True</property>
-                <child>
-                  <widget class="GtkButton" id="btAceptarAR">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="label">gtk-ok</property>
-                    <property name="use_stock">True</property>
-                    <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_btAceptarAR_clicked"/>
-                  </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="pack_type">GTK_PACK_END</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkButton" id="btCancelarAR">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="label">gtk-cancel</property>
-                <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="on_btCancelarAR_clicked"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </widget>
     </child>
