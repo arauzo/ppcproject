@@ -64,7 +64,7 @@ def resourcesPerActivities(initialAsignation):
     """
       
     asignation={}
-    
+
     #Create a dictionary with the activities and the resources they need
     for a in initialAsignation:
         if a[0] in asignation.keys():
@@ -107,7 +107,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
     tempAux = temperature = (nu/-log(phi)) * prog1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
     if alpha >= 1:
-        return (None,None,None,None,None,None,None,None) #XXX algo menos chapucero?
+        return (None,None,None,None,None,None,None) #XXX de forma mas elegante con una excepcion
     it=0
     numIterationsAux = numIterations
     
@@ -139,9 +139,9 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
         temperature = alpha * temperature
 
     if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, prog1Evaluated, loadingSheet1, duration1, predecessors, alpha, tempAux, it)
+        return (prog1, prog1Evaluated, loadingSheet1, duration1, alpha, tempAux, it)
     else:
-        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, predecessors, alpha, tempAux, it)
+        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, alpha, tempAux, it)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
@@ -158,11 +158,10 @@ def generate(asignation,resources,predecessors,activities,balance):
     """
        
     currentTime = 0
-    possibles = {}
     executing = {}
     result = []
    
-    prog=generateOrModify(asignation,resources,predecessors,activities,balance,possibles,executing,result,currentTime)
+    prog=generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
     return prog
 
 
@@ -182,8 +181,6 @@ def modify(asignation,resources,predecessors,activities,prog1,balance):
        
     result = []
     executing = {}
-    possibles = {}
-
    
     # The modification will start at this time
     currentTime = random.randint(0, int(prog1[-1][1]))
@@ -206,14 +203,9 @@ def modify(asignation,resources,predecessors,activities,prog1,balance):
                 if act in predecessors[a]: 
                     predecessors[a].remove(act)
                     if predecessors[a] == []:
-                        del predecessors[a]   
-
-    # Update the state of possibles
-    for a in activities.copy():
-        if a not in predecessors.keys(): 
-            possibles[a] = activities.pop(a)   
+                        del predecessors[a] 
       
-    prog = generateOrModify(asignation,resources,predecessors,activities,balance,possibles,executing,result,currentTime)
+    prog = generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
     return prog
 
 
@@ -337,7 +329,7 @@ def calculateVariance(resources,asignation,duration, loadingSheet):
     return finalVariance / len(resources)
          
 
-def generateOrModify(asignation,resources,predecessors,activities,balance,possibles,executing,result,currentTime):
+def generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime):
     """
     Generate or modify a planning.
     It depends on currentTime
@@ -354,6 +346,7 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
 
     Returned value: result (planning calculated)
     """
+    possibles = {}
     
     lengthResources = len(resources)
     if lengthResources == 0: 
@@ -372,7 +365,7 @@ def generateOrModify(asignation,resources,predecessors,activities,balance,possib
             if balance == 1:
                 for act in possibles.copy():
                     if possibles[act][1] == currentTime:
-                        ##print 'se ejecuta indiscutiblemente: ',act                     
+                        #print 'se ejecuta indiscutiblemente: ',act                     
                         executing[act] = possibles[act][0]
                         result += [(act, currentTime, currentTime + possibles[act][0])]
                         del possibles[act]
