@@ -89,7 +89,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
                 alpha ((parameter to configure simulated annealing algorithm)
                 numIterations ((parameter to configure simulated annealing algorithm)
 
-    Returned value: (prog1,prog1Evaluated) or (progAux,progAuxEvaluated) (the best planning and the duration/variance of the project)
+    Returned value: (sch1,sch1Evaluated) or (schAux,schAuxEvaluated) (the best planning and the duration/variance of the project)
     """
     predecessors = successors2precedents(successors)
 
@@ -97,14 +97,14 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
         if predecessors[a] == []:
             del predecessors[a]
 
-    # prog1 will store the best plannings
-    progAux = prog1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),balance)
-    prog1Evaluated, loadingSheet1, duration1 = evaluate(prog1,balance,asignation,resources)
-    progAuxEvaluated = prog1Evaluated
+    # sch1 will store the best plannings
+    schAux = sch1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),balance)
+    sch1Evaluated, loadingSheet1, duration1 = evaluate(sch1,balance,asignation,resources)
+    schAuxEvaluated = sch1Evaluated
     durationAux = duration1
     loadingSheetAux = loadingSheet1
     
-    tempAux = temperature = (nu/-log(phi)) * prog1Evaluated
+    tempAux = temperature = (nu/-log(phi)) * sch1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
     if alpha >= 1:
         return (None,None,None,None,None,None,None) #XXX de forma mas elegante con una excepcion
@@ -113,35 +113,35 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
     
     while temperature > minTemperature and numIterations != 0:
         it += 1
-        prog2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),prog1,balance)
-        prog2Evaluated, loadingSheet2, duration2 = evaluate(prog2,balance,asignation,resources)
-        if prog2Evaluated <= prog1Evaluated:
+        sch2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),sch1,balance)
+        sch2Evaluated, loadingSheet2, duration2 = evaluate(sch2,balance,asignation,resources)
+        if sch2Evaluated <= sch1Evaluated:
             loadingSheet1 = loadingSheet2
             duration1 = duration2
-            prog1 = prog2
-            prog1Evaluated = prog2Evaluated
+            sch1 = sch2
+            sch1Evaluated = sch2Evaluated
             numIterations = numIterationsAux # Set numIterations to initial value
         else:
             numIterations -= 1 
             r = random.random()
-            m = exp(-(prog2Evaluated-prog1Evaluated) / temperature)
+            m = exp(-(sch2Evaluated-sch1Evaluated) / temperature)
             if r < m:
-                if progAuxEvaluated > prog1Evaluated:
+                if schAuxEvaluated > sch1Evaluated:
                     loadingSheetAux = loadingSheet1
                     durationAux = duration1
-                    progAux = prog1 
-                    progAuxEvaluated = prog1Evaluated              
-                prog1 = prog2
-                prog1Evaluated = prog2Evaluated
+                    schAux = sch1 
+                    schAuxEvaluated = sch1Evaluated              
+                sch1 = sch2
+                sch1Evaluated = sch2Evaluated
                 loadingSheet1 = loadingSheet2
                 duration1 = duration2   
                     
         temperature = alpha * temperature
 
-    if prog1Evaluated <= progAuxEvaluated:
-        return (prog1, prog1Evaluated, loadingSheet1, duration1, alpha, tempAux, it)
+    if sch1Evaluated <= schAuxEvaluated:
+        return (sch1, sch1Evaluated, loadingSheet1, duration1, alpha, tempAux, it)
     else:
-        return (progAux, progAuxEvaluated, loadingSheetAux, durationAux, alpha, tempAux, it)
+        return (schAux, schAuxEvaluated, loadingSheetAux, durationAux, alpha, tempAux, it)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
@@ -154,18 +154,18 @@ def generate(asignation,resources,predecessors,activities,balance):
                 activities (dictionary with the name of activities and their characteristics)
                 balance (if 0 it will allocate else it will balance)
 
-    Returned value: prog (planing generated)
+    Returned value: sch (planing generated)
     """
        
     currentTime = 0
     executing = {}
     result = []
    
-    prog=generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
-    return prog
+    sch = generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
+    return sch
 
 
-def modify(asignation,resources,predecessors,activities,prog1,balance):
+def modify(asignation,resources,predecessors,activities,sch1,balance):
     """
     Modify a planning
 
@@ -173,20 +173,20 @@ def modify(asignation,resources,predecessors,activities,prog1,balance):
                 resources (returned by resourcesAvailability)
                 predecessors (dictionary with activities and their predecessors)
                 activities (dictionary with the name of activities and their characteristics)
-                prog1 (planning to modify)
+                sch1 (planning to modify)
                 balance (if 0 it will allocate else it will balance)
 
-    Returned value: prog (planning modified)
+    Returned value: sch (planning modified)
     """
        
     result = []
     executing = {}
    
     # The modification will start at this time
-    currentTime = random.randint(0, int(prog1[-1][1]))
+    currentTime = random.randint(0, int(sch1[-1][1]))
    
     # Update the state of result, executing, resources and activities to the state they would be at currentTime
-    for act,startTime,endTime in prog1:
+    for act,startTime,endTime in sch1:
         if startTime < currentTime:
             result += [(act,startTime,endTime)]
             if startTime + activities[act][0] > currentTime:
@@ -205,15 +205,15 @@ def modify(asignation,resources,predecessors,activities,prog1,balance):
                     if predecessors[a] == []:
                         del predecessors[a] 
       
-    prog = generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
-    return prog
+    sch = generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
+    return sch
 
 
-def evaluate(prog,balance,asignation,resources):
+def evaluate(sch,balance,asignation,resources):
     """
     Evaluate a planning
 
-    Parameters: prog (planning to evaluate)
+    Parameters: sch (planning to evaluate)
                 balance (if 0 it will consider resoucers)
                 asignation (returned by resourcesPerActivity)
                 resources (returned by resourcesAvailability)
@@ -225,20 +225,20 @@ def evaluate(prog,balance,asignation,resources):
     duration = 0
     
     # Calculate duration
-    for act,startTime,endTime in prog:
+    for act,startTime,endTime in sch:
         if endTime > duration:
             duration = endTime
     
-    loadingSheet = calculateLoadingSheet(prog, resources, asignation, duration)
+    loadingSheet = calculateLoadingSheet(sch, resources, asignation, duration)
     if balance == 0: # if allocate
         return (duration, loadingSheet, duration)  
     else: #if balance
         variance = calculateVariance(resources,asignation,duration,loadingSheet) 
         return (variance, loadingSheet, duration)
 
-def calculateLoadingSheet (prog, resources, asignation, duration):
+def calculateLoadingSheet (sch, resources, asignation, duration):
     """
-    Calculate the loading sheet of prog
+    Calculate the loading sheet of sch
 
     Parameters: asignation (returned by resourcesPerActivity)
                 resources (returned by resourcesAvailability)
@@ -246,14 +246,14 @@ def calculateLoadingSheet (prog, resources, asignation, duration):
                 activities (dictionary with the name of activities and their characteristics)
                 balance (if 0 it will allocate else it will balance)
 
-    Returned value: prog (planing generated)
+    Returned value: sch (planing generated)
     """
         
     startTime = []
     endTime = []
     loadingSheet = {}
 
-    for act in prog:
+    for act in sch:
         startTime.append(act[1])
         endTime.append(act[2])
     
@@ -271,7 +271,7 @@ def calculateLoadingSheet (prog, resources, asignation, duration):
                 if a == time:
                     endTimeCopy.remove(a)
             amount = 0        
-            for act,start,end in prog:
+            for act,start,end in sch:
                 if time >= start and time < end and act in asignation.keys():
                     for r, a in asignation[act]:
                         if r == resource:
@@ -294,7 +294,7 @@ def calculateVariance(resources,asignation,duration, loadingSheet):
     """
     Calculate the variance of the planning it receives
 
-    Parameters: prog (planning to evaluate)
+    Parameters: sch (planning to evaluate)
                 resources (returned by resourcesAvailability)
                 asignation (returned by resourcesPerActivity)
                 duration (duration of the planning)

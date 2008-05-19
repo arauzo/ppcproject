@@ -69,8 +69,8 @@ class Interface:
       self.sbExecuteTimesSA = self._widgets.get_widget('sbExecuteTimesSA')
       
       
-      self.ntbProgram = self._widgets.get_widget('ntbProgram')
-      self.ntbProgram.hide()
+      self.ntbSchedule = self._widgets.get_widget('ntbSchedule')
+      self.ntbSchedule.hide()
       
       gtk.window_set_default_icon_from_file('ppcproject.svg')
       self._widgets.get_widget('dAyuda').set_logo(self._widgets.get_widget('dAyuda').get_icon())
