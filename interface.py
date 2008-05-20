@@ -410,7 +410,7 @@ class Interface:
        self.vistaLista.renderer[8] = gtk.CellRendererText()
        self.vistaLista.renderer[8].set_property('editable', False)
        self.vistaLista.append_column(self.vistaLista.columna[8])
-       self.vistaLista.columna[8].set_sort_column_id(11)
+       self.vistaLista.columna[8].set_sort_column_id(8)
        self.vistaLista.columna[8].pack_start(self.vistaLista.renderer[8], True)
        self.vistaLista.columna[8].set_cell_data_func(self.vistaLista.renderer[8], self.resourcesRendererFunc)
        self.vistaLista.columna[8].set_spacing(8)
