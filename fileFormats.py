@@ -57,7 +57,8 @@ class PSPProjectFileFormat(ProjectFileFormat):
     """
     """
     def filenameExtensions(self):
-        return "
+        return [".sm"]
+
     def load(self):
         pass
 
