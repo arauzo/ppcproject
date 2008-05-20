@@ -441,35 +441,32 @@ class PPCproject:
    
    
         # Recursos 
-        elif modelo==self.modeloR:   
+        elif modelo == self.modeloR:
+            if n == 0:
+                for index in range(len(self.asignacion)):
+                    if self.asignacion[index][1] == self.recurso[int(path)][0]:
+                        self.asignacion[index][1] = self.modeloR[path][n]
+                        self.modeloAR[index][1] = self.modeloR[path][n]
+            self.recurso[int(path)][n] = self.modeloR[path][n]
             # Si el recurso es Renovable    
-            if self.modeloR[path][1]==gettext.gettext('Renewable'):
-                self.recurso[int(path)][n]=self.modeloR[path][n]
-                if self.modeloR[path][n]==self.modeloR[path][2]:
-                    self.recurso[int(path)][2]=self.modeloR[path][2]=''
+            if self.modeloR[path][1] == gettext.gettext('Renewable'):
+                if n == 2:
                     self.dialogoRec(gettext.gettext('Renewable'))
-                else:
-                    self.recurso[int(path)][2]=self.modeloR[path][2]=''
-  
+                self.recurso[int(path)][2] = self.modeloR[path][2] = ''
             # Si el recurso es No Renovable    
-            elif self.modeloR[path][1]==gettext.gettext('Non renewable'):
-                self.recurso[int(path)][n]=self.modeloR[path][n]
-                if self.modeloR[path][n]==self.modeloR[path][3]:
-                    self.recurso[int(path)][3]=self.modeloR[path][3]=''
+            elif self.modeloR[path][1] == gettext.gettext('Non renewable'):
+                if n == 3:
                     self.dialogoRec(gettext.gettext('Non renewable'))
-                else:
-                    self.recurso[int(path)][3]=self.modeloR[path][3]=''
-  
-            # Si el recurso es Doblemente restringido o Ilimitado
-            else:
-                self.recurso[int(path)][n]=self.modeloR[path][n]
- 
-            #print self.recurso 
-   
-   
+                self.recurso[int(path)][3] = self.modeloR[path][3] = ''
+            # Si el recurso es Ilimitado
+            elif self.modeloR[path][1] == gettext.gettext('Unlimited'):
+                if n == 2 or n == 3:
+                    self.dialogoRec(gettext.gettext('Unlimited'))
+                self.recurso[int(path)][3] = self.modeloR[path][3] = self.recurso[int(path)][2] = self.modeloR[path][2] = ''
+
         # Recursos necesarios por actividad
         else:
-            self.asignacion[int(path)][n]=self.modeloAR[path][n]
+            self.asignacion[int(path)][n] = self.modeloAR[path][n]
    
             #print self.asignacion
    
@@ -2277,6 +2274,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modified = 0
             self.gantt.clear()
             self.gantt.update()
+            while self.ntbSchedule.get_current_page() != -1:
+                self.ntbSchedule.remove_page(-1)
 
         return close
   
@@ -3600,6 +3599,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.dAyuda.hide()
         return True
 
+    def on_tab_changed(self, notebook, page, page_num):
+        self.set_schedule(self.schedules[page_num][1])
   
 # --- Start running as a program
 if __name__ == '__main__':
