@@ -46,7 +46,7 @@ class loadingTable(gtk.HBox):
         """
         Set loading
         
-        loading: loading (pixels)
+        loading: loading
         """
         self.table.loading = loading
     def set_duration(self, duration):
@@ -141,21 +141,23 @@ class table(gtk.Layout):
         self.duration = 0
     
     def set_tooltip(self, widget, x, y, keyboard_mode, tooltip):
+        """
+        Create tooltip to loadingTable
+        
+        """
         keys = self.loading.keys()
         keys.sort()
         if self.rowHeight != 0:
-            tooltip.set_text(keys[int(y) / self.rowHeight])
-   
+            try:
+                tooltip.set_text(keys[int(y) / self.rowHeight])
+            except:
+                pass
         return True
             
     def expose (self,widget,event):
         """
         Function called when the widget needs to be drawn
-        
-        widget:
-        event:
 
-        Returns: False
         """
         #Creating Cairo drawing context
         self.ctx = self.bin_window.cairo_create()
@@ -171,6 +173,10 @@ class table(gtk.Layout):
         return False
 
     def draw(self, ctx):   
+        """
+        Function called when the widget needs to be drawn
+
+        """
         if len(self.loading) != 0: 
             self.rowHeight = (self.available_height - 1) / len(self.loading)
         self.set_size(self.width, self.available_height)  
