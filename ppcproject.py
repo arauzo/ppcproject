@@ -59,6 +59,7 @@ from zaderenko import mZad, early, last
 from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
+from simAnnealing import calculate_loading_sheet
 
 
 class PPCproject:
@@ -2733,7 +2734,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
-        self.optimumSchedule, optSchEvaluated, optSchLoadingSheet, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+        self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
         # If no error
         if self.optimumSchedule != None:
             # Load gantt diagram
@@ -2744,12 +2745,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
             # Execute the algorithm as many times as the user introduced
             for a in range(0,int(times - 1)):
-                schedule, schEvaluated, schLoadingSheet, schDuration, schAlpha, schTemp, schIt = simulated_annealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+                schedule, schEvaluated, schDuration, schAlpha, schTemp, schIt = simulated_annealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
                 # Save the best schedule
                 if optSchEvaluated > schEvaluated2:
                     self.optimumSchedule = schedule
                     optSchEvaluated = schEvaluated
-                    optSchLoadingSheet = schloadingSheet
                     optSchDuration = schDuration
                     optSchAlpha = schAlpha
                     optSchTemp = schTemp
@@ -2766,6 +2766,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.ganttSA.set_activity_prelations(act,successors[act])
 
             self.ganttSA.update()
+            # Calculate loadingSheet
+            resources = resources_availability(self.recurso, True)
+            asignation = resources_per_activities(self.asignacion, resources)
+            optSchLoadingSheet = calculate_loading_sheet(self.optimumSchedule, resources, asignation, optSchDuration)
             # Add loading to loadingSheet
             self.loadingSheet.set_loading(optSchLoadingSheet)
             self.loadingSheet.set_duration(optSchDuration)
