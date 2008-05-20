@@ -215,11 +215,11 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkMenuItem" id="mnCOMSOAL">
+                      <widget class="GtkMenuItem" id="mnSimAnnealing">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Balance or Allocation</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnCOMSOAL_activate"/>
+                        <signal name="activate" handler="on_mnSimAnnealing_activate"/>
                       </widget>
                     </child>
                   </widget>
