@@ -32,7 +32,7 @@ gettext.bindtextdomain(APP, DIR)
 gettext.textdomain(APP)
 
 
-def resourcesAvailability(availableResources):
+def resources_availability(availableResources):
     """
     Create a dictionary with the renewable and the
             doubly restricted resources
@@ -53,30 +53,31 @@ def resourcesAvailability(availableResources):
     return resources
 
 
-def resourcesPerActivities(initialAsignation):
+def resources_per_activities(initialAsignation, resources):
     """
     Create a dictionary with the resources
           the activities need
 
     Parameters: initialAsignation (list of the activities and the resources they need) 
+                resources
 
     Returned value: asignation
     """
       
     asignation={}
-
     #Create a dictionary with the activities and the resources they need
-    for a in initialAsignation:
-        if a[0] in asignation.keys():
-            asignation[a[0]] = asignation[a[0]] + [(a[1],a[2])]
-        else:
-            asignation[a[0]] = [(a[1],a[2])] 
+    for act,resource,amount in initialAsignation:
+        if resource in resources.keys():
+            if act in asignation.keys():
+                asignation[act] = asignation[act] + [(resource,amount)]
+            else:
+                asignation[act] = [(resource,amount)]
      
     return asignation
       
-def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,numIterations):
+def simulated_annealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,numIterations):
     """
-    Try to find the best planning of the project by
+    Try to find the best schedule of the project by
         the technique of simulated annealing
 
     Parameters: asignation (returned by resourcesPerActivity)
@@ -84,12 +85,18 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
                 successors (the prelations of the activities)
                 activities (dictionary with the name of activities and their characteristics)
                 balance (if 0 it will allocate else it will balance)
-                temperature (parameter to configure simulated annealing algorithm)
-                minTemperature ((parameter to configure simulated annealing algorithm)
-                alpha ((parameter to configure simulated annealing algorithm)
-                numIterations ((parameter to configure simulated annealing algorithm)
+                nu (parameter to configure simulated annealing algorithm)
+                phi (parameter to configure simulated annealing algorithm)
+                minTemperature (parameter to configure simulated annealing algorithm)
+                maxIteration (parameter to configure simulated annealing algorithm)
+                numIterations (parameter to configure simulated annealing algorithm)
 
-    Returned value: (sch1,sch1Evaluated) or (schAux,schAuxEvaluated) (the best planning and the duration/variance of the project)
+    Returned value: sch (the best schedule found)
+                    schEvaluated (loading sheet of schedule)
+                    duration (duration of schedule)
+                    alpha (parameter to configure simulated annealing algorithm)
+                    tempAux (parameter to configure simulated annealing algorithm)
+                    it (number of iterations done)
     """
     predecessors = successors2precedents(successors)
 
@@ -107,7 +114,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
     tempAux = temperature = (nu/-log(phi)) * sch1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
     if alpha >= 1:
-        return (None,None,None,None,None,None,None) #XXX de forma mas elegante con una excepcion
+        return (None,None,None,None,None,None,None)
     it=0
     numIterationsAux = numIterations
     
@@ -120,7 +127,8 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
             duration1 = duration2
             sch1 = sch2
             sch1Evaluated = sch2Evaluated
-            numIterations = numIterationsAux # Set numIterations to initial value
+            # Set numIterations to initial value
+            numIterations = numIterationsAux 
         else:
             numIterations -= 1 
             r = random.random()
@@ -146,7 +154,7 @@ def simulatedAnnealing(asignation,resources,successors,activities,balance,nu,phi
 
 def generate(asignation,resources,predecessors,activities,balance):
     """
-    Generate a planning
+    Generate a schedule
 
     Parameters: asignation (returned by resourcesPerActivity)
                 resources (returned by resourcesAvailability)
@@ -161,7 +169,7 @@ def generate(asignation,resources,predecessors,activities,balance):
     executing = {}
     result = []
    
-    sch = generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
+    sch = generate_or_modify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
     return sch
 
 
@@ -205,7 +213,7 @@ def modify(asignation,resources,predecessors,activities,sch1,balance):
                     if predecessors[a] == []:
                         del predecessors[a] 
       
-    sch = generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
+    sch = generate_or_modify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
     return sch
 
 
@@ -219,7 +227,9 @@ def evaluate(sch,balance,asignation,resources):
                 resources (returned by resourcesAvailability)
                 
 
-    Returned value: duration or variance (duration or variance of the planning evaluated)
+    Returned value: duration or variance
+                    loadingSheet
+                    duration
     """
     
     duration = 0
@@ -229,24 +239,23 @@ def evaluate(sch,balance,asignation,resources):
         if endTime > duration:
             duration = endTime
     
-    loadingSheet = calculateLoadingSheet(sch, resources, asignation, duration)
+    loadingSheet = calculate_loading_sheet(sch, resources, asignation, duration)
     if balance == 0: # if allocate
         return (duration, loadingSheet, duration)  
     else: #if balance
-        variance = calculateVariance(resources,asignation,duration,loadingSheet) 
+        variance = calculate_variance(resources,asignation,duration,loadingSheet) 
         return (variance, loadingSheet, duration)
 
-def calculateLoadingSheet (sch, resources, asignation, duration):
+def calculate_loading_sheet (sch, resources, asignation, duration):
     """
     Calculate the loading sheet of sch
 
-    Parameters: asignation (returned by resourcesPerActivity)
-                resources (returned by resourcesAvailability)
-                predecessors (dictionary with activities and their predecessors)
-                activities (dictionary with the name of activities and their characteristics)
-                balance (if 0 it will allocate else it will balance)
-
-    Returned value: sch (planing generated)
+    Parameters: sch (schedule)
+                resources 
+                asignation
+                duration
+               
+    Returned value: loadingSheet
     """
         
     startTime = []
@@ -290,12 +299,11 @@ def calculateLoadingSheet (sch, resources, asignation, duration):
     return loadingSheet
     
       
-def calculateVariance(resources,asignation,duration, loadingSheet): 
+def calculate_variance(resources,asignation,duration, loadingSheet): 
     """
     Calculate the variance of the planning it receives
 
-    Parameters: sch (planning to evaluate)
-                resources (returned by resourcesAvailability)
+    Parameters: resources (returned by resourcesAvailability)
                 asignation (returned by resourcesPerActivity)
                 duration (duration of the planning)
                 loadingSheet (loadingSheet of the planning)
@@ -329,7 +337,7 @@ def calculateVariance(resources,asignation,duration, loadingSheet):
     return finalVariance / len(resources)
          
 
-def generateOrModify(asignation,resources,predecessors,activities,balance,executing,result,currentTime):
+def generate_or_modify(asignation,resources,predecessors,activities,balance,executing,result,currentTime):
     """
     Generate or modify a planning.
     It depends on currentTime

@@ -56,9 +56,9 @@ import graph
 import interface
 from fileFormats import leerPSPLIB, guardarCsv, leerTxt
 from zaderenko import mZad, early, last
-from simAnnealing import simulatedAnnealing
-from simAnnealing import resourcesAvailability
-from simAnnealing import resourcesPerActivities
+from simAnnealing import simulated_annealing
+from simAnnealing import resources_availability
+from simAnnealing import resources_per_activities
 
 
 class PPCproject:
@@ -2596,15 +2596,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         Parameters: window
                     event
-        Returns: -
+        Returns: True
         """
-
         self.btResetSA.clicked()
         window.hide()
 
         return True
-    def on_btnSaveSA_clicked (self, menu_item):
         
+    def on_btnSaveSA_clicked (self, menu_item):
+        """
+        Save the schedule calculated
+
+        Parameters: menu_item
+        
+        Returns: -
+        """
         optSchDic = {}
         if self.optimumSchedule == []:
             self.dialogoError(gettext.gettext('There is no schedule.'))
@@ -2615,41 +2621,57 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.add_schedule(None, optSchDic)
             
     def on_rbAllocation_pressed (self, menu_item):
+        """
+        Choose allocation
 
+        Parameters: menu_item
+        
+        Returns: -
+        """
         self.sbSlackSA.set_sensitive(False)
 
     def on_rbBalance_pressed (self, menu_item):
+        """
+        Choose balance
 
+        Parameters: menu_item
+        
+        Returns: -
+        """
         self.sbSlackSA.set_sensitive(True)
 
     def on_cbIterationSA_toggled (self, menu_item):
+        """
+        Choose unlimited number of iterations without improve
 
+        Parameters: menu_item
+        
+        Returns: -
+        """
         if self.cbIterationSA.get_active():
             self.sbNoImproveIterSA.set_sensitive(False)
         else:
             self.sbNoImproveIterSA.set_sensitive(True)
 
-    def on_mnCOMSOAL_activate(self, menu_item):
+    def on_mnSimAnnealing_activate(self, menu_item):
         """
-        User action to open the COMSOAL window
+        User action to open the simulated annealing window
 
         Parameters: menu_item
 
         Returns: -
         """
-
         self.wndSimAnnealing.show()
 
 
     def on_btnSimAnnealingReset_clicked(self,menu_item):
         """
-        User action to restart the values of the COMSOAL window fields
+        User action to restart the values of the simulated annealing window fields
 
         Parameters: menu_item
 
         Returns: -
         """
-
         self.ganttActLoaded = False
         self.ganttSA.clear()
         self.loadingSheet.clear()
@@ -2672,13 +2694,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_btnSimAnnealingCalculate_clicked(self, menu_item):
         """
-        User action to start the COMSOAL algorithm
+        User action to start the simulated annealing algorithm
 
         Parameters: menu_item
 
         Returns: -
         """
-
         # Add all activities in rest dictionary
         rest={}
         for a in self.actividad:
@@ -2687,21 +2708,20 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 return False
             rest[a[1]] = [float(a[6])]
 
-        #balRadioButton = self._widgets.get_widget('rbBalance')
         if self.rbBalance.get_active():
             balance = 1
         else:
             balance = 0
-
+        
         if balance == 1 and self.recurso == []:
             self.dialogoError(gettext.gettext('There are not resources introduced.'))
             return False
-
-        asignation = resourcesPerActivities(self.asignacion)
-        resources = resourcesAvailability(self.recurso)
+        # Create main dictionaries
+        resources = resources_availability(self.recurso)
+        asignation = resources_per_activities(self.asignacion, resources)
         successors = self.tablaSucesoras(self.actividad)
-        activities = self.alteredLast(rest)
-
+        activities = self.altered_last(rest)
+        # Get the simulated annealing algorithm's paremeters
         phi = self.sbPhi.get_value()
         nu = self.sbNu.get_value()
         minTemperature = self.sbMinTempSA.get_value()
@@ -2713,17 +2733,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
-        self.optimumSchedule, optSchEvaluated, optSchLoadingSheet, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
-
+        self.optimumSchedule, optSchEvaluated, optSchLoadingSheet, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+        # If no error
         if self.optimumSchedule != None:
+            # Load gantt diagram
             if not self.ganttActLoaded:
                 self.ganttActLoaded = True
                 self.ganttSA.clear()
                 for a in self.actividad:
                     self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
-
+            # Execute the algorithm as many times as the user introduced
             for a in range(0,int(times - 1)):
-                schedule, schEvaluated, schLoadingSheet, schDuration, schAlpha, schTemp, schIt = simulatedAnnealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+                schedule, schEvaluated, schLoadingSheet, schDuration, schAlpha, schTemp, schIt = simulated_annealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+                # Save the best schedule
                 if optSchEvaluated > schEvaluated2:
                     self.optimumSchedule = schedule
                     optSchEvaluated = schEvaluated
@@ -2732,23 +2754,23 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     optSchAlpha = schAlpha
                     optSchTemp = schTemp
                     optSchIt = schIt
-
+            # Show the value of algorithm's parameters
             self.entryResultSA.set_text(str(optSchDuration))
             self.entryAlpha.set_text(str(optSchAlpha))
             self.entryMaxTempSA.set_text(str(optSchTemp))
             self.entryIterations.set_text(str(optSchIt))
-
+            # Add activities to gantt
             for act,startTime,finalTime in self.optimumSchedule:
                 self.ganttSA.set_activity_start_time(act, startTime)
                 if act in successors.keys():
                     self.ganttSA.set_activity_prelations(act,successors[act])
 
             self.ganttSA.update()
-
+            # Add loading to loadingSheet
             self.loadingSheet.set_loading(optSchLoadingSheet)
             self.loadingSheet.set_duration(optSchDuration)
             self.loadingSheet.update()
-
+            # Add loading to loadingTable
             self.loadingTable.set_loading(optSchLoadingSheet)
             self.loadingTable.set_duration(optSchDuration)
             self.loadingTable.update()
@@ -2756,27 +2778,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.dialogoError(gettext.gettext('Initial temperature not high enough.'))
             return False
 
-    # Returns a dictionary with the activity's name like keys and duration and modified last time like definitions
-    def alteredLast(self,rest):
+    def altered_last(self,rest):
         """
-        Modify the last time of the activities with the slack introduced by the user
+        Calculate last time modified
 
         Parameters: rest (activities in the project)
 
-        Returns: rest (list of the activities and their characteristics)
+        Returns: rest (dictionary of the activities and their characteristics (duration, last time))
         """
-        # Se crea el grafo Pert y se renumera
+        # Create graph and number it
         grafoRenumerado = self.pertFinal()
   
-        # Nuevos nodos
+        # New nodes
         nodosN = []
         for n in range(len(grafoRenumerado.graph)):
             nodosN.append(n+1)
    
-        # Se calcula la matriz de Zaderenko
+        # Calculate Zaderenko matrix
         matrizZad = mZad(self.actividad,grafoRenumerado.activities, nodosN, 1, []) 
 
-        # Se calculan los tiempos early y last
+        # Calculate early and last times
         tearly = early(nodosN, matrizZad)      
         tlast = last(nodosN, tearly, matrizZad)
 

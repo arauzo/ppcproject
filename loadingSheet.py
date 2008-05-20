@@ -53,7 +53,7 @@ class loadingSheet(gtk.HBox):
         """
         Set loading
         
-        loading: loading (pixels)
+        loading: loading
         """
         self.diagram.loading = loading
     def set_duration(self, duration):
@@ -105,17 +105,17 @@ class loadingSheetScale(gtk.Layout):
         self.connect("expose-event", self.expose)
         
     def set_greatest(self,widget,greatest):
+        """
+        set the greatest value of resources' usage
+
+        """
         self.greatest = greatest
         self.queue_draw()  
         
     def expose (self,widget,event):
         """
         Function called when the widget needs to be drawn
-        
-        widget:
-        event:
 
-        Returns: False
         """
         #Creating Cairo drawing context
         self.ctx = self.bin_window.cairo_create()
@@ -131,6 +131,10 @@ class loadingSheetScale(gtk.Layout):
         return False
               
     def draw(self,ctx):
+        """
+        Function called when the widget needs to be drawn
+
+        """
         step = self.greatest / 5
         # Drawing the scale
         ctx.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
@@ -189,6 +193,10 @@ class loadingSheetDiagram(gtk.Layout):
         self.queue_draw()
     
     def calculate_greatest(self):
+        """
+        Calculate the greatest value of resources' usage
+        
+        """
         greatest = 0
         for resourceList in self.loading.values():
             for time, use in resourceList:
@@ -208,11 +216,7 @@ class loadingSheetDiagram(gtk.Layout):
     def expose (self,widget,event):
         """
         Function called when the widget needs to be drawn
-        
-        widget:
-        event:
 
-        Returns: False
         """
         #Creating Cairo drawing context
         self.ctx = self.bin_window.cairo_create()
@@ -228,6 +232,10 @@ class loadingSheetDiagram(gtk.Layout):
         return False
 
     def draw(self, ctx):  
+        """
+        Function called when the widget needs to be drawn
+
+        """
         self.set_size(self.width, self.available_height)  
         #Drawing cell lines
         for i in range(0, (max(self.available_width,int(self.width)) / self.cell_width) + 1):
