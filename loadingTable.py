@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# XXX Falta comentario indicando el proposito de este fichero!! XXX
+# Create a table showing the resources usage
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
@@ -27,11 +27,26 @@ import gobject
 import copy
 
 class loadingTable(gtk.HBox):
-    """ XXX Falta comentario indicando el proposito de esta clase """
+   """
+    Class loadingTable
+
+        Properties:
+            table
+
+        Interface:
+            set_cell_width(width)
+            set_loading(loading)
+            set_duration(duration)
+            set_hadjustment(adjustment)
+            set_width(widget,width)
+            update()
+            clear()
+
+    """
 
     def __init__(self):
         gtk.HBox.__init__(self)
-        self.table = table()
+        self.table = Table()
         self.set_homogeneous(False)
         self.pack_start(self.table, True, True, 0)
         
@@ -84,8 +99,31 @@ class loadingTable(gtk.HBox):
         self.table.clear()   
 
         
-class table(gtk.Layout):
-    """ XXX Falta comentario indicando el proposito de esta clase """
+class Table(gtk.Layout):
+    """    
+    Class Table
+
+        Properties:
+            colors
+            cell_width
+            width
+            rowHeight
+            loading
+            duration
+            ctx
+            available_width
+            available_height
+
+        Interface:
+            set_cell_width(width)
+            set_loading(loading)
+            set_duration(duration)
+            set_width(width)
+            clear()
+            set_tooltip(widget, x, y, keyboard_mode, tooltip)
+            expose(widget,event)
+            draw(ctx)
+    """
 
     def __init__(self):
         gtk.Layout.__init__(self)
