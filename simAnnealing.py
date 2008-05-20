@@ -32,12 +32,14 @@ gettext.bindtextdomain(APP, DIR)
 gettext.textdomain(APP)
 
 
-def resources_availability(availableResources):
+def resources_availability(availableResources, flag = False):
     """
     Create a dictionary with the renewable and the
             doubly restricted resources
 
     Parameters: availableResources (list of resources in the project)
+                flag (True : consider only renewable and double restricted resources;
+                      False: consider also unlimited resources)
 
     Returned value: resources
     """
@@ -49,6 +51,8 @@ def resources_availability(availableResources):
             resources[a[0]] = a[3]
         elif a[1] == gettext.gettext('Double restricted'):
             resources[a[0]] = a[2]
+        elif flag and a[1] == gettext.gettext('Unlimited'):
+            resources[a[0]] = None
    
     return resources
 
@@ -114,7 +118,7 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
     tempAux = temperature = (nu/-log(phi)) * sch1Evaluated
     alpha = (minTemperature / temperature) ** (1/maxIteration)
     if alpha >= 1:
-        return (None,None,None,None,None,None,None)
+        return (None,None,None,None,None,None)
     it=0
     numIterationsAux = numIterations
     
@@ -147,9 +151,9 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
         temperature = alpha * temperature
 
     if sch1Evaluated <= schAuxEvaluated:
-        return (sch1, sch1Evaluated, loadingSheet1, duration1, alpha, tempAux, it)
+        return (sch1, sch1Evaluated, duration1, alpha, tempAux, it)
     else:
-        return (schAux, schAuxEvaluated, loadingSheetAux, durationAux, alpha, tempAux, it)
+        return (schAux, schAuxEvaluated, durationAux, alpha, tempAux, it)
 
 
 def generate(asignation,resources,predecessors,activities,balance):
