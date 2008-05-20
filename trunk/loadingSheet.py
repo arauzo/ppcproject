@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# XXX Falta comentario indicando el proposito de este fichero!! XXX
+# Create a graph showing the resources usage
 #-----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in 
@@ -28,7 +28,23 @@ import copy
 import random
 
 class loadingSheet(gtk.HBox):
-    """ XXX Falta comentario indicando el proposito de esta clase """
+       """
+    Class loadingSheet
+
+        Properties:
+            diagram
+            scale
+
+        Interface:
+            set_cell_width(width)
+            set_loading(loading)
+            set_duration(duration)
+            set_hadjustment(adjustment)
+            set_width(widget,width)
+            update()
+            clear()
+
+    """
 
     def __init__(self):
         gtk.HBox.__init__(self)
@@ -94,8 +110,22 @@ class loadingSheet(gtk.HBox):
         self.diagram.clear()   
 
 class loadingSheetScale(gtk.Layout):
-    """ XXX Falta comentario indicando el proposito de esta clase """
+    """    
+    Class loadingSheetScale
 
+        Properties:
+            greatest
+            duration
+            ctx
+            available_width
+            available_height
+
+        Interface:
+            set_greatest
+            expose(widget,event)
+            draw(ctx)
+    """
+    
     def __init__(self):
         gtk.Layout.__init__(self)
         #Connecting signals
@@ -146,7 +176,32 @@ class loadingSheetScale(gtk.Layout):
             
         
 class loadingSheetDiagram(gtk.Layout):
-    """ XXX Falta comentario indicando el proposito de esta clase """
+"""    
+    Class loadingSheetDiagram
+
+        Properties:
+            colors
+            cell_width
+            loading
+            width
+            duration
+            ctx
+            available_width
+            available_height
+
+        Interface:
+            set_cell_width(width)
+            set_loading(loading)
+            set_duration(duration)
+            set_width(width)
+            calculate_greatest()
+            clear()
+            expose(widget,event)
+            draw(ctx)
+
+        Signals:
+            'greatest-calculated' Signal emmited when the required width has changed. Parameters: widget, width
+    """
 
     __gsignals__ = {'greatest-calculated' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
 
