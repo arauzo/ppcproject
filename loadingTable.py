@@ -27,7 +27,7 @@ import gobject
 import copy
 
 class loadingTable(gtk.HBox):
-   """
+    """
     Class loadingTable
 
         Properties:

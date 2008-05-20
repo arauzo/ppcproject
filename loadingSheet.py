@@ -28,7 +28,7 @@ import copy
 import random
 
 class loadingSheet(gtk.HBox):
-       """
+    """
     Class loadingSheet
 
         Properties:
@@ -176,7 +176,7 @@ class loadingSheetScale(gtk.Layout):
             
         
 class loadingSheetDiagram(gtk.Layout):
-"""    
+    """    
     Class loadingSheetDiagram
 
         Properties:
