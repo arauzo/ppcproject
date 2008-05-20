@@ -23,27 +23,43 @@ import gettext
 
 class ProjectFileFormat:
     """
-    Base class for general project loader
+    Base class for general project file format loader and saver
     """
-    def filenameExtension(self):
+    def filenameExtensions(self):
         """
-        Returns a string with the filename extension of this format
+        This function must be 
+        
+        Returns a list of strings with the filename extensions of this format
         """
-        pass
+        raise Exception("Not implemented")
 
     def load(self, filename):
         """
         Returns project data: (activities, schedules, resources, resourceAsignaments)
-        
-        
         """
-        pass    
+        raise Exception("Not implemented")
 
+    def canSave(self):
+        """
+        Returns if this project format allows to save all data
+        """
+        return 'save' in self.__class__.__dict__
+        
     def save(self, projectData, filename):
         """
+        project data: (activities, schedules, resources, resourceAsignaments)
+        filename: path and filename to save (should include extension)
+        Returns: None
         """
+        raise Exception("Not implemented")
+
+class PSPProjectFileFormat(ProjectFileFormat):
+    """
+    """
+    def filenameExtensions(self):
+        return "
+    def load(self):
         pass
-    
 
 
 def guardarCsv(texto, principal):
@@ -146,4 +162,9 @@ def leerTxt(f):
 
     return tabla
 
+# --- Start running as a program
+if __name__ == '__main__':
+    o = PSPProjectFileFormat()
+    print o.canSave()
+    
 
