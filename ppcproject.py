@@ -241,8 +241,8 @@ class PPCproject:
         self.modeloAR.clear()
         self.asignacion=[]
         cont=1
-        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia
-
+        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
+        self.modeloAR.append()
   
     def col_edited_cb( self, renderer, path, new_text, modelo, n):
         """
