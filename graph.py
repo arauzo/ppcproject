@@ -410,6 +410,57 @@ def royPaths2csv2(royGraph):
 
     return s
 
+#XXX This get_activities_start_time is the good one, but is not supported yet. I upload it as a comment to prevent loosing it.
+"""
+def get_activities_start_time(activities, durations, prelations, previous_times = {}, root_activity = None, minimum = False):
+    open_list = []
+    inv_prelations = {}
+    closed_list = []
+    start_time = {}
+    for activity in activities:
+        inv_prelations[activity] = []
+    for activity in activities:
+        for children in prelations[activity]:
+            inv_prelations[children].append(activity)
+    if root_activity == None:
+        for activity in activities:
+            if inv_prelations[activity] == []:
+                open_list.append(activity)
+    else:
+        descendants = [root_activity]
+        open_descendants = prelations[root_activity]
+        while open_descendants != []:
+            activity = open_descendants.pop()
+            descendants.append(activity)
+            for children in prelations[activity]
+                if children not in descendants and not in open_descendants:
+                    open_descendants.append(children)
+        for activity in activities:
+            if activity not in descendants:
+                closed_list.append(activity)
+                start_time[activity] = previous_times[activity]
+        open_list.append(root_activity)
+        
+    while open_list != []:
+        chosen = open_list.pop()
+        closed_list.append(chosen)
+        time = [0]
+        for activity in inv_prelations[chosen]:
+            time.append(start_time[activity] + durations[activity])
+        if previous_times != {} and not minimum:
+            time.append(previous_times[chosen]
+        start_time[chosen] = max(time)
+        for activity in prelations[chosen]:
+            pending = False
+            for parent in inv_prelations[activity]:
+                if parent not in closed_list:
+                    pending = True
+            if not pending:
+                open_list.append(activity)
+    return(start_time)
+"""
+
+
 def get_activities_start_time(activities, durations, prelations, root_activity = None, root_activity_start_time = 0):
     open_list = []
     inv_prelations = {}
