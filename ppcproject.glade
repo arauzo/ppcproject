@@ -363,7 +363,7 @@
                 <property name="can_focus">True</property>
                 <property name="tab_pos">GTK_POS_RIGHT</property>
                 <property name="show_border">False</property>
-                <property name="enable_popup">True</property>
+                <signal name="button_press_event" handler="on_tab_clicked"/>
                 <signal name="switch_page" handler="on_tab_changed"/>
               </widget>
               <packing>
@@ -2595,6 +2595,27 @@ Alejandro Villagrán Marín
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
         <signal name="activate" handler="delete_tree_row"/>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkMenu" id="ctxTabsMenu">
+    <property name="visible">True</property>
+    <child>
+      <widget class="GtkImageMenuItem" id="mnTabsNew">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">gtk-new</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="new_tab"/>
+      </widget>
+    </child>
+    <child>
+      <widget class="GtkImageMenuItem" id="mnTabsDelete">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">gtk-delete</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">True</property>
+        <signal name="activate" handler="delete_tab"/>
       </widget>
     </child>
   </widget>

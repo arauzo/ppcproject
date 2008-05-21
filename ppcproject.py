@@ -29,6 +29,8 @@ import gobject
 import gtk
 import gtk.glade
 
+from copy import deepcopy
+
 import GTKgantt
 import loadingSheet
 
@@ -72,6 +74,7 @@ class PPCproject:
         self.asignacion = []
         self.optimumSchedule = []
         self.schedules = []
+        self.schedule_tab_labels = []
         self.bufer=gtk.TextBuffer()
         self.directorio = gettext.gettext('Unnamed -PPC-Project')
         self.modified=0
@@ -696,6 +699,7 @@ class PPCproject:
             name = "P" + str(len(self.schedules))
         self.schedules.append([name, sch_dic])
         label = gtk.Label(name)
+        self.schedule_tab_labels.append(label)
         fixed = gtk.Fixed()
         self.ntbSchedule.append_page(fixed, label)
         fixed.show()
@@ -3627,6 +3631,30 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         self.dAyuda.hide()
         return True
+
+    def on_tab_clicked(self, widget, event):
+        """
+          xxx lacks comment
+        """
+        if event.button == 3:
+            for i in range(self.ntbSchedule.get_n_pages()):
+                x, y = self.ntbSchedule.translate_coordinates(self.vPrincipal, int(event.x), int(event.y))
+                if self.schedule_tab_labels[i].intersect(gtk.gdk.Rectangle(x, y, 1, 1)):
+                    self.clicked_tab = i
+                    self._widgets.get_widget("mnTabsDelete").set_sensitive(i != 0)
+                    self._widgets.get_widget("ctxTabsMenu").popup(None, None, None, event.button, event.time)
+                    break
+
+    def delete_tab(self, widget):
+        self.schedule_tab_labels.remove(self.schedule_tab_labels[self.clicked_tab])
+        if self.clicked_tab == self.ntbSchedule.get_current_page():
+            self.ntbSchedule.set_current_page((self.clicked_tab - 1) % self.ntbSchedule.get_n_pages())
+        del self.schedules[self.clicked_tab]
+        self.ntbSchedule.remove_page(self.clicked_tab)
+
+    def new_tab(self, widget):
+        new_sched = deepcopy(self.schedules[0][1])
+        self.add_schedule(None, new_sched )
 
     def on_tab_changed(self, notebook, page, page_num):
         self.set_schedule(self.schedules[page_num][1])
