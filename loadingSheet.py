@@ -45,7 +45,6 @@ class loadingSheet(gtk.HBox):
             clear()
 
     """
-
     def __init__(self):
         gtk.HBox.__init__(self)
         self.diagram = loadingSheetDiagram()
@@ -150,8 +149,8 @@ class loadingSheetScale(gtk.Layout):
         #Creating Cairo drawing context
         self.ctx = self.bin_window.cairo_create()
         #Setting context size to available size
-        #self.ctx.rectangle(event.area.x, event.area.y, 20, event.area.height)
-        #self.ctx.clip()
+        self.ctx.rectangle(event.area.x, event.area.y, event.area.width, event.area.height)
+        self.ctx.clip()
         self.ctx.translate(20.5,-0.5)
         #Obtaining available width and height
         self.available_width = event.area.width
