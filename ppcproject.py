@@ -430,9 +430,12 @@ class PPCproject:
                     act_list.append(self.actividad[i][1])
                     dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                     pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-                self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1], modelo[path][1])
-                for index in range(1, len(self.schedules)):
-                    self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False, self.schedules[index][1], modelo[path][1])
+                if n == 10:
+                    self.schedules[self.ntbSchedule.get_current_page()][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
+                else:
+                    self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1], modelo[path][1])
+                    for index in range(1, len(self.schedules)):
+                        self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False, self.schedules[index][1], modelo[path][1])
                 self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
             #print self.actividad, 'ya modificada'
    
