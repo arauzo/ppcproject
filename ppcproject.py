@@ -562,9 +562,12 @@ class PPCproject:
         if self.asignacion!=[]:
             mostrarColumnaRes=self.mostrarRec(self.asignacion, 1)
             self.actualizarColR(mostrarColumnaRes)
-   
+
         #print "%s" % (tabla)
-  
+        
+        #empty row added
+        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
+        self.modeloAR.append()
   
     def cargarTxt(self, tabla):
         """
@@ -600,6 +603,9 @@ class PPCproject:
                 self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
                 self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
         self.gantt.update()
+        #empty row added
+        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
+        self.modeloAR.append()
   
   
     def comprobarSig(self, modelo, path, new_text):
@@ -884,6 +890,10 @@ class PPCproject:
         if self.asignacion!=[]:
             mostrarColumnaRec=self.mostrarRec(self.asignacion, 0)
             self.actualizarColR(mostrarColumnaRec)
+            
+        #empty row added
+        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
+        self.modeloAR.append()
 
      
     def actualizarColSigPSPLIB(self, prelacion):
