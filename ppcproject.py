@@ -416,6 +416,7 @@ class PPCproject:
                         self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.actString2actList(self.modelo[path][2]))
                         gantt_modified = True
                 elif n==10:
+                    self.schedules[self.ntbSchedule.get_current_page()][1][modelo[path][1]] = float(self.modelo[path][10])
                     gantt_modified = True
                 # Si no es ningún caso de los anteriores, se actualiza normalmente
                 else:
@@ -429,15 +430,10 @@ class PPCproject:
                     act_list.append(self.actividad[i][1])
                     dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                     pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-                if n == 10:
-                    start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.modelo[path][1], float(self.modelo[path][10]))
-                else:
-                    start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
-                for i in range(len(self.actividad)):
-                    if self.actividad[i][1] in start_times.keys():
-                        self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
-                        self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
-                self.gantt.update()
+                self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1], modelo[path][1])
+                for index in range(1, len(self.schedules)):
+                    self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False, self.schedules[index][1], modelo[path][1])
+                self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
             #print self.actividad, 'ya modificada'
    
    
@@ -538,12 +534,10 @@ class PPCproject:
                 self.actividad[i][2]=[]
             pre_dic[self.actividad[i][1]] = self.actividad[i][2]
             self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]) if self.actividad[i][6] != "" else 0)
-        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
-        for i in range(len(self.actividad)):
-            if self.actividad[i][1] in start_times.keys():
-                self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
-                self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
-        self.gantt.update()
+        #Minimum schedule
+        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True)
+        self.add_schedule(gettext.gettext("Min"), start_times)
+        self.set_schedule(start_times)
         # Se actualizan la interfaz y la lista de los recursos
         self.modeloR.clear()
         self.recurso=tabla[1]   
@@ -597,12 +591,10 @@ class PPCproject:
             pre_dic[fila[1]] = fila[2]
             self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
             cont+=1
-        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
-        for i in range(len(self.actividad)):
-            if self.actividad[i][1] in start_times.keys():
-                self.actividad[i][10] = self.modelo[i][10] = str(start_times[self.actividad[i][1]])
-                self.gantt.set_activity_start_time(self.actividad[i][1], start_times[self.actividad[i][1]])
-        self.gantt.update()
+        #Minimum schedule
+        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True)
+        self.add_schedule(gettext.gettext("Min"), start_times)
+        self.set_schedule(start_times)
         #empty row added
         self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
         self.modeloAR.append()
@@ -699,7 +691,7 @@ class PPCproject:
     def add_schedule(self, name , sch_dic):
         if name == None:
             name = "P" + str(len(self.schedules))
-        self.schedules.append((name, sch_dic))
+        self.schedules.append([name, sch_dic])
         label = gtk.Label(name)
         fixed = gtk.Fixed()
         self.ntbSchedule.append_page(fixed, label)
@@ -817,11 +809,10 @@ class PPCproject:
             pre_dic[row[1]] = row[2]
             dur_dic[row[1]] = float(row[6])
             self.gantt.add_activity(row[1], row[2], float(row[6]))
-        time_dics = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
-        for n in range(len(asig)-1):
-            self.actividad[n-1][10] = self.modelo[n-1][10] = str(time_dics[self.actividad[n-1][1]])
-            self.gantt.set_activity_start_time(self.actividad[n-1][1], time_dics[self.actividad[n-1][1]])
-            self.gantt.update()
+        #Minimum schedule
+        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True)
+        self.add_schedule(gettext.gettext("Min"), start_times)
+        self.set_schedule(start_times)
 
         # Se actualizan los recursos
         i=1
