@@ -76,7 +76,7 @@ class PPCproject(object):
         self.schedules = []
         self.schedule_tab_labels = []
         self.bufer=gtk.TextBuffer()
-        self.directorio = gettext.gettext('Unnamed -PPC-Project')
+        self.openFilename = gettext.gettext('Unnamed -PPC-Project')
         self.modified=0
         self.ganttActLoaded = False
         self.interface = interface.Interface(self)
@@ -233,8 +233,8 @@ class PPCproject(object):
          Parámetros: -
          Valor de retorno: -
         """
-        self.directorio=gettext.gettext('Unnamed -PPC-Project') #nombre del proyecto
-        self.vPrincipal.set_title(self.directorio)
+        self.openFilename=gettext.gettext('Unnamed -PPC-Project') #nombre del proyecto
+        self.vPrincipal.set_title(self.openFilename)
         # Se limpian las listas y la interfaz para la introducción de nuevos datos
         self.modelo.clear()   
         self.modeloComboS.clear()   
@@ -2103,11 +2103,41 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
  
 # --- FUNCIONES DIALOGOS ABRIR, GUARDAR Y ADVERTENCIA/ERRORES #
 
+    def openProject(self, filename):
+        """
+        Open a project file given by filename
+        """
+        try: 
+            flectura=open(filename,'r') 
+            # Se coloca el nombre del fichero como tí­tulo del proyecto abierto
+            self.asignarTitulo(filename)
+            # Keeps filename to Save on the same file
+            self.openFilename = filename
+            # Se cargan los datos del fichero 
+            tabla=[]
+            if filename[-4:] == '.prj':  
+                tabla=pickle.load(flectura)
+                self.cargaDatos(tabla)
+            elif filename[-3:] == '.sm':  
+                # Se lee el fichero y se extraen los datos necesarios 
+                prelaciones, rec, asig=leerPSPLIB(flectura)   
+                # Se cargan los datos extraidos en las listas correspondientes
+                self.cargarPSPLIB(prelaciones, rec, asig)       
+            else: # Fichero de texto
+                tabla=leerTxt(flectura)
+                self.cargarTxt(tabla)
+            response = True
+            flectura.close()
+        except IOError :
+            # xxx Como gestionamos este error si se carga desde linea de comandos??
+            self.dialogoError(gettext.gettext('The selected file does not exist')) #xxx very specific message, does not cover all catched exceptions
+            response = False
+
+
+
     def abrir(self):
         """
-        Abre un proyecto (con extensión '.prj' guardado)
-
-        Debería abrir cualquier fichero desde una opción
+        Open dialog asking for file to open project
         """
         # Close open project if any
         closed = self.closeProject()
@@ -2141,30 +2171,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             resultado = dialogoFicheros.run()
 
             if resultado == gtk.RESPONSE_OK:
-                try: 
-                        # Se abre el fichero en modo lectura y se coloca el nombre del fichero como tí­tulo del proyecto abierto
-                    self.directorio=dialogoFicheros.get_filename()
-                    flectura=open(self.directorio,'r') 
-                    self.asignarTitulo(self.directorio)
-                    # Se cargan los datos del fichero 
-                    tabla=[]
-                    if self.directorio[-4:] == '.prj':  
-                        tabla=pickle.load(flectura)
-                        self.cargaDatos(tabla)
-                    elif self.directorio[-3:] == '.sm':  
-                        # Se lee el fichero y se extraen los datos necesarios 
-                        prelaciones, rec, asig=leerPSPLIB(flectura)   
-                        # Se cargan los datos extraidos en las listas correspondientes
-                        self.cargarPSPLIB(prelaciones, rec, asig)       
-                    else: # Fichero de texto
-                        tabla=leerTxt(flectura)
-                        self.cargarTxt(tabla)
-                    response = True
-                    flectura.close()
-                except IOError :
-                    self.dialogoError(gettext.gettext('The selected file does not exist'))
-                    response = False
-        
+                self.openProject(dialogoFicheros.get_filename())
             elif resultado == gtk.RESPONSE_CANCEL:
                 response = False
     
@@ -2175,7 +2182,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # --- DIÁLOGOS GUARDAR
 
     def guardar(self, saveAs=False):
-        if saveAs or self.directorio==gettext.gettext('Unnamed -PPC-Project'):
+        if saveAs or self.openFilename==gettext.gettext('Unnamed -PPC-Project'):
             dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save"),
                                                    None,
                                                    gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -2185,15 +2192,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             resultado = dialogoGuardar.run()
 
             if resultado == gtk.RESPONSE_OK:
-                self.directorio=dialogoGuardar.get_filename()
-                self.saveProject(self.directorio)
-                self.asignarTitulo(self.directorio)
+                self.openFilename=dialogoGuardar.get_filename()
+                self.saveProject(self.openFilename)
+                self.asignarTitulo(self.openFilename)
                 self.set_modified(False)
                 self.modified = 0
     
             dialogoGuardar.destroy() 
         else:
-            self.saveProject(self.directorio)
+            self.saveProject(self.openFilename)
             self.modified = 0
             
     def saveProject(self, nombre):
@@ -3658,31 +3665,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_tab_changed(self, notebook, page, page_num):
         self.set_schedule(self.schedules[page_num][1])
-  
+
+
 # --- Start running as a program
 if __name__ == '__main__':
     app = PPCproject()
 
     if   len(sys.argv) == 1:
         gtk.main()    elif len(sys.argv) == 2:
-        nombre = sys.argv[1]
-        try:
-            fichero = open(nombre, 'r')
-            # Se asigna el nombre como título del proyecto
-            app.directorio = nombre
-            app.asignarTitulo(app.directorio)
-            # Se cargan los datos en la lista 
-            tabla = []             
-            tabla = pickle.load(fichero)
-#         for e in tabla:
-#            print e
-            app.cargaDatos(tabla) 
-            fichero.close()
-            gtk.main()
-   
-        except IOError:
-            print nombre, gettext.gettext('file does not exist')
-   
+        app.openProject(sys.argv[1])
+        gtk.main()   
     else:
         print gettext.gettext('Syntax is:')
         print sys.argv[0], '[project_file]'
