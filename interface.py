@@ -38,7 +38,7 @@ gettext.textdomain(APP)
 gtk.glade.bindtextdomain(APP, DIR)
 gtk.glade.textdomain(APP)
 
-class Interface:
+class Interface(object):
    __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
    def __init__(self, parent_application):
       self._widgets = gtk.glade.XML('ppcproject.glade')

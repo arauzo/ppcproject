@@ -21,7 +21,7 @@
 import gtk
 import gettext
 
-class ProjectFileFormat:
+class ProjectFileFormat(object):
     """
     Base class for general project file format loader and saver
     """
@@ -29,7 +29,7 @@ class ProjectFileFormat:
         """
         This function must be 
         
-        Returns a list of strings with the filename extensions of this format
+        Returns a list of strings with the filename extensions supported by this format
         """
         raise Exception("Not implemented")
 
@@ -55,12 +55,40 @@ class ProjectFileFormat:
 
 class PSPProjectFileFormat(ProjectFileFormat):
     """
+    Allows loading PSPlib files
     """
     def filenameExtensions(self):
-        return [".sm"]
+        return [".sm"] #xxx revisar
+
+    def load(self):
+        pass #xxx
+
+class PPCProjectOLDFileFormat(ProjectFileFormat):
+    """
+    Permite cargar los fichero .prj generados con la versión anterior
+
+    (está a drede en español ya que esta clase debe ser eliminada cuando 
+    se consolide el formato nuevo (convirtamos los ficheros útiles))
+    """
+    def filenameExtensions(self):
+        return [".prj"]
 
     def load(self):
         pass
+
+class PPCProjectFileFormat(ProjectFileFormat):
+    """
+    Permite cargar los fichero .prj generados con la versión anterior
+
+    (está a drede en español ya que esta clase debe ser eliminada cuando 
+    se consolide el formato nuevo (convirtamos los ficheros útiles))
+    """
+    def filenameExtensions(self):
+        return [".prj"]
+
+    def load(self):
+        pass
+
 
 
 def guardarCsv(texto, principal):

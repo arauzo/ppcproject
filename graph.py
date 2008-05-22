@@ -24,7 +24,7 @@ from pert import *
 import copy
 
 # Prototype of new class Graph
-class Grafo:
+class Grafo(object):
 
     def __init__(self):
         self.successors = {}
@@ -464,7 +464,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-class Test:
+class Test(object):
 
     def delete_event(self, widget, event, data=None):
         return False
