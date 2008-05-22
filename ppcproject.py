@@ -76,7 +76,9 @@ class PPCproject(object):
         self.schedules = []
         self.schedule_tab_labels = []
         self.bufer=gtk.TextBuffer()
-        self.openFilename = gettext.gettext('Unnamed -PPC-Project')
+        # Keeps the name of the open file 
+        # (None = no open file, 'Unnamed' = Project without name yet)
+        self.openFilename = None #xxx gettext.gettext('Unnamed -PPC-Project')
         self.modified=0
         self.ganttActLoaded = False
         self.interface = interface.Interface(self)
@@ -233,8 +235,8 @@ class PPCproject(object):
          Parámetros: -
          Valor de retorno: -
         """
-        self.openFilename=gettext.gettext('Unnamed -PPC-Project') #nombre del proyecto
-        self.vPrincipal.set_title(self.openFilename)
+        self.openFilename = 'Unnamed' 
+        self.updateWindowTitle()
         # Se limpian las listas y la interfaz para la introducción de nuevos datos
         self.modelo.clear()   
         self.modeloComboS.clear()   
@@ -1223,21 +1225,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         bufer.set_text(valor) 
                     
 
-    def asignarTitulo(self, directorio):
+    def updateWindowTitle(self):
         """
-         Asignación de tí­tulo al proyecto actual
-
-         Parámetros: directorio (tí­tulo+directorio)
-
-         Valor de retorno: - 
+        Updates window title (should be called when open file changes)
         """
-        titulo=os.path.basename(directorio)
-        ubicacion=directorio[:-(len(titulo)+1)]
-        if ubicacion=='': 
-            self.vPrincipal.set_title(titulo+' - PPC-Project')
+        if self.openFilename:
+            basename = os.path.basename(self.openFilename)
+            path = self.openFilename[:-(len(basename)+1)]
+            if path=='': 
+                self.vPrincipal.set_title(basename + ' - PPC-Project')
+            else:
+                self.vPrincipal.set_title(basename + ' (' + path + ')' + ' - PPC-Project')
         else:
-            self.vPrincipal.set_title(titulo+' ('+ubicacion+')'+ ' - PPC-Project')
-
+            self.vPrincipal.set_title('PPC-Project')
                
 ### FUNCIONES VENTANAS DE ACCIÓN
 
@@ -2109,10 +2109,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         try: 
             flectura=open(filename,'r') 
-            # Se coloca el nombre del fichero como tí­tulo del proyecto abierto
-            self.asignarTitulo(filename)
-            # Keeps filename to Save on the same file
-            self.openFilename = filename
             # Se cargan los datos del fichero 
             tabla=[]
             if filename[-4:] == '.prj':  
@@ -2126,12 +2122,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             else: # Fichero de texto
                 tabla=leerTxt(flectura)
                 self.cargarTxt(tabla)
-            response = True
             flectura.close()
+
+            # Update interface 
+            self.openFilename = filename
+            self.updateWindowTitle()
+            self.enableProjectControls(True)
+            self.set_modified(False)
+            self.modified = 0
+            self.ntbSchedule.show()
         except IOError :
             # xxx Como gestionamos este error si se carga desde linea de comandos??
             self.dialogoError(gettext.gettext('The selected file does not exist')) #xxx very specific message, does not cover all catched exceptions
-            response = False
 
 
 
@@ -2173,16 +2175,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             if resultado == gtk.RESPONSE_OK:
                 self.openProject(dialogoFicheros.get_filename())
             elif resultado == gtk.RESPONSE_CANCEL:
-                response = False
+                pass
     
             dialogoFicheros.destroy()
-            return (response) 
 
    
 # --- DIÁLOGOS GUARDAR
 
     def guardar(self, saveAs=False):
-        if saveAs or self.openFilename==gettext.gettext('Unnamed -PPC-Project'):
+        if saveAs or self.openFilename=='Unnamed':
             dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save"),
                                                    None,
                                                    gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -2194,7 +2195,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             if resultado == gtk.RESPONSE_OK:
                 self.openFilename=dialogoGuardar.get_filename()
                 self.saveProject(self.openFilename)
-                self.asignarTitulo(self.openFilename)
+                self.updateWindowTitle()
                 self.set_modified(False)
                 self.modified = 0
     
@@ -2280,13 +2281,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         if close:
             # Se limpian todas las listas de datos
+            self.openFilename = None
             self.modelo.clear()
             self.actividad=[]
             self.modeloR.clear()
             self.recurso=[]
             self.modeloAR.clear()
             self.asignacion=[]
-            self.vPrincipal.set_title(gettext.gettext('PPC-Project'))
+            self.updateWindowTitle()
             self.modified = 0
             self.gantt.clear()
             self.gantt.update()
@@ -2432,11 +2434,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
     def on_Open_activate(self, item):
         """ User ask for open file (from menu or toolbar) """
-        if self.abrir():
-            self.enableProjectControls(True)
-            self.set_modified(False)
-            self.modified = 0
-            self.ntbSchedule.show()
+        self.abrir()
 
     def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
