@@ -22,7 +22,7 @@
 import math, os, sys
 from graph import *
 
-class Pert:
+class Pert(object):
     """
     PERT class to store graph data, contains:
       self.graph = directed graph data structure

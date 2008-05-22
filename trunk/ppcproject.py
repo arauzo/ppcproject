@@ -64,8 +64,8 @@ from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
 
 
-class PPCproject:
-    """ Controler of all events in application """
+class PPCproject(object):
+    """ Controler of global events in application """
 
     def __init__(self):
         # Data globaly used in application
@@ -3686,3 +3686,5 @@ if __name__ == '__main__':
     else:
         print gettext.gettext('Syntax is:')
         print sys.argv[0], '[project_file]'
+
+
