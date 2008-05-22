@@ -27,22 +27,38 @@ class ProjectFileFormat(object):
     """
     def filenameExtensions(self):
         """
-        This function must be 
-        
         Returns a list of strings with the filename extensions supported by this format
+
+        Implementing this function on subclasses is: compulsory.
         """
         raise Exception("Not implemented")
+
+    def canLoad(self):
+        """
+        Returns if this project format allows to save all data
+
+        Implementing this function on subclasses is: not appropiate.
+        """
+        #xxx should be corrected to work on all subclass hierarchy
+
+        return 'load' in self.__class__.__dict__
 
     def load(self, filename):
         """
         Returns project data: (activities, schedules, resources, resourceAsignaments)
+
+        Implementing this function on subclasses is: optional.
         """
         raise Exception("Not implemented")
 
     def canSave(self):
         """
         Returns if this project format allows to save all data
+
+        Implementing this function on subclasses is: not appropiate.
         """
+        #xxx should be corrected to work on all subclass hierarchy
+
         return 'save' in self.__class__.__dict__
         
     def save(self, projectData, filename):
@@ -50,18 +66,56 @@ class ProjectFileFormat(object):
         project data: (activities, schedules, resources, resourceAsignaments)
         filename: path and filename to save (should include extension)
         Returns: None
+
+        Implementing this function on subclasses is: optional.
         """
         raise Exception("Not implemented")
+
 
 class PSPProjectFileFormat(ProjectFileFormat):
     """
     Allows loading PSPlib files
     """
     def filenameExtensions(self):
-        return [".sm"] #xxx revisar
+        return [".sm"] #xxx revisar otras extensiones...
 
-    def load(self):
-        pass #xxx
+    def load(self, filename):
+        """
+        Load project data (see base class)
+        """
+        f = open(filename)
+        prelaciones = []
+        asig = []
+        rec = []
+        l = f.readline()
+        while l:
+        # Lectura de las actividades y sus siguientes
+            if l[0] == 'j' and l[10] == '#':
+                l = f.readline()
+                while l[0] != '*':
+                    prel = (l.split()[0], l.split()[3:])
+                    prelaciones.append(prel)
+                    l = f.readline()
+
+            # Lectura de la duración de las actividades y de las unidades de recursos 
+            # necesarias por actividad
+            if l[0] == '-':
+                l = f.readline()
+                while l[0] != '*':
+                    asig.append(l.split())
+                    l = f.readline()
+
+            # Lectura del nombre, tipo y unidad de los recursos
+            if l[0:22] == 'RESOURCEAVAILABILITIES':
+                l = f.readline()
+                while l[0] != '*':
+                    rec.append(l.split())
+                    l = f.readline()
+
+            l = f.readline()
+
+        return (prelaciones, [], rec, asig)
+
 
 class PPCProjectOLDFileFormat(ProjectFileFormat):
     """
@@ -73,21 +127,27 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
     def filenameExtensions(self):
         return [".prj"]
 
-    def load(self):
-        pass
+    def load(self, filename):
+        """
+        Load project data (see base class)
+        """
+        pass # xxx
+
 
 class PPCProjectFileFormat(ProjectFileFormat):
     """
-    Permite cargar los fichero .prj generados con la versión anterior
-
-    (está a drede en español ya que esta clase debe ser eliminada cuando 
-    se consolide el formato nuevo (convirtamos los ficheros útiles))
+    New project file format (xxx to define)
     """
     def filenameExtensions(self):
         return [".prj"]
 
-    def load(self):
-        pass
+    def load(self, filename):
+        """
+        Load project data (see base class)
+        """
+        pass # xxx 
+
+
 
 
 
@@ -125,6 +185,7 @@ def guardarCsv(texto, principal):
 
 def leerPSPLIB(f):
     """
+    xxx To be removed
      Lectura de un proyecto de la librería de proyectos PSPLIB   
 
      Parámetros: f (fichero) 
