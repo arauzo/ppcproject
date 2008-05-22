@@ -340,7 +340,7 @@ class GanttHeader(gtk.Layout):
         context.set_line_width(1);
         context.stroke()
 
-class Diagram_graph():
+class Diagram_graph(object):
     """
     Class Diagram_graph:
         Simple structure created to group the activities information
