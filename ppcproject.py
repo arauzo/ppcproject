@@ -2169,7 +2169,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             dialogoFicheros.add_filter(filtro)
             dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
             resultado = dialogoFicheros.run()
-
+            response = True
             if resultado == gtk.RESPONSE_OK:
                 self.openProject(dialogoFicheros.get_filename())
             elif resultado == gtk.RESPONSE_CANCEL:
