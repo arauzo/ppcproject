@@ -2413,8 +2413,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     
             dialogoFicheros.destroy()
         
-        
-
     def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
