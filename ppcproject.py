@@ -2101,7 +2101,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.box=gtk.VBox()
  
  
-# --- FUNCIONES DIALOGOS ABRIR, GUARDAR Y ADVERTENCIA/ERRORES #
+# --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #
 
     def openProject(self, filename):
         """
@@ -2445,7 +2445,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.modified=0
         self.set_modified(False)
 
-    def on_mnGuardarComo_activate(self, menu_item):
+    def on_SaveAs_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
