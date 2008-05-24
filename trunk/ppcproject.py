@@ -2100,8 +2100,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.vBoxProb.remove(self.box)
             self.box=gtk.VBox()
  
- 
-# --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #
+
 
     def openProject(self, filename):
         """
@@ -2134,34 +2133,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         except IOError :
             self.dialogoError(gettext.gettext('The selected file does not exist')) #xxx very specific message, does not cover all catched exceptions
 
-
-
-
-   
-# --- DIÁLOGOS GUARDAR
-
-    def guardar(self, saveAs=False):
-        if saveAs or self.openFilename=='Unnamed':
-            dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save"),
-                                                   None,
-                                                   gtk.FILE_CHOOSER_ACTION_SAVE,
-                                                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                                   gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-            dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-            resultado = dialogoGuardar.run()
-
-            if resultado == gtk.RESPONSE_OK:
-                self.openFilename=dialogoGuardar.get_filename()
-                self.saveProject(self.openFilename)
-                self.updateWindowTitle()
-                self.set_modified(False)
-                self.modified = 0
-    
-            dialogoGuardar.destroy() 
-        else:
-            self.saveProject(self.openFilename)
-            self.modified = 0
-            
     def saveProject(self, nombre):
         """
         Saves a project in ppcproject format '.prj'
@@ -2177,9 +2148,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         try:
             fescritura=open(nombre,'w')
             pickle.dump(tabla, fescritura)
+
+            # Update interface 
+            self.openFilename=nombre
+            self.updateWindowTitle()
+            self.set_modified(False)
+            self.modified = 0
+
         except IOError :
             self.dialogoError(gettext.gettext('Error saving the file'))    
         fescritura.close()
+
+
+
+ 
+# --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #            
   
     def on_btnSaveRoy_clicked(self, button):
         self.save_graph_image(self.grafoRoy.get_pixbuf())
@@ -2433,31 +2416,34 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
 
     def  on_Save_activate(self, item):
-        # Se comprueba que no haya actividades repetidas
+        # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
-            self.guardar()
-        # Si hay actividades repetidas, se muestra un mensaje de error
+            if self.openFilename=='Unnamed':
+                on_SaveAs_activate(item)
+            else:
+                self.saveProject(self.openFilename)
         else:
-                #print actividadesRepetidas
             self.errorActividadesRepetidas(actividadesRepetidas) 
-
-        self.modified=0
-        self.set_modified(False)
 
     def on_SaveAs_activate(self, menu_item):
-        # Se comprueba que no haya actividades repetidas
+        # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
-            self.guardar(saveAs=True)
-             
-        # Si hay actividades repetidas, se muestra un mensaje de error
+            dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save as"),
+                                                   None,
+                                                   gtk.FILE_CHOOSER_ACTION_SAVE,
+                                                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                                   gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+            dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
+            resultado = dialogoGuardar.run()
+
+            if resultado == gtk.RESPONSE_OK:
+                self.saveProject(self.openFilename)
+            dialogoGuardar.destroy() 
         else:
-            #print actividadesRepetidas
             self.errorActividadesRepetidas(actividadesRepetidas) 
        
-        self.modified=0
-        self.set_modified(False)
 
     def on_Close_activate(self, menu_item):
         if self.closeProject():
