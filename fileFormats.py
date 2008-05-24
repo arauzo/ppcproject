@@ -27,12 +27,24 @@ class ProjectFileFormat(object):
     """
     def filenameExtensions(self):
         """
-        Returns a list of strings with the filename extensions supported by this format
+        Returns a list of strings with the filename extensions (excluding '.') 
+        supported by this format
 
         Implementing this function on subclasses is: compulsory.
         """
         raise Exception("Not implemented")
 
+    def description(self):
+        """
+        Returns a string with the name or description of this format to show on 
+        dialogs
+
+        Implementing this function on subclasses is: recommended.
+        Example string: PPC-Project files (*.prj, *.prj2)
+        """
+        wildcardfiles = ['*.'+e for e in self.filenameExtensions()]
+        return ''.join(['(', ', '.join(wildcardfiles), ')'])
+        
     def canLoad(self):
         """
         Returns if this project format allows to save all data
@@ -77,7 +89,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
     Allows loading PSPlib files
     """
     def filenameExtensions(self):
-        return [".sm"] #xxx revisar otras extensiones...
+        return ["sm"] #xxx revisar otras extensiones...
 
     def load(self, filename):
         """
