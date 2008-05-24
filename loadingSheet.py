@@ -27,7 +27,7 @@ import gobject
 import copy
 import random
 
-class loadingSheet(gtk.HBox):
+class LoadingSheet(gtk.HBox):
     """
     Class loadingSheet
 
@@ -47,8 +47,8 @@ class loadingSheet(gtk.HBox):
     """
     def __init__(self):
         gtk.HBox.__init__(self)
-        self.diagram = loadingSheetDiagram()
-        self.scale = loadingSheetScale()
+        self.diagram = LoadingSheetDiagram()
+        self.scale = LoadingSheetScale()
         
         self.set_homogeneous(False)
         self.pack_start(self.scale, False, False, 0)
@@ -108,7 +108,7 @@ class loadingSheet(gtk.HBox):
         """
         self.diagram.clear()   
 
-class loadingSheetScale(gtk.Layout):
+class LoadingSheetScale(gtk.Layout):
     """    
     Class loadingSheetScale
 
@@ -135,7 +135,7 @@ class loadingSheetScale(gtk.Layout):
         
     def set_greatest(self,widget,greatest):
         """
-        set the greatest value of resources' usage
+        Set the greatest value of resources' usage
 
         """
         self.greatest = greatest
@@ -174,7 +174,7 @@ class loadingSheetScale(gtk.Layout):
             ctx.show_text(str(i))
             
         
-class loadingSheetDiagram(gtk.Layout):
+class LoadingSheetDiagram(gtk.Layout):
     """    
     Class loadingSheetDiagram
 
