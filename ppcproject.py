@@ -2132,52 +2132,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modified = 0
             self.ntbSchedule.show()
         except IOError :
-            # xxx Como gestionamos este error si se carga desde linea de comandos??
             self.dialogoError(gettext.gettext('The selected file does not exist')) #xxx very specific message, does not cover all catched exceptions
 
 
 
-    def abrir(self):
-        """
-        Open dialog asking for file to open project
-        """
-        # Close open project if any
-        closed = self.closeProject()
-
-        if closed:
-            # Open dialog asking for file to open
-            dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
-                                                    None,
-                                                    gtk.FILE_CHOOSER_ACTION_OPEN,
-                                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
-                                                    )
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.prj')
-            filtro.add_pattern('*.txt')
-            filtro.add_pattern('*.sm')
-            filtro.set_name(gettext.gettext("Project files (*.prj, *.txt, *.sm)"))
-            dialogoFicheros.add_filter(filtro)
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.prj')
-            filtro.set_name(gettext.gettext("PPC-Project files (*.prj)"))
-            dialogoFicheros.add_filter(filtro)
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.txt')
-            filtro.set_name(gettext.gettext("Text files (*.txt)"))
-            dialogoFicheros.add_filter(filtro)
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.sm')
-            filtro.set_name(gettext.gettext("PSPLIB files (*.sm)"))
-            dialogoFicheros.add_filter(filtro)
-            dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-            resultado = dialogoFicheros.run()
-            response = True
-            if resultado == gtk.RESPONSE_OK:
-                self.openProject(dialogoFicheros.get_filename())
-            elif resultado == gtk.RESPONSE_CANCEL:
-                pass
-    
-            dialogoFicheros.destroy()
 
    
 # --- DIÁLOGOS GUARDAR
@@ -2433,8 +2391,46 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.ntbSchedule.show()
   
     def on_Open_activate(self, item):
-        """ User ask for open file (from menu or toolbar) """
-        self.abrir()
+        """ User ask for open file (from menu or toolbar)
+        """
+        # Close open project if any
+        closed = self.closeProject()
+
+        if closed:
+            # Open dialog asking for file to open
+            dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
+                                                    None,
+                                                    gtk.FILE_CHOOSER_ACTION_OPEN,
+                                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+                                                    )
+            filtro=gtk.FileFilter()
+            filtro.add_pattern('*.prj')
+            filtro.add_pattern('*.txt')
+            filtro.add_pattern('*.sm')
+            filtro.set_name(gettext.gettext("Project files (*.prj, *.txt, *.sm)"))
+            dialogoFicheros.add_filter(filtro)
+            filtro=gtk.FileFilter()
+            filtro.add_pattern('*.prj')
+            filtro.set_name(gettext.gettext("PPC-Project files (*.prj)"))
+            dialogoFicheros.add_filter(filtro)
+            filtro=gtk.FileFilter()
+            filtro.add_pattern('*.txt')
+            filtro.set_name(gettext.gettext("Text files (*.txt)"))
+            dialogoFicheros.add_filter(filtro)
+            filtro=gtk.FileFilter()
+            filtro.add_pattern('*.sm')
+            filtro.set_name(gettext.gettext("PSPLIB files (*.sm)"))
+            dialogoFicheros.add_filter(filtro)
+            dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
+            resultado = dialogoFicheros.run()
+            if resultado == gtk.RESPONSE_OK:
+                self.openProject(dialogoFicheros.get_filename())
+            elif resultado == gtk.RESPONSE_CANCEL:
+                pass
+    
+            dialogoFicheros.destroy()
+        
+        
 
     def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas
@@ -3665,14 +3661,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.set_schedule(self.schedules[page_num][1])
 
 
+def main(filename=None):
+    app = PPCproject()
+    if filename:
+        app.openProject(filename)
+    gtk.main()   
+
+
 # --- Start running as a program
 if __name__ == '__main__':
-    app = PPCproject()
-
     if   len(sys.argv) == 1:
-        gtk.main()    elif len(sys.argv) == 2:
-        app.openProject(sys.argv[1])
-        gtk.main()   
+        main()
+    elif len(sys.argv) == 2:
+        main(sys.argv[1])
     else:
         print gettext.gettext('Syntax is:')
         print sys.argv[0], '[project_file]'
