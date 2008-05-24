@@ -51,6 +51,9 @@ class Interface(object):
       self.gantt.show_all()
       self.crearTreeViews()
       
+      self._widgets.get_widget('bHerramientas1').show()
+      self.
+      
       # Obtaining the widget of allocation/balance window
       self.rbBalance = self._widgets.get_widget('rbBalance')
       self.btResetSA = self._widgets.get_widget('btnSimAnnealingReset')
