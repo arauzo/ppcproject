@@ -115,8 +115,8 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
     durationAux = duration1
     loadingSheetAux = loadingSheet1
     
-    tempAux = temperature = (nu/-log(phi)) * sch1Evaluated
-    alpha = (minTemperature / temperature) ** (1/maxIteration)
+    tempAux = temperature = (nu / -log(phi)) * sch1Evaluated
+    alpha = (minTemperature / temperature) ** (1 / maxIteration)
     if alpha >= 1:
         return (None,None,None,None,None,None)
     it=0

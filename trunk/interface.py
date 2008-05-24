@@ -102,7 +102,7 @@ class Interface(object):
       
       # Adding the loading sheet to simulated annealing window
       hbLoadingSheet = self._widgets.get_widget('hbox37')
-      self.loadingSheet = loadingSheet.loadingSheet()
+      self.loadingSheet = loadingSheet.LoadingSheet()
       self.loadingSheet.set_cell_width(20)
       hbLoadingSheet.pack_start(self.loadingSheet)
       self.loadingSheet.set_hadjustment(hsbSA.get_adjustment())
@@ -110,7 +110,7 @@ class Interface(object):
       self.ganttSA.diagram.connect("gantt-width-changed", self.loadingSheet.set_width)
       # Adding the loading table to simulated annealing window
       hbLoadingTable = self._widgets.get_widget('hbox30')
-      self.loadingTable = loadingTable.loadingTable()
+      self.loadingTable = loadingTable.LoadingTable()
       self.loadingTable.set_cell_width(20)
       hbLoadingTable.pack_end(self.loadingTable)
       self.loadingTable.set_hadjustment(hsbSA.get_adjustment())
