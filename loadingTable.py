@@ -26,7 +26,7 @@ import gtk.gdk
 import gobject
 import copy
 
-class loadingTable(gtk.HBox):
+class LoadingTable(gtk.HBox):
     """
     Class loadingTable
 
