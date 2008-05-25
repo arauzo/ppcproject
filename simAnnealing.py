@@ -79,7 +79,7 @@ def resources_per_activities(initialAsignation, resources):
      
     return asignation
       
-def simulated_annealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,numIterations):
+def simulated_annealing(asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,numIterations):
     """
     Try to find the best schedule of the project by
         the technique of simulated annealing
@@ -88,7 +88,7 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
                 resources (returned by resourcesAvailability)
                 successors (the prelations of the activities)
                 activities (dictionary with the name of activities and their characteristics)
-                balance (if 0 it will allocate else it will balance)
+                leveling (if 0 it will allocate else it will level)
                 nu (parameter to configure simulated annealing algorithm)
                 phi (parameter to configure simulated annealing algorithm)
                 minTemperature (parameter to configure simulated annealing algorithm)
@@ -109,12 +109,12 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
             del predecessors[a]
 
     # sch1 will store the best plannings
-    schAux = sch1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),balance)
-    sch1Evaluated, loadingSheet1, duration1 = evaluate(sch1,balance,asignation,resources)
+    schAux = sch1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),leveling)
+    sch1Evaluated, loadingSheet1, duration1 = evaluate(sch1,leveling,asignation,resources)
     schAuxEvaluated = sch1Evaluated
     durationAux = duration1
     loadingSheetAux = loadingSheet1
-    
+
     tempAux = temperature = (nu / -log(phi)) * sch1Evaluated
     alpha = (minTemperature / temperature) ** (1 / maxIteration)
     if alpha >= 1:
@@ -124,8 +124,8 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
     
     while temperature > minTemperature and numIterations != 0:
         it += 1
-        sch2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),sch1,balance)
-        sch2Evaluated, loadingSheet2, duration2 = evaluate(sch2,balance,asignation,resources)
+        sch2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),sch1,leveling)
+        sch2Evaluated, loadingSheet2, duration2 = evaluate(sch2,leveling,asignation,resources)
         if sch2Evaluated <= sch1Evaluated:
             loadingSheet1 = loadingSheet2
             duration1 = duration2
@@ -156,7 +156,7 @@ def simulated_annealing(asignation,resources,successors,activities,balance,nu,ph
         return (schAux, schAuxEvaluated, durationAux, alpha, tempAux, it)
 
 
-def generate(asignation,resources,predecessors,activities,balance):
+def generate(asignation,resources,predecessors,activities,leveling):
     """
     Generate a schedule
 
@@ -164,7 +164,7 @@ def generate(asignation,resources,predecessors,activities,balance):
                 resources (returned by resourcesAvailability)
                 predecessors (dictionary with activities and their predecessors)
                 activities (dictionary with the name of activities and their characteristics)
-                balance (if 0 it will allocate else it will balance)
+                leveling (if 0 it will allocate else it will level)
 
     Returned value: sch (planing generated)
     """
@@ -173,11 +173,11 @@ def generate(asignation,resources,predecessors,activities,balance):
     executing = {}
     result = []
    
-    sch = generate_or_modify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
+    sch = generate_or_modify(asignation,resources,predecessors,activities,leveling,executing,result,currentTime)
     return sch
 
 
-def modify(asignation,resources,predecessors,activities,sch1,balance):
+def modify(asignation,resources,predecessors,activities,sch1,leveling):
     """
     Modify a planning
 
@@ -186,7 +186,7 @@ def modify(asignation,resources,predecessors,activities,sch1,balance):
                 predecessors (dictionary with activities and their predecessors)
                 activities (dictionary with the name of activities and their characteristics)
                 sch1 (planning to modify)
-                balance (if 0 it will allocate else it will balance)
+                leveling (if 0 it will allocate else it will level)
 
     Returned value: sch (planning modified)
     """
@@ -203,7 +203,7 @@ def modify(asignation,resources,predecessors,activities,sch1,balance):
             result += [(act,startTime,endTime)]
             if startTime + activities[act][0] > currentTime:
                 executing[act] = startTime + activities[act][0] - currentTime
-                if act in asignation.keys() and balance == 0:
+                if act in asignation.keys() and leveling == 0:
                     for resource,amount in asignation[act]:
                         resources[resource] = float(resources[resource]) - float(amount)
             activities.pop(act) 
@@ -217,16 +217,16 @@ def modify(asignation,resources,predecessors,activities,sch1,balance):
                     if predecessors[a] == []:
                         del predecessors[a] 
       
-    sch = generate_or_modify(asignation,resources,predecessors,activities,balance,executing,result,currentTime)
+    sch = generate_or_modify(asignation,resources,predecessors,activities,leveling,executing,result,currentTime)
     return sch
 
 
-def evaluate(sch,balance,asignation,resources):
+def evaluate(sch,leveling,asignation,resources):
     """
     Evaluate a planning
 
     Parameters: sch (planning to evaluate)
-                balance (if 0 it will consider resoucers)
+                leveling (if 0 it will consider resoucers)
                 asignation (returned by resourcesPerActivity)
                 resources (returned by resourcesAvailability)
                 
@@ -244,9 +244,9 @@ def evaluate(sch,balance,asignation,resources):
             duration = endTime
     
     loadingSheet = calculate_loading_sheet(sch, resources, asignation, duration)
-    if balance == 0: # if allocate
+    if leveling == 0: # if allocate
         return (duration, loadingSheet, duration)  
-    else: #if balance
+    else: #if leveling
         variance = calculate_variance(resources,asignation,duration,loadingSheet) 
         return (variance, loadingSheet, duration)
 
@@ -341,7 +341,7 @@ def calculate_variance(resources,asignation,duration, loadingSheet):
     return finalVariance / len(resources)
          
 
-def generate_or_modify(asignation,resources,predecessors,activities,balance,executing,result,currentTime):
+def generate_or_modify(asignation,resources,predecessors,activities,leveling,executing,result,currentTime):
     """
     Generate or modify a planning.
     It depends on currentTime
@@ -350,7 +350,7 @@ def generate_or_modify(asignation,resources,predecessors,activities,balance,exec
                 resources (returned by resourcesAvailability)
                 predecessors (dictionary with activities and their predecessors)
                 activities (dictionary with the name of activities and their characteristics)
-                balance (if 0 it will allocate else it will balance)
+                leveling (if 0 it will allocate else it will level)
                 possibles (dictionary of the activities which can execute at currentTime)
                 executing (dictionary of the activities which are executing at currentTime)
                 result (planning of the project up to currentTime)
@@ -373,8 +373,8 @@ def generate_or_modify(asignation,resources,predecessors,activities,balance,exec
                 possibles[a] = activities.pop(a)
       
         if possibles != {}:           
-            # If it balance, pop the activities with maximum time to start = currentTime 
-            if balance == 1:
+            # If it level, pop the activities with maximum time to start = currentTime 
+            if leveling == 1:
                 for act in possibles.copy():
                     if possibles[act][1] == currentTime:
                         #print 'se ejecuta indiscutiblemente: ',act                     
@@ -406,7 +406,7 @@ def generate_or_modify(asignation,resources,predecessors,activities,balance,exec
                 act = possiblesCopy.pop(key)
                 #print 'actividad: ',act
                 # If resources are required            
-                if key in asignation.keys() and balance == 0:
+                if key in asignation.keys() and leveling == 0:
                     for resource,amount in asignation[key]:
                         # if resource required > resource available
                         if float(amount) > float(resources[resource]):
@@ -430,7 +430,7 @@ def generate_or_modify(asignation,resources,predecessors,activities,balance,exec
                 #print 'resultado: ',result
         
         time = min(executing.values())
-        if balance == 0:
+        if leveling == 0:
             currentTime += time
         else:
             if time <= 1:
@@ -445,7 +445,7 @@ def generate_or_modify(asignation,resources,predecessors,activities,balance,exec
             if executing[a] == 0:
                 del executing[a]
                 # Once one activity finish, update the resources' availability
-                if a in asignation.keys() and balance == 0:
+                if a in asignation.keys() and leveling == 0:
                     for resource,amount in asignation[a]:
                         if float(resources[resource]) == 0:
                             resourcesUsedUp -= 1

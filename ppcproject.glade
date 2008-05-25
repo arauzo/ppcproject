@@ -218,7 +218,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="mnSimAnnealing">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Balance or Allocation</property>
+                        <property name="label" translatable="yes">Leveling or Allocation</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_mnSimAnnealing_activate"/>
                       </widget>
@@ -557,42 +557,41 @@
                         <property name="column_spacing">10</property>
                         <property name="row_spacing">10</property>
                         <child>
-                          <widget class="GtkEntry" id="mediaSim">
+                          <widget class="GtkLabel" id="lblMediaSim">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="editable">False</property>
+                            <property name="yalign">0</property>
+                            <property name="label" translatable="yes">Average</property>
+                            <property name="justify">GTK_JUSTIFY_CENTER</property>
                           </widget>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
                             <property name="top_attach">1</property>
                             <property name="bottom_attach">2</property>
+                            <property name="x_options"></property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkScrolledWindow" id="scrolledwindow19">
+                          <widget class="GtkLabel" id="lblIterTotalesSim">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                            <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
-                            <child>
-                              <widget class="GtkViewport" id="viewport3">
-                                <property name="visible">True</property>
-                                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                                <child>
-                                  <widget class="GtkEntry" id="dTipicaSim">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="editable">False</property>
-                                  </widget>
-                                </child>
-                              </widget>
-                            </child>
+                            <property name="yalign">0</property>
+                            <property name="label" translatable="yes">Total Iterations</property>
+                            <property name="justify">GTK_JUSTIFY_CENTER</property>
                           </widget>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options"></property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="lblDesvSim">
+                            <property name="visible">True</property>
+                            <property name="yalign">0</property>
+                            <property name="label" translatable="yes">Typical Deviation</property>
+                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                          </widget>
+                          <packing>
                             <property name="x_options"></property>
                             <property name="y_options"></property>
                           </packing>
@@ -627,42 +626,43 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="lblDesvSim">
+                          <widget class="GtkScrolledWindow" id="scrolledwindow19">
                             <property name="visible">True</property>
-                            <property name="yalign">0</property>
-                            <property name="label" translatable="yes">Typical Deviation</property>
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                            <property name="can_focus">True</property>
+                            <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+                            <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                            <child>
+                              <widget class="GtkViewport" id="viewport3">
+                                <property name="visible">True</property>
+                                <property name="shadow_type">GTK_SHADOW_NONE</property>
+                                <child>
+                                  <widget class="GtkEntry" id="dTipicaSim">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="editable">False</property>
+                                  </widget>
+                                </child>
+                              </widget>
+                            </child>
                           </widget>
                           <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
                             <property name="x_options"></property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="lblIterTotalesSim">
+                          <widget class="GtkEntry" id="mediaSim">
                             <property name="visible">True</property>
-                            <property name="yalign">0</property>
-                            <property name="label" translatable="yes">Total Iterations</property>
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
                           </widget>
                           <packing>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                            <property name="x_options"></property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="lblMediaSim">
-                            <property name="visible">True</property>
-                            <property name="yalign">0</property>
-                            <property name="label" translatable="yes">Average</property>
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
-                          </widget>
-                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
                             <property name="top_attach">1</property>
                             <property name="bottom_attach">2</property>
-                            <property name="x_options"></property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -907,17 +907,53 @@
                     <property name="row_spacing">10</property>
                     <property name="homogeneous">True</property>
                     <child>
-                      <widget class="GtkScrolledWindow" id="scrolledwindow18">
+                      <widget class="GtkLabel" id="lblActTotales">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">TOTAL ACTIVITIES</property>
+                      </widget>
+                      <packing>
+                        <property name="x_options"></property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="lblFicticias">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">DUMMY</property>
+                        <property name="justify">GTK_JUSTIFY_CENTER</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="x_options"></property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="lblNodos">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">NODES</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                        <property name="x_options"></property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkScrolledWindow" id="scrolledwindow16">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="border_width">5</property>
                         <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
                         <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
                         <child>
-                          <widget class="GtkViewport" id="viewport7">
+                          <widget class="GtkViewport" id="viewport5">
                             <property name="visible">True</property>
                             <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <child>
-                              <widget class="GtkEntry" id="tvNodos">
+                              <widget class="GtkEntry" id="tvActividades">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
@@ -927,8 +963,6 @@
                         </child>
                       </widget>
                       <packing>
-                        <property name="left_attach">2</property>
-                        <property name="right_attach">3</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                         <property name="x_options"></property>
@@ -965,18 +999,17 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkScrolledWindow" id="scrolledwindow16">
+                      <widget class="GtkScrolledWindow" id="scrolledwindow18">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="border_width">5</property>
                         <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
                         <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
                         <child>
-                          <widget class="GtkViewport" id="viewport5">
+                          <widget class="GtkViewport" id="viewport7">
                             <property name="visible">True</property>
                             <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <child>
-                              <widget class="GtkEntry" id="tvActividades">
+                              <widget class="GtkEntry" id="tvNodos">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="editable">False</property>
@@ -986,43 +1019,10 @@
                         </child>
                       </widget>
                       <packing>
-                        <property name="top_attach">1</property>
-                        <property name="bottom_attach">2</property>
-                        <property name="x_options"></property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="lblNodos">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">NODES</property>
-                      </widget>
-                      <packing>
                         <property name="left_attach">2</property>
                         <property name="right_attach">3</property>
-                        <property name="x_options"></property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="lblFicticias">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">DUMMY</property>
-                        <property name="justify">GTK_JUSTIFY_CENTER</property>
-                      </widget>
-                      <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
-                        <property name="x_options"></property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="lblActTotales">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">TOTAL ACTIVITIES</property>
-                      </widget>
-                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
                         <property name="x_options"></property>
                         <property name="y_options"></property>
                       </packing>
@@ -1213,28 +1213,23 @@
                     <property name="column_spacing">6</property>
                     <property name="row_spacing">6</property>
                     <child>
-                      <widget class="GtkScrolledWindow" id="scrolledwindow30">
+                      <widget class="GtkLabel" id="label36">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                        <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
-                        <child>
-                          <widget class="GtkViewport" id="viewport11">
-                            <property name="visible">True</property>
-                            <property name="shadow_type">GTK_SHADOW_NONE</property>
-                            <child>
-                              <widget class="GtkEntry" id="mediaProb">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="editable">False</property>
-                              </widget>
-                            </child>
-                          </widget>
-                        </child>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Typical Deviation</property>
                       </widget>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
+                        <property name="x_options"></property>
+                        <property name="y_options"></property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="label37">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Average</property>
+                      </widget>
+                      <packing>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                         <property name="x_options"></property>
@@ -1269,25 +1264,30 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label37">
+                      <widget class="GtkScrolledWindow" id="scrolledwindow30">
                         <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Average</property>
+                        <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+                        <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                        <child>
+                          <widget class="GtkViewport" id="viewport11">
+                            <property name="visible">True</property>
+                            <property name="shadow_type">GTK_SHADOW_NONE</property>
+                            <child>
+                              <widget class="GtkEntry" id="mediaProb">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="editable">False</property>
+                              </widget>
+                            </child>
+                          </widget>
+                        </child>
                       </widget>
                       <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
-                        <property name="x_options"></property>
-                        <property name="y_options"></property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label36">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Typical Deviation</property>
-                      </widget>
-                      <packing>
                         <property name="x_options"></property>
                         <property name="y_options"></property>
                       </packing>
@@ -1700,7 +1700,7 @@ Alejandro Villagrán Marín
   <widget class="GtkWindow" id="wndSimAnnealing">
     <property name="has_focus">True</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-    <property name="title" translatable="yes">Ballance or Allocation</property>
+    <property name="title" translatable="yes">Leveling or Allocation</property>
     <property name="window_position">GTK_WIN_POS_CENTER</property>
     <property name="default_width">800</property>
     <property name="default_height">500</property>
@@ -1719,15 +1719,15 @@ Alejandro Villagrán Marín
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <child>
-                  <widget class="GtkRadioButton" id="rbBalance">
+                  <widget class="GtkRadioButton" id="rbLeveling">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Balance</property>
+                    <property name="label" translatable="yes">Leveling</property>
                     <property name="use_underline">True</property>
                     <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <signal name="pressed" handler="on_rbBalance_pressed"/>
+                    <signal name="pressed" handler="on_rbLeveling_pressed"/>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -1767,7 +1767,7 @@ Alejandro Villagrán Marín
                     <property name="response_id">0</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <property name="group">rbBalance</property>
+                    <property name="group">rbLeveling</property>
                     <signal name="pressed" handler="on_rbAllocation_pressed"/>
                   </widget>
                   <packing>

@@ -105,7 +105,7 @@ class PPCproject(object):
         self.dAyuda=self._widgets.get_widget('dAyuda')
         self.bHerramientas=self._widgets.get_widget('bHerramientas1')
 
-        self.rbBalance = self.interface.rbBalance
+        self.rbLeveling = self.interface.rbLeveling
         self.btResetSA = self.interface.btResetSA
         self.btSaveSA = self.interface.btSaveSA
         self.entryResultSA = self.interface.entryResultSA
@@ -2659,9 +2659,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         self.sbSlackSA.set_sensitive(False)
 
-    def on_rbBalance_pressed (self, menu_item):
+    def on_rbLeveling_pressed (self, menu_item):
         """
-        Choose balance
+        Choose leveling
 
         Parameters: menu_item
         
@@ -2737,12 +2737,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 return False
             rest[a[1]] = [float(a[6])]
 
-        if self.rbBalance.get_active():
-            balance = 1
+        if self.rbLeveling.get_active():
+            leveling = 1
         else:
-            balance = 0
+            leveling = 0
         
-        if balance == 1 and self.recurso == []:
+        if leveling == 1 and self.recurso == []:
             self.dialogoError(gettext.gettext('There are not resources introduced.'))
             return False
         # Create main dictionaries
@@ -2762,7 +2762,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
-        self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+        self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
         # If no error
         if self.optimumSchedule != None:
             # Load gantt diagram
@@ -2773,7 +2773,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.ganttSA.add_activity(a[1],[],float(a[6]),0,0,'Activity: ' + a[1])
             # Execute the algorithm as many times as the user introduced
             for a in range(0,int(times - 1)):
-                schedule, schEvaluated, schDuration, schAlpha, schTemp, schIt = simulated_annealing      (asignation,resources,successors,activities,balance,nu,phi,minTemperature,maxIteration,noImproveIter)
+                schedule, schEvaluated, schDuration, schAlpha, schTemp, schIt = simulated_annealing      (asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
                 # Save the best schedule
                 if optSchEvaluated > schEvaluated2:
                     self.optimumSchedule = schedule
