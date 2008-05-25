@@ -24,6 +24,10 @@
 import gtk
 import gettext
 
+class InvalidFilFormatException(Exception):
+    pass
+        Implementing this function on subclasses is: optional.
+
 class ProjectFileFormat(object):
     """
     Base class for general project file format loader and saver
@@ -66,17 +70,17 @@ class ProjectFileFormat(object):
 
     def load(self, filename):
         """
-        Returns project data: (activities, schedules, resources, resourceAsignaments)
-           xxx Describe here complete data structure of each.
+        Return: project data=(activities, schedules, resources, resourceAsignaments)
+           xxx Describe here complete data structure of each part.
 
+        Raises: InvalidFileFormatException if data in file does not follow the format
         Implementing this function on subclasses is: optional.
-        Raises exception xxxException if data in file does not follow the format
         """
         raise Exception('Virtual method not implemented (base class reached)')
 
     def canSave(self):
         """
-        Returns if this project format allows to save all data
+        Return: if this project format allows to save all data
 
         Implementing this function on subclasses is: not appropiate.
         """
@@ -170,13 +174,27 @@ class PPCProjectFileFormat(ProjectFileFormat):
         """
         Load project data (see base class)
         """
-        pass # xxx 
+        f = open(filename, 'rb')
+        try:
+            data = pickle.load(f)
+            activities, schedules, resources, resourceAsignaments = data
+        except (UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
+            raise InvalidFileFormatException('Unpickle failed')
+
+        # xxx Check activities, schedules, resources, resourceAsignaments have the right data structure
+        # if len(activities) != 6 and ... :
+        #     raise InvalidFileFormatException('Incorrect data on file')
+
+        f.close()
+        return data
 
     def save(self, projectData, filename):
         """
         Saves project data (see base class)
         """
-        pass #xxx
+        f = open(filename, 'wb')
+        pickle.dump(projectData, f, protocol=1)
+        f.close()
 
 
 class TxtProjectFileFormat(ProjectFileFormat):
@@ -189,7 +207,7 @@ class TxtProjectFileFormat(ProjectFileFormat):
     def load(self, filename):
         """
         Lectura de un fichero con extensión '.txt' ¿qué formato era este y para que??
-        xxx Funcion incorrecta hay que adaptarla para que devuelve lo que debe (load)
+        xxx Funcion incorrecta hay que adaptarla para que devuelva lo que debe (load)
         """
         f = open(filename)
         tabla = []
