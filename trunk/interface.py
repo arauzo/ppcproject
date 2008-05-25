@@ -53,8 +53,8 @@ class Interface(object):
       
       self._widgets.get_widget('bHerramientas1').show()
       
-      # Obtaining the widget of allocation/balance window
-      self.rbBalance = self._widgets.get_widget('rbBalance')
+      # Obtaining the widget of allocation/leveling window
+      self.rbLeveling = self._widgets.get_widget('rbLeveling')
       self.btResetSA = self._widgets.get_widget('btnSimAnnealingReset')
       self.btSaveSA = self._widgets.get_widget('btnSaveSA')
       self.entryResultSA = self._widgets.get_widget ('entryResult')
