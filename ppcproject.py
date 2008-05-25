@@ -2389,36 +2389,40 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         closed = self.closeProject()
 
         if closed:
-            # Open dialog asking for file to open
+            # Dialog asking for file to open
             dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
                                                     None,
                                                     gtk.FILE_CHOOSER_ACTION_OPEN,
                                                     (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
                                                     )
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.prj')
-            filtro.add_pattern('*.txt')
-            filtro.add_pattern('*.sm')
-            filtro.set_name(gettext.gettext("Project files (*.prj, *.txt, *.sm)"))
-            dialogoFicheros.add_filter(filtro)
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.prj')
-            filtro.set_name(gettext.gettext("PPC-Project files (*.prj)"))
-            dialogoFicheros.add_filter(filtro)
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.txt')
-            filtro.set_name(gettext.gettext("Text files (*.txt)"))
-            dialogoFicheros.add_filter(filtro)
-            filtro=gtk.FileFilter()
-            filtro.add_pattern('*.sm')
-            filtro.set_name(gettext.gettext("PSPLIB files (*.sm)"))
-            dialogoFicheros.add_filter(filtro)
+            # Creates a filter for all supported file formats
+            ffilter = gtk.FileFilter()
+            pats = []
+            for f in self.fileFormats:
+                for pat in f.filenamePatterns():
+                    pats.append(pat)
+                    ffilter.add_pattern(pat)
+            ffilter.set_name(''.join(['All project files (', ', '.join(pats), ')']))
+            dialogoFicheros.add_filter(ffilter)                 
+
+            # Creates a filter for each supported file format
+            for f in self.fileFormats:
+                ffilter = gtk.FileFilter()
+                for pat in f.filenamePatterns():
+                    ffilter.add_pattern(pat)
+                ffilter.set_name(f.description())
+                dialogoFicheros.add_filter(ffilter)                 
+
+            # Creates the filter allowing to see all files            
+            ffilter = gtk.FileFilter()
+            ffilter.add_pattern('*')
+            ffilter.set_name('All files')
+            dialogoFicheros.add_filter(ffilter)                 
+
             dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
             resultado = dialogoFicheros.run()
             if resultado == gtk.RESPONSE_OK:
                 self.openProject(dialogoFicheros.get_filename())
-            elif resultado == gtk.RESPONSE_CANCEL:
-                pass
     
             dialogoFicheros.destroy()
         

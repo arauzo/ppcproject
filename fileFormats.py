@@ -29,7 +29,8 @@ class ProjectFileFormat(object):
     Base class for general project file format loader and saver
     """
     def __init__(self):
-        """Initializes self.filenameExtensions as a list of strings with 
+        """
+        Initializes self.filenameExtensions as a list of strings with 
         the filename extensions (excluding '.') supported by this format
         """
         self.filenameExtensions = []  # Example: ['sm', 'prj']
@@ -37,6 +38,7 @@ class ProjectFileFormat(object):
 
     def filenamePatterns(self):
         """
+        Returns a list of the wildcard pattern that matches files on this format.
 
         Implementing this function on subclasses is: not appropiate.
         """
