@@ -437,7 +437,10 @@ def get_activities_start_time(activities, durations, prelations, minimum = True,
         for activity in activities:
             if activity not in descendants:
                 closed_list.append(activity)
-                start_time[activity] = previous_times[activity]
+                try:
+                    start_time[activity] = previous_times[activity]
+                except:
+                    start_time[activity] = 0
         open_list.append(root_activity)
     while open_list != []:
         chosen = open_list.pop()
