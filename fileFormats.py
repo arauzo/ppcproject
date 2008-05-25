@@ -25,8 +25,10 @@ import gtk
 import gettext
 
 class InvalidFilFormatException(Exception):
+    """
+    Raised when a file does not contain data in the expected format
+    """
     pass
-        Implementing this function on subclasses is: optional.
 
 class ProjectFileFormat(object):
     """
