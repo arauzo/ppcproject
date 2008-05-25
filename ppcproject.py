@@ -56,7 +56,7 @@ gtk.glade.textdomain(APP)
 import pert
 import graph
 import interface
-from fileFormats import leerPSPLIB, guardarCsv, leerTxt
+import fileFormats
 from zaderenko import mZad, early, last
 from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
@@ -153,6 +153,15 @@ class PPCproject(object):
         self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
         self._widgets.get_widget('vistaListaRec').connect('button-press-event', self.treeview_menu_invoked, self._widgets.get_widget('vistaListaRec'))
         self._widgets.get_widget('vistaListaAR').connect('button-press-event', self.treeview_menu_invoked, self._widgets.get_widget('vistaListaAR'))
+
+        # File format loaders and savers
+        #  (the order is used to try when loading unknown type files)
+        self.fileFormats = [
+            fileFormats.PPCProjectFileFormat(),
+            fileFormats.PPCProjectOLDFileFormat(),
+            fileFormats.PSPProjectFileFormat(),
+        ]
+
     def cbtreeview (self, container, widget):
         """
           xxx lacks comment
@@ -2115,11 +2124,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.cargaDatos(tabla)
             elif filename[-3:] == '.sm':  
                 # Se lee el fichero y se extraen los datos necesarios 
-                prelaciones, rec, asig=leerPSPLIB(flectura)   
+                prelaciones, rec, asig = fileFormats.leerPSPLIB(flectura)   
                 # Se cargan los datos extraidos en las listas correspondientes
                 self.cargarPSPLIB(prelaciones, rec, asig)       
             else: # Fichero de texto
-                tabla=leerTxt(flectura)
+                tabla=fileFormats.leerTxt(flectura)
                 self.cargarTxt(tabla)
             flectura.close()
 
@@ -3442,7 +3451,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         simulacionCsv = simulation.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
         
         # Se muestra el diálogo para salvar el archivo
-        guardarCsv(simulacionCsv, self)
+        fileFormats.guardarCsv(simulacionCsv, self)
   
   
     def on_wndSimulacion_delete_event(self, ventana, evento):
@@ -3576,7 +3585,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         pathsInCSV = graph.royPaths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
         
         # Se muestra el diálogo para salvar el archivo
-        guardarCsv(pathsInCSV, self) 
+        fileFormats.guardarCsv(pathsInCSV, self) 
   
     def on_wndCaminos_delete_event(self, ventana, evento):
         """

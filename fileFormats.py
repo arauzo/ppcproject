@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Importing files
+# Load, Save, Import and Export files
+#  Classes here should deal with data storing and recovering. They should
+#  not have anything to do with graphical or text user interface (filenames,
+#  and options should be received by parameter).
 # -----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in
@@ -25,14 +28,19 @@ class ProjectFileFormat(object):
     """
     Base class for general project file format loader and saver
     """
-    def filenameExtensions(self):
+    def __init__(self):
+        """Initializes self.filenameExtensions as a list of strings with 
+        the filename extensions (excluding '.') supported by this format
         """
-        Returns a list of strings with the filename extensions (excluding '.') 
-        supported by this format
+        self.filenameExtensions = []  # Example: ['sm', 'prj']
+        raise Exception('Virtual class can not be instantiated')
 
-        Implementing this function on subclasses is: compulsory.
+    def filenamePatterns(self):
         """
-        raise Exception("Not implemented")
+
+        Implementing this function on subclasses is: not appropiate.
+        """
+        return ['*.'+e for e in self.filenameExtensions]
 
     def description(self):
         """
@@ -40,10 +48,9 @@ class ProjectFileFormat(object):
         dialogs
 
         Implementing this function on subclasses is: recommended.
-        Example string: PPC-Project files (*.prj, *.prj2)
+        Example string: 'PPC-Project files (*.prj, *.prj2)'
         """
-        wildcardfiles = ['*.'+e for e in self.filenameExtensions()]
-        return ''.join(['(', ', '.join(wildcardfiles), ')'])
+        return ''.join(['(', ', '.join(self.filenamePatterns()), ')'])
         
     def canLoad(self):
         """
@@ -58,10 +65,11 @@ class ProjectFileFormat(object):
     def load(self, filename):
         """
         Returns project data: (activities, schedules, resources, resourceAsignaments)
+           xxx Describe here complete data structure of each.
 
         Implementing this function on subclasses is: optional.
         """
-        raise Exception("Not implemented")
+        raise Exception('Virtual method not implemented (base class reached)')
 
     def canSave(self):
         """
@@ -75,22 +83,24 @@ class ProjectFileFormat(object):
         
     def save(self, projectData, filename):
         """
-        project data: (activities, schedules, resources, resourceAsignaments)
+        project data: exactly the same structure as load method: 
+          (activities, schedules, resources, resourceAsignaments)
+          See load method for details.
         filename: path and filename to save (should include extension)
         Returns: None
 
         Implementing this function on subclasses is: optional.
         """
-        raise Exception("Not implemented")
+        raise Exception('Virtual method not implemented (base class reached)')
 
 
 class PSPProjectFileFormat(ProjectFileFormat):
     """
     Allows loading PSPlib files
     """
-    def filenameExtensions(self):
-        return ["sm"] #xxx revisar otras extensiones...
-
+    def __init__(self):
+        self.filenameExtensions = ['sm']
+        
     def load(self, filename):
         """
         Load project data (see base class)
@@ -136,8 +146,8 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
     (está a drede en español ya que esta clase debe ser eliminada cuando 
     se consolide el formato nuevo (convirtamos los ficheros útiles))
     """
-    def filenameExtensions(self):
-        return [".prj"]
+    def __init__(self):
+        self.filenameExtensions = ['prj']
 
     def load(self, filename):
         """
@@ -150,8 +160,8 @@ class PPCProjectFileFormat(ProjectFileFormat):
     """
     New project file format (xxx to define)
     """
-    def filenameExtensions(self):
-        return [".prj"]
+    def __init__(self):
+        self.filenameExtensions = ['prj']
 
     def load(self, filename):
         """
