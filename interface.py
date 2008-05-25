@@ -429,7 +429,10 @@ class Interface(object):
        if activity != "":
            for row in self.modeloAR:
                if row[0] == activity:
-                   text += row[1] + ": " + row[2] + "; " 
+                   try:
+                       text += row[1] + ": " + row[2] + "; "
+                   except:
+                       pass
        cell_renderer.set_property('text', text)
        return
 
