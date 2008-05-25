@@ -70,6 +70,7 @@ class ProjectFileFormat(object):
            xxx Describe here complete data structure of each.
 
         Implementing this function on subclasses is: optional.
+        Raises exception xxxException if data in file does not follow the format
         """
         raise Exception('Virtual method not implemented (base class reached)')
 
@@ -171,6 +172,37 @@ class PPCProjectFileFormat(ProjectFileFormat):
         """
         pass # xxx 
 
+    def save(self, projectData, filename):
+        """
+        Saves project data (see base class)
+        """
+        pass #xxx
+
+
+class TxtProjectFileFormat(ProjectFileFormat):
+    """
+    New project file format (xxx to define)
+    """
+    def __init__(self):
+        self.filenameExtensions = ['txt']
+
+    def load(self, filename):
+        """
+        Lectura de un fichero con extensión '.txt' ¿qué formato era este y para que??
+        xxx Funcion incorrecta hay que adaptarla para que devuelve lo que debe (load)
+        """
+        f = open(filename)
+        tabla = []
+        l = f.readline()
+        while l:
+            linea = l.split('\t')
+            linea[1] = linea[1].split(',')
+            tabla.append(linea)
+            l = f.readline()
+
+        l = f.readline()
+
+        return tabla
 
 
 
@@ -209,7 +241,7 @@ def guardarCsv(texto, principal):
 
 def leerPSPLIB(f):
     """
-    xxx To be removed
+     xxx To be removed (code copied to class PSPlibFileFormat)
      Lectura de un proyecto de la librería de proyectos PSPLIB   
 
      Parámetros: f (fichero) 
@@ -254,27 +286,29 @@ def leerPSPLIB(f):
 
     return (prelaciones, rec, asig)
 
+    def leerTxt(f):
+        """
+         xxx To be removed (code copied to class TxtProjectFileFormat)
+         Lectura de un fichero con extensión '.txt'
 
-def leerTxt(f):
-    """
-     Lectura de un fichero con extensión '.txt'
+         Parámetros: f (fichero)
 
-     Parámetros: f (fichero)
+         Valor de retorno: tabla (datos leidos)
+        """
 
-     Valor de retorno: tabla (datos leidos)
-    """
+        tabla = []
+        l = f.readline()
+        while l:
+            linea = l.split('\t')
+            linea[1] = linea[1].split(',')
+            tabla.append(linea)
+            l = f.readline()
 
-    tabla = []
-    l = f.readline()
-    while l:
-        linea = l.split('\t')
-        linea[1] = linea[1].split(',')
-        tabla.append(linea)
         l = f.readline()
 
-    l = f.readline()
+        return tabla
 
-    return tabla
+
 
 # --- Start running as a program
 if __name__ == '__main__':
