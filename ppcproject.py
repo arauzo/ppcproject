@@ -2115,6 +2115,35 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Open a project file given by filename
         """
+        # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
+#        try:
+#            # Tries to load file with formats that match its extension in format order
+#            data = None
+#            extension = filename[filename.rfind('.')+1:]
+#            for format in self.fileFormats:
+#                if extension in format.filenameExtensions:
+#                    try:
+#                        data = format.load(filename)
+#                        break
+#                    except xxxException:
+#                        pass
+
+#            # if not data:
+#            # xxx Should we try here to load files in any format independently of their 
+#            # extension. It would the same previous code without the 'if extension'
+
+#            if data:
+#                activities, schedules, resources, resourceAsignaments = data
+#                # xxx Update model data
+#                # xxx Ask for interface update
+#            else:
+#                self.dialogoError(gettext.gettext('Error reading file:') + filename 
+#                      + ' ' + gettext.gettext('Unknown format')) 
+
+        except IOError:
+            self.dialogoError(gettext.gettext('Error reading file:') + filename) 
+        
+
         try: 
             flectura=open(filename,'r') 
             # Se cargan los datos del fichero 
