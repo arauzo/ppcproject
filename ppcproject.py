@@ -1758,34 +1758,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.vCaminos.show()
             widget=self._widgets.get_widget('tvCaminos')
             self.mostrarTextView(widget, camino)
-#     RECUROS NECESARIOS POR ACTIVIDAD         #
-
-    def asignarRecursos(self):
-        """
-         Acción usuario para acceder a la ventana de 
-                  'recursos necesarios por actividad'
-
-         Parámetros: -
-
-         Valor de retorno: - 
-         Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
-        """
-        # Se comprueba que se hayan introducido actividades
-        if self.actividad == []:
-            self.dialogoError(gettext.gettext('No activities introduced'))
- 
-        # Se comprueba que se hayan introducido recursos
-        elif self.recurso == []:
-            self.dialogoError(gettext.gettext('No resources introduced'))
-           
-        # Si todo es correcto, se accede a la ventana con normalidad
-        else:
-            if self.asignacion==[]:
-                self.modeloAR.append()
-            self.vAsignarRec.show()
-
-
-         
 #              SIMULACIÓN                      
 
     def simulacion(self, n):
@@ -2526,8 +2498,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # Action menu actions                 
 
     def on_mnCrearRecursos_activate(self, menu_item):
-        if self.recurso==[]:
-            self.modeloR.append()
         self.vRecursos.show()
 
     def on_mnGrafoRoy_activate(self, menu_item):
@@ -3515,8 +3485,20 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Parámetros: boton (botón clickeado)
   
         Valor de retorno: -
+        
+        Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
         """
-        self.asignarRecursos()
+        # Se comprueba que se hayan introducido actividades
+        if self.actividad == []:
+            self.dialogoError(gettext.gettext('No activities introduced'))
+ 
+        # Se comprueba que se hayan introducido recursos
+        elif self.recurso == []:
+            self.dialogoError(gettext.gettext('No resources introduced'))
+           
+        # Si todo es correcto, se accede a la ventana con normalidad
+        else:
+            self.vAsignarRec.show()
 
         
     def on_wndRecursos_delete_event(self, ventana, evento):
