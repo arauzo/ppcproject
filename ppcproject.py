@@ -2140,8 +2140,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 #                self.dialogoError(gettext.gettext('Error reading file:') + filename 
 #                      + ' ' + gettext.gettext('Unknown format')) 
 
-        except IOError:
-            self.dialogoError(gettext.gettext('Error reading file:') + filename) 
+#        except IOError:
+#            self.dialogoError(gettext.gettext('Error reading file:') + filename) 
         
 
         try: 
