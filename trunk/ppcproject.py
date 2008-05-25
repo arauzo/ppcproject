@@ -257,6 +257,10 @@ class PPCproject(object):
         cont=1
         self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
         self.modeloAR.append()
+        #Minimum schedule
+        start_times = graph.get_activities_start_time([], [], [], True)
+        self.add_schedule(gettext.gettext("Min"), start_times)
+        self.set_schedule(start_times)
   
     def col_edited_cb( self, renderer, path, new_text, modelo, n):
         """
