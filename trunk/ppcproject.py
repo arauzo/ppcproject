@@ -2151,6 +2151,25 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Saves a project in ppcproject format '.prj'
         """
+#        # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
+#        
+#        # xxx Here extension should be checked to choose the save format
+#        # by now we suppose it is .prj
+#        if nombre[-4:] != '.prj':
+#            nombre = nombre + '.prj'
+
+#        format = PPCProjectFileFormat()
+#        # xxx Here data should be prepared to be stored
+#        try:
+#            format.save((activities, schedules, resources, resourceAsignaments), nombre)
+#            # Update interface 
+#            self.openFilename=nombre
+#            self.updateWindowTitle()
+#            self.set_modified(False)
+#            self.modified = 0
+#        except IOError :
+#            self.dialogoError(gettext.gettext('Error saving the file'))    
+
         if nombre[-4:] != '.prj':
             nombre = nombre + '.prj'
 
