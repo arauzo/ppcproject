@@ -398,7 +398,7 @@ class PPCproject(object):
             if self.modelo[path][n]=='':
                 if n==2:
                     self.actividad[int(path)][2]=[]
-                    self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.actString2actList(self.modelo[path][2]))
+                    self.gantt.set_activity_prelations(self.actividad[int(path)][1], [])
                     gantt_modified = True
                 else:
                     self.actividad[int(path)][n]=self.modelo[path][n]
@@ -464,25 +464,7 @@ class PPCproject(object):
                 # Si no es ningún caso de los anteriores, se actualiza normalmente
                 else:
                     self.actividad[int(path)][n]=self.modelo[path][n]
-
-            if gantt_modified == True:
-                act_list = []
-                dur_dic = {}
-                pre_dic = {}
-                for i in range(len(self.actividad)):
-                    act_list.append(self.actividad[i][1])
-                    dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
-                    pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-                if n == 9:
-                    self.schedules[self.ntbSchedule.get_current_page()][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
-                else:
-                    self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1], modelo[path][1])
-                    for index in range(1, len(self.schedules)):
-                        self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False, self.schedules[index][1], modelo[path][1])
-                self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
-            #print self.actividad, 'ya modificada'
-   
-   
+ 
         # Recursos 
         elif modelo == self.modeloR:
             if n == 0:
@@ -512,6 +494,23 @@ class PPCproject(object):
             self.asignacion[int(path)][n] = self.modeloAR[path][n]
    
             #print self.asignacion
+        if gantt_modified == True:
+            act_list = []
+            dur_dic = {}
+            pre_dic = {}
+            for i in range(len(self.actividad)):
+                act_list.append(self.actividad[i][1])
+                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
+                pre_dic[self.actividad[i][1]] = self.actividad[i][2]
+            if n == 9:
+                self.schedules[self.ntbSchedule.get_current_page()][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
+            elif n == 2:
+                self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1])
+            else:
+                self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1], modelo[path][1])
+                for index in range(1, len(self.schedules)):
+                    self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False, self.schedules[index][1], modelo[path][1])
+            self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
    
    
     def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
@@ -559,9 +558,8 @@ class PPCproject(object):
 
         # Se pasa el nuevo texto a una lista
         modificacion=self.actString2actList(new_text)
-        #print modificacion, 'modificacion'
-       
-        if modificacion==[]:  # Si no se introduce texto (estamos borrando todas las siguientes)
+        #print modificacion, 'modificacion'
+        if modificacion==[""]:  # Si no se introduce texto (estamos borrando todas las siguientes)
             modelo[path][2] = ''
 
         else:  # Se introduce texto
