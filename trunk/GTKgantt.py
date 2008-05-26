@@ -294,6 +294,7 @@ class GanttHeader(gtk.Layout):
         """
         self.width = width
         self.set_size_request(width, self.height)
+        self.queue_draw()
     def set_height(self, num):
         """
         Set header height
@@ -527,6 +528,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.graph.slacks = {}
         self.graph.comments = {}
         self.selected = None
+        self.width = 0
 
     def add_activity(self, name, prelations, duration, start_time, slack, comment):
         """
