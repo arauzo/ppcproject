@@ -2744,7 +2744,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.ganttSA.clear()
         self.loadingSheet.clear()
         self.loadingTable.clear()
-        self.ganttSA.update()
+        self.ganttSA.update()        
         self.loadingSheet.update()
         self.loadingTable.update()
         self.entryResultSA.set_text('')
@@ -2802,8 +2802,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
         self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
-        # If no error
-        if self.optimumSchedule != None:
+        if self.optimumSchedule != None: # If no error
             # Load gantt diagram
             if not self.ganttActLoaded:
                 self.ganttActLoaded = True
@@ -2826,6 +2825,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.entryAlpha.set_text(str(optSchAlpha))
             self.entryMaxTempSA.set_text(str(optSchTemp))
             self.entryIterations.set_text(str(optSchIt))
+            # Calculate loadingSheet
+            resources = resources_availability(self.recurso, True)
+            asignation = resources_per_activities(self.asignacion, resources)
+            optSchLoadingSheet = calculate_loading_sheet(self.optimumSchedule, resources, asignation, optSchDuration)
             # Add activities to gantt
             for act,startTime,finalTime in self.optimumSchedule:
                 self.ganttSA.set_activity_start_time(act, startTime)
@@ -2833,10 +2836,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.ganttSA.set_activity_prelations(act,successors[act])
 
             self.ganttSA.update()
-            # Calculate loadingSheet
-            resources = resources_availability(self.recurso, True)
-            asignation = resources_per_activities(self.asignacion, resources)
-            optSchLoadingSheet = calculate_loading_sheet(self.optimumSchedule, resources, asignation, optSchDuration)
             # Add loading to loadingSheet
             self.loadingSheet.set_loading(optSchLoadingSheet)
             self.loadingSheet.set_duration(optSchDuration)
