@@ -255,7 +255,7 @@ class PPCproject(object):
         self.modeloAR.clear()
         self.asignacion=[]
         cont=1
-        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
+        self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
         self.modeloAR.append()
         #Minimum schedule
         start_times = graph.get_activities_start_time([], [], [], True)
@@ -325,11 +325,11 @@ class PPCproject(object):
             # Actividades
             if modelo==self.modelo:                
                 if len(modelo)!=len(self.actividad): #siempre debe existir un elemento más en modelo que en actividades     
-                    modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
-                    fila=['', '', [], '', '', '', '', '', '', gettext.gettext('Beta'),0]
+                    modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
+                    fila=['', '', [], '', '', '', '', '', gettext.gettext('Beta'),0]
                     self.actividad.append(fila) 
                 else:
-                    modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
+                    modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
                     #print self.actividad 
                      
             # Recursos
@@ -414,8 +414,8 @@ class PPCproject(object):
                     gantt_modified = True
   
                 # Si se modifica el tipo de distribución, se actualizan la media y la desviación tí­pica
-                elif n==9:  
-                    self.actividad[int(path)][9]=self.modelo[path][9]
+                elif n==8:  
+                    self.actividad[int(path)][8]=self.modelo[path][8]
                     if self.modelo[path][3]!='' or self.modelo[path][4]!='' or self.modelo[path][5]!='':
                         a=float(self.modelo[path][3]) #d.optimista
                         b=float(self.modelo[path][5]) #d.pesimista
@@ -433,8 +433,8 @@ class PPCproject(object):
                         self.actividad[int(path)][2] = self.actString2actList(self.modelo[path][2])
                         self.gantt.set_activity_prelations(self.actividad[int(path)][1], self.actString2actList(self.modelo[path][2]))
                         gantt_modified = True
-                elif n==10:
-                    self.schedules[self.ntbSchedule.get_current_page()][1][modelo[path][1]] = float(self.modelo[path][10])
+                elif n==9:
+                    self.schedules[self.ntbSchedule.get_current_page()][1][modelo[path][1]] = float(self.modelo[path][9])
                     gantt_modified = True
                 # Si no es ningún caso de los anteriores, se actualiza normalmente
                 else:
@@ -448,7 +448,7 @@ class PPCproject(object):
                     act_list.append(self.actividad[i][1])
                     dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                     pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-                if n == 10:
+                if n == 9:
                     self.schedules[self.ntbSchedule.get_current_page()][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
                 else:
                     self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1], modelo[path][1])
@@ -723,10 +723,10 @@ class PPCproject(object):
     def set_schedule(self, schedule):
         for row in self.modelo:
             if row[1] != "":
-                row[10] = schedule[row[1]]
+                row[9] = schedule[row[1]]
         for row in self.actividad:
-            row[10] = schedule[row[1]]
-            self.gantt.set_activity_start_time(row[1], row[10])
+            row[9] = schedule[row[1]]
+            self.gantt.set_activity_start_time(row[1], row[9])
         self.gantt.update()
   
     def actualizarColSig(self, datos):
@@ -2092,60 +2092,66 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Open a project file given by filename
         """
         # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
-#        try:
-#            # Tries to load file with formats that match its extension in format order
-#            data = None
-#            extension = filename[filename.rfind('.')+1:]
-#            for format in self.fileFormats:
-#                if extension in format.filenameExtensions:
-#                    try:
-#                        data = format.load(filename)
-#                        break
-#                    except xxxException:
-#                        pass
+        try:
+            # Tries to load file with formats that match its extension in format order
+            data = None
+            extension = filename[filename.rfind('.')+1:]
+            for format in self.fileFormats:
+                if extension in format.filenameExtensions:
+                    try:
+                        data = format.load(filename)
+                        break
+                    except xxxException:
+                        pass
 
-#            # if not data:
-#            # xxx Should we try here to load files in any format independently of their 
-#            # extension. It would the same previous code without the 'if extension'
+            # if not data:
+            # xxx Should we try here to load files in any format independently of their 
+            # extension. It would the same previous code without the 'if extension'
 
-#            if data:
-#                activities, schedules, resources, resourceAsignaments = data
-#                # xxx Update model data
-#                # xxx Ask for interface update
-#            else:
-#                self.dialogoError(gettext.gettext('Error reading file:') + filename 
-#                      + ' ' + gettext.gettext('Unknown format')) 
+            if data:
+                self.actividad, schedules, self.recurso, self.asignacion = data
+                for res in self.recurso:
+                    res[1] = gettext.gettext(res[1])
+                    
+                act_list = []
+                dur_dic = {}
+                pre_dic = {}
 
-#        except IOError:
-#            self.dialogoError(gettext.gettext('Error reading file:') + filename) 
-        
+                for act in self.actividad:
+                    act_list.append(act[1])
+                    dur_dic[act[1]] = act[6]
+                    pre_dic[act[1]] = act[2]
+                    self.gantt.add_activity(act[1],act[2],act[6])
+                min_sched = graph.get_activities_start_time(act_list,dur_dic,pre_dic)
+                schedules = [[gettext.gettext('Min'), min_sched]] + schedules
+                
+                cont = 1
+                for act in self.actividad:
+                    act.append(0)
+                    act[0] = cont
+                    cont += 1
 
-        try: 
-            flectura=open(filename,'r') 
-            # Se cargan los datos del fichero 
-            tabla=[]
-            if filename[-4:] == '.prj':  
-                tabla=pickle.load(flectura)
-                self.cargaDatos(tabla)
-            elif filename[-3:] == '.sm':  
-                # Se lee el fichero y se extraen los datos necesarios 
-                prelaciones, rec, asig = fileFormats.leerPSPLIB(flectura)   
-                # Se cargan los datos extraidos en las listas correspondientes
-                self.cargarPSPLIB(prelaciones, rec, asig)       
-            else: # Fichero de texto
-                tabla=fileFormats.leerTxt(flectura)
-                self.cargarTxt(tabla)
-            flectura.close()
+                for sched in schedules:
+                    self.add_schedule(*sched)
+                self.set_schedule(self.schedules[0][1]) 
+                self.ntbSchedule.show()             
+                for row in self.recurso:
+                    self.modeloR.append(row)
+                for row in self.asignacion:
+                    self.modeloAR.append(row)
 
-            # Update interface 
-            self.openFilename = filename
-            self.updateWindowTitle()
-            self.enableProjectControls(True)
-            self.set_modified(False)
-            self.modified = 0
-            self.ntbSchedule.show()
-        except IOError :
-            self.dialogoError(gettext.gettext('The selected file does not exist')) #xxx very specific message, does not cover all catched exceptions
+                for act in self.actividad:
+                    self.modelo.append(act[0:2] + [', '.join(act[2])] + act[3:6] + [str(act[6])] + act[7:9] + [str(act[9])])
+                    self.modeloComboS.append([act[1]])                    
+                # xxx Update model data
+                # xxx Ask for interface update
+            else:
+                self.dialogoError(gettext.gettext('Error reading file:') + filename 
+                      + ' ' + gettext.gettext('Unknown format')) 
+
+        except IOError:
+            self.dialogoError(gettext.gettext('Error reading file:') + filename) 
+
 
     def saveProject(self, nombre):
         """
@@ -2155,8 +2161,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
         # xxx Here extension should be checked to choose the save format
         # by now we suppose it is .prj
-        if nombre[-4:] != '.prj':
-            nombre = nombre + '.prj'
+        if nombre[-4:] != '.ppc':
+            nombre = nombre + '.ppc'
 
         format = fileFormats.PPCProjectFileFormat()
 
@@ -2170,14 +2176,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 res[1] = 'Double restricted'
             else:
                 res[1] = 'Unlimited'
-        print resources        
+        
         activities = []
         for act in self.actividad:
             activities.append(act[0:-1])
 
         # xxx Here data should be prepared to be stored
         try:
-            format.save((activities, self.schedules, resources, self.asignacion), nombre)
+            format.save((activities, self.schedules[1:], resources, self.asignacion), nombre)
             # Update interface 
             self.openFilename=nombre
             self.updateWindowTitle()
