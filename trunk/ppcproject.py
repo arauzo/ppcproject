@@ -2151,46 +2151,40 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Saves a project in ppcproject format '.prj'
         """
-#        # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
-#        
-#        # xxx Here extension should be checked to choose the save format
-#        # by now we suppose it is .prj
-#        if nombre[-4:] != '.prj':
-#            nombre = nombre + '.prj'
-
-#        format = PPCProjectFileFormat()
-#        # xxx Here data should be prepared to be stored
-#        try:
-#            format.save((activities, schedules, resources, resourceAsignaments), nombre)
-#            # Update interface 
-#            self.openFilename=nombre
-#            self.updateWindowTitle()
-#            self.set_modified(False)
-#            self.modified = 0
-#        except IOError :
-#            self.dialogoError(gettext.gettext('Error saving the file'))    
-
+        # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
+        
+        # xxx Here extension should be checked to choose the save format
+        # by now we suppose it is .prj
         if nombre[-4:] != '.prj':
             nombre = nombre + '.prj'
 
-        # Se guardan todos los datos en una lista y se escriben en el fichero  
-        tabla=[]
-        tabla.append(self.actividad)
-        tabla.append(self.recurso)
-        tabla.append(self.asignacion)
-        try:
-            fescritura=open(nombre,'w')
-            pickle.dump(tabla, fescritura)
+        format = fileFormats.PPCProjectFileFormat()
 
+        resources = deepcopy(self.recurso)
+        for res in resources:
+            if res[1] == gettext.gettext('Renewable'): 
+                res[1] = 'Renewable'
+            elif res[1] == gettext.gettext('Non renewable'):
+                res[1] = 'Non renewable'
+            elif res[1] == gettext.gettext('Double restricted'):
+                res[1] = 'Double restricted'
+            else:
+                res[1] = 'Unlimited'
+        print resources        
+        activities = []
+        for act in self.actividad:
+            activities.append(act[0:-1])
+
+        # xxx Here data should be prepared to be stored
+        try:
+            format.save((activities, self.schedules, resources, self.asignacion), nombre)
             # Update interface 
             self.openFilename=nombre
             self.updateWindowTitle()
             self.set_modified(False)
             self.modified = 0
-
         except IOError :
-            self.dialogoError(gettext.gettext('Error saving the file'))    
-        fescritura.close()
+            self.dialogoError(gettext.gettext('Error saving the file'))    
 
 
 
@@ -2463,8 +2457,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_SaveAs_activate(self, menu_item):
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
-        errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
-        if errorActRepetidas==0:
+        errorActRepetidas, actividadesRepetidas = self.actividadesRepetidas(self.actividad)
+        if errorActRepetidas == 0:
             dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save as"),
                                                    None,
                                                    gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -2472,8 +2466,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                                    gtk.STOCK_SAVE, gtk.RESPONSE_OK))
             dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
             resultado = dialogoGuardar.run()
-
+      
             if resultado == gtk.RESPONSE_OK:
+                self.openFilename = dialogoGuardar.get_filename()
                 self.saveProject(self.openFilename)
             dialogoGuardar.destroy() 
         else:
