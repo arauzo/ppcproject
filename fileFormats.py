@@ -23,6 +23,7 @@
 
 import gtk
 import gettext
+import pickle
 
 class InvalidFilFormatException(Exception):
     """
