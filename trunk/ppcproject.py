@@ -540,112 +540,6 @@ class PPCproject(object):
             dT='%4.3f'%(dTipica)
             actividad[int(path)][7]=modelo[path][7]=dT 
 
- 
-    def cargaDatos(self, tabla):     
-        """
-         Actualización de los datos con los obtenidos de la   
-                  apertura de un fichero con extensión '.prj'
-  
-         Parámetros: tabla (lista que engloba a las tres listas: 
-                     actividad, recurso y asignacion)
-         Valor de retorno: -
-        """
-        cont=1
-        self._widgets.get_widget('vistaListaDatos').show()
-        self.modelo.clear()
-        self.modeloComboS.clear()
-        # Se actualiza la interfaz de las actividades
-        for dato in tabla[0]:      
-            dato[0]=cont
-            cont+=1
-            # (XXX Temporary fix while Schedules are not fully supported)
-
-            dato += ["0"]
-
-            # (XXX Fix end)
-            
-            self.modelo.append(dato)
-            self.actualizarColSig(tabla[0])
-            self.modeloComboS.append([dato[1]])
-   
-        # Se actualiza la lista de las actividades
-        self.actividad=tabla[0]
-        act_list = []
-        dur_dic = {}
-        pre_dic = {}
-        for i in range(len(self.actividad)):
-            act_list.append(self.actividad[i][1])
-            dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
-            if self.actividad[i][2]==['']:
-                self.actividad[i][2]=[]
-            pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-            self.gantt.add_activity(self.actividad[i][1], self.actividad[i][2], float(self.actividad[i][6]) if self.actividad[i][6] != "" else 0)
-        #Minimum schedule
-        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True)
-        self.add_schedule(gettext.gettext("Min"), start_times)
-        self.set_schedule(start_times)
-        # Se actualizan la interfaz y la lista de los recursos
-        self.modeloR.clear()
-        self.recurso=tabla[1]   
-        for dato in tabla[1]:   
-            self.modeloR.append(dato)
-   
-         
-        # Se actualizan la interfaz y la lista de los recursos necesarios por actividad
-        self.modeloAR.clear()
-        self.asignacion=tabla[2]   
-        for dato in tabla[2]:      
-            self.modeloAR.append(dato)
-
-
-        #Se actualiza la columna de los recursos en la interfaz y en la lista de actividades 
-        if self.asignacion!=[]:
-            mostrarColumnaRes=self.mostrarRec(self.asignacion, 1)
-            self.actualizarColR(mostrarColumnaRes)
-
-        #print "%s" % (tabla)
-        
-        #empty row added
-        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
-        self.modeloAR.append()
-  
-    def cargarTxt(self, tabla):
-        """
-         Actualización de los datos con los obtenidos de la   
-                  apertura de un fichero con extensión '.txt'
-  
-         Parámetros: tabla (lista con los datos del fichero)
-  
-         Valor de retorno: -
-        """
-        cont=1
-        self._widgets.get_widget('vistaListaDatos').show()
-        act_list = []
-        dur_dic = {}
-        pre_dic = {}
-        for linea in tabla:
-            sig=self.lista2Cadena2(linea[1])
-            if linea[1]==['']:
-                fila=[cont, linea[0], [], linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
-            else:
-                fila=[cont, linea[0], linea[1], linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta')]
-            fila1=[cont, linea[0], sig, linea[2], linea[3], linea[4], '', '', '', gettext.gettext('Beta'), ""]
-            self.actividad.append(fila)
-            self.modelo.append(fila1)
-            act_list.append(fila[1])
-            dur_dic[fila[1]] = float(fila[5])
-            pre_dic[fila[1]] = fila[2]
-            self.gantt.add_activity(fila[1], fila[2], float(fila[5]))
-            cont+=1
-        #Minimum schedule
-        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True)
-        self.add_schedule(gettext.gettext("Min"), start_times)
-        self.set_schedule(start_times)
-        #empty row added
-        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
-        self.modeloAR.append()
-  
-  
     def comprobarSig(self, modelo, path, new_text):
         """
          Control de la introducción de las siguientes  
@@ -802,136 +696,6 @@ class PPCproject(object):
 
 
 #                    PSPLIB                        
-     
-    def cargarPSPLIB(self, prelaciones, rec, asig):
-        """
-         Actualización de los datos con los obtenidos de la   
-                  lectura de un fichero con extensión '.sm' de la librería 
-                  de proyectos PSPLIB
-         Parámetros: prelaciones (lista que almacena las actividades 
-                                        y sus siguientes)
-                     rec (lista que almacena el nombre y las unidades
-                               de recurso)
-                     asig (lista que almacena las duraciones y las 
-                                 unid. de recurso necesarias por cada actividad)
-
-         Valor de retorno: -
-        """
-        # Se actualizan las actividades
-        self.modelo.clear()
-        self.actividad=[]
-        cont=1
-        longitud=len(prelaciones)
-        self._widgets.get_widget('vistaListaDatos').show()
-        #Se actualizan actividades y prelaciones, ignorando la primera y la última
-        for prelacion in prelaciones:   
-            if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:  
-                if prelacion[1]==[str(longitud)]:  #controlamos las actividades cuya siguiente es la última  
-                    fila=[cont, prelacion[0], [], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para lista actividad
-                    fila1=[cont, prelacion[0], '', '', '', '', '', '', '', gettext.gettext('Beta'),""] #fila para interfaz
-                else:
-                    fila=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]   #fila para lista actividad
-                    fila1=[cont, prelacion[0], prelacion[1], '', '', '', '', '', '', gettext.gettext('Beta'),""]  #fila para interfaz
-                
-                self.actividad.append(fila)
-                self.modelo.append(fila1)
-                # Se actualiza la columna de siguientes en la interfaz
-                self.actualizarColSigPSPLIB(prelaciones)
-                
-                cont+=1  
-        
-        # Se actualiza la duración de las actividades
-        for n in range(len(asig)-1):   
-            if asig[n][2]!='0' and asig[n][2]!='0':
-                m=n-1
-                self.actividad[m][6]=float(asig[n][2])
-                self.modelo[m][6]=asig[n][2]
-
-        # Update Gantt Diagram
-        act_list = []
-        dur_dic = {}
-        pre_dic = {}
-        for row in self.actividad:
-            act_list.append(row[1])
-            pre_dic[row[1]] = row[2]
-            dur_dic[row[1]] = float(row[6])
-            self.gantt.add_activity(row[1], row[2], float(row[6]))
-        #Minimum schedule
-        start_times = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True)
-        self.add_schedule(gettext.gettext("Min"), start_times)
-        self.set_schedule(start_times)
-
-        # Se actualizan los recursos
-        i=1
-        m=0
-        self.modeloR.clear()
-        self.recurso=[]
-        for n in range(len(rec[1])):
-            # Si el recurso es Renovable
-            if rec[0][m]=='R' or rec[0][m][0]=='R':
-                if rec[0][m]=='R':
-                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Renewable'), '', rec[1][n]] 
-                    m+=2
-                else:
-                    filaR=[rec[0][m], gettext.gettext('Renewable'), '', rec[1][n]] 
-                    m+=1
-                self.recurso.append(filaR)
-                self.modeloR.append(filaR)
-                i+=2
-                
-
-            # Si el recurso es No Renovable
-            elif rec[0][m]=='N' or rec[0][m][0]=='N':
-                if rec[0][m]=='N':
-                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Non renewable'), rec[1][n], '']
-                    m+=2
-                else:
-                    filaR=[rec[0][m], gettext.gettext('Non renewable'), rec[1][n], ''] 
-                    m+=1
-            
-                self.recurso.append(filaR)
-                self.modeloR.append(filaR)
-                i+=2
-
-            # Si el recurso es Doblemente restringido
-            elif rec[0][m]=='D' or rec[0][m][0]=='D':
-                if rec[0][m]=='D':
-                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Double constrained'), rec[1][n], rec[1][n]]
-                    m+=2
-                else:
-                    filaR=[rec[0][m], gettext.gettext('Double constrained'), rec[1][n], rec[1][n]] 
-                    m+=1
-                
-                self.recurso.append(filaR)
-                self.modeloR.append(filaR)
-                i+=2
-
-            # NOTA: no tenemos en cuenta si el recurso es Ilimitado porque éste tipo de recurso no existe en 
-            #       en la librería de proyectos PSPLIB
-        
-
-
-        # Se actualizan los recursos necesarios por actividad
-        self.modeloAR.clear()
-        self.asignacion=[]
-        for n in range(len(asig)):                     
-            for m in range(3, 3+len(rec[1])):  #len(self.rec[1]): número de recursos 
-                if asig[n][m] != '0':          #los recursos no usados no se muestran
-                    i=m-3
-                    filaAR=[asig[n][0], self.recurso[i][0], asig[n][m]] 
-                    self.asignacion.append(filaAR)
-                    self.modeloAR.append(filaAR)
-
-
-
-        #Se actualiza la columna de los recursos en la interfaz y en la lista de actividades 
-        if self.asignacion!=[]:
-            mostrarColumnaRec=self.mostrarRec(self.asignacion, 0)
-            self.actualizarColR(mostrarColumnaRec)
-            
-        #empty row added
-        self.modelo.append([cont, '', '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia        self.modeloR.append()
-        self.modeloAR.append()
 
      
     def actualizarColSigPSPLIB(self, prelacion):
@@ -961,7 +725,7 @@ Valor de retorno: -
     def comprobarDuraciones(self, a, b, m):
         """
 Comprobación de que los tiempos optimista, pesimista y
-         más probable son correctos
+         más probable son correctoso
 
 Parámetros: a (d.optimista)
             b (d.pesimista)
@@ -2444,52 +2208,51 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_Open_activate(self, item):
         """ User ask for open file (from menu or toolbar)
         """
-        # Close open project if any
-        closed = self.closeProject()
+        
+        # Dialog asking for file to open
+        dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
+                                                None,
+                                                gtk.FILE_CHOOSER_ACTION_OPEN,
+                                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
+                                                )
+        # Creates a filter for all supported file formats
+        ffilter = gtk.FileFilter()
+        pats = []
+        for f in self.fileFormats:
+            for pat in f.filenamePatterns():
+                pats.append(pat)
+                ffilter.add_pattern(pat)
+        ffilter.set_name(''.join([gettext.gettext('All project files') + ' (', ', '.join(pats), ')']))
+        dialogoFicheros.add_filter(ffilter)                 
 
-        if closed:
-            # Dialog asking for file to open
-            dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
-                                                    None,
-                                                    gtk.FILE_CHOOSER_ACTION_OPEN,
-                                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
-                                                    )
-            # Creates a filter for all supported file formats
+        # Creates a filter for each supported file format
+        for f in self.fileFormats:
             ffilter = gtk.FileFilter()
-            pats = []
-            for f in self.fileFormats:
-                for pat in f.filenamePatterns():
-                    pats.append(pat)
-                    ffilter.add_pattern(pat)
-            ffilter.set_name(''.join(['All project files (', ', '.join(pats), ')']))
+            for pat in f.filenamePatterns():
+                ffilter.add_pattern(pat)
+            ffilter.set_name(f.description())
             dialogoFicheros.add_filter(ffilter)                 
 
-            # Creates a filter for each supported file format
-            for f in self.fileFormats:
-                ffilter = gtk.FileFilter()
-                for pat in f.filenamePatterns():
-                    ffilter.add_pattern(pat)
-                ffilter.set_name(f.description())
-                dialogoFicheros.add_filter(ffilter)                 
+        # Creates the filter allowing to see all files            
+        ffilter = gtk.FileFilter()
+        ffilter.add_pattern('*')
+        ffilter.set_name(gettext.gettext('All files'))
+        dialogoFicheros.add_filter(ffilter)                 
 
-            # Creates the filter allowing to see all files            
-            ffilter = gtk.FileFilter()
-            ffilter.add_pattern('*')
-            ffilter.set_name('All files')
-            dialogoFicheros.add_filter(ffilter)                 
-
-            dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-            resultado = dialogoFicheros.run()
-            if resultado == gtk.RESPONSE_OK:
+        dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
+        resultado = dialogoFicheros.run()
+        if resultado == gtk.RESPONSE_OK:
+            # Close open project if any
+            closed = self.closeProject()
+            if closed:
                 self.openProject(dialogoFicheros.get_filename())
-    
-            dialogoFicheros.destroy()
+        dialogoFicheros.destroy()
         
     def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
-            if self.openFilename=='Unnamed':
+            if self.openFilename==gettext.gettext('Unnamed'):
                 on_SaveAs_activate(item)
             else:
                 self.saveProject(self.openFilename)
