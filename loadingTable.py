@@ -177,6 +177,7 @@ class Table(gtk.Layout):
         """
         self.loading = {}
         self.duration = 0
+        self.width = 0
     
     def set_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         """

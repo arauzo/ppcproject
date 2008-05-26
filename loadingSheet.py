@@ -266,6 +266,7 @@ class LoadingSheetDiagram(gtk.Layout):
         """
         self.loading = {}
         self.duration = 0
+        self.width = 0
             
     def expose (self,widget,event):
         """
