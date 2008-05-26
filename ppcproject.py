@@ -2063,7 +2063,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modeloComboARA.clear()
             self.modeloComboARR.clear()
             while self.ntbSchedule.get_current_page() != -1:
-                self.ntbSchedule.remove_page(-1)
+                self.clicked_tab = len(self.schedule_tab_labels) - 1
+                self.delete_tab(None)
             self.schedules = []
 
         return close
@@ -3483,9 +3484,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def new_tab(self, widget):
         new_sched = deepcopy(self.schedules[0][1])
         self.add_schedule(None, new_sched )
+        self.set_modified(True)
+        self.modified = 1
 
     def on_tab_changed(self, notebook, page, page_num):
         self.set_schedule(self.schedules[page_num][1])
+        self.set_modified(True)
+        self.modified = 1
 
 
 def main(filename=None):
