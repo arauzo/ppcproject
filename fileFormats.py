@@ -145,8 +145,73 @@ class PSPProjectFileFormat(ProjectFileFormat):
                     l = f.readline()
 
             l = f.readline()
+        
+        # Modify data structure
+        cont=1
+        longitud=len(prelaciones)
+        activities = []
 
-        return (prelaciones, [], rec, asig)
+        for prelacion in prelaciones:
+            if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:   
+                if prelacion[1]==[str(longitud)]:  #activities with the last activity as next 
+                    activities.append([cont, prelacion[0], [], '', '', '', '', '', gettext.gettext('Beta')] )
+                else:
+                    activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', gettext.gettext('Beta')])
+                                    
+                cont += 1  
+
+        # Update activities duration
+        for n in range(len(asig)-1):   
+            if asig[n][2]!='0':
+                m=n-1
+                activities[m][6]=float(asig[n][2])
+
+        # Se actualizan los recursos
+        i=1
+        m=0
+        resources = []
+        for n in range(len(rec[1])):
+            # Si el recurso es Renovable
+            if rec[0][m]=='R' or rec[0][m][0]=='R':
+                if rec[0][m]=='R':
+                    row=[rec[0][m]+rec[0][i], 'Renewable', '', rec[1][n]] 
+                    m+=2
+                else:
+                    row=[rec[0][m], 'Renewable', '', rec[1][n]] 
+                    m+=1      
+            # Si el recurso es No Renovable
+            elif rec[0][m]=='N' or rec[0][m][0]=='N':
+                if rec[0][m]=='N':
+                    row=[rec[0][m]+rec[0][i], 'Non renewable', rec[1][n], '']
+                    m+=2
+                else:
+                    row=[rec[0][m], 'Non renewable', rec[1][n], ''] 
+                    m+=1
+            # Si el recurso es Doblemente restringido
+            elif rec[0][m]=='D' or rec[0][m][0]=='D':
+                if rec[0][m]=='D':
+                    row=[rec[0][m]+rec[0][i], 'Double restricted', rec[1][n], rec[1][n]]
+                    m+=2
+                else:
+                    row=[rec[0][m], 'Double restricted', rec[1][n], rec[1][n]] 
+                    m+=1
+                
+            resources.append(row)
+            i += 2
+            
+            # NOTA: no tenemos en cuenta si el recurso es Ilimitado porque éste tipo de recurso no existe en 
+            #       en la librería de proyectos PSPLIB   
+
+        # Se actualizan los recursos necesarios por actividad
+        asignation = []
+        for n in range(len(asig)):                     
+            for m in range(3, 3+len(rec[1])):  #len(self.rec[1]): número de recursos 
+                if asig[n][m] != '0':          #los recursos no usados no se muestran
+                    i = m-3
+                    row = [asig[n][0], resources[i][0], asig[n][m]] 
+                    asignation.append(row)
+        
+        return (activities, [], resources, asignation)
 
 
 class PPCProjectOLDFileFormat(ProjectFileFormat):

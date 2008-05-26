@@ -2119,18 +2119,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Tries to load file with formats that match its extension in format order
             data = None
             extension = filename[filename.rfind('.')+1:]
+
             for format in self.fileFormats:
                 if extension in format.filenameExtensions:
                     try:
                         data = format.load(filename)
                         break
-                    except xxxException:
+                    except:# xxxException:
                         pass
 
             # if not data:
             # xxx Should we try here to load files in any format independently of their 
             # extension. It would the same previous code without the 'if extension'
-
             if data:
                 self.actividad, schedules, self.recurso, self.asignacion = data
                 for res in self.recurso:
@@ -2166,8 +2166,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
                 for act in self.actividad:
                     self.modelo.append(act[0:2] + [', '.join(act[2])] + act[3:6] + [str(act[6])] + act[7:9] + [str(act[9])])
-                    self.modeloComboS.append([act[1]])                    
+                    self.modeloComboS.append([act[1]])            
                     self.modeloComboARA.append([act[1]])
+    
                 # xxx Update model data
                 # Update interface 
                 self.openFilename=filename
