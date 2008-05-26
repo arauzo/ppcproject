@@ -3480,6 +3480,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.ntbSchedule.set_current_page((self.clicked_tab - 1) % self.ntbSchedule.get_n_pages())
         del self.schedules[self.clicked_tab]
         self.ntbSchedule.remove_page(self.clicked_tab)
+        self.set_modified(True)
+        self.modified = 1
 
     def new_tab(self, widget):
         new_sched = deepcopy(self.schedules[0][1])
@@ -3489,8 +3491,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_tab_changed(self, notebook, page, page_num):
         self.set_schedule(self.schedules[page_num][1])
-        self.set_modified(True)
-        self.modified = 1
 
 
 def main(filename=None):
