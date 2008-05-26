@@ -322,8 +322,8 @@ class Interface(object):
       self.vistaListaAR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Needed Units'))
       self.vistaListaAR.renderer=[None]*3
 
-      self.columnaEditable(self.vistaListaAR, self.modeloAR, 0)
-      self.columnaEditable(self.vistaListaAR, self.modeloAR, 1)
+      self.modeloComboARA = self.columnaCombo(self.vistaListaAR, self.modeloAR, 0)
+      self.modeloComboARR = self.columnaCombo(self.vistaListaAR, self.modeloAR, 1)
       self.columnaEditable(self.vistaListaAR, self.modeloAR, 2)
 
 
