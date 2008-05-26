@@ -2305,6 +2305,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modeloComboARR.clear()
             while self.ntbSchedule.get_current_page() != -1:
                 self.ntbSchedule.remove_page(-1)
+            self.schedules = []
 
         return close
   
