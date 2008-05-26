@@ -324,6 +324,8 @@ class PPCproject(object):
             elif n==2:  # Columna de las siguientes
                 modelo=self.comprobarSig(modelo, path, new_text)
     
+            elif n > 7:
+                modelo[path][n-1] = new_text
             else:
                 modelo[path][n] = new_text
                 
@@ -1478,7 +1480,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             #print actividades[n]
                 a=actividades[n]
                 criticas.append(a)
-        
         return criticas
 
   
@@ -1493,7 +1494,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
         sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
-        #print sucesorasCriticas, 'suc criticas'
+        print sucesorasCriticas, 'suc criticas'
         gCritico=graph.roy(sucesorasCriticas)
         #print gCritico
         caminosCriticos=[]
@@ -1524,18 +1525,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         sucesorasCriticas={}
         for n in cr:
             for m in range(len(self.actividad)):
-                #print n, 'n', self.actividad[m][1]
                 if n==self.actividad[m][1]:
                     for a in self.actividad[m][2]:
-                        #print a
+                        print a
                         if a in cr:
                             if n not in sucesorasCriticas:
                                 sucesorasCriticas[n]=[a]
                             else:
                                 sucesorasCriticas[n].append(a)
 
-        if n not in sucesorasCriticas:  
-            sucesorasCriticas[n]=[]
+            if n not in sucesorasCriticas:  
+                sucesorasCriticas[n]=[]
 
         return sucesorasCriticas
 
@@ -2956,31 +2956,31 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Se asigna tí­tulo y gráfica a la ventana de probabilidad
             self.vProbabilidades.set_title(gettext.gettext('Probability related to the path'))
             #imagen=self._widgets.get_widget('graficaProb')
-        if len(self.vBoxProb)>1:
-            self.vBoxProb.remove(self.grafica)
-            self.grafica=gtk.Image()
+            if len(self.vBoxProb)>1:
+                self.vBoxProb.remove(self.grafica)
+                self.grafica=gtk.Image()
 
-        self.grafica.set_from_file('graficaNormal.gif')
-        self.vBoxProb.add(self.grafica)
-        self.vBoxProb.show_all()
+            self.grafica.set_from_file('graficaNormal.gif')
+            self.vBoxProb.add(self.grafica)
+            self.vBoxProb.show_all()
         
-        # Se muestran la media y desviación típica en la ventana de probabilidades
-        widgetMedia=self._widgets.get_widget('mediaProb')
-        widgetMedia.set_text(media)
-        widgetMedia.set_sensitive(False)
-        widgetdTipica=self._widgets.get_widget('dTipicaProb')
-        widgetdTipica.set_text(dTipica)
-        widgetdTipica.set_sensitive(False)
+            # Se muestran la media y desviación típica en la ventana de probabilidades
+            widgetMedia=self._widgets.get_widget('mediaProb')
+            widgetMedia.set_text(media)
+            widgetMedia.set_sensitive(False)
+            widgetdTipica=self._widgets.get_widget('dTipicaProb')
+            widgetdTipica.set_text(dTipica)
+            widgetdTipica.set_sensitive(False)
 
-        # Se insensibilizan las casillas resultado
-        resultado1=self._widgets.get_widget('resultado1Prob')
-        resultado1.set_sensitive(False)
-        resultado2=self._widgets.get_widget('resultado2Prob')
-        resultado2.set_sensitive(False)
+            # Se insensibilizan las casillas resultado
+            resultado1=self._widgets.get_widget('resultado1Prob')
+            resultado1.set_sensitive(False)
+            resultado2=self._widgets.get_widget('resultado2Prob')
+            resultado2.set_sensitive(False)
 
-        self.vProbabilidades.show()
-        self.on_btnIntervalReset_clicked(None)
-        self.on_btnProbabilityReset_clicked(None)
+            self.vProbabilidades.show()
+            self.on_btnIntervalReset_clicked(None)
+            self.on_btnProbabilityReset_clicked(None)
 
     def on_btAceptarZad_clicked(self, boton):
         """
