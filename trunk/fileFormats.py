@@ -190,10 +190,10 @@ class PSPProjectFileFormat(ProjectFileFormat):
             # Si el recurso es Doblemente restringido
             elif rec[0][m]=='D' or rec[0][m][0]=='D':
                 if rec[0][m]=='D':
-                    row=[rec[0][m]+rec[0][i], 'Double restricted', rec[1][n], rec[1][n]]
+                    row=[rec[0][m]+rec[0][i], 'Double constrained', rec[1][n], rec[1][n]]
                     m+=2
                 else:
-                    row=[rec[0][m], 'Double restricted', rec[1][n], rec[1][n]] 
+                    row=[rec[0][m], 'Double constrained', rec[1][n], rec[1][n]] 
                     m+=1
                 
             resources.append(row)
@@ -252,7 +252,7 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
             elif res[1] == 'No renovable':
                 res[1] = 'Non renewable'
             elif res[1] == 'Doblemente restringido':
-                res[1] = 'Double restricted'
+                res[1] = 'Double constrained'
             else:
                 res[1] = 'Unlimited'
             resources.append(res)
