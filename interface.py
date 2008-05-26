@@ -147,7 +147,7 @@ class Interface(object):
       mode=self.selec.get_mode()   
       self.menu=gtk.Menu()
       #XXX resources column should be removed from ListStore
-      self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str, str)
+      self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
       self.vistaLista.set_model(self.modelo)
       self.orden=gtk.TreeModelSort(self.modelo)
       self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
@@ -176,8 +176,8 @@ class Interface(object):
       self.columnaEditable(self.vistaLista, self.modelo, 6)
       self.columnaEditable(self.vistaLista, self.modelo, 7)
       self.resourcesColumn()
-      self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9)
-      self.columnaEditable(self.vistaLista, self.modelo, 10)
+      self.modeloComboD=self.columnaCombo(self.vistaLista, self.modelo, 9, True)
+      self.columnaEditable(self.vistaLista, self.modelo, 10, True)
       self.endTimeColumn()
       
       # Se añaden los tipos de distribución
@@ -440,7 +440,7 @@ class Interface(object):
        """
         xxx needs to be commented.
        """
-       start = model.get_value(iter, 10)
+       start = model.get_value(iter, 9)
        duration = model.get_value(iter, 6)
        if start == "" and duration == "":
            cell_renderer.set_property('text', "")
@@ -478,7 +478,7 @@ class Interface(object):
 
 #-----------------------------------------------------------                           
      
-   def columnaEditable(self, vista, modelo, n):
+   def columnaEditable(self, vista, modelo, n, offset = False):
       """
        Creación de las columnas editables y con color
                 de celda
@@ -495,14 +495,14 @@ class Interface(object):
       vista.append_column(vista.columna[n])
       vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
-      vista.columna[n].set_attributes(vista.renderer[n], text=n)
+      vista.columna[n].set_attributes(vista.renderer[n], text= (n - 1 if offset else n))
       vista.columna[n].set_spacing(8)
       vista.columna[n].set_expand(True)
       vista.columna[n].set_resizable(True)
       vista.columna[n].set_reorderable(True)
       
      
-   def columnaCombo(self, vista, modelo, n):
+   def columnaCombo(self, vista, modelo, n, offset = False):
       """
        Creación de todas las columnas combo (selector)
 
@@ -522,7 +522,7 @@ class Interface(object):
       vista.append_column(vista.columna[n])
       vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
-      vista.columna[n].set_attributes(vista.renderer[n], text=n)
+      vista.columna[n].set_attributes(vista.renderer[n], text=(n - 1 if offset else n))
       vista.columna[n].set_resizable(True)
       #vista.columna[n].set_min_width(150)
 
