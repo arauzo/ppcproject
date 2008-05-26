@@ -133,6 +133,8 @@ class PPCproject(object):
         self.modeloR = self.interface.modeloR
         self.modeloAR = self.interface.modeloAR
         self.modeloComboS = self.interface.modeloComboS
+        self.modeloComboARA = self.interface.modeloComboARA
+        self.modeloComboARR = self.interface.modeloComboARR
         self.modeloA = self.interface.modeloA
         self.modeloZ = self.interface.modeloZ
         self.vistaListaZ = self.interface.vistaListaZ
@@ -248,7 +250,9 @@ class PPCproject(object):
         self.updateWindowTitle()
         # Se limpian las listas y la interfaz para la introducción de nuevos datos
         self.modelo.clear()   
-        self.modeloComboS.clear()   
+        self.modeloComboS.clear()
+        self.modeloComboARR.clear()
+        self.modeloComboARA.clear()
         self.actividad=[]
         self.modeloR.clear()
         self.recurso=[]
@@ -297,6 +301,8 @@ class PPCproject(object):
                             modelo[path][1] = new_text
                             it=self.modeloComboS.get_iter(path)
                             self.modeloComboS.set_value(it, 0, new_text)
+                            it=self.modeloComboARA.get_iter(path)
+                            self.modeloComboARA.set_value(it, 0, new_text)
                         #else:
                             #print 'actividad repetida'
                             #self.dialogoError('Actividad repetida')
@@ -304,6 +310,7 @@ class PPCproject(object):
                     else:  # Se inserta normalmente
                         modelo[path][1] = new_text
                         self.modeloComboS.append([modelo[path][1]])
+                        self.modeloComboARA.append([modelo[path][1]])
                         self.gantt.add_activity(new_text)
                         self.gantt.update()
       
@@ -313,8 +320,18 @@ class PPCproject(object):
     
             else:
                 modelo[path][n] = new_text
-    
-    
+                
+        elif modelo == self.modeloR and n == 0:
+            if new_text!='':
+                if modelo[path][1]!='':  # Si modificamos un recurso
+                    try:
+                        it=self.modeloComboARR.get_iter(path)
+                        self.modeloComboARR.set_value(it, 0, new_text)
+                    except:
+                        self.modeloComboARR.append([new_text])
+                else:  # Se inserta normalmente
+                    self.modeloComboARR.append([new_text])
+            modelo[path][0] = new_text
         else:  # Otras interfaces 
             modelo[path][n] = new_text
                     
@@ -2111,6 +2128,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             if data:
                 self.actividad, schedules, self.recurso, self.asignacion = data
                 for res in self.recurso:
+                    self.modeloComboARR.append([res[0]])
                     res[1] = gettext.gettext(res[1])
                     
                 act_list = []
@@ -2143,8 +2161,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 for act in self.actividad:
                     self.modelo.append(act[0:2] + [', '.join(act[2])] + act[3:6] + [str(act[6])] + act[7:9] + [str(act[9])])
                     self.modeloComboS.append([act[1]])                    
+                    self.modeloComboARA.append([act[1]])
                 # xxx Update model data
-                # xxx Ask for interface update
+                # Update interface 
+                self.openFilename=filename
+                self.updateWindowTitle()
+                self.enableProjectControls(True)
+                self.set_modified(False)
+                self.modified = 0
+                self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia
+                cont += 1                self.modeloR.append()
+                self.modeloAR.append()
             else:
                 self.dialogoError(gettext.gettext('Error reading file:') + filename 
                       + ' ' + gettext.gettext('Unknown format')) 
@@ -2266,6 +2293,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modified = 0
             self.gantt.clear()
             self.gantt.update()
+            self.modeloComboS.clear()
+            self.modeloComboARA.clear()
+            self.modeloComboARR.clear()
             while self.ntbSchedule.get_current_page() != -1:
                 self.ntbSchedule.remove_page(-1)
 

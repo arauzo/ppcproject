@@ -449,7 +449,10 @@ def get_activities_start_time(activities, durations, prelations, minimum = True,
         for activity in inv_prelations[chosen]:
             time.append(start_time[activity] + durations[activity])
         if previous_times != {} and not minimum:
-            time.append(previous_times[chosen])
+            try:
+                time.append(previous_times[chosen])
+            except:
+                pass
         start_time[chosen] = max(time)
         for activity in prelations[chosen]:
             pending = False
