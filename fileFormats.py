@@ -171,7 +171,7 @@ class PPCProjectFileFormat(ProjectFileFormat):
     New project file format (xxx to define)
     """
     def __init__(self):
-        self.filenameExtensions = ['prj']
+        self.filenameExtensions = ['ppc']
 
     def load(self, filename):
         """
