@@ -1494,11 +1494,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
         sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
-        print sucesorasCriticas, 'suc criticas'
         gCritico=graph.roy(sucesorasCriticas)
         #print gCritico
         caminosCriticos=[]
-        print gCritico#xxx
         caminos=graph.findAllPaths(gCritico, 'Begin', 'End')
 
         # Se eliminan 'begin' y 'end' de todos los caminos
@@ -1527,7 +1525,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for m in range(len(self.actividad)):
                 if n==self.actividad[m][1]:
                     for a in self.actividad[m][2]:
-                        print a
                         if a in cr:
                             if n not in sucesorasCriticas:
                                 sucesorasCriticas[n]=[a]
