@@ -636,6 +636,8 @@ class PPCproject(object):
         self.ntbSchedule.append_page(fixed, label)
         fixed.show()
         label.show()
+        self.set_modified(True)
+        self.modified = 1
 
     def set_schedule(self, schedule):
         for row in self.modelo:
@@ -3486,8 +3488,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def new_tab(self, widget):
         new_sched = deepcopy(self.schedules[0][1])
         self.add_schedule(None, new_sched )
-        self.set_modified(True)
-        self.modified = 1
 
     def on_tab_changed(self, notebook, page, page_num):
         self.set_schedule(self.schedules[page_num][1])
