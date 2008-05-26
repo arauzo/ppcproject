@@ -110,7 +110,15 @@ class PSPProjectFileFormat(ProjectFileFormat):
     """
     def __init__(self):
         self.filenameExtensions = ['sm']
-        
+
+    def description(self):
+        """
+        Returns a string with the name or description of this format to show on 
+        dialogs
+
+        """
+        return gettext.gettext('PSPLIB') + " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+
     def load(self, filename):
         """
         Load project data (see base class)
@@ -224,6 +232,14 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
     def __init__(self):
         self.filenameExtensions = ['prj']
 
+    def description(self):
+        """
+        Returns a string with the name or description of this format to show on 
+        dialogs
+
+        """
+        return gettext.gettext('PPC-Project old file format')+ " "+ "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+
     def load(self, filename):
         """
         Load project data (see base class)
@@ -267,6 +283,14 @@ class PPCProjectFileFormat(ProjectFileFormat):
     def __init__(self):
         self.filenameExtensions = ['ppc']
 
+    def description(self):
+        """
+        Returns a string with the name or description of this format to show on 
+        dialogs
+
+        """
+        return gettext.gettext('PPC-Project file') + " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+
     def load(self, filename):
         """
         Load project data (see base class)
@@ -301,6 +325,14 @@ class TxtProjectFileFormat(ProjectFileFormat):
     def __init__(self):
         self.filenameExtensions = ['txt']
 
+    def description(self):
+        """
+        Returns a string with the name or description of this format to show on 
+        dialogs
+
+        """
+        return gettext.gettext('Text file')+ " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+
     def load(self, filename):
         """
         Lectura de un fichero con extensión '.txt' ¿qué formato era este y para que??
@@ -318,9 +350,6 @@ class TxtProjectFileFormat(ProjectFileFormat):
         l = f.readline()
 
         return tabla
-
-
-
 
 def guardarCsv(texto, principal):
     """
@@ -353,75 +382,26 @@ def guardarCsv(texto, principal):
 
     dialogoGuardar.destroy()
 
-
-def leerPSPLIB(f):
+def leerTxt(f):
     """
-     xxx To be removed (code copied to class PSPlibFileFormat)
-     Lectura de un proyecto de la librería de proyectos PSPLIB   
+    xxx To be removed (code copied to class TxtProjectFileFormat)
+    Lectura de un fichero con extensión '.txt'
+    Parámetros: f (fichero)
 
-     Parámetros: f (fichero) 
-
-     Valor de retorno: prelaciones (lista que almacena las actividades 
-                                    y sus siguientes)
-                       rec (lista que almacena el nombre y las unidades
-                           de recurso)
-                       asig (lista que almacena las duraciones y las 
-                             unid. de recurso necesarias por cada actividad)
+    Valor de retorno: tabla (datos leidos)
     """
 
-    prelaciones = []
-    asig = []
-    rec = []
+    tabla = []
     l = f.readline()
     while l:
-    # Lectura de las actividades y sus siguientes
-        if l[0] == 'j' and l[10] == '#':
-            l = f.readline()
-            while l[0] != '*':
-                prel = (l.split()[0], l.split()[3:])
-                prelaciones.append(prel)
-                l = f.readline()
-
-        # Lectura de la duración de las actividades y de las unidades de recursos 
-        # necesarias por actividad
-        if l[0] == '-':
-            l = f.readline()
-            while l[0] != '*':
-                asig.append(l.split())
-                l = f.readline()
-
-        # Lectura del nombre, tipo y unidad de los recursos
-        if l[0:22] == 'RESOURCEAVAILABILITIES':
-            l = f.readline()
-            while l[0] != '*':
-                rec.append(l.split())
-                l = f.readline()
-
+        linea = l.split('\t')
+        linea[1] = linea[1].split(',')
+        tabla.append(linea)
         l = f.readline()
 
-    return (prelaciones, rec, asig)
+    l = f.readline()
 
-    def leerTxt(f):
-        """
-         xxx To be removed (code copied to class TxtProjectFileFormat)
-         Lectura de un fichero con extensión '.txt'
-
-         Parámetros: f (fichero)
-
-         Valor de retorno: tabla (datos leidos)
-        """
-
-        tabla = []
-        l = f.readline()
-        while l:
-            linea = l.split('\t')
-            linea[1] = linea[1].split(',')
-            tabla.append(linea)
-            l = f.readline()
-
-        l = f.readline()
-
-        return tabla
+    return tabla
 
 
 
