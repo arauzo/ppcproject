@@ -896,10 +896,10 @@ class PPCproject(object):
             # Si el recurso es Doblemente restringido
             elif rec[0][m]=='D' or rec[0][m][0]=='D':
                 if rec[0][m]=='D':
-                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]]
+                    filaR=[rec[0][m]+rec[0][i], gettext.gettext('Double constrained'), rec[1][n], rec[1][n]]
                     m+=2
                 else:
-                    filaR=[rec[0][m], gettext.gettext('Double restricted'), rec[1][n], rec[1][n]] 
+                    filaR=[rec[0][m], gettext.gettext('Double constrained'), rec[1][n], rec[1][n]] 
                     m+=1
                 
                 self.recurso.append(filaR)
@@ -1076,7 +1076,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         unidadesRec=[]
         for n in range(len(self.recurso)): 
-            if self.recurso[n][1]==gettext.gettext('Non renewable') or self.recurso[n][1]==gettext.gettext('Double restricted'):
+            if self.recurso[n][1]==gettext.gettext('Non renewable') or self.recurso[n][1]==gettext.gettext('Double constrained'):
                 cont=0
                 recurso=self.recurso[n][0]
                 for m in range(len(asignacion)):
@@ -2203,8 +2203,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 res[1] = 'Renewable'
             elif res[1] == gettext.gettext('Non renewable'):
                 res[1] = 'Non renewable'
-            elif res[1] == gettext.gettext('Double restricted'):
-                res[1] = 'Double restricted'
+            elif res[1] == gettext.gettext('Double constrained'):
+                res[1] = 'Double constrained'
             else:
                 res[1] = 'Unlimited'
         

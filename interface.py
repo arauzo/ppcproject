@@ -309,7 +309,7 @@ class Interface(object):
       # Se añaden los tipos de recursos
       self.modeloComboR.append([gettext.gettext('Renewable')])
       self.modeloComboR.append([gettext.gettext('Non renewable')])
-      self.modeloComboR.append([gettext.gettext('Double restricted')])
+      self.modeloComboR.append([gettext.gettext('Double constrained')])
       self.modeloComboR.append([gettext.gettext('Unlimited')])
   
       # TREEVIEW para los RECURSOS NECESARIOS POR ACTIVIDAD

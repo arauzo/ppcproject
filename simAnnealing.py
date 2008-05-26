@@ -35,10 +35,10 @@ gettext.textdomain(APP)
 def resources_availability(availableResources, flag = False):
     """
     Create a dictionary with the renewable and the
-            doubly restricted resources
+            doubly constrained resources
 
     Parameters: availableResources (list of resources in the project)
-                flag (True : consider only renewable and double restricted resources;
+                flag (True : consider only renewable and double constrained resources;
                       False: consider also unlimited resources)
 
     Returned value: resources
@@ -49,7 +49,7 @@ def resources_availability(availableResources, flag = False):
     for a in availableResources:
         if a[1] == gettext.gettext('Renewable'):
             resources[a[0]] = a[3]
-        elif a[1] == gettext.gettext('Double restricted'):
+        elif a[1] == gettext.gettext('Double constrained'):
             resources[a[0]] = a[2]
         elif flag and a[1] == gettext.gettext('Unlimited'):
             resources[a[0]] = None
