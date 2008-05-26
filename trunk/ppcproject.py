@@ -298,6 +298,12 @@ class PPCproject(object):
                             modelo=self.modificarSig(modelo, modelo[path][1], new_text)
                             self.gantt.rename_activity(modelo[path][1],new_text)
                             self.gantt.update()
+                            for row in self.asignacion:
+                                if row[0] == modelo[path][1]:
+                                    row[0] = new_text
+                            for row in self.modeloAR:
+                                if row[0] == modelo[path][1]:
+                                    row[0] = new_text
                             modelo[path][1] = new_text
                             it=self.modeloComboS.get_iter(path)
                             self.modeloComboS.set_value(it, 0, new_text)
