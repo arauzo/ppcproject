@@ -493,7 +493,7 @@ class Interface(object):
       """
       vista.renderer[n] = gtk.CellRendererText()
       vista.renderer[n].set_property('editable', True)
-      vista.renderer[n].connect('edited', self.parent_application.col_edited_cb, modelo, n)
+      vista.renderer[n].connect('edited', self.parent_application.col_edited_cb, modelo, (n - 1 if offset else n))
       vista.append_column(vista.columna[n])
       vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
@@ -517,7 +517,7 @@ class Interface(object):
       modeloCombo=gtk.ListStore(str)
       vista.renderer[n]=gtk.CellRendererCombo()
       vista.renderer[n].set_property('editable', True)
-      vista.renderer[n].connect('edited', self.parent_application.col_edited_cb, modelo, n)
+      vista.renderer[n].connect('edited', self.parent_application.col_edited_cb, modelo, (n - 1 if offset else n))
       vista.renderer[n].set_property('model', modeloCombo)
       #vista.renderer[n].set_property('has-entry', False)
       vista.renderer[n].set_property('text-column', 0)
