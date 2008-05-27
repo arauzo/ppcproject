@@ -283,95 +283,100 @@ class PPCproject(object):
   
          Valor de retorno: -
         """
-        self.modified=1   # Controlamos que el proyecto ha cambiado
-        self.set_modified(True)
-        cont=int(path)+1
-        #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
+        if new_text != modelo[int(path)][n]:
+            self.modified=1   # Controlamos que el proyecto ha cambiado
+            self.set_modified(True)
+            cont=int(path)+1
+            #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
           
-        actividades=self.actividades2Lista()
-        # Controlamos la introduccion de las siguientes
-        if modelo==self.modelo:  # Interfaz de actividades
-            # añadimos las etiquetas de las actividades al selector de las siguientes
-            if n==1:  # Columna de las actividades
-                if new_text=='':
-                    modelo[path][1] = new_text
-                else:
-                    if modelo[path][1]!='':  # Si modificamos una actividad
-                        if new_text not in actividades:  # Si no está introducida                     
-                            #print modelo[path][1], new_text, 'valores a intercambiar'
-                            modelo=self.modificarSig(modelo, modelo[path][1], new_text)
-                            self.gantt.rename_activity(modelo[path][1],new_text)
-                            self.gantt.update()
-                            for row in self.asignacion:
-                                if row[0] == modelo[path][1]:
-                                    row[0] = new_text
-                            for row in self.modeloAR:
-                                if row[0] == modelo[path][1]:
-                                    row[0] = new_text
-                            modelo[path][1] = new_text
-                            it=self.modeloComboS.get_iter(path)
-                            self.modeloComboS.set_value(it, 0, new_text)
-                            it=self.modeloComboARA.get_iter(path)
-                            self.modeloComboARA.set_value(it, 0, new_text)
-                        #else:
-                            #print 'actividad repetida'
-                            #self.dialogoError('Actividad repetida')
-                                
-                    else:  # Se inserta normalmente
+            actividades=self.actividades2Lista()
+            # Controlamos la introduccion de las siguientes
+            if modelo==self.modelo:  # Interfaz de actividades
+                # añadimos las etiquetas de las actividades al selector de las siguientes
+                if n==1:  # Columna de las actividades
+                    if new_text=='':
                         modelo[path][1] = new_text
-                        self.modeloComboS.append([modelo[path][1]])
-                        self.modeloComboARA.append([modelo[path][1]])
-                        self.gantt.add_activity(new_text)
-                        self.gantt.update()
+                    else:
+                        if modelo[path][1]!='':  # Si modificamos una actividad
+                            if new_text not in actividades:  # Si no está introducida                     
+                                #print modelo[path][1], new_text, 'valores a intercambiar'
+                                modelo=self.modificarSig(modelo, modelo[path][1], new_text)
+                                self.gantt.rename_activity(modelo[path][1],new_text)
+                                self.gantt.update()
+                                for row in self.asignacion:
+                                    if row[0] == modelo[path][1]:
+                                        row[0] = new_text
+                                for row in self.modeloAR:
+                                    if row[0] == modelo[path][1]:
+                                        row[0] = new_text
+                                modelo[path][1] = new_text
+                                it=self.modeloComboS.get_iter(path)
+                                self.modeloComboS.set_value(it, 0, new_text)
+                                it=self.modeloComboARA.get_iter(path)
+                                self.modeloComboARA.set_value(it, 0, new_text)
+                            #else:
+                                #print 'actividad repetida'
+                                #self.dialogoError('Actividad repetida')
+                                    
+                        else:  # Se inserta normalmente
+                            modelo[path][1] = new_text
+                            self.modeloComboS.append([modelo[path][1]])
+                            self.modeloComboARA.append([modelo[path][1]])
+                            self.gantt.add_activity(new_text)
+                            self.gantt.update()
       
       
-            elif n==2:  # Columna de las siguientes
-                modelo=self.comprobarSig(modelo, path, new_text)
-            else:
-                modelo[path][n] = new_text
-                
-        elif modelo == self.modeloR and n == 0:
-            if new_text!='':
-                if modelo[path][1]!='':  # Si modificamos un recurso
-                    try:
-                        it=self.modeloComboARR.get_iter(path)
-                        self.modeloComboARR.set_value(it, 0, new_text)
-                    except:
-                        self.modeloComboARR.append([new_text])
-                else:  # Se inserta normalmente
-                    self.modeloComboARR.append([new_text])
-            modelo[path][0] = new_text
-        else:  # Otras interfaces 
-            modelo[path][n] = new_text
-                    
-        iterador=modelo.get_iter(path)
-        proximo=modelo.iter_next(iterador)
-        if proximo==None:  #si estamos en la última fila, insertamos otra vací­a
-            cont+=1
-            # Actividades
-            if modelo==self.modelo:                
-                if len(modelo)!=len(self.actividad): #siempre debe existir un elemento más en modelo que en actividades     
-                    modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
-                    fila=['', '', [], '', '', '', '', '', gettext.gettext('Beta'),0]
-                    self.actividad.append(fila) 
+                elif modelo[int(path)][1] != "":
+                    if n==2:  # Columna de las siguientes
+                        modelo=self.comprobarSig(modelo, path, new_text)
+                    else:
+                        modelo[path][n] = new_text
                 else:
-                    modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
-                    #print self.actividad 
+                    self.dialogoError(gettext.gettext('Activity name must be introduced first.'))
+                    return
+                
+            elif modelo == self.modeloR and n == 0:
+                if new_text!='':
+                    if modelo[path][1]!='':  # Si modificamos un recurso
+                        try:
+                            it=self.modeloComboARR.get_iter(path)
+                            self.modeloComboARR.set_value(it, 0, new_text)
+                        except:
+                            self.modeloComboARR.append([new_text])
+                    else:  # Se inserta normalmente
+                        self.modeloComboARR.append([new_text])
+                modelo[path][0] = new_text
+            else:  # Otras interfaces 
+                modelo[path][n] = new_text
+                    
+            iterador=modelo.get_iter(path)
+            proximo=modelo.iter_next(iterador)
+            if proximo==None:  #si estamos en la última fila, insertamos otra vací­a
+                cont+=1
+                # Actividades
+                if modelo==self.modelo:                
+                    if len(modelo)!=len(self.actividad): #siempre debe existir un elemento más en modelo que en actividades     
+                        modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
+                        fila=['', '', [], '', '', '', '', '', gettext.gettext('Beta'),0]
+                        self.actividad.append(fila) 
+                    else:
+                        modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
+                        #print self.actividad 
                      
-            # Recursos
-            elif modelo==self.modeloR:  
-                modelo.append()  
-                filaR=['', '', '', '']
-                self.recurso.append(filaR)
-                   
-            # Recursos necesarios por actividad
-            else:
-                modelo.append()
-                filaAR=['', '', '']
-                self.asignacion.append(filaAR)
-                   
-        # Actualizamos las listas con los nuevos datos introducidos
-        self.actualizacion(modelo, path, n)
+                # Recursos
+                elif modelo==self.modeloR:  
+                    modelo.append()  
+                    filaR=['', '', '', '']
+                    self.recurso.append(filaR)
+                       
+                # Recursos necesarios por actividad
+                else:
+                    modelo.append()
+                    filaAR=['', '', '']
+                    self.asignacion.append(filaAR)
+                       
+            # Actualizamos las listas con los nuevos datos introducidos
+            self.actualizacion(modelo, path, n)
         return
 
     def reorder_gantt(self, dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0 ):
@@ -419,12 +424,7 @@ class PPCproject(object):
                             self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                             
                         else:  #se emite un mensaje de error
-                            dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_ERROR, (gtk.STOCK_OK, gtk.RESPONSE_OK))
-                            label=gtk.Label(gettext.gettext('Wrong durations introduced.'))
-                            dialogo.vbox.pack_start(label,True,True,10)
-                            label.show()
-                            respuesta=dialogo.run()
-                            dialogo.destroy()
+                            self.dialogoError(gettext.gettext('Wrong durations introduced.'))
  
                             self.modelo[path][6]=self.actividad[int(path)][6]=''
                         self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
@@ -2109,12 +2109,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
  Valor de retorno: -
         """
-        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
-        label=gtk.Label(cadena)
-        dialogo.vbox.pack_start(label,True,True,10)
-        label.show()
+        dialogo=gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+                                  message_format = cadena,
+                                  buttons = gtk.BUTTONS_OK)
         respuesta=dialogo.run()
-
         dialogo.destroy()   
 
 
