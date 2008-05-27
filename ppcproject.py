@@ -265,6 +265,10 @@ class PPCproject(object):
         start_times = graph.get_activities_start_time([], [], [], True)
         self.add_schedule(gettext.gettext("Min"), start_times)
         self.set_schedule(start_times)
+        self.enableProjectControls(True)
+        self.set_modified(True)
+        self.modified = 1
+        self.ntbSchedule.show()
   
     def col_edited_cb( self, renderer, path, new_text, modelo, n):
         """
@@ -2068,6 +2072,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.clicked_tab = len(self.schedule_tab_labels) - 1
                 self.delete_tab(None)
             self.schedules = []
+            self.enableProjectControls(False)
+            self.modified = 0
+            self.ntbSchedule.hide()
 
         return close
   
@@ -2201,10 +2208,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_New_activate(self, item):
         """ User ask for new file (from menu or toolbar) """
         self.introduccionDatos()
-        self.enableProjectControls(True)
-        self.set_modified(True)
-        self.modified = 1
-        self.ntbSchedule.show()
   
     def on_Open_activate(self, item):
         """ User ask for open file (from menu or toolbar)
@@ -2281,9 +2284,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
        
 
     def on_Close_activate(self, menu_item):
-        if self.closeProject():
-            self.enableProjectControls(False)
-            self.ntbSchedule.hide()
+        self.closeProject()
    
     def on_Exit_activate(self, *args):
         closed = self.closeProject()
