@@ -148,13 +148,12 @@ class Interface(object):
       self.selec.set_mode(gtk.SELECTION_MULTIPLE)
       mode=self.selec.get_mode()   
       self.menu=gtk.Menu()
-      #XXX resources column should be removed from ListStore
       self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
       self.vistaLista.set_model(self.modelo)
       self.orden=gtk.TreeModelSort(self.modelo)
-      self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaLista.columna=[None]*13
-      self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('ID'))
+      self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('#'))
       self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaLista.columna[2] = gtk.TreeViewColumn(gettext.gettext('Following Act.'))
       self.vistaLista.columna[3] = gtk.TreeViewColumn(gettext.gettext('Optimistic Dur.'))
@@ -237,7 +236,7 @@ class Interface(object):
       self.modeloZ = gtk.ListStore(str, str, str, bool)
       self.vistaListaZ.set_model(self.modeloZ)
       self.ordenZ=gtk.TreeModelSort(self.modeloZ)
-      self.ordenZ.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.ordenZ.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaZ.columna=[None]*3
       self.vistaListaZ.columna[0] = gtk.TreeViewColumn(gettext.gettext('Duration'))
       self.vistaListaZ.columna[1] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
@@ -257,7 +256,7 @@ class Interface(object):
       self.modeloA = gtk.ListStore(str, str, str)
       self.vistaListaA.set_model(self.modeloA)
       self.ordenA=gtk.TreeModelSort(self.modeloA)
-      self.ordenA.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.ordenA.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaA.columna=[None]*3
       self.vistaListaA.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaListaA.columna[1] = gtk.TreeViewColumn(gettext.gettext('First Node'))
@@ -274,7 +273,7 @@ class Interface(object):
       self.modeloH = gtk.ListStore(str, str, str, str)
       self.vistaListaH.set_model(self.modeloH)
       self.ordenH=gtk.TreeModelSort(self.modeloH)
-      self.ordenH.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.ordenH.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaH.columna=[None]*4
       self.vistaListaH.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaListaH.columna[1] = gtk.TreeViewColumn(gettext.gettext('Total Sl.'))
@@ -293,7 +292,7 @@ class Interface(object):
       self.modeloR = gtk.ListStore(str, str, str, str)
       self.vistaListaR.set_model(self.modeloR)
       self.ordenR=gtk.TreeModelSort(self.modeloR)
-      self.ordenR.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.ordenR.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaR.columna=[None]*4
       self.vistaListaR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Name'))
       self.vistaListaR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Kind'))
@@ -317,7 +316,7 @@ class Interface(object):
       self.modeloAR = gtk.ListStore(str, str, str)
       self.vistaListaAR.set_model(self.modeloAR)
       self.ordenAR=gtk.TreeModelSort(self.modeloAR)
-      self.ordenAR.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.ordenAR.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vistaListaAR.columna=[None]*3
       self.vistaListaAR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
       self.vistaListaAR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Resource'))
@@ -334,7 +333,7 @@ class Interface(object):
       self.modeloC = gtk.ListStore(str, str, str)
       self.vLCriticidad.set_model(self.modeloC)
       self.ordenC=gtk.TreeModelSort(self.modeloC)
-      self.ordenC.set_sort_column_id(0,gtk.SORT_ASCENDING)
+      #self.ordenC.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vLCriticidad.columna=[None]*3
       self.vLCriticidad.columna[0] = gtk.TreeViewColumn(gettext.gettext('N'))
       self.vLCriticidad.columna[1] = gtk.TreeViewColumn(gettext.gettext('I.Criticidad'))
@@ -380,7 +379,7 @@ class Interface(object):
       self.vistaLista.renderer[n] = gtk.CellRendererText()
       self.vistaLista.renderer[n].set_property('editable', False)
       self.vistaLista.append_column(self.vistaLista.columna[n])
-      self.vistaLista.columna[n].set_sort_column_id(n)
+      #self.vistaLista.columna[n].set_sort_column_id(n)
       self.vistaLista.columna[n].pack_start(self.vistaLista.renderer[n], True)
       self.vistaLista.columna[n].set_attributes(self.vistaLista.renderer[n], text=n)
       self.vistaLista.columna[n].set_spacing(8)
@@ -397,7 +396,7 @@ class Interface(object):
        self.vistaLista.renderer[11] = gtk.CellRendererText()
        self.vistaLista.renderer[11].set_property('editable', False)
        self.vistaLista.append_column(self.vistaLista.columna[11])
-       self.vistaLista.columna[11].set_sort_column_id(11)
+       #self.vistaLista.columna[11].set_sort_column_id(11)
        self.vistaLista.columna[11].pack_start(self.vistaLista.renderer[11], True)
        self.vistaLista.columna[11].set_cell_data_func(self.vistaLista.renderer[11], self.endTimeRendererFunc)
        self.vistaLista.columna[11].set_spacing(8)
@@ -414,7 +413,7 @@ class Interface(object):
        self.vistaLista.renderer[8] = gtk.CellRendererText()
        self.vistaLista.renderer[8].set_property('editable', False)
        self.vistaLista.append_column(self.vistaLista.columna[8])
-       self.vistaLista.columna[8].set_sort_column_id(8)
+       #self.vistaLista.columna[8].set_sort_column_id(8)
        self.vistaLista.columna[8].pack_start(self.vistaLista.renderer[8], True)
        self.vistaLista.columna[8].set_cell_data_func(self.vistaLista.renderer[8], self.resourcesRendererFunc)
        self.vistaLista.columna[8].set_spacing(8)
@@ -471,12 +470,12 @@ class Interface(object):
       """
       vista.renderer[n] = gtk.CellRendererText()
       vista.append_column(vista.columna[n])
-      vista.columna[n].set_sort_column_id(n)
+      #vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
       vista.columna[n].set_attributes(vista.renderer[n], text=n)
       vista.columna[n].set_spacing(8)
       vista.columna[n].set_expand(True)
-      vista.columna[n].set_reorderable(True)
+      #vista.columna[n].set_reorderable(True)
 
 #-----------------------------------------------------------                           
      
@@ -495,13 +494,13 @@ class Interface(object):
       vista.renderer[n].set_property('editable', True)
       vista.renderer[n].connect('edited', self.parent_application.col_edited_cb, modelo, (n - 1 if offset else n))
       vista.append_column(vista.columna[n])
-      vista.columna[n].set_sort_column_id(n)
+      #vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
       vista.columna[n].set_attributes(vista.renderer[n], text= (n - 1 if offset else n))
       vista.columna[n].set_spacing(8)
       vista.columna[n].set_expand(True)
       vista.columna[n].set_resizable(True)
-      vista.columna[n].set_reorderable(True)
+      #vista.columna[n].set_reorderable(True)
       
      
    def columnaCombo(self, vista, modelo, n, offset = False):
@@ -522,7 +521,7 @@ class Interface(object):
       #vista.renderer[n].set_property('has-entry', False)
       vista.renderer[n].set_property('text-column', 0)
       vista.append_column(vista.columna[n])
-      vista.columna[n].set_sort_column_id(n)
+      #vista.columna[n].set_sort_column_id(n)
       vista.columna[n].pack_start(vista.renderer[n], True)
       vista.columna[n].set_attributes(vista.renderer[n], text=(n - 1 if offset else n))
       vista.columna[n].set_resizable(True)
