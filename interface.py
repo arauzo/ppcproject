@@ -79,21 +79,21 @@ class Interface(object):
       
       self.sbPhi.set_range(0.001,0.999)
       self.sbPhi.set_increments(0.001,0.01)
-      self.sbPhi.set_value(0.1)
+      self.sbPhi.set_value(0.9)
       self.sbNu.set_range(0.001,1)
       self.sbNu.set_increments(0.001,0.01)
-      self.sbNu.set_value(0.1)
+      self.sbNu.set_value(0.9)
       self.sbMinTempSA.set_range(0.001,100)
       self.sbMinTempSA.set_increments(0.001,0.01)
       self.sbMinTempSA.set_value(0.1)
       
       # Adding Gantt Diagram to Simulated Annealing window
-      fixedGanttSA = self._widgets.get_widget('hbox19') #XXX hbox34
+      fixedGanttSA = self._widgets.get_widget('hbox19')
       self.ganttSA = GTKgantt.GTKgantt()
       self.ganttSA.set_row_height(25)
       self.ganttSA.set_header_height(20)
       self.ganttSA.set_cell_width(20)
-      self.ganttSA.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER) #XXX ALWAYS
+      self.ganttSA.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
       self.ganttSA.show_extra_row(False)
       hsbSA = self._widgets.get_widget('hsbSA')
       vsbGantt = self._widgets.get_widget('vsbGantt')

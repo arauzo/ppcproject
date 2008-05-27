@@ -53,7 +53,7 @@ def resources_availability(availableResources, flag = False):
             resources[a[0]] = a[2]
         elif flag and a[1] == gettext.gettext('Unlimited'):
             resources[a[0]] = None
-   
+            
     return resources
 
 
