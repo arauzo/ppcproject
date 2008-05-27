@@ -2412,10 +2412,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """ User ask for paths in project """
         self.calcularCaminos()
 
-
-      # XXX XXX XXX XXX --- SimAnnealing
-
-
     def on_wndSimAnnealing_delete_event(self, window, event):
         """
         User action to close the window
@@ -2509,8 +2505,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.entryMaxTempSA.set_text('')
         self.entryAlpha.set_text('')
         self.cbIterationSA.set_active(False)
-        self.sbPhi.set_value(0.1)
-        self.sbNu.set_value(0.1)
+        self.sbPhi.set_value(0.9)
+        self.sbNu.set_value(0.9)
         self.sbMinTempSA.set_value(0.1)
         self.sbNoImproveIterSA.set_value(100)
         self.sbMaxIterationSA.set_value(100)
@@ -2538,12 +2534,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             leveling = 1
         else:
             leveling = 0
-        
-        if leveling == 1 and self.recurso == []:
-            self.dialogoError(gettext.gettext('There are not resources introduced.'))
+            
+        resources = resources_availability(self.recurso)        
+        if leveling == 1 and resources == {}:
+            self.dialogoError(gettext.gettext('There are not resources introduced or there are only non renewable resources.'))
             return False
+            
         # Create main dictionaries
-        resources = resources_availability(self.recurso)
         asignation = resources_per_activities(self.asignacion, resources)
         successors = self.tablaSucesoras(self.actividad)
         activities = self.altered_last(rest)
@@ -2571,7 +2568,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for a in range(0,int(times - 1)):
                 schedule, schEvaluated, schDuration, schAlpha, schTemp, schIt = simulated_annealing      (asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
                 # Save the best schedule
-                if optSchEvaluated > schEvaluated2:
+                if optSchEvaluated > schEvaluated:
                     self.optimumSchedule = schedule
                     optSchEvaluated = schEvaluated
                     optSchDuration = schDuration
