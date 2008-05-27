@@ -393,9 +393,9 @@ class PPCproject(object):
          
          Valor de retorno: -
         """
+        gantt_modified = False
         # Actividades
         if modelo==self.modelo:
-            gantt_modified = False
             if self.modelo[path][n]=='':
                 if n==2:
                     self.actividad[int(path)][2]=[]
