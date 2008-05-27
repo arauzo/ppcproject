@@ -381,9 +381,24 @@ class PPCproject(object):
 
     def reorder_gantt(self, dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0 ):
         act_list = []
-        for activity in self.modelo:
-            if activity[1] != "":
-                act_list.append(activity[1])
+        for index in range(len(self.modelo)):
+            if self.modelo[index][1] != "":
+                act_list.append(self.modelo[index][1])
+            else:
+                row_path = index
+        if row_path != len(self.modelo) - 1:
+            row_cont = self.modelo[row_path][0]
+            self.modelo.remove(self.modelo.get_iter(row_path))
+            self.modelo.append([row_cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])
+        new_actividad = []
+        for act in act_list:
+            for index in range(len(self.actividad)):
+                if self.actividad[index][1] == act:
+                    found = index
+                    break;
+            new_actividad.append(self.actividad[found])
+            self.actividad.remove(new_actividad[-1])
+        self.actividad = new_actividad
         self.gantt.reorder(act_list)
         self.gantt.update()
   
@@ -2168,10 +2183,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
           xxx lacks comment
         """
+        gantt_modified = False
         path = self.treemenu_invoker.get_selection().get_selected_rows()[1][0]
         model = self.treemenu_invoker.get_model()
         if self.treemenu_invoker == self.vistaLista:
             for index in range(len(self.actividad)-1,-1, -1):
+                if model[path][1] in self.actividad[index][2]:
+                    self.actividad[index][2].remove(model[path][1])
+                    model[index][2]=", ".join(self.actividad[index][2])
                 if self.actividad[index][1] == model[path][1]:
                     del self.actividad[index]
             for index in range(len(self.asignacion)-1,-1, -1):
@@ -2179,7 +2198,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     del self.asignacion[index]
                 if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                     self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
-            #xxx TODO: Update gantt diagram and Schedules.
+                    
+                    
+            self.gantt.remove_activity(model[path][1])
+            gantt_modified = True
+
+
         elif self.treemenu_invoker == self._widgets.get_widget('vistaListaRec'):
             for index in range(len(self.recurso)-1,-1, -1):
                 if self.recurso[index][0] == model[path][0]:
@@ -2194,6 +2218,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 if self.asignacion[index][0] == model[path][0] and self.asignacion[index][1] == model[path][1]:
                     del self.asignacion[index]
         model.remove(model.get_iter(path))
+        if gantt_modified == True:
+            act_list = []
+            dur_dic = {}
+            pre_dic = {}
+            for i in range(len(self.actividad)):
+                act_list.append(self.actividad[i][1])
+                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
+                pre_dic[self.actividad[i][1]] = self.actividad[i][2]
+            self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1])
+            for index in range(1, len(self.schedules)):
+                self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False, self.schedules[index][1])
+            self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
         self.modified=1   # Controlamos que el proyecto ha cambiado
         self.set_modified(True)
   
