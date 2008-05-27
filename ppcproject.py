@@ -327,9 +327,6 @@ class PPCproject(object):
       
             elif n==2:  # Columna de las siguientes
                 modelo=self.comprobarSig(modelo, path, new_text)
-    
-            elif n > 7:
-                modelo[path][n-1] = new_text
             else:
                 modelo[path][n] = new_text
                 
@@ -1879,7 +1876,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Open a project file given by filename
         """
-        # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
         try:
             # Tries to load file with formats that match its extension in format order
             data = None
@@ -1890,12 +1886,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     try:
                         data = format.load(filename)
                         break
-                    except:# xxxException:
+                    except InvalidFileFormatException:
                         pass
 
             # if not data:
             # xxx Should we try here to load files in any format independently of their 
             # extension. It would the same previous code without the 'if extension'
+            
+            #Data successfully loaded
             if data:
                 self.actividad, schedules, self.recurso, self.asignacion = data
                 for res in self.recurso:
