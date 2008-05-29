@@ -286,7 +286,6 @@ class PPCproject(object):
         if new_text != modelo[int(path)][n]:
             self.modified=1   # Controlamos que el proyecto ha cambiado
             self.set_modified(True)
-            cont=int(path)+1
             #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
           
             actividades=self.actividades2Lista()
@@ -352,15 +351,14 @@ class PPCproject(object):
             iterador=modelo.get_iter(path)
             proximo=modelo.iter_next(iterador)
             if proximo==None:  #si estamos en la última fila, insertamos otra vací­a
-                cont+=1
                 # Actividades
                 if modelo==self.modelo:                
                     if len(modelo)!=len(self.actividad): #siempre debe existir un elemento más en modelo que en actividades     
-                        modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
+                        modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])     
                         fila=['', '', [], '', '', '', '', '', gettext.gettext('Beta'),0]
                         self.actividad.append(fila) 
                     else:
-                        modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
+                        modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '', gettext.gettext('Beta'),""])
                         #print self.actividad 
                      
                 # Recursos
