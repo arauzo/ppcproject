@@ -2237,6 +2237,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # File menu actions
     def on_New_activate(self, item):
         """ User ask for new file (from menu or toolbar) """
+        self.closeProject()
         self.introduccionDatos()
   
     def on_Open_activate(self, item):
@@ -2287,7 +2288,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
         if errorActRepetidas==0:
             if self.openFilename==gettext.gettext('Unnamed'):
-                on_SaveAs_activate(item)
+                self.on_SaveAs_activate(item)
             else:
                 self.saveProject(self.openFilename)
         else:
