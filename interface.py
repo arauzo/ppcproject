@@ -423,7 +423,14 @@ class Interface(object):
 
    def resourcesRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
        """
-        xxx needs to be commented.
+       Function called by the "Resources" column when its content needs to be shown 
+
+       Parameters: treeviewcolumn: resources column.
+                   cell_renderer: cell renderer
+                   model: activities model.
+                   iter: row pointer.
+
+       Return value: -
        """
        activity = model.get_value(iter, 1)
        text = ""
@@ -439,7 +446,14 @@ class Interface(object):
 
    def endTimeRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
        """
-        xxx needs to be commented.
+       Function called by the "End Time" column when its content needs to be shown 
+
+       Parameters: treeviewcolumn: end time column.
+                   cell_renderer: cell renderer
+                   model: activities model.
+                   iter: row pointer.
+
+       Return value: -
        """
        start = model.get_value(iter, 9)
        duration = model.get_value(iter, 6)

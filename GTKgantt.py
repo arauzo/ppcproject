@@ -341,9 +341,9 @@ class GanttHeader(gtk.Layout):
         context.set_line_width(1);
         context.stroke()
 
-class Diagram_graph(object):
+class DiagramGraph(object):
     """
-    Class Diagram_graph:
+    Class DiagramGraph:
         Simple structure created to group the activities information
 
         Properties:
@@ -406,7 +406,7 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         gtk.Layout.__init__(self)
         gtk.EventBox.__init__(self)
         #Creating objects
-        self.graph = Diagram_graph()
+        self.graph = DiagramGraph()
         #Initialising values
         self.row_height = 25
         self.cell_width = 25
@@ -439,6 +439,13 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
         self.connect("leave-notify-event", self.set_selected)
 
     def set_selected(self, widget, event):
+        """
+        Marks an activity as selected if the mouse pointer is above it.
+        
+        widget: widget where the event occurred
+        
+        event: input event
+        """
         previous = self.selected
         if event.type == gtk.gdk.LEAVE_NOTIFY:
             self.selected = None
