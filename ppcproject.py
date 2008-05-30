@@ -2626,14 +2626,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.ganttSA.set_activity_prelations(act,successors[act])
 
             self.ganttSA.update()
-            # Add loading to loadingSheet
-            self.loadingSheet.set_loading(optSchLoadingSheet)
-            self.loadingSheet.set_duration(optSchDuration)
-            self.loadingSheet.update()
-            # Add loading to loadingTable
-            self.loadingTable.set_loading(optSchLoadingSheet)
-            self.loadingTable.set_duration(optSchDuration)
-            self.loadingTable.update()
+            if asignation != {}:
+                # Add loading to loadingSheet
+                self.loadingSheet.set_loading(optSchLoadingSheet)
+                self.loadingSheet.set_duration(optSchDuration)
+                self.loadingSheet.update()
+                # Add loading to loadingTable
+                self.loadingTable.set_loading(optSchLoadingSheet)
+                self.loadingTable.set_duration(optSchDuration)
+                self.loadingTable.update()
         else:
             self.dialogoError(gettext.gettext('Initial temperature not high enough.'))
             return False
