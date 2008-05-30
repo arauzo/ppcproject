@@ -2579,6 +2579,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         asignation = resources_per_activities(self.asignacion, resources)
         successors = self.tablaSucesoras(self.actividad)
         activities = self.altered_last(rest)
+        if activities == {}:
+            self.dialogoError(gettext.gettext('There are no activities'))
+            return False
         # Get the simulated annealing algorithm's paremeters
         phi = self.sbPhi.get_value()
         nu = self.sbNu.get_value()
@@ -2592,6 +2595,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
         self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
+        
+        if optSchDuration == 0:
+            self.dialogoError(gettext.gettext('Project\'s duration = 0'))
+            return False
+            
         if self.optimumSchedule != None: # If no error
             # Load gantt diagram
             if not self.ganttActLoaded:
