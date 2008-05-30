@@ -157,6 +157,9 @@ class Pert(object):
         return (origin,destination)
 
     def addNode(self, node):
+        """
+        Adds a new node
+        """
         self.graph[node] = []
 
     def activityArc(self, activityName):

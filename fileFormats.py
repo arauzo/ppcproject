@@ -74,7 +74,10 @@ class ProjectFileFormat(object):
     def load(self, filename):
         """
         Return: project data=(activities, schedules, resources, resourceAsignaments)
-           xxx Describe here complete data structure of each part.
+           activities: table with the following fields: (act_number, act_name, opt.dur, most prob. dur, pes. dur, avg. dur, typ. dev, distribution)
+           schedules: list containing lists with two elements: a string (schedule name) and a dictionary which uses activity names as keys and start times as definitions.
+           resources: table with the following fields: (name, type, project units, period units)
+           resourceAsignaments: table with the following fields: (activity name, resource, units)
 
         Raises: InvalidFileFormatException if data in file does not follow the format
         Implementing this function on subclasses is: optional.
