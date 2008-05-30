@@ -2572,7 +2572,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             
         resources = resources_availability(self.recurso)        
         if leveling == 1 and resources == {}:
-            self.dialogoError(gettext.gettext('There are not resources introduced or there are only non renewable resources.'))
+            self.dialogoError(gettext.gettext('There are not renewable or double constrained resources introduced'))
             return False
             
         # Create main dictionaries
