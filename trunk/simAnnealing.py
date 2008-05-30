@@ -115,6 +115,8 @@ def simulated_annealing(asignation,resources,successors,activities,leveling,nu,p
     durationAux = duration1
     loadingSheetAux = loadingSheet1
     
+    if duration1 == 0:
+        return (sch1, sch1Evaluated, duration1, None, None, None)
     if sch1Evaluated == 0:
         return (sch1, sch1Evaluated, duration1, None, None, 0)
         
@@ -246,6 +248,9 @@ def evaluate(sch,leveling,asignation,resources):
         if endTime > duration:
             duration = endTime
     
+    if duration == 0:
+        return (None, None, 0)
+        
     loadingSheet = calculate_loading_sheet(sch, resources, asignation, duration)
     if leveling == 0: # if allocate
         return (duration, loadingSheet, duration)  
@@ -268,7 +273,7 @@ def calculate_loading_sheet (sch, resources, asignation, duration):
     startTime = []
     endTime = []
     loadingSheet = {}
-
+        
     for act in sch:
         startTime.append(act[1])
         endTime.append(act[2])
