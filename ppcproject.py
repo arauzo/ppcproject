@@ -2987,7 +2987,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         elif dato1=='':
             mostrarDato=gettext.gettext('P ( Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
         else:
-            mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project > ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+            mostrarDato='P ( '+str(dato1)+gettext.gettext(' < Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
         self.escribirProb(mostrarDato)
 
     def on_btnProbabilityReset_clicked(self, button):
