@@ -661,7 +661,20 @@ class PPCproject(object):
             row[9] = schedule[row[1]]
             self.gantt.set_activity_start_time(row[1], row[9])
         self.gantt.update()
-  
+
+    def delete_tab(self, widget):
+        self.schedule_tab_labels.remove(self.schedule_tab_labels[self.clicked_tab])
+        if self.clicked_tab == self.ntbSchedule.get_current_page():
+            self.ntbSchedule.set_current_page((self.clicked_tab - 1) % self.ntbSchedule.get_n_pages())
+        del self.schedules[self.clicked_tab]
+        self.ntbSchedule.remove_page(self.clicked_tab)
+        self.set_modified(True)
+        self.modified = 1
+
+    def new_tab(self, widget):
+        new_sched = deepcopy(self.schedules[0][1])
+        self.add_schedule(None, new_sched )
+
     def actualizarColSig(self, datos):
         """
          Actualización de la columna de las siguientes en   
@@ -3514,21 +3527,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self._widgets.get_widget("ctxTabsMenu").popup(None, None, None, event.button, event.time)
                     break
 
-    def delete_tab(self, widget):
-        self.schedule_tab_labels.remove(self.schedule_tab_labels[self.clicked_tab])
-        if self.clicked_tab == self.ntbSchedule.get_current_page():
-            self.ntbSchedule.set_current_page((self.clicked_tab - 1) % self.ntbSchedule.get_n_pages())
-        del self.schedules[self.clicked_tab]
-        self.ntbSchedule.remove_page(self.clicked_tab)
-        self.set_modified(True)
-        self.modified = 1
-
-    def new_tab(self, widget):
-        new_sched = deepcopy(self.schedules[0][1])
-        self.add_schedule(None, new_sched )
-
     def on_tab_changed(self, notebook, page, page_num):
         self.set_schedule(self.schedules[page_num][1])
+
+    def on_key_pressed(self, widget, event):
+        if event.keyval == gtk.keysyms.Escape:
+            widget.hide()
+            return True
+        else:
+            return False
 
 
 def main(filename=None):
