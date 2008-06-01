@@ -2299,8 +2299,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def  on_Save_activate(self, item):
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
+
         if errorActRepetidas==0:
-            if self.openFilename==gettext.gettext('Unnamed'):
+            if self.openFilename=='Unnamed':
                 self.on_SaveAs_activate(item)
             else:
                 self.saveProject(self.openFilename)
