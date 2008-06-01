@@ -384,8 +384,7 @@ def generate_or_modify(asignation,resources,predecessors,activities,leveling,exe
             # If it level, pop the activities with maximum time to start = currentTime 
             if leveling == 1:
                 for act in possibles.copy():
-                    if possibles[act][1] == currentTime:
-                        #print 'se ejecuta indiscutiblemente: ',act                     
+                    if possibles[act][1] == currentTime:                   
                         executing[act] = possibles[act][0]
                         result += [(act, currentTime, currentTime + possibles[act][0])]
                         del possibles[act]
@@ -396,23 +395,16 @@ def generate_or_modify(asignation,resources,predecessors,activities,leveling,exe
             else:
                 numActivities = random.randint(0,len(possibles))
 
-            #print 'numero actividades: ', numActivities
-            #print 'possibles0: ', possibles
-            #print 'executing0: ', executing
-            #print 'result0: ',result
             possiblesCopy = possibles.copy()
             # Execute activities until a number of activities have executed, no more possibles activities or no more resources 
             while numActivities != 0 and lengthResources != resourcesUsedUp:
             
                 noExecute = 0
-                
-                #print 'predecesors: ',predecessors
-                #print 'possibles: ',possibles 
+
                 # Pop a random item of possiblesCopy
                 possiblesKeys = possiblesCopy.keys()
                 key = random.choice(possiblesKeys)
                 act = possiblesCopy.pop(key)
-                #print 'actividad: ',act
                 # If resources are required            
                 if key in asignation.keys() and leveling == 0:
                     for resource,amount in asignation[key]:
@@ -434,9 +426,7 @@ def generate_or_modify(asignation,resources,predecessors,activities,leveling,exe
                     del possibles[key] #remove the activity from possibles dictionary
                 
                 numActivities -= 1
-                #print 'ejecutando: ',executing      
-                #print 'resultado: ',result
-        
+
         time = min(executing.values())
         if leveling == 0:
             currentTime += time
@@ -446,7 +436,6 @@ def generate_or_modify(asignation,resources,predecessors,activities,leveling,exe
             else:
                 time = 1
                 currentTime = int(currentTime) + time
-        #print 'currentTime: ',currentTime
         # Update the remaining time of all activities executing
         for a in executing.copy():
             executing[a] = float(executing[a]) - time
