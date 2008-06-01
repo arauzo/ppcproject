@@ -2335,6 +2335,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if closed:
             #XXX Salir propiamente??
             gtk.main_quit()
+            return False
+        else:
+            return True
 
 # View menu actions
 

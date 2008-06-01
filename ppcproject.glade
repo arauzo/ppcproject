@@ -259,7 +259,7 @@
             <child>
               <widget class="GtkToolButton" id="tbNuevo">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Proyecto nuevo</property>
+                <property name="tooltip" translatable="yes">New project</property>
                 <property name="stock_id">gtk-new</property>
                 <signal name="clicked" handler="on_New_activate"/>
               </widget>
@@ -270,7 +270,7 @@
             <child>
               <widget class="GtkToolButton" id="tbAbrir">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Abrir proyecto</property>
+                <property name="tooltip" translatable="yes">Open project</property>
                 <property name="stock_id">gtk-open</property>
                 <signal name="clicked" handler="on_Open_activate"/>
               </widget>
@@ -281,7 +281,7 @@
             <child>
               <widget class="GtkToolButton" id="tbGuardar">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Guardar proyecto</property>
+                <property name="tooltip" translatable="yes">Save project</property>
                 <property name="stock_id">gtk-save</property>
                 <signal name="clicked" handler="on_Save_activate"/>
               </widget>
@@ -292,7 +292,7 @@
             <child>
               <widget class="GtkToolButton" id="tbCerrar">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Cerrar proyecto actual</property>
+                <property name="tooltip" translatable="yes">Close actual project</property>
                 <property name="stock_id">gtk-close</property>
                 <signal name="clicked" handler="on_Close_activate"/>
               </widget>
@@ -312,7 +312,7 @@
             <child>
               <widget class="GtkToolButton" id="tbSalir">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Salir de la aplicación</property>
+                <property name="tooltip" translatable="yes">Quit PPC-Project</property>
                 <property name="stock_id">gtk-quit</property>
                 <signal name="clicked" handler="on_Exit_activate"/>
               </widget>
@@ -475,7 +475,7 @@
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip" translatable="yes">Calcular probabilidad del camino selccionado</property>
+                    <property name="tooltip" translatable="yes">Calculate probabilities</property>
                     <property name="label" translatable="yes">Calculate Probabilities</property>
                     <property name="use_underline">True</property>
                     <property name="response_id">0</property>
@@ -724,7 +724,7 @@
                   <widget class="GtkButton" id="btContinuarIterando">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip" translatable="yes">Continuar iterando</property>
+                    <property name="tooltip" translatable="yes">Continue iterating</property>
                     <property name="border_width">4</property>
                     <property name="label" translatable="yes">Iterate</property>
                     <property name="use_underline">True</property>
@@ -781,7 +781,7 @@
               <widget class="GtkButton" id="btGuardarSim">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="tooltip" translatable="yes">Guardar resultado</property>
+                <property name="tooltip" translatable="yes">Save results</property>
                 <property name="label">gtk-save</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
@@ -798,7 +798,7 @@
               <widget class="GtkButton" id="btProbSim">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="tooltip" translatable="yes">Cálcular probabilidad</property>
+                <property name="tooltip" translatable="yes">Calculate probability</property>
                 <property name="label" translatable="yes">Probability</property>
                 <property name="use_underline">True</property>
                 <property name="response_id">0</property>
@@ -1593,7 +1593,7 @@
                   <widget class="GtkTextView" id="tvProbabilidades">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="tooltip" translatable="yes">Probabilidades calculadas</property>
+                    <property name="tooltip" translatable="yes">Calculated probabilities</property>
                     <property name="editable">False</property>
                     <property name="indent">9</property>
                     <property name="cursor_visible">False</property>
@@ -1623,7 +1623,7 @@
     <property name="copyright" translatable="yes">© 2007 - 2008 University of Córdoba</property>
     <property name="comments" translatable="yes">Multiplatform software tool for education and research in project management</property>
     <property name="website">http://code.google.com/p/ppcproject/</property>
-    <property name="website_label" translatable="yes">Repositorio oficial</property>
+    <property name="website_label" translatable="yes">Official Repository</property>
     <property name="license" translatable="yes">This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
@@ -2513,7 +2513,7 @@ Alejandro Villagrán Marín
               <widget class="GtkButton" id="btExportarCsv">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="tooltip" translatable="yes">Exportar caminos a formato CSV</property>
+                <property name="tooltip" translatable="yes">Export to CSV Format</property>
                 <property name="label" translatable="yes">Export to CSV Format</property>
                 <property name="use_underline">True</property>
                 <property name="response_id">0</property>
