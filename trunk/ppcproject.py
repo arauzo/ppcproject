@@ -2558,9 +2558,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.cbIterationSA.set_active(False)
         self.sbPhi.set_value(0.9)
         self.sbNu.set_value(0.9)
-        self.sbMinTempSA.set_value(0.1)
+        self.sbMinTempSA.set_value(0.01)
         self.sbNoImproveIterSA.set_value(100)
-        self.sbMaxIterationSA.set_value(100)
+        self.sbMaxIterationSA.set_value(1000)
         self.sbExecuteTimesSA.set_value(1)
         self.sbSlackSA.set_value(0)
 

@@ -85,7 +85,7 @@ class Interface(object):
       self.sbNu.set_value(0.9)
       self.sbMinTempSA.set_range(0.001,100)
       self.sbMinTempSA.set_increments(0.001,0.01)
-      self.sbMinTempSA.set_value(0.1)
+      self.sbMinTempSA.set_value(0.01)
       
       # Adding Gantt Diagram to Simulated Annealing window
       fixedGanttSA = self._widgets.get_widget('hbox19')
