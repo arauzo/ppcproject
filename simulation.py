@@ -113,7 +113,7 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
     s += gettext.gettext('SIMULATION DATA')
     s += '\n'
     s += '\n'
-    s += gettext.gettext('N, I.CRITICIDAD, PATH')
+    s += gettext.gettext('N, CRITICALITY INT., PATH')
     s += '\n'
     for n in range(len(modeloCriticidad)):
         s += modeloCriticidad[n][0] + ',' + modeloCriticidad[n][1] + ',' + '"'\

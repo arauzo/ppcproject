@@ -336,7 +336,7 @@ class Interface(object):
       #self.ordenC.set_sort_column_id(0,gtk.SORT_ASCENDING)
       self.vLCriticidad.columna=[None]*3
       self.vLCriticidad.columna[0] = gtk.TreeViewColumn(gettext.gettext('N'))
-      self.vLCriticidad.columna[1] = gtk.TreeViewColumn(gettext.gettext('I.Criticidad'))
+      self.vLCriticidad.columna[1] = gtk.TreeViewColumn(gettext.gettext('Criticality Int.'))
       self.vLCriticidad.columna[2] = gtk.TreeViewColumn(gettext.gettext('Paths'))
       self.vLCriticidad.renderer=[None]*3
       
