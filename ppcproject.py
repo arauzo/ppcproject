@@ -2767,7 +2767,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         media, dTipica=self.extraerMediaYDTipica()
 
         if float(dTipica)==0.00:
-            texto=gettext.gettext('Path duration is ') +'%5.2f'%(float(media))+' t.u. with 100% probability'
+            texto=gettext.gettext('Path duration is ') +'%5.2f'%(float(media))+gettext.gettext(' t.u. with 100% probability')
             self.dialogoError(texto)
         else:
             # Se asigna tí­tulo y gráfica a la ventana de probabilidad
