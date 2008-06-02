@@ -296,8 +296,8 @@ class Interface(object):
       self.vistaListaR.columna=[None]*4
       self.vistaListaR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Name'))
       self.vistaListaR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Kind'))
-      self.vistaListaR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Project Dur. Unit'))
-      self.vistaListaR.columna[3] = gtk.TreeViewColumn(gettext.gettext('Period Dur. Unit'))
+      self.vistaListaR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Project Available Units'))
+      self.vistaListaR.columna[3] = gtk.TreeViewColumn(gettext.gettext('Period Available Units'))
       self.vistaListaR.renderer=[None]*4
      
       self.columnaEditable(self.vistaListaR, self.modeloR, 0)
