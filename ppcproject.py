@@ -166,7 +166,12 @@ class PPCproject(object):
 
     def cbtreeview (self, container, widget):
         """
-          xxx lacks comment
+        Sets Gantt row height according to the activities treeview.
+    
+        Parameters: container
+                    widget
+
+        Returns: False.
         """
         self.gantt.set_header_height(self.vistaLista.convert_tree_to_widget_coords(0,1)[1])
         if len (self.modelo) > 0 and self.modelo[0][1] != "":
@@ -176,7 +181,11 @@ class PPCproject(object):
 
     def enableProjectControls(self, value):
         """
-          xxx lacks comment
+        Enable project editing controls.
+    
+        Parameters: value (True or False)
+
+        Returns: None.
         """
         self._widgets.get_widget('mnGuardar').set_sensitive(value)
         self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
@@ -191,7 +200,11 @@ class PPCproject(object):
 
     def set_modified(self, value):
         """
-          xxx lacks comment
+        Enable or disable project saving controls.
+    
+        Parameters: value (True or False)
+
+        Returns: None.
         """
         self._widgets.get_widget('mnGuardar').set_sensitive(value)
         self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
@@ -378,6 +391,16 @@ class PPCproject(object):
         return
 
     def reorder_gantt(self, dummy1 = 0, dummy2 = 0, dummy3 = 0, dummy4 = 0 ):
+        """
+        Reorder Gantt diagram according to activities new order.
+    
+        Parameters: dummy1: not used parameter.
+                    dummy2: not used parameter.
+                    dummy3: not used parameter.
+                    dummy4: not used parameter.
+
+        Returns: None.
+        """
         act_list = []
         for index in range(len(self.modelo)):
             if self.modelo[index][1] != "":
@@ -641,6 +664,14 @@ class PPCproject(object):
    
 
     def add_schedule(self, name , sch_dic):
+        """
+        Add new schedule.
+    
+        Parameters: name: schedule name.
+                    sch_dic: schedule.
+
+        Returns: None.
+        """
         if name == None:
             name = "P" + str(len(self.schedules))
         self.schedules.append([name, sch_dic])
@@ -654,6 +685,13 @@ class PPCproject(object):
         self.modified = 1
 
     def set_schedule(self, schedule):
+        """
+        Set current schedule to "schedule".
+    
+        Parameters: schedule
+
+        Returns: None.
+        """
         for row in self.modelo:
             if row[1] != "":
                 row[9] = schedule[row[1]]
@@ -663,6 +701,13 @@ class PPCproject(object):
         self.gantt.update()
 
     def delete_tab(self, widget):
+        """
+        Delete tab.
+    
+        Parameters: widget.
+
+        Returns: None.
+        """
         self.schedule_tab_labels.remove(self.schedule_tab_labels[self.clicked_tab])
         if self.clicked_tab == self.ntbSchedule.get_current_page():
             self.ntbSchedule.set_current_page((self.clicked_tab - 1) % self.ntbSchedule.get_n_pages())
@@ -672,6 +717,13 @@ class PPCproject(object):
         self.modified = 1
 
     def new_tab(self, widget):
+        """
+        Create new tab.
+    
+        Parameters: widget.
+
+        Returns: None.
+        """
         new_sched = deepcopy(self.schedules[0][1])
         self.add_schedule(None, new_sched )
 
@@ -727,13 +779,11 @@ class PPCproject(object):
      
     def actualizarColSigPSPLIB(self, prelacion):
         """
-Actualización de la columna de las siguientes en   
-        la interfaz para los proyectos de la librería PSPLIB
+        Actualización de la columna de las siguientes en la interfaz para los proyectos de la librería PSPLIB
 
-Parámetros: prelacion (lista que almacena las actividades 
-                              y sus siguientes)
+        Parámetros: prelacion (lista que almacena las actividades y sus siguientes)
 
-Valor de retorno: -
+        Valor de retorno: -
         """   
         longitud=len(prelacion)
         for m in range(len(self.modelo)):
@@ -751,15 +801,14 @@ Valor de retorno: -
      
     def comprobarDuraciones(self, a, b, m):
         """
-Comprobación de que los tiempos optimista, pesimista y
-         más probable son correctoso
+        Comprobación de que los tiempos optimista, pesimista y más probable son correctoso
 
-Parámetros: a (d.optimista)
-            b (d.pesimista)
-            m (d.mas probable)
+        Parámetros: a (d.optimista)
+                    b (d.pesimista)
+                    m (d.mas probable)
 
-Valor de retorno: 0 (valores incorrectos)
-                  1 (valores correctos)
+        Valor de retorno: 0 (valores incorrectos)
+                          1 (valores correctos)
         """
         if ( (a<b and m<=b and m>=a) or (a==b and b==m)):
             return 1 
@@ -769,13 +818,13 @@ Valor de retorno: 0 (valores incorrectos)
 
     def actividadesRepetidas(self, actividad):
         """
- Comprueba si se han introducido actividades repetidas 
+        Comprueba si se han introducido actividades repetidas 
 
- Parámetros: actividad (lista de actividades)
+        Parámetros: actividad (lista de actividades)
 
- Valor de retorno: error (0 si no hay error
-                          1 si hay error) 
-                   repetidas (lista de actividades repetidas)
+        Valor de retorno: error (0 si no hay error
+                                 1 si hay error) 
+                          repetidas (lista de actividades repetidas)
         """
         error=0
         actividades=[]
@@ -793,14 +842,12 @@ Valor de retorno: 0 (valores incorrectos)
 
     def comprobarActExisten(self, actividad):
         """
-Comprobación de que las actividades 
-          introducidas en la ventana 'recursos necesarios por 
-          actividad' existen
+        Comprobación de que las actividades introducidas en la ventana 'recursos necesarios por actividad' existen
 
-Parámetros: actividad (lista de actividades)
+        Parámetros: actividad (lista de actividades)
 
-Valor de retorno: error (0 si no hay error
-                         1 si hay error) 
+        Valor de retorno: error (0 si no hay error
+                                 1 si hay error) 
         """
         error=0
         actividades=[]
@@ -823,14 +870,12 @@ Valor de retorno: error (0 si no hay error
 
     def comprobarRecExisten(self, recurso):
         """
-Comprobación de que los recursos
-         introducidos en la ventana 'recursos necesarios por 
-         actividad' existen
+        Comprobación de que los recursos introducidos en la ventana 'recursos necesarios por actividad' existen
 
-Parámetros: recurso (lista de recursos)
+        Parámetros: recurso (lista de recursos)
 
-Valor de retorno: error (0 si no hay error
-                         1 si hay error) 
+        Valor de retorno: error (0 si no hay error
+                                 1 si hay error) 
         """
         error=0
         recursos=[]
@@ -881,18 +926,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     
     def mostrarRec(self, asignacion, num): 
         """
- Almacenamiento en una lista de listas (filas) las relaciones entre    
-          actividades, recursos y unidades de recurso 
-          necesarias por actividad
+        Almacenamiento en una lista de listas (filas) las relaciones entre  actividades, recursos y unidades de recurso necesarias por actividad
 
- Parámetros: asignacion (lista que almacena actividad,
-                         recurso y unid. necesarias por act.)
-             num (0: fichero con extensión '.sm'
-                  1: fichero con extensión '.prj')
+        Parámetros: asignacion (lista que almacena actividad, recurso y unid. necesarias por act.)
+                    num (0: fichero con extensión '.sm'
+                         1: fichero con extensión '.prj')
 
- Valor de retorno: mostrarR (lista que almacena una lista por
-                  cada actividad con la relacion 
-                  actividad-recurso-unidad necesaria)
+        Valor de retorno: mostrarR (lista que almacena una lista por cada actividad con la relacion actividad-recurso-unidad necesaria)
         """
         mostrarR=[]
         i=asignacion.index(asignacion[0])
@@ -1209,14 +1249,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def mostrarCaminosZad(self, modelo, criticos, informacionCaminos):
         """
- Muestra los caminos del grafo en la interfaz (ventana Zaderenko)
+        Muestra los caminos del grafo en la interfaz (ventana Zaderenko)
 
- Parámetros: modelo (lista donde se muestran los caminos)
-             criticos (lista caminos criticos)
-             informacionCaminos (lista caminos del grafo, sus duraciones
-                          y sus desviaciones tí­picas)
+        Parámetros: modelo (lista donde se muestran los caminos)
+                    criticos (lista caminos criticos)
+                    informacionCaminos (lista caminos del grafo, sus duraciones y sus desviaciones tí­picas)
 
- Valor de retorno: -
+        Valor de retorno: -
         """
         #Se cambia el formato de los caminos para mostrarlos en la interfaz
         camino=[]
@@ -2021,12 +2060,27 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #            
   
     def on_btnSaveRoy_clicked(self, button):
+        """
+        Close the project checking if it has been modified.
+        If it has been modified, show a dialog: Save-Discard-Cancel
+
+        Return: True if closed
+                False if canceled
+        """
         self.save_graph_image(self.grafoRoy.get_pixbuf())
 
     def on_btnSavePert_clicked(self, button):
+        """
+        Save Pert graph image
+        """
         self.save_graph_image(self.grafoPert.get_pixbuf())
 
     def save_graph_image(self, pixbuf):
+        """
+        Save graph image
+        
+        Parameter: pixbuf (image)
+        """
         dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save Image"),
                                                None,
                                                gtk.FILE_CHOOSER_ACTION_SAVE,
@@ -2105,12 +2159,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
     def dialogoRec(self, tipo):
         """
- Muestra un mensaje de advertencia si no se han
-          introducido bien las unidades de recurso
+        Muestra un mensaje de advertencia si no se han introducido bien las unidades de recurso
 
- Parámetros: tipo (tipo de recurso)
+        Parámetros: tipo (tipo de recurso)
 
- Valor de retorno: -
+        Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
@@ -2129,11 +2182,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
      
     def dialogoError(self, cadena):
         """
- Muestra un mensaje de error en la apertura del fichero
+        Muestra un mensaje de error en la apertura del fichero
 
- Parámetros: -
+        Parámetros: -
 
- Valor de retorno: -
+        Valor de retorno: -
         """
         dialogo=gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
                                   message_format = cadena,
@@ -2145,12 +2198,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def errorActividadesRepetidas(self, repetidas):
         """
- Muestra un mensaje de error si en la introducción
-          de datos hay alguna actividad repetida
+        Muestra un mensaje de error si en la introducción de datos hay alguna actividad repetida
 
- Parámetros: repetidas (lista con las actividades repetidas)
+        Parámetros: repetidas (lista con las actividades repetidas)
 
- Valor de retorno: -
+        Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
@@ -2164,14 +2216,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def errorRecNecAct(self, datosErroneos, cadena):
         """
- Muestra un mensaje de error si en la ventana
-          'recursos necesarios por actividad' hay alguna
-          actividad o algun recurso inexistente
+        Muestra un mensaje de error si en la ventana 'recursos necesarios por actividad' hay alguna actividad o algun recurso inexistente
 
- Parámetros: datosErroneos (lista con los datos erróneos)
-             cadena (cadena de texto)
+        Parámetros: datosErroneos (lista con los datos erróneos) cadena (cadena de texto)
 
- Valor de retorno: -
+        Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
@@ -2184,7 +2233,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def treeview_menu_invoked(self, widget, event, treeview):
         """
-          xxx lacks comment
+        Treeview menu invoked
+
+        Parameters: widget
+                    event
+                    treeview
+
+        Returns: -
         """
         if event.button == 3 and treeview.get_selection().count_selected_rows() != 0 and treeview.get_model()[treeview.get_selection().get_selected_rows()[1][0]][1] != "":
             self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
@@ -2192,7 +2247,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def delete_tree_row(self, widget):
         """
-          xxx lacks comment
+        Delete treeview row
+
+        Parameters: widget
+
+        Returns: -
         """
         gantt_modified = False
         path = self.treemenu_invoker.get_selection().get_selected_rows()[1][0]
@@ -2297,6 +2356,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dialogoFicheros.destroy()
         
     def  on_Save_activate(self, item):
+        """
+        Save option invoked
+
+        Parameters: item
+
+        Returns: -
+        """
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
 
@@ -2309,6 +2375,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.errorActividadesRepetidas(actividadesRepetidas) 
 
     def on_SaveAs_activate(self, menu_item):
+        """
+        Save as option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas = self.actividadesRepetidas(self.actividad)
         if errorActRepetidas == 0:
@@ -2329,9 +2402,23 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
        
 
     def on_Close_activate(self, menu_item):
+        """
+        Close option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         self.closeProject()
    
     def on_Exit_activate(self, *args):
+        """
+        Exit option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         closed = self.closeProject()
         if closed:
             #XXX Salir propiamente??
@@ -2354,11 +2441,25 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.bHerramientas.hide()
    
     def on_mnPantallaComp_activate(self, menu_item):
+        """
+        Full screen option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         self.vPrincipal.fullscreen()
         self._widgets.get_widget('mnSalirPantComp').show()
         self._widgets.get_widget('mnPantallaComp').hide()
   
     def on_mnSalirPantComp_activate(self, menu_item):
+        """
+        Exit full screen option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         self.vPrincipal.unfullscreen()
         self._widgets.get_widget('mnSalirPantComp').hide()
         self._widgets.get_widget('mnPantallaComp').show()
@@ -2366,9 +2467,23 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # Action menu actions                 
 
     def on_mnCrearRecursos_activate(self, menu_item):
+        """
+        Create resources option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         self.vRecursos.show()
 
     def on_mnGrafoRoy_activate(self, menu_item):
+        """
+        Roy Graph option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         # Se calcula el grafo ROY a través de la tabla de sucesoras
         successors = self.tablaSucesoras(self.actividad)
         roy = graph.roy(successors)
@@ -2385,6 +2500,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
 
     def on_mnGrafoPert_activate(self, menu_item):
+        """
+        Pert Graph option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         # Se crea el grafo Pert y se renumera
         grafoRenumerado=self.pertFinal()
   
@@ -2407,6 +2529,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.mostrarActividades(self.modeloA, grafoRenumerado.activities, grafoRenumerado.graph)
        
     def on_mnZaderenko_activate(self, menu_item):
+        """
+        Zaderenko option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         s=0
         for a in self.actividad:
             if a[6]=='':
@@ -2699,6 +2828,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # Help menu actions
 
     def on_mnAyuda_activate(self, menu_item):
+        """
+        Help option invoked
+
+        Parameters: menu_item
+
+        Returns: -
+        """
         dialogoAyuda = self.dAyuda
         dialogoAyuda.show()
 
@@ -2706,10 +2842,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # --- Window actions
 
     def on_wndGrafoPert_delete_event(self, window, event):
+        """
+        Close Pert Window
+
+        Parameters: window
+                    event
+
+        Returns: -
+        """
         window.hide()
         return True
 
     def on_wndGrafoRoy_delete_event(self, window, event):
+        """
+        Close Roy Window
+
+        Parameters: window
+                    event
+
+        Returns: -
+        """
         window.hide()
         return True
 
@@ -2883,6 +3035,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_btnIntervalReset_clicked(self, button):
         """
+        Interval Reset button clicked
+
+        Parameters: button
+
+        Returns: -
         """
         widgetMedia=self._widgets.get_widget('mediaProb')
         media=float(widgetMedia.get_text())
@@ -2995,6 +3152,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.escribirProb(mostrarDato)
 
     def on_btnProbabilityReset_clicked(self, button):
+        """
+        Probability reset button clicked
+
+        Parameters: button
+
+        Returns: -
+        """
         self._widgets.get_widget('valor3Prob').set_value(90)
         self.on_probability_changed(None)
 
@@ -3520,7 +3684,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_tab_clicked(self, widget, event):
         """
-          xxx lacks comment
+        Tab clicked.
+    
+        Parameters: widget
+                    event
+                    
+        Returns: None.
         """
         if event.button == 3:
             for i in range(self.ntbSchedule.get_n_pages()):
@@ -3532,9 +3701,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     break
 
     def on_tab_changed(self, notebook, page, page_num):
+        """
+        Tab changed.
+    
+        Parameters: notebook
+                    page: tab
+                    page_num: number of tab
+                    
+        Returns: None.
+        """
         self.set_schedule(self.schedules[page_num][1])
 
     def on_key_pressed(self, widget, event):
+        """
+        Key pressed.
+    
+        Parameters: widget
+                    event
+                
+        Returns: True or false depending if the window should be closed.
+        """
         if event.keyval == gtk.keysyms.Escape:
             widget.hide()
             return True
