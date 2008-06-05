@@ -284,7 +284,7 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
 
 class PPCProjectFileFormat(ProjectFileFormat):
     """
-    New project file format (xxx to define)
+    Allows loading PPC-Project files.
     """
     def __init__(self):
         self.filenameExtensions = ['ppc']
