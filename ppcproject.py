@@ -1997,7 +1997,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.modeloComboS.append([act[1]])            
                     self.modeloComboARA.append([act[1]])
     
-                # xxx Update model data
                 # Update interface 
                 self.openFilename=filename
                 self.updateWindowTitle()
@@ -2019,10 +2018,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Saves a project in ppcproject format '.prj'
         """
-        # xxx Código que sustituirá la antigua carga de ficheros cuando esté todo terminado
         
-        # xxx Here extension should be checked to choose the save format
-        # by now we suppose it is .prj
+        # Here extension should be checked to choose the save format
+        # by now we suppose it is .ppc
         if nombre[-4:] != '.ppc':
             nombre = nombre + '.ppc'
 
@@ -2043,7 +2041,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         for act in self.actividad:
             activities.append(act[0:-1])
 
-        # xxx Here data should be prepared to be stored
         try:
             format.save((activities, self.schedules[1:], resources, self.asignacion), nombre)
             # Update interface 
