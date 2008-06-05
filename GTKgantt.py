@@ -27,41 +27,7 @@ import gobject
 
 class GTKgantt(gtk.VBox):
     """
-    Class GTKgantt
-        Structure:
-            GTKgantt(gtk.VBox)
-                GanttHeader(gtk.Layout)
-                gtk.ScrolledWindow
-                    GanttDrawing
-
-        Properties:
-            header
-            diagram
-            scrolled_window
-
-        Interface:
-            set_vadjustment(adjustment)
-            set_hadjustment(adjustment)
-            set_policy(horizontal policy, vertical policy)
-            set_cell_width(width)
-            set_header_height(height)
-            set_row_height(height)
-            show_extra_row(value)
-            update()
-            add_activity(name, prelations, duration = 0 , start_time = 0, slack = 0, comment = "")
-            rename_activity(old name, new name)
-            set_activity_duration(activity, duration)
-            set_activity_prelations(activity, prelations)
-            set_activity_slack(activity, slack)
-            set_activity_start_time(activity, time)
-            set_activity_comment(activity, comment)
-            set_activities_color(color)
-            set_slack_color(color)
-            set_thin_slack(value)
-            remove_activity(activity)
-            reorder(activities)
-            show_arrows(value)
-            clear()
+    GTK widget that displays a complete Gantt diagram (header + diagram).
     """
     def __init__(self):
         gtk.VBox.__init__(self)
@@ -82,6 +48,7 @@ class GTKgantt(gtk.VBox):
         self.set_size_request(100,100)
         #Connecting signals
         self.diagram.connect("gantt-width-changed", self.header.set_width)
+        
     def set_vadjustment(self, adjustment):
         """
         Set vertical adjustment to "adjustment"
@@ -89,6 +56,7 @@ class GTKgantt(gtk.VBox):
         adjustment: gtk.Adjustment to be set.
         """
         self.diagram.set_vadjustment(adjustment)
+        
     def set_hadjustment(self, adjustment):
         """
         Set horizontal adjustment to "adjustment"
@@ -97,6 +65,7 @@ class GTKgantt(gtk.VBox):
         """
         self.diagram.set_hadjustment(adjustment)
         self.header.set_hadjustment(adjustment)
+        
     def set_policy(self, hpol, vpol):
         """
         Set scrollbars policy
@@ -105,6 +74,7 @@ class GTKgantt(gtk.VBox):
         vpol: vertical policy (gtk.POLICY_ALWAYS, gtk.POLICY_AUTOMATIC or gtk.POLICY_NEVER)
         """
         self.scrolled_window.set_policy(hpol , vpol)
+        
     def set_cell_width(self, num):
         """
         Set cell width
@@ -113,6 +83,7 @@ class GTKgantt(gtk.VBox):
         """
         self.header.set_cell_width(num)
         self.diagram.set_cell_width(num)
+        
     def set_row_height(self,num):
         """
         Set row height
@@ -120,6 +91,7 @@ class GTKgantt(gtk.VBox):
         num: height (pixels)
         """
         self.diagram.set_row_height(num)
+        
     def set_header_height(self,num):
         """
         Set header height
@@ -127,6 +99,7 @@ class GTKgantt(gtk.VBox):
         num: height (pixels)
         """
         self.header.set_height(num)
+        
     def update(self):
         """
         Redraw Gantt diagram.
@@ -134,6 +107,7 @@ class GTKgantt(gtk.VBox):
         """
         self.diagram.queue_draw()
         self.header.queue_draw()
+        
     def add_activity(self, name, prelations=[], duration = 0, start_time = 0, slack = 0, comment = ""):
         """
         Add an activity to the diagram
@@ -146,6 +120,7 @@ class GTKgantt(gtk.VBox):
         comment: String that will be shown to the right of the activity (string).
         """
         self.diagram.add_activity(name, prelations, duration, start_time, slack, comment)
+        
     def rename_activity(self,old,new):
         """
         Changes the name of an activity.
@@ -155,6 +130,7 @@ class GTKgantt(gtk.VBox):
         """
         if (old != new):
             self.diagram.set_activity_name(old,new)
+            
     def set_activity_duration(self, activity, duration):
         """
         Change the duration of an activity
@@ -163,6 +139,7 @@ class GTKgantt(gtk.VBox):
         duration: duration of the activity measured in units of time.
         """
         self.diagram.set_activity_duration(activity,duration)
+        
     def set_activity_prelations(self,activity,prelations):
         """
         Change the prelations of an activity
@@ -171,6 +148,7 @@ class GTKgantt(gtk.VBox):
         prelations: List of strings containing activity names.
         """
         self.diagram.set_activity_prelations(activity,prelations)
+        
     def set_activity_slack(self,activity,slack):
         """
         Change the slack of an activity
@@ -179,6 +157,7 @@ class GTKgantt(gtk.VBox):
         slack: slack measured in units of time
         """
         self.diagram.set_activity_slack(activity,slack)
+        
     def set_activity_comment(self,activity,comment):
         """
         Change the comment of an activity
@@ -187,6 +166,7 @@ class GTKgantt(gtk.VBox):
         comment: String that will be shown to the right of the activity (string)
         """
         self.diagram.set_activity_comment(activity,comment)
+        
     def set_activity_start_time(self,activity,time):
         """
         Change the start time of an activity
@@ -195,6 +175,7 @@ class GTKgantt(gtk.VBox):
         time: unit of time when the activity start.
         """
         self.diagram.set_activity_start_time(activity,time)
+        
     def set_activities_color(self, color):
         """
         Change the color of the activities rectangles
@@ -202,6 +183,7 @@ class GTKgantt(gtk.VBox):
         color: new color (gtk.gdk.Color)
         """
         self.diagram.set_activities_color(color)
+        
     def set_slack_color(self, color):
         """
         Change the color of the slacks rectangles
@@ -209,6 +191,7 @@ class GTKgantt(gtk.VBox):
         color: new color (gtk.gdk.Color)
         """
         self.diagram.set_slack_color(color)
+        
     def set_thin_slack(self, value):
         """
         Set if the slacks rectangles will be thinner than the activities ones
@@ -216,6 +199,7 @@ class GTKgantt(gtk.VBox):
         value (True or False)
         """
         self.diagram.set_thin_slack(value)
+        
     def remove_activity(self, activity):
         """
         Removes an activity from the diagram.
@@ -223,6 +207,7 @@ class GTKgantt(gtk.VBox):
         activity: name of the activity (string)
         """
         self.diagram.remove_activity(activity)
+        
     def reorder(self,activities):
         """
         change the order of the activities
@@ -230,6 +215,7 @@ class GTKgantt(gtk.VBox):
         activities: list of strings containing activity names.
         """
         self.diagram.reorder(activities)
+        
     def show_arrows(self, value):
         """
         Set if the prelation arrows should be shown or not.
@@ -237,6 +223,7 @@ class GTKgantt(gtk.VBox):
         value (True or False)
         """
         self.diagram.show_arrows(value)
+        
     def show_extra_row(self, value):
         """
         Set if an extra row should be shown or not.
@@ -244,6 +231,7 @@ class GTKgantt(gtk.VBox):
         value (True or False)
         """
         self.diagram.show_extra_row(value)
+        
     def clear(self):
         """
         Clear all the activities information
@@ -251,23 +239,10 @@ class GTKgantt(gtk.VBox):
         self.diagram.clear()
         self.header.set_width(None, 0)
 
+
 class GanttHeader(gtk.Layout):
     """    
-    Class GanttHeader
-
-        Properties:
-            width
-            cell_width
-            height
-            context
-            available_width
-
-        Interface:
-            set_cell_width(width)
-            set_width(width)
-            set_height(height)
-            expose(widget,event)
-            draw(context)
+    Displays the header of the Gantt diagram.
     """
     def __init__(self):
         gtk.Layout.__init__(self)
@@ -278,6 +253,7 @@ class GanttHeader(gtk.Layout):
         self.connect("expose-event", self.expose)
         #Setting size request
         self.set_size_request(self.width, self.height)
+        
     def set_cell_width(self,num):
         """
         Set cell width
@@ -285,6 +261,7 @@ class GanttHeader(gtk.Layout):
         num: width (pixels)
         """
         self.cell_width = num
+        
     def set_width(self, widget, width):
         """
         Set header width.
@@ -295,6 +272,7 @@ class GanttHeader(gtk.Layout):
         self.width = width
         self.set_size_request(width, self.height)
         self.queue_draw()
+        
     def set_height(self, num):
         """
         Set header height
@@ -303,6 +281,7 @@ class GanttHeader(gtk.Layout):
         """
         self.height = num
         self.set_size_request(self.width, self.height)
+        
     def expose (self,widget,event):
         """
         Function called when the widget needs to be drawn
@@ -322,6 +301,7 @@ class GanttHeader(gtk.Layout):
         #Drawing
         self.draw(self.context)
         return False
+        
     def draw(self, context):
         """
         Draw the widget
@@ -341,18 +321,10 @@ class GanttHeader(gtk.Layout):
         context.set_line_width(1);
         context.stroke()
 
+
 class DiagramGraph(object):
     """
-    Class DiagramGraph:
-        Simple structure created to group the activities information
-
-        Properties:
-            activities: list of string containing activity names
-            prelations: dictionary (index: activity names (strings), definitions: List of strings containing activity names).
-            duration: dictionary (index: activity names (strings), definitions: duration of the activity measured in units of time).
-            start_time: dictionary (index: activity names (strings), definitions: unit of time when the activity start).
-            slack: dictionary (index: activity names (strings), definitions: slack measured in units of time).
-            comment: dictionary (index: activity names (strings), definitions: string that will be shown to the right of the activity (string))
+    Simple structure created to group the activities information.
     """
     activities = []
     durations = {}
@@ -361,45 +333,10 @@ class DiagramGraph(object):
     slacks = {}
     comments = {}
 
+
 class GanttDrawing(gtk.Layout, gtk.EventBox):
     """
-    Class GanttDrawing(gtk.Layout)
-
-        Properties:
-            graph
-            row_height
-            cell_width
-            width
-            available_width
-            modified
-            activities_color
-            slack_color
-            thin_slack
-            context
-            arrows
-            extra_row
-
-        Interface:
-            set_policy(horizontal policy, vertical policy)
-            set_cell_width(width)
-            set_row_height(height)
-            add_activity(name, prelations, duration = 0 , start_time = 0, slack = 0, comment = "")
-            rename_activity(old name, new name)
-            set_activity_duration(activity, duration)
-            set_activity_prelations(activity, prelations)
-            set_activity_slack(activity, slack)
-            set_activity_start_time(activity, time)
-            set_activity_comment(activity, comment)
-            set_activities_color(color)
-            set_slack_color(color)
-            set_thin_slack(value)
-            remove_activity(activity)
-            reorder(activities)
-            show_arrows(value)
-            clear()
-
-        Signals:
-            'gantt-width-changed' Signal emmited when the required width has changed. Parameters: widget, width
+    Draws a Gantt diagram.
     """
     __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE,(gobject.TYPE_INT,))}
     def __init__(self):
@@ -809,7 +746,8 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
                             context.stroke()
                         except:
                             pass
-      
+
+
 def main():
     """
         Example of use.
