@@ -253,10 +253,6 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
         except (UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
             raise InvalidFileFormatException('Unpickle failed')
 
-        # xxx Check activities, schedules, resources, resourceAsignaments have the right data structure
-        # if len(activities) != 6 and ... :
-        #     raise InvalidFileFormatException('Incorrect data on file')
-
         f.close()
         # Se actualiza la interfaz de las actividades
         activities = []
@@ -265,6 +261,12 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
         for row in table[0]:      
             prepared_row = row[0:6] + [float(row[6])] + [row[7]] + row[9:]
             activities.append(prepared_row)
+            
+        # Check activities, schedules, resources, resourceAsignaments have the right data structure
+        for row in activities:
+            if len(row) != 9:
+                raise InvalidFileFormatException('Incorrect data on file')
+                
         for res in table[1]:
             if res[1] == 'Renovable': 
                 res[1] = 'Renewable'
@@ -276,6 +278,7 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
                 res[1] = 'Unlimited'
             resources.append(res)
         assignations = table[2]
+        
         return (activities, [], resources, assignations)
 
 
@@ -305,10 +308,11 @@ class PPCProjectFileFormat(ProjectFileFormat):
         except (UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
             raise InvalidFileFormatException('Unpickle failed')
 
-        # xxx Check activities, schedules, resources, resourceAsignaments have the right data structure
-        # if len(activities) != 6 and ... :
-        #     raise InvalidFileFormatException('Incorrect data on file')
-
+        # Check activities, schedules, resources, resourceAsignaments have the right data structure
+        for row in activities:
+            if len(row) != 9:
+                raise InvalidFileFormatException('Incorrect data on file')
+                
         f.close()
         return data
 
