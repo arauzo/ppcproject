@@ -25,7 +25,7 @@ class Grafo:
             self.addNode(c)
         self.successors[a].append(c)
         self.predecessors[c].append(a)
-        self.arcs[(a,c)]= [label]
+        self.arcs[(a,c)]= [label] # Una lista de etiquetas??? Es un error o tiene algun motivo?
         
     def removeNode(self,nodo):
         if nodo in self.successors:
