@@ -32,7 +32,7 @@ import gtk.glade
 from copy import deepcopy
 
 import GTKgantt
-import loadingSheet
+import loadSheet
 
 import scipy.stats
 from matplotlib import rcParams
@@ -128,7 +128,7 @@ class PPCproject(object):
         self.modelo = self.interface.modelo
         self.gantt = self.interface.gantt
         self.ganttSA = self.interface.ganttSA
-        self.loadingSheet = self.interface.loadingSheet
+        self.loadSheet = self.interface.loadSheet
         self.loadingTable = self.interface.loadingTable
         self.modeloR = self.interface.modeloR
         self.modeloAR = self.interface.modeloAR
@@ -2674,10 +2674,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         self.ganttActLoaded = False
         self.ganttSA.clear()
-        self.loadingSheet.clear()
+        self.loadSheet.clear()
         self.loadingTable.clear()
         self.ganttSA.update()        
-        self.loadingSheet.update()
+        self.loadSheet.update()
         self.loadingTable.update()
         self.entryResultSA.set_text('')
         self.entryMaxTempSA.set_text('')
@@ -2766,10 +2766,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.entryAlpha.set_text(str(optSchAlpha))
             self.entryMaxTempSA.set_text(str(optSchTemp))
             self.entryIterations.set_text(str(optSchIt))
-            # Calculate loadingSheet
+            # Calculate loadSheet
             resources = resources_availability(self.recurso, True)
             asignation = resources_per_activities(self.asignacion, resources)
-            optSchLoadingSheet = calculate_loading_sheet(self.optimumSchedule, resources, asignation, optSchDuration)
+            optSchLoadSheet = calculate_loading_sheet(self.optimumSchedule, resources, asignation, optSchDuration)
             # Add activities to gantt
             for act,startTime,finalTime in self.optimumSchedule:
                 self.ganttSA.set_activity_start_time(act, startTime)
@@ -2778,12 +2778,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
             self.ganttSA.update()
             if asignation != {}:
-                # Add loading to loadingSheet
-                self.loadingSheet.set_loading(optSchLoadingSheet)
-                self.loadingSheet.set_duration(optSchDuration)
-                self.loadingSheet.update()
+                # Add loading to loadSheet
+                self.loadSheet.set_loading(optSchLoadSheet)
+                self.loadSheet.set_duration(optSchDuration)
+                self.loadSheet.update()
                 # Add loading to loadingTable
-                self.loadingTable.set_loading(optSchLoadingSheet)
+                self.loadingTable.set_loading(optSchLoadSheet)
                 self.loadingTable.set_duration(optSchDuration)
                 self.loadingTable.update()
         else:
