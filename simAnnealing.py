@@ -110,10 +110,10 @@ def simulated_annealing(asignation,resources,successors,activities,leveling,nu,p
 
     # sch1 will store the best plannings
     schAux = sch1 = generate(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),leveling)
-    sch1Evaluated, loadingSheet1, duration1 = evaluate(sch1,leveling,asignation,resources)
+    sch1Evaluated, loadSheet1, duration1 = evaluate(sch1,leveling,asignation,resources)
     schAuxEvaluated = sch1Evaluated
     durationAux = duration1
-    loadingSheetAux = loadingSheet1
+    loadSheetAux = loadSheet1
     
     if duration1 == 0:
         return (sch1, sch1Evaluated, duration1, None, None, None)
@@ -130,9 +130,9 @@ def simulated_annealing(asignation,resources,successors,activities,leveling,nu,p
     while temperature > minTemperature and numIterations != 0:
         it += 1
         sch2 = modify(asignation,resources.copy(),copy.deepcopy(predecessors),activities.copy(),sch1,leveling)
-        sch2Evaluated, loadingSheet2, duration2 = evaluate(sch2,leveling,asignation,resources)
+        sch2Evaluated, loadSheet2, duration2 = evaluate(sch2,leveling,asignation,resources)
         if sch2Evaluated <= sch1Evaluated:
-            loadingSheet1 = loadingSheet2
+            loadSheet1 = loadSheet2
             duration1 = duration2
             sch1 = sch2
             sch1Evaluated = sch2Evaluated
@@ -144,13 +144,13 @@ def simulated_annealing(asignation,resources,successors,activities,leveling,nu,p
             m = exp(-(sch2Evaluated-sch1Evaluated) / temperature)
             if r < m:
                 if schAuxEvaluated > sch1Evaluated:
-                    loadingSheetAux = loadingSheet1
+                    loadSheetAux = loadSheet1
                     durationAux = duration1
                     schAux = sch1 
                     schAuxEvaluated = sch1Evaluated              
                 sch1 = sch2
                 sch1Evaluated = sch2Evaluated
-                loadingSheet1 = loadingSheet2
+                loadSheet1 = loadSheet2
                 duration1 = duration2   
                     
         temperature = alpha * temperature
@@ -237,7 +237,7 @@ def evaluate(sch,leveling,asignation,resources):
                 
 
     Returned value: duration or variance
-                    loadingSheet
+                    loadSheet
                     duration
     """
     
@@ -251,12 +251,12 @@ def evaluate(sch,leveling,asignation,resources):
     if duration == 0:
         return (None, None, 0)
         
-    loadingSheet = calculate_loading_sheet(sch, resources, asignation, duration)
+    loadSheet = calculate_loading_sheet(sch, resources, asignation, duration)
     if leveling == 0: # if allocate
-        return (duration, loadingSheet, duration)  
+        return (duration, loadSheet, duration)  
     else: #if leveling
-        variance = calculate_variance(resources,asignation,duration,loadingSheet) 
-        return (variance, loadingSheet, duration)
+        variance = calculate_variance(resources,asignation,duration,loadSheet) 
+        return (variance, loadSheet, duration)
 
 def calculate_loading_sheet (sch, resources, asignation, duration):
     """
@@ -267,12 +267,12 @@ def calculate_loading_sheet (sch, resources, asignation, duration):
                 asignation
                 duration
                
-    Returned value: loadingSheet
+    Returned value: loadSheet
     """
         
     startTime = []
     endTime = []
-    loadingSheet = {}
+    loadSheet = {}
         
     for act in sch:
         startTime.append(act[1])
@@ -298,27 +298,27 @@ def calculate_loading_sheet (sch, resources, asignation, duration):
                         if r == resource:
                             amount += float(a)
                             break
-            if resource in loadingSheet.keys() and loadingSheet[resource][-1][1] != amount:
-                loadingSheet[resource] += [(time,amount)]
-            elif resource not in loadingSheet.keys():
-                loadingSheet[resource] = [(time,amount)]
+            if resource in loadSheet.keys() and loadSheet[resource][-1][1] != amount:
+                loadSheet[resource] += [(time,amount)]
+            elif resource not in loadSheet.keys():
+                loadSheet[resource] = [(time,amount)]
             
             if startTimeCopy != []:    
                 time = min(min(startTimeCopy),min(endTimeCopy))
             else:
                 time = min(endTimeCopy)
                 
-    return loadingSheet
+    return loadSheet
     
       
-def calculate_variance(resources,asignation,duration, loadingSheet): 
+def calculate_variance(resources,asignation,duration, loadSheet): 
     """
     Calculate the variance of the planning it receives
 
     Parameters: resources (returned by resourcesAvailability)
                 asignation (returned by resourcesPerActivity)
                 duration (duration of the planning)
-                loadingSheet (loadingSheet of the planning)
+                loadSheet (loadSheet of the planning)
                 
     Returned value: variance (the average of all resources' variance)
     """
@@ -330,7 +330,7 @@ def calculate_variance(resources,asignation,duration, loadingSheet):
         average[resource] = 0
         pre = 0
         value = 0
-        for time,data in loadingSheet[resource]:
+        for time,data in loadSheet[resource]:
             average[resource] += (time - pre) * value
             pre = time
             value = data
@@ -339,7 +339,7 @@ def calculate_variance(resources,asignation,duration, loadingSheet):
         variance[resource] = 0
         pre = 0
         value = 0
-        for time,data in loadingSheet[resource]:
+        for time,data in loadSheet[resource]:
             variance[resource] += (time - pre) * (value - average[resource])**2
             pre = time
             value = data
