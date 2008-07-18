@@ -26,9 +26,9 @@ import gtk.gdk
 import gobject
 import copy
 
-class LoadingTable(gtk.HBox):
+class LoadTable(gtk.HBox):
     """
-    Class loadingTable
+    Class loadTable
 
         Properties:
             table
@@ -181,7 +181,7 @@ class Table(gtk.Layout):
     
     def set_tooltip(self, widget, x, y, keyboard_mode, tooltip):
         """
-        Create tooltip to loadingTable
+        Create tooltip to loadTable
         
         """
         keys = self.loading.keys()
@@ -264,7 +264,7 @@ def main():
         Example of use.
     """
     window = gtk.Window()
-    lt = loadingTable()
+    lt = loadTable()
     lt.set_cell_width(20)
     window.add(lt)
     window.connect("destroy", gtk.main_quit)
