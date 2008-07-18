@@ -129,7 +129,7 @@ class PPCproject(object):
         self.gantt = self.interface.gantt
         self.ganttSA = self.interface.ganttSA
         self.loadSheet = self.interface.loadSheet
-        self.loadingTable = self.interface.loadingTable
+        self.loadTable = self.interface.loadTable
         self.modeloR = self.interface.modeloR
         self.modeloAR = self.interface.modeloAR
         self.modeloComboS = self.interface.modeloComboS
@@ -2675,10 +2675,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.ganttActLoaded = False
         self.ganttSA.clear()
         self.loadSheet.clear()
-        self.loadingTable.clear()
+        self.loadTable.clear()
         self.ganttSA.update()        
         self.loadSheet.update()
-        self.loadingTable.update()
+        self.loadTable.update()
         self.entryResultSA.set_text('')
         self.entryMaxTempSA.set_text('')
         self.entryAlpha.set_text('')
@@ -2782,10 +2782,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.loadSheet.set_loading(optSchLoadSheet)
                 self.loadSheet.set_duration(optSchDuration)
                 self.loadSheet.update()
-                # Add loading to loadingTable
-                self.loadingTable.set_loading(optSchLoadSheet)
-                self.loadingTable.set_duration(optSchDuration)
-                self.loadingTable.update()
+                # Add loading to loadTable
+                self.loadTable.set_loading(optSchLoadSheet)
+                self.loadTable.set_duration(optSchDuration)
+                self.loadTable.update()
         else:
             self.dialogoError(gettext.gettext('Initial temperature not high enough.'))
             return False
