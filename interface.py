@@ -27,7 +27,7 @@ import gtk.glade
 
 import GTKgantt
 import loadSheet
-import loadingTable
+import loadTable
 
 # Internationalization
 import gettext
@@ -111,13 +111,13 @@ class Interface(object):
       self.loadSheet.show_all()
       self.ganttSA.diagram.connect("gantt-width-changed", self.loadSheet.set_width)
       # Adding the loading table to simulated annealing window
-      hbLoadingTable = self._widgets.get_widget('hbox30')
-      self.loadingTable = loadingTable.LoadingTable()
-      self.loadingTable.set_cell_width(20)
-      hbLoadingTable.pack_end(self.loadingTable)
-      self.loadingTable.set_hadjustment(hsbSA.get_adjustment())
-      self.loadingTable.show_all()      
-      self.ganttSA.diagram.connect("gantt-width-changed", self.loadingTable.set_width)
+      hbLoadTable = self._widgets.get_widget('hbox30')
+      self.loadTable = loadTable.LoadTable()
+      self.loadTable.set_cell_width(20)
+      hbLoadTable.pack_end(self.loadTable)
+      self.loadTable.set_hadjustment(hsbSA.get_adjustment())
+      self.loadTable.show_all()      
+      self.ganttSA.diagram.connect("gantt-width-changed", self.loadTable.set_width)
 
       
       # Setting status message
