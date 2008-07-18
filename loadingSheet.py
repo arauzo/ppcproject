@@ -27,9 +27,9 @@ import gobject
 import copy
 import random
 
-class LoadingSheet(gtk.HBox):
+class LoadSheet(gtk.HBox):
     """
-    Class loadingSheet
+    Class loadSheet
 
         Properties:
             diagram
@@ -47,8 +47,8 @@ class LoadingSheet(gtk.HBox):
     """
     def __init__(self):
         gtk.HBox.__init__(self)
-        self.diagram = LoadingSheetDiagram()
-        self.scale = LoadingSheetScale()
+        self.diagram = LoadSheetDiagram()
+        self.scale = LoadSheetScale()
         
         self.set_homogeneous(False)
         self.pack_start(self.scale, False, False, 0)
@@ -108,9 +108,9 @@ class LoadingSheet(gtk.HBox):
         """
         self.diagram.clear()   
 
-class LoadingSheetScale(gtk.Layout):
+class LoadSheetScale(gtk.Layout):
     """    
-    Class loadingSheetScale
+    Class loadSheetScale
 
         Properties:
             greatest
@@ -174,9 +174,9 @@ class LoadingSheetScale(gtk.Layout):
             ctx.show_text(str(i))
             
         
-class LoadingSheetDiagram(gtk.Layout):
+class LoadSheetDiagram(gtk.Layout):
     """    
-    Class loadingSheetDiagram
+    Class loadSheetDiagram
 
         Properties:
             colors
@@ -340,7 +340,7 @@ def main():
         Example of use.
     """
     window = gtk.Window()
-    ls = loadingSheet()
+    ls = loadSheet()
     ls.set_cell_width(20)
     window.add(ls)
     window.connect("destroy", gtk.main_quit)
