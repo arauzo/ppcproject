@@ -41,77 +41,21 @@ def dibujarGrafo():
         'N' : ['G','K'],
         'O' : ['J','L','M','N'],
     }
-    print prelaciones
 
-    prelaciones = {}
-    prelaciones['A']=[]
-#    prelaciones['A'].append('None')
-    prelaciones['B']=[]
-#    prelaciones['B'].append('None')
-    prelaciones['C']=[]
-#    prelaciones['C'].append('None')
-    prelaciones['D']=[]
-#    prelaciones['D'].append('None')
-    prelaciones['E']=[]
-#    prelaciones['E'].append('None')
-    prelaciones['F']=[]
-    prelaciones['F'].append('A')
-    prelaciones['G']=[]
-    prelaciones['G'].append('A')
-    prelaciones['H']=[]
-    prelaciones['H'].append('B')
-    prelaciones['I']=[]
-    prelaciones['I'].append('E')
-    prelaciones['J']=[]
-    prelaciones['J'].append('C')
-    prelaciones['J'].append('D')
-    prelaciones['J'].append('I')
-    prelaciones['K']=[]
-    prelaciones['K'].append('H')
-    prelaciones['L']=[]
-    prelaciones['L'].append('F')
-    prelaciones['L'].append('H')
-    prelaciones['M']=[]
-    prelaciones['M'].append('G')
-    prelaciones['M'].append('H')
-    prelaciones['N']=[]
-    prelaciones['N'].append('G')
-    prelaciones['N'].append('K')
-    prelaciones['O']=[]
-    prelaciones['O'].append('J')
-    prelaciones['O'].append('L')
-    prelaciones['O'].append('M')
-    prelaciones['O'].append('N')
-    print prelaciones
-
-    prelaciones1 = {}
-    prelaciones1['A']=[]
-    prelaciones1['A'].append('None')
-    prelaciones1['B']=[]
-    prelaciones1['B'].append('A')
-    prelaciones1['C']=[]
-    prelaciones1['C'].append('A')
-    prelaciones1['D']=[]
-    prelaciones1['D'].append('A')
-    prelaciones1['E']=[]
-    prelaciones1['E'].append('B')
-    prelaciones1['F']=[]
-    prelaciones1['F'].append('B')
-    prelaciones1['F'].append('C')
-    prelaciones1['G']=[]
-    prelaciones1['G'].append('C')
-    prelaciones1['H']=[]
-    prelaciones1['H'].append('D')
-    prelaciones1['I']=[]
-    prelaciones1['I'].append('H')
-    prelaciones1['J']=[]
-    prelaciones1['J'].append('F')
-    prelaciones1['J'].append('G')
-    prelaciones1['J'].append('H')
-    prelaciones1['K']=[]
-    prelaciones1['K'].append('E')
-    prelaciones1['K'].append('J')
-    prelaciones1['K'].append('I')
+    prelaciones1 = {
+        'A' : [],
+        'B' : ['A'],
+        'C' : ['A'],
+        'D' : ['A'],
+        'E' : ['B'],
+        'F' : ['B','C'],
+        'G' : ['C'],
+        'H' : ['D'],
+        'I' : ['H'],
+        'J' : ['F','G','H'],
+        'K' : ['E','J','I'],
+    }
+   
     
     
     g=YCE.yuvalCohen(prelaciones)
@@ -141,74 +85,37 @@ def graph2image(graph, format='svg'):
     return graphImage
 
 def dibujarPert():
-    prelaciones = {}
-    prelaciones['A']=[]
-    prelaciones['A'].append('None')
-    prelaciones['B']=[]
-    prelaciones['B'].append('None')
-    prelaciones['C']=[]
-    prelaciones['C'].append('None')
-    prelaciones['D']=[]
-    prelaciones['D'].append('None')
-    prelaciones['E']=[]
-    prelaciones['E'].append('None')
-    prelaciones['F']=[]
-    prelaciones['F'].append('A')
-    prelaciones['G']=[]
-    prelaciones['G'].append('A')
-    prelaciones['H']=[]
-    prelaciones['H'].append('B')
-    prelaciones['I']=[]
-    prelaciones['I'].append('E')
-    prelaciones['J']=[]
-    prelaciones['J'].append('C')
-    prelaciones['J'].append('D')
-    prelaciones['J'].append('I')
-    prelaciones['K']=[]
-    prelaciones['K'].append('H')
-    prelaciones['L']=[]
-    prelaciones['L'].append('F')
-    prelaciones['L'].append('H')
-    prelaciones['M']=[]
-    prelaciones['M'].append('G')
-    prelaciones['M'].append('H')
-    prelaciones['N']=[]
-    prelaciones['N'].append('G')
-    prelaciones['N'].append('K')
-    prelaciones['O']=[]
-    prelaciones['O'].append('J')
-    prelaciones['O'].append('L')
-    prelaciones['O'].append('M')
-    prelaciones['O'].append('N')
+    prelaciones = {
+        'A' : [],
+        'B' : [],
+        'C' : [],
+        'D' : [],
+        'E' : [],
+        'F' : ['A'],
+        'G' : ['A'],
+        'H' : ['B'],
+        'I' : ['E'],
+        'J' : ['C','D','I'],
+        'K' : ['H'],
+        'L' : ['F','H'],
+        'M' : ['G','H'],
+        'N' : ['G','K'],
+        'O' : ['J','L','M','N'],
+    }
 
-    prelaciones1 = {}
-    prelaciones1['A']=[]
-    prelaciones1['A'].append('None')
-    prelaciones1['B']=[]
-    prelaciones1['B'].append('A')
-    prelaciones1['C']=[]
-    prelaciones1['C'].append('A')
-    prelaciones1['D']=[]
-    prelaciones1['D'].append('A')
-    prelaciones1['E']=[]
-    prelaciones1['E'].append('B')
-    prelaciones1['F']=[]
-    prelaciones1['F'].append('B')
-    prelaciones1['F'].append('C')
-    prelaciones1['G']=[]
-    prelaciones1['G'].append('C')
-    prelaciones1['H']=[]
-    prelaciones1['H'].append('D')
-    prelaciones1['I']=[]
-    prelaciones1['I'].append('H')
-    prelaciones1['J']=[]
-    prelaciones1['J'].append('F')
-    prelaciones1['J'].append('G')
-    prelaciones1['J'].append('H')
-    prelaciones1['K']=[]
-    prelaciones1['K'].append('E')
-    prelaciones1['K'].append('J')
-    prelaciones1['K'].append('I')
+    prelaciones1 = {
+        'A' : [],
+        'B' : ['A'],
+        'C' : ['A'],
+        'D' : ['A'],
+        'E' : ['B'],
+        'F' : ['B','C'],
+        'G' : ['C'],
+        'H' : ['D'],
+        'I' : ['H'],
+        'J' : ['F','G','H'],
+        'K' : ['E','J','I'],
+    }
     p=YCE.yuvalCohen(prelaciones)
     return p
 
