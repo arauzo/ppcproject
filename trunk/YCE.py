@@ -331,45 +331,23 @@ def yuvalCohen(prelaciones):
 
 if __name__ == "__main__":
 
-   
-    prelaciones = {}
-    prelaciones['A']=[]
-    prelaciones['A'].append('None')
-    prelaciones['B']=[]
-    prelaciones['B'].append('None')
-    prelaciones['C']=[]
-    prelaciones['C'].append('None')
-    prelaciones['D']=[]
-    prelaciones['D'].append('None')
-    prelaciones['E']=[]
-    prelaciones['E'].append('None')
-    prelaciones['F']=[]
-    prelaciones['F'].append('A')
-    prelaciones['G']=[]
-    prelaciones['G'].append('A')
-    prelaciones['H']=[]
-    prelaciones['H'].append('B')
-    prelaciones['I']=[]
-    prelaciones['I'].append('E')
-    prelaciones['J']=[]
-    prelaciones['J'].append('C')
-    prelaciones['J'].append('D')
-    prelaciones['J'].append('I')
-    prelaciones['K']=[]
-    prelaciones['K'].append('H')
-    prelaciones['L']=[]
-    prelaciones['L'].append('F')
-    prelaciones['L'].append('H')
-    prelaciones['M']=[]
-    prelaciones['M'].append('G')
-    prelaciones['M'].append('H')
-    prelaciones['N']=[]
-    prelaciones['N'].append('G')
-    prelaciones['N'].append('K')
-    prelaciones['O']=[]
-    prelaciones['O'].append('J')
-    prelaciones['O'].append('L')
-    prelaciones['O'].append('M')
-    prelaciones['O'].append('N')
+    prelaciones = {
+        'A' : [],
+        'B' : [],
+        'C' : [],
+        'D' : [],
+        'E' : [],
+        'F' : ['A'],
+        'G' : ['A'],
+        'H' : ['B'],
+        'I' : ['E'],
+        'J' : ['C','D','I'],
+        'K' : ['H'],
+        'L' : ['F','H'],
+        'M' : ['G','H'],
+        'N' : ['G','K'],
+        'O' : ['J','L','M','N'],
+    }
 
-    g=yuvalCohen(prelaciones)
+    g=yuvalCohen(prelaciones)
+    
