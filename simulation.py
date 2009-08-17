@@ -7,7 +7,7 @@
 #   Multiplatform software tool for education and research in
 #   project management
 #
-# Copyright 2007-8 Universidad de Córdoba
+# Copyright 2007-9 Universidad de Córdoba
 # This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License,
@@ -22,7 +22,6 @@
 import random
 
 # Internationalization
-
 import gettext
 APP = 'PPC-Project'  # Program name
 DIR = 'po'  # Directory containing translations, usually /usr/share/locale
@@ -34,10 +33,10 @@ def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
     """
      Cálculo de las F.Absolutas y F.Relativas 
 
-     Parámetros: dMax (duración máxima)
-                 dMin (duración mímima)
-                 itTotales (iteraciones totales)
-                 N (número de intervalos)
+       dMax (duración máxima)
+       dMin (duración mímima)
+       itTotales (iteraciones totales)
+       N (número de intervalos)
 
      Valor de retorno: fa (frecuencias absolutas)
                        fr (frecuencias relativas)
@@ -66,10 +65,10 @@ def posicion(d, dMax, dMin, N):
      Cálculo de la posición de una duración dentro del 
               vector de F.Absolutas
 
-     Parámetros: d (duración)
-                 dMax (duración máxima)
-                 dMin (duración mí­nima)
-                 N (número de intervalos)
+       d (duración)
+       dMax (duración máxima)
+       dMin (duración mí­nima)
+       N (número de intervalos)
 
      Valor de retorno: x (posición)
     """
@@ -83,10 +82,10 @@ def duracion(x, dMax, dMin, N):
      Cálculo de la duración correspondiente a una posición 
               (inversa de la Función anterior)
 
-     Parámetros: x (posición)
-                 dMax (duración máxima)
-                 dMin (duración mí­nima)
-                 N (número de intervalos)
+       x (posición)
+       dMax (duración máxima)
+       dMin (duración mí­nima)
+       N (número de intervalos)
 
      Valor de retorno: d (duración)
     """
@@ -100,11 +99,11 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
      Prepara los datos de la simulación para ser mostrados
               en formato CSV
 
-     Parámetros: duraciones (lista con las duraciones de la simulación)
-                 iteraciones (número de iteraciones totales)
-                 media (duración media)
-                 dTipica (desviación tí­pica)
-                 modeloCriticidad (lista de caminos e í­ndice de criticidad)
+       duraciones (lista con las duraciones de la simulación)
+       iteraciones (número de iteraciones totales)
+       media (duración media)
+       dTipica (desviación tí­pica)
+       modeloCriticidad (lista de caminos e í­ndice de criticidad)
 
      Valor de retorno: s (texto a mostrar en formato CSV) 
     """
@@ -200,8 +199,51 @@ def generaAleatoriosNormal(mean, stdev):
     """
     Generates a number from a Normal random variate with mean and stdev
     """
-    
+
     norm = random.gauss(mean, stdev)
     return norm
+
+# --- Start running as a program
+if __name__ == '__main__':
+
+    # Test of python random number generators
+    # ---------------------------------------
+    import math
+
+    # Generar n aleatorios de cada distribución
+    n = 100
+
+    # Para Uniforme, Triangular y Beta:
+    op = 2.0
+    mode = 5.0
+    pes = 10.0
+
+    # Para la Normal
+    mean = 5
+    stdev = 2
+
+    print '\n *** Uniform(', op, pes, ')'
+    for i in range(n):
+        print random.uniform(op, pes)
+
+    print '\n *** Beta(', op, mode, pes, ')'
+    mean = (op + 4 * mode + pes) / 6.0
+    stdev = (pes - op) / 6.0
+    shape_a = ((mean - op) / (pes - op)) * (((mean - op) * (pes - mean))
+             / stdev ** 2 - 1)
+    shape_b = ((pes - mean) / (mean - op)) * shape_a
+
+    print 'Mean=', mean, 'Stdev=', stdev
+    print 'shape_a=', shape_a, 'shape_b=', shape_b
+    for i in range(n):
+        print random.betavariate(shape_a, shape_b) * (pes - op) + op
+
+    print '\n *** Normal(', mean, stdev, ')'
+    for i in range(n):
+        print random.gauss(mean, stdev)
+
+    print '\n *** Triangle(', op, mode, pes, ')'
+    for i in range(n):
+        print generaAleatoriosTriangular(op, mode, pes)
 
 

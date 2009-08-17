@@ -7,7 +7,7 @@
 #   Multiplatform software tool for education and research in 
 #   project management
 #
-# Copyright 2007-8 Universidad de Córdoba
+# Copyright 2007-9 Universidad de Córdoba
 # This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License,
@@ -71,6 +71,7 @@ class LoadSheet(gtk.HBox):
         loading: loading
         """
         self.diagram.loading = loading
+
     def set_duration(self, duration):
         """
         Set duration
@@ -87,6 +88,7 @@ class LoadSheet(gtk.HBox):
         adjustment: gtk.Adjustment to be set.
         """
         self.diagram.set_hadjustment(adjustment)     
+
     def set_width(self, widget, width):
         """
         Set width
@@ -94,6 +96,7 @@ class LoadSheet(gtk.HBox):
         width: width
         """
         self.diagram.set_width(width)
+
     def update(self):
         """
         Redraw loading diagram.
@@ -101,12 +104,14 @@ class LoadSheet(gtk.HBox):
         """
         self.diagram.queue_draw()
         self.scale.queue_draw()
+
     def clear(self):
         """
         Clean loading diagram.
         
         """
         self.diagram.clear()   
+
 
 class LoadSheetScale(gtk.Layout):
     """    
@@ -340,7 +345,7 @@ def main():
         Example of use.
     """
     window = gtk.Window()
-    ls = loadSheet()
+    ls = LoadSheet()
     ls.set_cell_width(20)
     window.add(ls)
     window.connect("destroy", gtk.main_quit)
