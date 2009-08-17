@@ -9,7 +9,7 @@
 #   Multiplatform software tool for education and research in
 #   project management
 #
-# Copyright 2007-8 Universidad de Córdoba
+# Copyright 2007-9 Universidad de Córdoba
 # This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License,
@@ -25,7 +25,7 @@ import gtk
 import gettext
 import pickle
 
-class InvalidFilFormatException(Exception):
+class InvalidFileFormatException(Exception):
     """
     Raised when a file does not contain data in the expected format
     """
