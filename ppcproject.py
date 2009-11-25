@@ -19,16 +19,20 @@
 # You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Python std.lib.
-import os
-from copy import deepcopy
+import os, math, sys
+import random
+import pickle
 
-# GTK
 import pygtk
 pygtk.require('2.0')
 import gobject
 import gtk
 import gtk.glade
+
+from copy import deepcopy
+
+import GTKgantt
+import loadSheet
 
 import scipy.stats
 from matplotlib import rcParams
@@ -37,7 +41,7 @@ from pylab import *
 from matplotlib.axes import Subplot
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
-
+import simulation
 
 # Internationalization
 import gettext
@@ -48,10 +52,7 @@ gettext.textdomain(APP)
 gtk.glade.bindtextdomain(APP, DIR)
 gtk.glade.textdomain(APP)
 
-# ppcProject modules
-import GTKgantt
-import loadSheet
-import simulation
+# Own application modules
 import pert
 import graph
 import interface
@@ -77,14 +78,12 @@ class PPCproject(object):
         self.bufer=gtk.TextBuffer()
         # Keeps the name of the open file 
         # (None = no open file, 'Unnamed' = Project without name yet)
-        self.openFilename = None
+        self.openFilename = None #xxx gettext.gettext('Unnamed -PPC-Project')
         self.modified=0
         self.ganttActLoaded = False
-
         self.interface = interface.Interface(self)
         self._widgets = self.interface._widgets
         self._widgets.signal_autoconnect(self)
-
         self.vBoxProb = self._widgets.get_widget('vbProb')
         self.grafica = gtk.Image()
         self.box=gtk.VBox()
@@ -458,6 +457,7 @@ class PPCproject(object):
                         ok=self.comprobarDuraciones(a, b, m)   
    
                         if ok:  #se actualizan la media y la desviación tí­pica
+			    #distribucion=str(self.modelo[path][8])
                             self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                             
                         else:  #se emite un mensaje de error
@@ -467,12 +467,14 @@ class PPCproject(object):
                         self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
                         gantt_modified = True
                               
-                # Si se introduce la media, se elimina el resto de duraciones        
+                # Si se introduce la media, se elimina el resto de duraciones MODIFICADO POR MI    
                 elif n==6:   
                     self.actividad[int(path)][n]=float(self.modelo[path][n])
                     for i in range(3, 6):
                         self.modelo[path][i]=''
                         self.actividad[int(path)][i]=''
+                    if self.modelo[path][8]==gettext.gettext('Normal'):
+                        self.modelo[path][7]=self.actividad[int(path)][7]=0.2*float(self.modelo[path][6])
                     self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
                     gantt_modified = True
   
@@ -483,6 +485,7 @@ class PPCproject(object):
                         a=float(self.modelo[path][3]) #d.optimista
                         b=float(self.modelo[path][5]) #d.pesimista
                         m=float(self.modelo[path][4]) #d.más probable
+			#distribucion=str(self.modelo[path][8])
                         self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                         self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
                         gantt_modified = True                 
@@ -538,13 +541,7 @@ class PPCproject(object):
             pre_dic = {}
             for i in range(len(self.actividad)):
                 act_list.append(self.actividad[i][1])
-                # Para python 2.3
-                if self.actividad[i][6] != "":
-                   tmp = self.actividad[i][6]
-                else:
-                   tmp = 0
-                dur_dic[self.actividad[i][1]] = float(tmp)
-#                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0) # Incompatible con python 2.3
+                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                 pre_dic[self.actividad[i][1]] = self.actividad[i][2]
             if n == 9:
                 self.schedules[self.ntbSchedule.get_current_page()][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
@@ -564,20 +561,23 @@ class PPCproject(object):
          Parámetros: path (fila)
                      modelo (interfaz)
                      actividad (lista de actividades)
-                       a (duración optimista)
-                 b (duración pesimista)
-                 m (duración más probable)
+                     a (duración optimista)
+                     b (duración pesimista)
+                     m (duración más probable)
   
          Valor de retorno: -
         """
         # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
-        if modelo[path][9]==gettext.gettext('Normal'):  
+        if modelo[path][8]==gettext.gettext('Normal'):
+            modelo[path][3]=actividad[int(path)][3]=''
+            modelo[path][4]=actividad[int(path)][4]=''
+            modelo[path][5]=actividad[int(path)][5]=''  
             modelo[path][6]=actividad[int(path)][6]=''
             modelo[path][7]=actividad[int(path)][7]=''
 
         # Si la distribución no es Normal, se recalculan los valores
-        else:  
-            media, dTipica=self.calcularMediaYDTipica(modelo[path][9], a, b, m)
+        else:
+            media, dTipica=self.calcularMediaYDTipica(modelo[path][8], a, b, m)
             m='%4.3f'%(media)
             actividad[int(path)][6]=modelo[path][6]=m
             dT='%4.3f'%(dTipica)
@@ -631,7 +631,7 @@ class PPCproject(object):
                                 d+=1
                  
                 if c==0: # Si no se da ninguno de los dos primeros casos
-                    cadena = ', '.join(modificacion) # Pasamos la lista a cadena para mostrarla en la interfaz
+                    cadena=self.lista2Cadena2(modificacion) # Pasamos la lista a cadena para mostrarla en la interfaz
                     if d!=0:  # Si se da el último caso, se sobreescribe
                         modelo[path][2] = cadena
                         self.actividad[int(path)][2]=modelo[path][2]
@@ -665,7 +665,8 @@ class PPCproject(object):
                         if original==self.actividad[a][2][m]: # La siguiente que coincida con original, se modifica por nuevo
                             #print '3'
                             self.actividad[a][2][m]=nuevo
-                            modelo[a][2]=', '.join(self.actividad[a][2])
+                            modelo[a][2]=self.lista2Cadena2(self.actividad[a][2])
+  
         return modelo
    
 
@@ -692,9 +693,9 @@ class PPCproject(object):
 
     def set_schedule(self, schedule):
         """
-        Set current schedule.
-
-          schedule - the schedule to set
+        Set current schedule to "schedule".
+    
+        Parameters: schedule
 
         Returns: None.
         """
@@ -774,7 +775,7 @@ class PPCproject(object):
 
         # Se actualiza la interfaz
         for m in range(len(columnaRec)):
-            cadena=', '.join(columnaRec[m])
+            cadena=self.lista2Cadena(columnaRec, m)
             self.modelo[m][8]=cadena
         self.sumarUnidadesRec(self.asignacion)
 
@@ -799,7 +800,7 @@ class PPCproject(object):
                         #print 'entra'
                     self.modelo[m][2]=''
                 else: 
-                    s=', '.join(prelacion[m][1])
+                    s=self.lista2Cadena2(prelacion[m][1])
                     self.modelo[m-1][2]=s
 
 
@@ -1007,6 +1008,29 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             modelo[path][2] = texto
             self.actividad[int(path)][2]=modelo[path][2]
 
+
+    def lista2Cadena(self, listaCadenas, m):
+        """
+        xxx Puede eliminarse??
+         Pasa una lista de listas a formato cadena
+
+         Parámetros: listaCadenas (lista de listas)
+             m (posición)
+
+         Valor de retorno: cadena (cadena resultado)
+        """
+        return ', '.join(listaCadenas[m])
+
+    def lista2Cadena2(self, lista):
+        """
+        xxx Puede eliminarse??
+         Pasa una lista a formato cadena
+
+         Parámetros: lista (lista)
+
+         Valor de retorno: cadena (cadena resultado)
+        """
+        return ', '.join(lista)           
    
     def actString2actList(self, s):
         """
@@ -1040,21 +1064,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Si el tipo de distribución es Beta
         if distribucion==gettext.gettext('Beta'):
-            #print 'beta'
             media=(a+b+4.0*m)/6.0
             dTipica=(b-a)/6.0
 
         # Si el tipo de distribución es Triangular
         elif distribucion==gettext.gettext('Triangular'):
-            #print 'triangular'
             media=(a+b+m)/3.0
-            dTipica=(a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0
+            dTipica=sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0)
 
         # Si el tipo de distribución es Uniforme
-        else: 
-            #print 'uniforme'
+        else:   
             media=(a+b)/2.0
-            dTipica=((b-a)**2.0)/12.0
+            dTipica=sqrt(((b-a)**2.0)/12.0)
 
         # NOTA: La media y la desviación típica de la distribución Normal
         #       no se calculan, se deben introducir manualmente
@@ -1583,9 +1604,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             numeroCaminos=len(caminosSinBeginEnd) 
             camino=gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
             for n in range(len(caminosSinBeginEnd)):
-                cadena = ', '.join(caminosSinBeginEnd[n])
-                camino += cadena
-                camino += '\n'
+                cadena=self.lista2Cadena(caminosSinBeginEnd, n)
+                camino+=cadena
+                camino+='\n'
            
             # Se muestran los caminos en la interfaz
             self.vCaminos.show()
@@ -1934,12 +1955,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     try:
                         data = format.load(filename)
                         break
-                    except fileFormats.InvalidFileFormatException:
+                    except InvalidFileFormatException:
                         pass
 
             # if not data:
             # xxx Should we try here to load files in any format independently of their 
-            # extension. It would be the same previous code without the 'if extension'
+            # extension. It would the same previous code without the 'if extension'
             
             #Data successfully loaded
             if data:
@@ -2071,12 +2092,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         if resultado == gtk.RESPONSE_OK:
             filename = dialogoGuardar.get_filename()
-            # Para python 2.3
-            if filename[-4:] == ".png":
-                pixbuf.save(filename)
-            else:
-                pixbuf.save(filename + ".png","png")
-#            pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png","png") #incompatible python 2.3
+            pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png","png")
         dialogoGuardar.destroy()
 
 
@@ -2100,7 +2116,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                                   gtk.STOCK_SAVE, gtk.RESPONSE_OK )
                                  )
-                                 #xxx el dialogo no debe ser modal? Vamos que hasta que el usuario no responda no debe continuar. Corregir mirando doc.
             label = gtk.Label(gettext.gettext('Project has been modified. Do you want to save the changes?'))
             dialogo.vbox.pack_start(label,True,True,10)
             label.show()
@@ -2280,12 +2295,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             pre_dic = {}
             for i in range(len(self.actividad)):
                 act_list.append(self.actividad[i][1])
-                # Para python 2.3
-                if self.actividad[i][6] != "":
-                    dur_dic[self.actividad[i][1]] = float(self.actividad[i][6])
-                else:
-                    dur_dic[self.actividad[i][1]] = 0.0
-#                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0) incompatible python 2.3
+                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                 pre_dic[self.actividad[i][1]] = self.actividad[i][2]
             self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, self.schedules[0][1])
             for index in range(1, len(self.schedules)):
@@ -3728,7 +3738,6 @@ def main(filename=None):
 
 # --- Start running as a program
 if __name__ == '__main__':
-    import sys
     if   len(sys.argv) == 1:
         main()
     elif len(sys.argv) == 2:

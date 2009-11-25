@@ -9,7 +9,7 @@
 #   Multiplatform software tool for education and research in
 #   project management
 #
-# Copyright 2007-9 Universidad de Córdoba
+# Copyright 2007-8 Universidad de Córdoba
 # This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License,
@@ -24,8 +24,9 @@
 import gtk
 import gettext
 import pickle
+import random
 
-class InvalidFileFormatException(Exception):
+class InvalidFilFormatException(Exception):
     """
     Raised when a file does not contain data in the expected format
     """
@@ -171,11 +172,15 @@ class PSPProjectFileFormat(ProjectFileFormat):
                                     
                 cont += 1  
 
-        # Update activities duration
+        # Update activities duration MODIFICADO POR MI
         for n in range(len(asig)-1):   
             if asig[n][2]!='0':
                 m=n-1
                 activities[m][6]=float(asig[n][2])
+		activities[m][4]=float(round(random.uniform(0.8*activities[m][6],1.2*activities[m][6]),2))
+		activities[m][3]=float(2.4*float(asig[n][2])-2*float(activities[m][4]))
+		activities[m][5]=float(1.2*float(asig[n][2])+float(activities[m][3]))
+		activities[m][7]=float((float(activities[m][5])-float(activities[m][3]))/6.0)
 
         # Se actualizan los recursos
         i=1
