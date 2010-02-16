@@ -75,7 +75,7 @@ class ProjectFileFormat(object):
     def load(self, filename):
         """
         Return: project data=(activities, schedules, resources, resourceAsignaments)
-           activities: table with the following fields: (act_number, act_name, opt.dur, most prob. dur, pes. dur, avg. dur, typ. dev, distribution)
+           activities: table with the following fields: (act_number, act_name, next_acts, opt.dur, most prob. dur, pes. dur, avg. dur, typ. dev, distribution)
            schedules: list containing lists with two elements: a string (schedule name) and a dictionary which uses activity names as keys and start times as definitions.
            resources: table with the following fields: (name, type, project units, period units)
            resourceAsignaments: table with the following fields: (activity name, resource, units)
