@@ -319,18 +319,18 @@ def yuvalCohen(prelaciones):
 
     for i in la:
         tup=i[1][0],i[2][0]
-	cad=i[0][0]
-	tamanyo=len(i[0][0])
-	if tamanyo>1 and cad[1]==cad[-1]:
-		label=cad,'True'
-	else:
-		label=cad,'False'
+    cad=i[0][0]
+    tamanyo=len(i[0][0])
+    if tamanyo>1 and cad[1]==cad[-1]:
+        label=cad,'True'
+    else:
+        label=cad,'False'
         grafo.addArc(tup,label)
 
     return grafo
 
 if __name__ == "__main__":
-	
+    
     prelaciones = {
         'A' : [],
         'B' : [],
