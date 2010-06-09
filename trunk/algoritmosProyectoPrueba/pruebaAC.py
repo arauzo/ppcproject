@@ -17,7 +17,8 @@ prelaciones = {
 }
 
 itime=os.times()
-g=algoritmoConjuntos.algoritmoN(prelaciones)
+for i in range(1000):
+    g=algoritmoConjuntos.algoritmoN(prelaciones)
 ftime=os.times()
 utime = ftime[0] - itime[0]
 stime = ftime[1] - itime[1]
