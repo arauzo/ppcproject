@@ -227,15 +227,15 @@ def yuvalCohen(prelaciones):
             cont=cont+1
             cont1=cont1+1
             if ne > cont1:
-                r=[]
-                l1=[]
-                l2=[]
-                im=j*cont
-                l2.append(j)
-                l1.append(im)
-                r.append(l1)
-                r.append(l2)
-                rf.append(r)
+                    r=[]
+                    l1=[]
+                    l2=[]
+                    im=j*cont
+                    l2.append(j)
+                    l1.append(im)
+                    r.append(l1)
+                    r.append(l2)
+                    rf.append(r)
             ###rf tiene la nueva fila para lIPA1
     LIPA2=copy.deepcopy(LIPA1)
     #con esto obtengo la actividad real y la imaginaria y cambio las actividades
@@ -319,18 +319,18 @@ def yuvalCohen(prelaciones):
 
     for i in la:
         tup=i[1][0],i[2][0]
-    cad=i[0][0]
-    tamanyo=len(i[0][0])
-    if tamanyo>1 and cad[1]==cad[-1]:
-        label=cad,'True'
-    else:
-        label=cad,'False'
+	cad=i[0][0]
+	tamanyo=len(i[0][0])
+	if tamanyo>1 and cad[1]==cad[-1]:
+		label=cad,'True'
+	else:
+		label=cad,'False'
         grafo.addArc(tup,label)
 
     return grafo
 
 if __name__ == "__main__":
-    
+	
     prelaciones = {
         'A' : [],
         'B' : [],
