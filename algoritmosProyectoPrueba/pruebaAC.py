@@ -1,6 +1,8 @@
 import os
 import sys
 import algoritmoConjuntos
+import algoritmoLorenzo
+import yuvalCohen
 prelaciones = {
     'A' : [],
     'B' : [],
@@ -21,10 +23,34 @@ for i in range(1000):
     g=algoritmoConjuntos.algoritmoN(prelaciones)
 ftime=os.times()
 utime = ftime[0] - itime[0]
-stime = ftime[1] - itime[1]
-total = utime + stime
-total1 = ftime[4]-itime[4]
+print "Algoritmo Conjuntos"
+print "utime %.4f"% (utime)
+print "numero de nodos: ",g.numNodes()
+print "numero de arcos: ",g.numArcs()
+print g.successors
+print
 
-print "utime %.4f, stime %.4f, total %.4f" % (utime, stime, total)
-print "total %.4f"%(total1)
+itime=os.times()
+for i in range(1000):
+    g=yuvalCohen.yuvalCohen(prelaciones)
+ftime=os.times()
+utime = ftime[0] - itime[0]
+print "Yuval Cohen"
+print "utime %.4f"% (utime)
+print "numero de nodos: ",g.numNodes()
+print "numero de arcos: ",g.numArcs()
+print g.successors
+print
+
+itime=os.times()
+for i in range(1000):
+    g=algoritmoLorenzo.al(prelaciones)
+ftime=os.times()
+utime = ftime[0] - itime[0]
+print "Algoritmo Lorenzo"
+print "utime %.4f"% (utime)
+print "numero de nodos: ",g.numNodes()
+print "numero de arcos: ",g.numArcs()
+print g.successors
+print
 
