@@ -27,6 +27,8 @@ print "Algoritmo Conjuntos"
 print "utime %.4f"% (utime)
 print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
+print "numero de arcos reales: ",g.numArcsReales()
+print "numero de arcos ficticios: ",g.numArcsFicticios()
 print g.successors
 print
 
@@ -39,6 +41,8 @@ print "Yuval Cohen"
 print "utime %.4f"% (utime)
 print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
+print "numero de arcos reales: ",g.numArcsReales()
+print "numero de arcos ficticios: ",g.numArcsFicticios()
 print g.successors
 print
 
@@ -51,6 +55,8 @@ print "Algoritmo Lorenzo"
 print "utime %.4f"% (utime)
 print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
+print "numero de arcos reales: ",g.numArcsReales()
+print "numero de arcos ficticios: ",g.numArcsFicticios()
 print g.successors
 print
 
