@@ -60,3 +60,19 @@ class Grafo:
 
     def numArcs(self):
         return len(self.arcs)
+
+    def numArcsReales(self):
+        cont=0
+        for (i,j) in self.arcs:
+            for i in self.arcs[(i,j)]:
+                if i[1]=='False':
+                    cont = cont+1
+        return cont
+
+    def numArcsFicticios(self):
+        cont=0
+        for (i,j) in self.arcs:
+            for i in self.arcs[(i,j)]:
+                if i[1]=='True':
+                    cont = cont+1
+        return cont        
