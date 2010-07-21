@@ -1,3 +1,84 @@
+prelaciones = {
+    '3': [], 
+    '2': [], 
+    '5': ['3'], 
+    '4': [], 
+    '7': ['4'], 
+    '6': ['5'], 
+    '9': ['3'], 
+    '8': ['7'], 
+    '11': ['7'], 
+    '10': ['2'], 
+    '13': ['4', '6'], 
+    '12': ['10'], 
+    '15': ['3'], 
+    '14': ['9'], 
+    '17': ['5'], 
+    '16': ['6'], 
+    '19': ['7'], 
+    '18': ['6'], 
+    '20': ['16'], 
+    '21': ['11', '15', '17'], 
+    '22': ['10'], 
+    '23': ['18'], 
+    '24': ['12'],
+    '25': ['13', '14', '19'], 
+    '26': ['11', '17', '16'], 
+    '27': ['26', '22', '8'], 
+    '28': ['9'], 
+    '29': ['24', '22', '17'],
+    '30': ['25', '27', '28'],
+    '31': ['20', '21', '23'],
+}
+prelaciones = {
+    'B': [], 
+    'A': [], 
+    'D': ['B'], 
+    'C': [], 
+    'F': ['C'], 
+    'E': ['D'], 
+    'H': ['B'], 
+    'G': ['F'], 
+    'J': ['F'], 
+    'I': ['A'], 
+    'L': ['C', 'E'], 
+    'K': ['I'], 
+    'N': ['B'], 
+    'M': ['H'], 
+    'P': ['D'], 
+    'O': ['E'], 
+    'R': ['F'], 
+    'Q': ['E'], 
+    'S': ['O'], 
+    'T': ['J', 'N', 'P'], 
+    'U': ['I'], 
+    'V': ['Q'], 
+    'W': ['K'],
+    'X': ['L', 'M', 'R'], 
+    'Y': ['J', 'P', 'O'], 
+    'Z': ['Y', 'U', 'G'], 
+    'AB': ['H'], 
+    'AC': ['W', 'U', 'P'],
+    'AD': ['X', 'Z', 'AB'],
+    'AE': ['S', 'T', 'V']
+}
+
+prelaciones = {
+    'A' : [],
+    'B' : [],
+    'C' : ['A','B'],
+    'D' : ['A'],
+    'E' : ['B'],
+    'F' : ['A','B'],
+    'G' : ['C'],
+    'H' : ['D','E'],
+    'I' : ['D','E','F'],
+    'J' : ['D','E','F'],
+    'K' : ['D','F','L'],
+    'L' : ['A'],
+} 
+
+
 import copy
 import sys
 import claseGrafo
@@ -9,7 +90,7 @@ def algoritmoN(prelaciones):
     NI=[]
     for label in prelaciones:
         if prelaciones[label]==[]:
-            a=['-']
+            a=['start']
         else:
             a=prelaciones[label]
         if a not in NI:
@@ -43,17 +124,27 @@ def algoritmoN(prelaciones):
                 c.append(j)
             else:
                 d=[j]
-                NI.append(d)
+                if d not in NI:
+                    NI.append(d)
 
     ###Anado el nodo final
-    d=['1']
+    d=['end']
     NI.append(d)
-    
+
+
 
     ###para anadir las actividades ficiticias en el grafo
     ###cojo los nodos y veo si alguno esta compuesto por otro nodo, si es asi
     ###trazo arco ficticio
     gg=claseGrafo.Grafo()
+    for i in NI:
+        l=""
+        for j in i:
+            l=l+j+"-"
+        l=l[:-1]
+        gg.addNode(l)
+
+
     z=[]
     for i in NI:
         y=set(i)
@@ -66,18 +157,24 @@ def algoritmoN(prelaciones):
                 label='AA','True'
                 if t==y:
                     for k in i:
-                        l=l+k[0]
+                        l=l+k+"-"
                     for k in j:
-                        l1=l1+k[0]
+                        l1=l1+k+"-"
+                    l,l1
+                    l=l[:-1]
+                    l1=l1[:-1]
                     arco=l,l1
                     arco
                     
                     gg.addArc(arco,label)
                 elif t==w:
                     for k in i:
-                        l=l+k[0]
+                        l=l+k+"-"
                     for k in j:
-                        l1=l1+k[0]
+                        l1=l1+k+"-"
+                    l1,l
+                    l=l[:-1]
+                    l1=l1[:-1]
                     arco=l1,l
                     arco
                     gg.addArc(arco,label)
@@ -101,7 +198,7 @@ def algoritmoN(prelaciones):
     ###para anadir las actividades reales cojo prelaciones y anado arco desde
     ###prec a act. Si act no esta definida como nodo busco el nodo de menor tamano
     ###que la contenga y act pasa a ser dicho nodo.
-    
+
     l=""
     for i in prelaciones:            
         infinity= sys.maxint -1        ###valor infinito para compara tamano en caso de que haga falta
@@ -110,10 +207,11 @@ def algoritmoN(prelaciones):
         l=i
         l1=""
         if prelaciones[i] == []:
-            l1='0'
+            l1='start'
         else:
             for j in prelaciones[i]:     ###como prec siempre va a ser nodo los desmiembro para ponerlo en una cadena
-                l1=l1+j
+                l1=l1+j+"-"
+            l1=l1[:-1]
         if ll in NI:                 ###si act es un nodo
             arco=l1,l                 ###arco es prec-->act
         else:                         ###si act no es nodo
@@ -143,17 +241,18 @@ def algoritmoN(prelaciones):
     ###Para cada nodo que no tiene sucesores busco cual es su actividad precedente y trazo arco
     ###hacia el nodo final. si de un mismo nodo salen dos actividades hacia otro mismo nodo anado nodo 
     ###puente y actividad ficticia hasta dicho nodo
-    
+
     for i in k:
         cad=""
         for j in prelaciones[i]:
-            cad=cad+j
-        arco=cad,'1'
+            cad=cad+j+"-"
+        cad=cad[:-1]
+        arco=cad,'end'
         hecho=0
         for j in gg.arcs:
             if arco==j:
                 arco1=cad,i
-                arco2=i,'1'
+                arco2=i,'end'
                 hecho=1
         if hecho==0:
             label=i,'False'
@@ -165,5 +264,3 @@ def algoritmoN(prelaciones):
             gg.addArc(arco2,label)
     return gg
 
-
-   

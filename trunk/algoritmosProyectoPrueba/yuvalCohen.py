@@ -84,7 +84,7 @@ def yuvalCohen(prelaciones):
                 l1=[]
                 l2=[]
                 l2.append(j)
-                j=j*cont
+                j='ficticia '+j*cont
                 l1.append(j)
                 d.append(j)
                 relation=[]
@@ -206,31 +206,31 @@ def yuvalCohen(prelaciones):
             if j[0][0] in t:
                 f.append(j[1][0])
                 f.append(j[0][0])
-        cont=-1
+        cont1=-1
         g=[]
         for j in f:
-            cont=cont+1
+            cont1=cont1+1
             if f.count(j)>1:
-                k=cont+1
+                k=cont1+1
                 g.append(f[k])
         if g != []:        
             ND.append(g)
 
     ####en ND tengo una lista de listas de las cuales tengo que elegir las imaginarias
 
-    cont=1
     rf=[]
     for i in ND:
         ne=len(i)
         cont1=0
         for j in i:
-            cont=cont+1
+            
             cont1=cont1+1
             if ne > cont1:
+                    cont=cont+1
                     r=[]
                     l1=[]
                     l2=[]
-                    im=j*cont
+                    im='ficticia '+j*cont
                     l2.append(j)
                     l1.append(im)
                     r.append(l1)
@@ -319,12 +319,12 @@ def yuvalCohen(prelaciones):
 
     for i in la:
         tup=i[1][0],i[2][0]
-	cad=i[0][0]
-	tamanyo=len(i[0][0])
-	if tamanyo>1 and cad[1]==cad[-1]:
-		label=cad,'True'
-	else:
-		label=cad,'False'
+        cad=i[0][0]
+        tamanyo=len(i[0][0])
+        if cad[:8]=='ficticia':
+            label=cad,'True'
+        else:
+            label=cad,'False'
         grafo.addArc(tup,label)
 
     return grafo
