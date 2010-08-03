@@ -26,7 +26,7 @@ import gettext
 import pickle
 import random
 
-class InvalidFilFormatException(Exception):
+class InvalidFileFormatException(Exception):
     """
     Raised when a file does not contain data in the expected format
     """
@@ -172,15 +172,15 @@ class PSPProjectFileFormat(ProjectFileFormat):
                                     
                 cont += 1  
 
-        # Update activities duration MODIFICADO POR MI
+        # Update activities duration (adaptado por Rocio para cargar valores PERT Lorenzo)
         for n in range(len(asig)-1):   
             if asig[n][2]!='0':
                 m=n-1
                 activities[m][6]=float(asig[n][2])
-		activities[m][4]=float(round(random.uniform(0.8*activities[m][6],1.2*activities[m][6]),2))
-		activities[m][3]=float(2.4*float(asig[n][2])-2*float(activities[m][4]))
-		activities[m][5]=float(1.2*float(asig[n][2])+float(activities[m][3]))
-		activities[m][7]=float((float(activities[m][5])-float(activities[m][3]))/6.0)
+                activities[m][4]=float(round(random.uniform(0.8*activities[m][6],1.2*activities[m][6]),2))
+                activities[m][3]=float(2.4*float(asig[n][2])-2*float(activities[m][4]))
+                activities[m][5]=float(1.2*float(asig[n][2])+float(activities[m][3]))
+                activities[m][7]=float((float(activities[m][5])-float(activities[m][3]))/6.0)
 
         # Se actualizan los recursos
         i=1
