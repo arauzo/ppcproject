@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--*- mode: xml -*-->
+<?xml version="1.0"?>
 <glade-interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="wndPrincipal">
     <property name="visible">True</property>
     <property name="title" translatable="yes">PPC-Project</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_width">1000</property>
     <property name="default_height">500</property>
     <signal name="delete_event" handler="on_Exit_activate"/>
@@ -24,8 +24,8 @@
                   <widget class="GtkMenu" id="mnArchivo_menu">
                     <child>
                       <widget class="GtkImageMenuItem" id="mnNuevo">
-                        <property name="visible">True</property>
                         <property name="label">gtk-new</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_New_activate"/>
@@ -33,8 +33,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnAbrir">
-                        <property name="visible">True</property>
                         <property name="label">gtk-open</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_Open_activate"/>
@@ -42,8 +42,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnGuardar">
-                        <property name="visible">True</property>
                         <property name="label">gtk-save</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_Save_activate"/>
@@ -51,8 +51,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnGuardarComo">
-                        <property name="visible">True</property>
                         <property name="label">gtk-save-as</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_SaveAs_activate"/>
@@ -60,8 +60,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnCerrar">
-                        <property name="visible">True</property>
                         <property name="label">gtk-close</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_Close_activate"/>
@@ -74,8 +74,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnSalir">
-                        <property name="visible">True</property>
                         <property name="label">gtk-quit</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_Exit_activate"/>
@@ -103,8 +103,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnPantallaComp">
-                        <property name="visible">True</property>
                         <property name="label">gtk-fullscreen</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_mnPantallaComp_activate"/>
@@ -112,8 +112,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="mnSalirPantComp">
-                        <property name="visible">True</property>
                         <property name="label">gtk-leave-fullscreen</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_mnSalirPantComp_activate"/>
@@ -156,7 +156,7 @@
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Action</property>
                 <property name="use_underline">True</property>
-                <signal name="activate" handler="on_mnAcción_activate"/>
+                <signal name="activate" handler="on_mnAcci&#xF3;n_activate"/>
                 <child>
                   <widget class="GtkMenu" id="mnAccion_menu">
                     <child>
@@ -172,7 +172,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Draw _ROY graph</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafoRoy_activate"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -180,7 +180,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Draw _PERT graph</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafoPert_activate"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -235,9 +235,9 @@
                 <child>
                   <widget class="GtkMenu" id="mnAyuda_menu">
                     <child>
-                      <widget class="GtkImageMenuItem" id="mnAyuda">
-                        <property name="visible">True</property>
+                      <widget class="GtkImageMenuItem" id="mnAyuda1">
                         <property name="label">gtk-about</property>
+                        <property name="visible">True</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_mnAyuda_activate"/>
@@ -251,11 +251,12 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
           <widget class="GtkToolbar" id="bHerramientas1">
-            <property name="toolbar_style">GTK_TOOLBAR_BOTH</property>
+            <property name="toolbar_style">both</property>
             <child>
               <widget class="GtkToolButton" id="tbNuevo">
                 <property name="visible">True</property>
@@ -265,6 +266,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -276,6 +278,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -287,6 +290,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -298,6 +302,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
             <child>
@@ -306,7 +311,6 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
-                <property name="homogeneous">False</property>
               </packing>
             </child>
             <child>
@@ -318,6 +322,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
+                <property name="homogeneous">True</property>
               </packing>
             </child>
           </widget>
@@ -339,13 +344,13 @@
                   <widget class="GtkScrolledWindow" id="scrolledwindow10">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="shadow_type">GTK_SHADOW_IN</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="shadow_type">in</property>
                     <child>
                       <widget class="GtkTreeView" id="vistaListaDatos">
                         <property name="can_focus">True</property>
                         <property name="reorderable">True</property>
-                        <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+                        <property name="enable_grid_lines">both</property>
                       </widget>
                     </child>
                   </widget>
@@ -358,12 +363,15 @@
                   <placeholder/>
                 </child>
               </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkNotebook" id="ntbSchedule">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="tab_pos">GTK_POS_RIGHT</property>
+                <property name="tab_pos">right</property>
                 <property name="show_border">False</property>
                 <signal name="button_press_event" handler="on_tab_clicked"/>
                 <signal name="switch_page" handler="on_tab_changed"/>
@@ -394,7 +402,7 @@
   </widget>
   <widget class="GtkWindow" id="wndZaderenko">
     <property name="title" translatable="yes">Zaderenko and project paths</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
     <signal name="delete_event" handler="on_wndZaderenko_delete_event"/>
     <child>
@@ -404,19 +412,22 @@
           <widget class="GtkScrolledWindow" id="scrolledwindow34">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="shadow_type">GTK_SHADOW_IN</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
+            <property name="shadow_type">in</property>
             <child>
               <widget class="GtkTreeView" id="vistaZad">
                 <property name="height_request">209</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="enable_search">False</property>
-                <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+                <property name="enable_grid_lines">both</property>
               </widget>
             </child>
           </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox7">
@@ -435,15 +446,16 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow11">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="shadow_type">GTK_SHADOW_IN</property>
+                    <property name="hscrollbar_policy">automatic</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="shadow_type">in</property>
                     <child>
                       <widget class="GtkTreeView" id="vistaListaZad">
                         <property name="width_request">300</property>
@@ -452,7 +464,7 @@
                         <property name="can_focus">True</property>
                         <property name="reorderable">True</property>
                         <property name="rules_hint">True</property>
-                        <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+                        <property name="enable_grid_lines">both</property>
                         <signal name="cursor_changed" handler="on_vistaListaZad_cursor_changed"/>
                       </widget>
                     </child>
@@ -462,23 +474,24 @@
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkTable" id="table3">
                 <property name="visible">True</property>
                 <property name="border_width">10</property>
-                <property name="n_rows">1</property>
-                <property name="n_columns">1</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <widget class="GtkButton" id="btCalcularProb">
+                    <property name="label" translatable="yes">Calculate Probabilities</property>
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
                     <property name="tooltip" translatable="yes">Calculate probabilities</property>
-                    <property name="label" translatable="yes">Calculate Probabilities</property>
                     <property name="use_underline">True</property>
-                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_btCalcularProb_clicked"/>
                   </widget>
                   <packing>
@@ -489,7 +502,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
+                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
@@ -503,7 +516,7 @@
   </widget>
   <widget class="GtkWindow" id="wndSimulacion">
     <property name="title" translatable="yes">Durations Simulation</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
     <signal name="delete_event" handler="on_wndSimulacion_delete_event"/>
     <child>
@@ -521,7 +534,7 @@
               <widget class="GtkFrame" id="frame3">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkAlignment" id="alignment4">
                     <property name="visible">True</property>
@@ -552,12 +565,12 @@
                           <widget class="GtkScrolledWindow" id="scrolledwindow19">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                            <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                            <property name="hscrollbar_policy">never</property>
+                            <property name="vscrollbar_policy">never</property>
                             <child>
                               <widget class="GtkViewport" id="viewport3">
                                 <property name="visible">True</property>
-                                <property name="shadow_type">GTK_SHADOW_NONE</property>
+                                <property name="shadow_type">none</property>
                                 <child>
                                   <widget class="GtkEntry" id="dTipicaSim">
                                     <property name="visible">True</property>
@@ -579,12 +592,12 @@
                           <widget class="GtkScrolledWindow" id="scrolledwindow21">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                            <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                            <property name="hscrollbar_policy">never</property>
+                            <property name="vscrollbar_policy">never</property>
                             <child>
                               <widget class="GtkViewport" id="viewport4">
                                 <property name="visible">True</property>
-                                <property name="shadow_type">GTK_SHADOW_NONE</property>
+                                <property name="shadow_type">none</property>
                                 <child>
                                   <widget class="GtkEntry" id="iteracionesTotales">
                                     <property name="visible">True</property>
@@ -609,7 +622,7 @@
                             <property name="visible">True</property>
                             <property name="yalign">0</property>
                             <property name="label" translatable="yes">Typical Deviation</property>
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                            <property name="justify">center</property>
                           </widget>
                           <packing>
                             <property name="x_options"></property>
@@ -621,7 +634,7 @@
                             <property name="visible">True</property>
                             <property name="yalign">0</property>
                             <property name="label" translatable="yes">Total Iterations</property>
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                            <property name="justify">center</property>
                           </widget>
                           <packing>
                             <property name="top_attach">2</property>
@@ -635,7 +648,7 @@
                             <property name="visible">True</property>
                             <property name="yalign">0</property>
                             <property name="label" translatable="yes">Average</property>
-                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                            <property name="justify">center</property>
                           </widget>
                           <packing>
                             <property name="top_attach">1</property>
@@ -661,11 +674,14 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
+                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox16">
@@ -675,18 +691,21 @@
               <widget class="GtkScrolledWindow" id="scrolledwindow33">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                <property name="shadow_type">GTK_SHADOW_IN</property>
+                <property name="hscrollbar_policy">automatic</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <property name="shadow_type">in</property>
                 <child>
                   <widget class="GtkTreeView" id="vistaFrecuencias">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="enable_search">False</property>
-                    <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+                    <property name="enable_grid_lines">both</property>
                   </widget>
                 </child>
               </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkVBox" id="vbox17">
@@ -698,19 +717,20 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Iteration</property>
                     <property name="use_underline">True</property>
-                    <property name="justify">GTK_JUSTIFY_CENTER</property>
-                    <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+                    <property name="justify">center</property>
+                    <property name="ellipsize">end</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <widget class="GtkSpinButton" id="iteracion">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="adjustment">1 0 100 1 10 10</property>
+                    <property name="adjustment">1 0 100 1 10 0</property>
                     <property name="climb_rate">1</property>
                     <property name="numeric">True</property>
                   </widget>
@@ -722,13 +742,13 @@
                 </child>
                 <child>
                   <widget class="GtkButton" id="btContinuarIterando">
+                    <property name="label" translatable="yes">Iterate</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
                     <property name="tooltip" translatable="yes">Continue iterating</property>
                     <property name="border_width">4</property>
-                    <property name="label" translatable="yes">Iterate</property>
                     <property name="use_underline">True</property>
-                    <property name="response_id">0</property>
                     <signal name="clicked" handler="on_btContinuarIterando_clicked"/>
                   </widget>
                   <packing>
@@ -754,9 +774,9 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">10</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="shadow_type">GTK_SHADOW_IN</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
+            <property name="shadow_type">in</property>
             <child>
               <widget class="GtkTreeView" id="vistaListaCriticidad">
                 <property name="height_request">150</property>
@@ -764,7 +784,7 @@
                 <property name="can_focus">True</property>
                 <property name="reorderable">True</property>
                 <property name="rules_hint">True</property>
-                <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+                <property name="enable_grid_lines">both</property>
               </widget>
             </child>
           </widget>
@@ -779,42 +799,43 @@
             <property name="spacing">10</property>
             <child>
               <widget class="GtkButton" id="btGuardarSim">
+                <property name="label">gtk-save</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
                 <property name="tooltip" translatable="yes">Save results</property>
-                <property name="label">gtk-save</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_btGuardarSim_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
+                <property name="pack_type">end</property>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
               <widget class="GtkButton" id="btProbSim">
+                <property name="label" translatable="yes">Probability</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
                 <property name="tooltip" translatable="yes">Calculate probability</property>
-                <property name="label" translatable="yes">Probability</property>
                 <property name="use_underline">True</property>
-                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_btProbSim_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
+                <property name="pack_type">end</property>
+                <property name="position">0</property>
               </packing>
             </child>
           </widget>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="pack_type">GTK_PACK_END</property>
+            <property name="pack_type">end</property>
             <property name="position">2</property>
           </packing>
         </child>
@@ -823,7 +844,7 @@
   </widget>
   <widget class="GtkWindow" id="wndRecursos">
     <property name="title" translatable="yes">Resources</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_width">600</property>
     <property name="default_height">500</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
@@ -832,15 +853,15 @@
       <widget class="GtkScrolledWindow" id="scrolledwindow25">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-        <property name="shadow_type">GTK_SHADOW_IN</property>
+        <property name="hscrollbar_policy">automatic</property>
+        <property name="vscrollbar_policy">automatic</property>
+        <property name="shadow_type">in</property>
         <child>
           <widget class="GtkTreeView" id="vistaListaRec">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="reorderable">True</property>
-            <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+            <property name="enable_grid_lines">both</property>
           </widget>
         </child>
       </widget>
@@ -848,7 +869,7 @@
   </widget>
   <widget class="GtkWindow" id="wndActividades">
     <property name="title" translatable="yes">PERT Graph Activities</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_height">600</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
     <signal name="delete_event" handler="on_wndActividades_delete_event"/>
@@ -859,24 +880,27 @@
           <widget class="GtkScrolledWindow" id="scrolledwindow15">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="shadow_type">GTK_SHADOW_IN</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
+            <property name="shadow_type">in</property>
             <child>
               <widget class="GtkTreeView" id="vistaListaAct">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="rules_hint">True</property>
-                <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+                <property name="enable_grid_lines">both</property>
               </widget>
             </child>
           </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkFrame" id="frame6">
             <property name="visible">True</property>
             <property name="label_xalign">0</property>
-            <property name="shadow_type">GTK_SHADOW_NONE</property>
+            <property name="shadow_type">none</property>
             <child>
               <widget class="GtkAlignment" id="alignment7">
                 <property name="visible">True</property>
@@ -894,12 +918,12 @@
                       <widget class="GtkScrolledWindow" id="scrolledwindow18">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                        <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                        <property name="hscrollbar_policy">never</property>
+                        <property name="vscrollbar_policy">never</property>
                         <child>
                           <widget class="GtkViewport" id="viewport7">
                             <property name="visible">True</property>
-                            <property name="shadow_type">GTK_SHADOW_NONE</property>
+                            <property name="shadow_type">none</property>
                             <child>
                               <widget class="GtkEntry" id="tvNodos">
                                 <property name="visible">True</property>
@@ -923,12 +947,12 @@
                       <widget class="GtkScrolledWindow" id="scrolledwindow17">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                        <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                        <property name="hscrollbar_policy">never</property>
+                        <property name="vscrollbar_policy">never</property>
                         <child>
                           <widget class="GtkViewport" id="viewport6">
                             <property name="visible">True</property>
-                            <property name="shadow_type">GTK_SHADOW_NONE</property>
+                            <property name="shadow_type">none</property>
                             <child>
                               <widget class="GtkEntry" id="tvFicticias">
                                 <property name="visible">True</property>
@@ -953,12 +977,12 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="border_width">5</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                        <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                        <property name="hscrollbar_policy">never</property>
+                        <property name="vscrollbar_policy">never</property>
                         <child>
                           <widget class="GtkViewport" id="viewport5">
                             <property name="visible">True</property>
-                            <property name="shadow_type">GTK_SHADOW_NONE</property>
+                            <property name="shadow_type">none</property>
                             <child>
                               <widget class="GtkEntry" id="tvActividades">
                                 <property name="visible">True</property>
@@ -992,7 +1016,7 @@
                       <widget class="GtkLabel" id="lblFicticias">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">DUMMY</property>
-                        <property name="justify">GTK_JUSTIFY_CENTER</property>
+                        <property name="justify">center</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1036,7 +1060,7 @@
   </widget>
   <widget class="GtkWindow" id="wndAsignarRec">
     <property name="title" translatable="yes">Needed Resources per Activity</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_width">450</property>
     <property name="default_height">500</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
@@ -1045,23 +1069,23 @@
       <widget class="GtkScrolledWindow" id="scrolledwindow24">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-        <property name="shadow_type">GTK_SHADOW_IN</property>
+        <property name="hscrollbar_policy">automatic</property>
+        <property name="vscrollbar_policy">automatic</property>
+        <property name="shadow_type">in</property>
         <child>
           <widget class="GtkTreeView" id="vistaListaAR">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="reorderable">True</property>
-            <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+            <property name="enable_grid_lines">both</property>
           </widget>
         </child>
       </widget>
     </child>
   </widget>
-  <widget class="GtkWindow" id="wndGrafoRoy">
-    <property name="title" translatable="yes">ROY Graph</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+  <widget class="GtkWindow" id="wndGrafo">
+    <property name="title" translatable="yes">Graph</property>
+    <property name="window_position">center</property>
     <property name="default_width">600</property>
     <property name="default_height">500</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
@@ -1073,8 +1097,8 @@
           <widget class="GtkScrolledWindow" id="scrolledwindow27">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
             <child>
               <widget class="GtkViewport" id="viewport1">
                 <property name="visible">True</property>
@@ -1087,88 +1111,33 @@
               </widget>
             </child>
           </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox32">
             <property name="visible">True</property>
             <child>
               <widget class="GtkButton" id="btnSaveRoy">
+                <property name="label">gtk-save</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-save</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_btnSaveRoy_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
+                <property name="pack_type">end</property>
+                <property name="position">0</property>
               </packing>
             </child>
           </widget>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="GtkWindow" id="wndGrafoPert">
-    <property name="title" translatable="yes">PERT Graph</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
-    <property name="default_width">600</property>
-    <property name="default_height">500</property>
-    <signal name="key_press_event" handler="on_key_pressed"/>
-    <signal name="delete_event" handler="on_wndGrafoPert_delete_event"/>
-    <child>
-      <widget class="GtkVBox" id="vbox5">
-        <property name="visible">True</property>
-        <child>
-          <widget class="GtkScrolledWindow" id="scrolledwindow28">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <child>
-              <widget class="GtkViewport" id="viewport2">
-                <property name="visible">True</property>
-                <child>
-                  <widget class="GtkImage" id="imagenGrafoPert">
-                    <property name="visible">True</property>
-                    <property name="stock">gtk-missing-image</property>
-                  </widget>
-                </child>
-              </widget>
-            </child>
-          </widget>
-        </child>
-        <child>
-          <widget class="GtkHBox" id="hbox33">
-            <property name="visible">True</property>
-            <child>
-              <widget class="GtkButton" id="btnSavePert">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-save</property>
-                <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="on_btnSavePert_clicked"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="pack_type">GTK_PACK_END</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -1226,12 +1195,12 @@
                   <widget class="GtkScrolledWindow" id="scrolledwindow29">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">never</property>
                     <child>
                       <widget class="GtkViewport" id="viewport10">
                         <property name="visible">True</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkEntry" id="dTipicaProb">
                             <property name="visible">True</property>
@@ -1253,12 +1222,12 @@
                   <widget class="GtkScrolledWindow" id="scrolledwindow30">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_NEVER</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">never</property>
                     <child>
                       <widget class="GtkViewport" id="viewport11">
                         <property name="visible">True</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkEntry" id="mediaProb">
                             <property name="visible">True</property>
@@ -1288,6 +1257,7 @@
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -1304,7 +1274,7 @@
                   <widget class="GtkFrame" id="frame7">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
-                    <property name="shadow_type">GTK_SHADOW_OUT</property>
+                    <property name="shadow_type">out</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment8">
                         <property name="visible">True</property>
@@ -1326,13 +1296,14 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkSpinButton" id="valor1Prob">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="adjustment">0 0 9999.9899999999998 0.10000000000000001 10 10</property>
+                                    <property name="adjustment">0 0 9999.9899999999998 0.10000000000000001 10 0</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">1</property>
                                     <signal name="output" handler="on_interval_changed"/>
@@ -1357,7 +1328,7 @@
                                   <widget class="GtkSpinButton" id="valor2Prob">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="adjustment">0 0 9999.9899999999998 0.10000000000000001 10 10</property>
+                                    <property name="adjustment">0 0 9999.9899999999998 0.10000000000000001 10 0</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">1</property>
                                     <signal name="output" handler="on_interval_changed"/>
@@ -1390,39 +1361,43 @@
                                   </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkHBox" id="hbox28">
                                 <property name="visible">True</property>
                                 <child>
                                   <widget class="GtkButton" id="btnIntervalReset">
+                                    <property name="label">gtk-clear</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">gtk-clear</property>
+                                    <property name="receives_default">False</property>
                                     <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_btnIntervalReset_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="pack_type">GTK_PACK_END</property>
+                                    <property name="pack_type">end</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="bntIntervalCalculate">
+                                    <property name="label">gtk-add</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">gtk-add</property>
+                                    <property name="receives_default">False</property>
                                     <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_bntIntervalCalculate_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="pack_type">GTK_PACK_END</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                               </widget>
@@ -1445,12 +1420,15 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <widget class="GtkFrame" id="frame8">
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
-                    <property name="shadow_type">GTK_SHADOW_OUT</property>
+                    <property name="shadow_type">out</property>
                     <child>
                       <widget class="GtkAlignment" id="alignment9">
                         <property name="visible">True</property>
@@ -1471,6 +1449,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -1499,7 +1478,7 @@
                                   <widget class="GtkSpinButton" id="valor3Prob">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="adjustment">0 0 100 0.10000000000000001 10 10</property>
+                                    <property name="adjustment">0 0 100 0.10000000000000001 10 0</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">2</property>
                                     <signal name="value_changed" handler="on_probability_changed"/>
@@ -1521,39 +1500,43 @@
                                   </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkHBox" id="hbox29">
                                 <property name="visible">True</property>
                                 <child>
                                   <widget class="GtkButton" id="btnProbabilityReset">
+                                    <property name="label">gtk-clear</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">gtk-clear</property>
+                                    <property name="receives_default">False</property>
                                     <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_btnProbabilityReset_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="pack_type">GTK_PACK_END</property>
+                                    <property name="pack_type">end</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="btnProbabilityCalculate">
+                                    <property name="label">gtk-add</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">gtk-add</property>
+                                    <property name="receives_default">False</property>
                                     <property name="use_stock">True</property>
-                                    <property name="response_id">0</property>
                                     <signal name="clicked" handler="on_btnProbabilityCalculate_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="pack_type">GTK_PACK_END</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                               </widget>
@@ -1581,14 +1564,17 @@
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkScrolledWindow" id="scrolledwindow31">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                <property name="shadow_type">GTK_SHADOW_IN</property>
+                <property name="hscrollbar_policy">automatic</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <property name="shadow_type">in</property>
                 <child>
                   <widget class="GtkTextView" id="tvProbabilidades">
                     <property name="visible">True</property>
@@ -1617,10 +1603,10 @@
     <property name="tooltip" translatable="yes">Information about the application</property>
     <property name="border_width">5</property>
     <property name="destroy_with_parent">True</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+    <property name="type_hint">normal</property>
     <property name="program_name">PPC-Project</property>
     <property name="version">2.0</property>
-    <property name="copyright" translatable="yes">© 2007 - 2008 University of Córdoba</property>
+    <property name="copyright" translatable="yes">&#xA9; 2007 - 2010 University of C&#xF3;rdoba</property>
     <property name="comments" translatable="yes">Multiplatform software tool for education and research in project management</property>
     <property name="website">http://code.google.com/p/ppcproject/</property>
     <property name="website_label" translatable="yes">Official Repository</property>
@@ -1630,25 +1616,25 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</property>
     <property name="authors">Antonio Arauzo Azofra
-Alfonso Jiménez Vílchez
+Alfonso Jim&#xE9;nez V&#xED;lchez
 Lorenzo Salas Morera
-Cristina Urbano Roldán
-Alejandro Villagrán Marín
+Cristina Urbano Rold&#xE1;n
+Alejandro Villagr&#xE1;n Mar&#xED;n
 </property>
     <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
-    <property name="artists">Alfonso Jiménez Vílchez</property>
+    <property name="artists">Alfonso Jim&#xE9;nez V&#xED;lchez</property>
     <property name="wrap_license">True</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
-    <signal name="delete_event" handler="on_dAyuda_delete_event"/>
     <signal name="response" handler="on_dAyuda_response"/>
+    <signal name="delete_event" handler="on_dAyuda_delete_event"/>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox1">
         <child internal-child="action_area">
-          <widget class="GtkHButtonBox" id="dialog-action_area1">
-          </widget>
+          <widget class="GtkHButtonBox" id="dialog-action_area1"/>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">GTK_PACK_END</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </widget>
@@ -1658,7 +1644,7 @@ Alejandro Villagrán Marín
     <property name="has_focus">True</property>
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="title" translatable="yes">Leveling / Allocation</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_width">800</property>
     <property name="default_height">500</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
@@ -1676,19 +1662,18 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe1">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox12">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <widget class="GtkRadioButton" id="rbLeveling">
+                        <property name="label" translatable="yes">Leveling</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Leveling</property>
+                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <signal name="pressed" handler="on_rbLeveling_pressed"/>
@@ -1697,6 +1682,7 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">19</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -1717,25 +1703,25 @@ Alejandro Villagrán Marín
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <widget class="GtkAspectFrame" id="aspectframe2">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox11">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <widget class="GtkRadioButton" id="rbAllocation">
+                        <property name="label" translatable="yes">Allocation</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Allocation</property>
+                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rbLeveling</property>
@@ -1745,6 +1731,7 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">15</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -1753,7 +1740,7 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">0 0 100 1 10 10</property>
+                        <property name="adjustment">0 0 100 1 10 0</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1785,8 +1772,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe3">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox15">
                     <property name="visible">True</property>
@@ -1795,19 +1781,20 @@ Alejandro Villagrán Marín
                       <widget class="GtkLabel" id="label7">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">μ</property>
+                        <property name="label" translatable="yes">&#x3BC;</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">54</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label6">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">φ</property>
+                        <property name="label" translatable="yes">&#x3C6;</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1829,8 +1816,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe4">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox2">
                     <property name="visible">True</property>
@@ -1841,13 +1827,14 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">0.90000000000000002 0 0.98999999999999999 0.050000000000000003 10 10</property>
+                        <property name="adjustment">0.90000000000000002 0 0.98999999999999999 0.050000000000000003 10 0</property>
                         <property name="digits">3</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">26</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -1856,7 +1843,7 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">0.90000000000000002 0 1 0.050000000000000003 10 10</property>
+                        <property name="adjustment">0.90000000000000002 0 1 0.050000000000000003 10 0</property>
                         <property name="digits">3</property>
                       </widget>
                       <packing>
@@ -1879,8 +1866,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe5">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox18">
                     <property name="visible">True</property>
@@ -1895,6 +1881,7 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">24</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -1922,8 +1909,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe6">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox3">
                     <property name="visible">True</property>
@@ -1943,6 +1929,7 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">21</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -1951,7 +1938,7 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">0.01 0 100 0.01 10 10</property>
+                        <property name="adjustment">0.01 0 100 0.01 10 0</property>
                         <property name="digits">3</property>
                       </widget>
                       <packing>
@@ -1974,8 +1961,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe7">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox4">
                     <property name="visible">True</property>
@@ -1990,12 +1976,13 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">13</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkLabel" id="label3">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">α</property>
+                        <property name="label" translatable="yes">&#x3B1;</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2017,8 +2004,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe8">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox6">
                     <property name="visible">True</property>
@@ -2029,12 +2015,13 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">1000 1 100000 10 10 10</property>
+                        <property name="adjustment">1000 1 100000 10 10 0</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">23</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -2078,8 +2065,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe9">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox35">
                     <property name="visible">True</property>
@@ -2093,6 +2079,7 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">30</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                   </widget>
@@ -2106,8 +2093,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe10">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox10">
                     <property name="visible">True</property>
@@ -2118,21 +2104,22 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">100 0 1000 1 10 10</property>
+                        <property name="adjustment">100 0 1000 1 10 0</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">32</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkCheckButton" id="cbIterationSA">
+                        <property name="label" translatable="yes">Unlimited</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">Unlimited</property>
-                        <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_cbIterationSA_toggled"/>
                       </widget>
@@ -2154,8 +2141,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe11">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox9">
                     <property name="visible">True</property>
@@ -2170,6 +2156,7 @@ Alejandro Villagrán Marín
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">10</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -2196,8 +2183,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe12">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox14">
                     <property name="visible">True</property>
@@ -2208,12 +2194,13 @@ Alejandro Villagrán Marín
                         <property name="can_focus">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0.5</property>
-                        <property name="adjustment">1 1 1000 1 10 10</property>
+                        <property name="adjustment">1 1 1000 1 10 0</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">32</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -2256,8 +2243,7 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe13">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox38">
                     <property name="visible">True</property>
@@ -2268,6 +2254,9 @@ Alejandro Villagrán Marín
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="label" translatable="yes">Executed:</property>
                       </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="GtkEntry" id="entryIterations">
@@ -2307,36 +2296,35 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe14">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox5">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
                       <widget class="GtkButton" id="btnSimAnnealingReset">
+                        <property name="label">gtk-clear</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">gtk-clear</property>
                         <property name="use_stock">True</property>
-                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_btnSimAnnealingReset_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">17</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkButton" id="btnSimAnnealingCalculate">
+                        <property name="label">gtk-execute</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">gtk-execute</property>
+                        <property name="receives_default">False</property>
                         <property name="use_stock">True</property>
-                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_btnSimAnnealingCalculate_clicked"/>
                       </widget>
                       <packing>
@@ -2357,25 +2345,24 @@ Alejandro Villagrán Marín
               <widget class="GtkAspectFrame" id="aspectframe15">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
-                <property name="shadow_type">GTK_SHADOW_NONE</property>
-                <property name="ratio">1</property>
+                <property name="shadow_type">none</property>
                 <child>
                   <widget class="GtkHBox" id="hbox40">
                     <property name="visible">True</property>
                     <child>
                       <widget class="GtkButton" id="btnSaveSA">
+                        <property name="label">gtk-save</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="label" translatable="yes">gtk-save</property>
                         <property name="use_stock">True</property>
-                        <property name="response_id">0</property>
                         <signal name="clicked" handler="on_btnSaveSA_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="padding">65</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                   </widget>
@@ -2389,6 +2376,7 @@ Alejandro Villagrán Marín
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -2412,6 +2400,7 @@ Alejandro Villagrán Marín
                       </widget>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -2427,7 +2416,7 @@ Alejandro Villagrán Marín
                           </widget>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="pack_type">GTK_PACK_END</property>
+                            <property name="pack_type">end</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -2465,6 +2454,9 @@ Alejandro Villagrán Marín
                                   <placeholder/>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkFixed" id="fixed4">
@@ -2479,6 +2471,9 @@ Alejandro Villagrán Marín
                               </packing>
                             </child>
                           </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                       </widget>
                       <packing>
@@ -2497,6 +2492,7 @@ Alejandro Villagrán Marín
                           </widget>
                           <packing>
                             <property name="expand">False</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
@@ -2536,6 +2532,9 @@ Alejandro Villagrán Marín
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkHScrollbar" id="hsbSA">
@@ -2558,7 +2557,7 @@ Alejandro Villagrán Marín
   </widget>
   <widget class="GtkWindow" id="wndHolguras">
     <property name="title" translatable="yes">Slacks</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_width">450</property>
     <property name="default_height">600</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
@@ -2567,16 +2566,16 @@ Alejandro Villagrán Marín
       <widget class="GtkScrolledWindow" id="scrolledwindow13">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-        <property name="shadow_type">GTK_SHADOW_IN</property>
+        <property name="hscrollbar_policy">automatic</property>
+        <property name="vscrollbar_policy">automatic</property>
+        <property name="shadow_type">in</property>
         <child>
           <widget class="GtkTreeView" id="vistaListaHolg">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="reorderable">True</property>
             <property name="rules_hint">True</property>
-            <property name="enable_grid_lines">GTK_TREE_VIEW_GRID_LINES_BOTH</property>
+            <property name="enable_grid_lines">both</property>
           </widget>
         </child>
       </widget>
@@ -2584,7 +2583,7 @@ Alejandro Villagrán Marín
   </widget>
   <widget class="GtkWindow" id="wndCaminos">
     <property name="title" translatable="yes">Graph Paths</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <property name="default_width">450</property>
     <property name="default_height">600</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
@@ -2598,9 +2597,9 @@ Alejandro Villagrán Marín
           <widget class="GtkScrolledWindow" id="scrolledwindow26">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <property name="shadow_type">GTK_SHADOW_IN</property>
+            <property name="hscrollbar_policy">automatic</property>
+            <property name="vscrollbar_policy">automatic</property>
+            <property name="shadow_type">in</property>
             <child>
               <widget class="GtkTextView" id="tvCaminos">
                 <property name="visible">True</property>
@@ -2610,24 +2609,28 @@ Alejandro Villagrán Marín
               </widget>
             </child>
           </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox23">
             <property name="visible">True</property>
             <child>
               <widget class="GtkButton" id="btExportarCsv">
+                <property name="label" translatable="yes">Export to CSV Format</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
                 <property name="tooltip" translatable="yes">Export to CSV Format</property>
-                <property name="label" translatable="yes">Export to CSV Format</property>
                 <property name="use_underline">True</property>
-                <property name="response_id">0</property>
                 <signal name="clicked" handler="on_btExportarCsv_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="pack_type">GTK_PACK_END</property>
+                <property name="pack_type">end</property>
+                <property name="position">0</property>
               </packing>
             </child>
           </widget>
@@ -2644,8 +2647,8 @@ Alejandro Villagrán Marín
     <property name="visible">True</property>
     <child>
       <widget class="GtkImageMenuItem" id="ctxDelete">
+        <property name="label">gtk-delete</property>
         <property name="visible">True</property>
-        <property name="label" translatable="yes">gtk-delete</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
         <signal name="activate" handler="delete_tree_row"/>
@@ -2656,8 +2659,8 @@ Alejandro Villagrán Marín
     <property name="visible">True</property>
     <child>
       <widget class="GtkImageMenuItem" id="mnTabsNew">
+        <property name="label">gtk-new</property>
         <property name="visible">True</property>
-        <property name="label" translatable="yes">gtk-new</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
         <signal name="activate" handler="new_tab"/>
@@ -2665,8 +2668,8 @@ Alejandro Villagrán Marín
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="mnTabsDelete">
+        <property name="label">gtk-delete</property>
         <property name="visible">True</property>
-        <property name="label" translatable="yes">gtk-delete</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
         <signal name="activate" handler="delete_tab"/>

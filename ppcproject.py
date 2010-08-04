@@ -95,8 +95,7 @@ class PPCproject(object):
         self.vRecursos = self._widgets.get_widget('wndRecursos')
         self.vAsignarRec = self._widgets.get_widget('wndAsignarRec')
         self.vCaminos = self._widgets.get_widget('wndCaminos')
-        self.vRoy = self._widgets.get_widget('wndGrafoRoy')
-        self.vPert = self._widgets.get_widget('wndGrafoPert')
+        self.vRoy = self._widgets.get_widget('wndGrafo')
         self.dAyuda = self._widgets.get_widget('dAyuda')
         self.bHerramientas = self._widgets.get_widget('bHerramientas1')
 
@@ -120,6 +119,7 @@ class PPCproject(object):
 
         self.zadViewList = self._widgets.get_widget('vistaZad')
         self.vistaLista = self._widgets.get_widget('vistaListaDatos')
+        
         self.modelo = self.interface.modelo
         self.gantt = self.interface.gantt
         self.ganttSA = self.interface.ganttSA
@@ -1884,7 +1884,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     try:
                         data = format.load(filename)
                         break
-                    except fileformats.InvalidFileFormatException:
+                    except fileFormats.InvalidFileFormatException:
                         pass
 
             # if not data:
@@ -2021,7 +2021,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         if resultado == gtk.RESPONSE_OK:
             filename = dialogoGuardar.get_filename()
-            pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png","png")
+            pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png", "png")
         dialogoGuardar.destroy()
 
 
@@ -2399,7 +2399,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self._widgets.get_widget('mnSalirPantComp').hide()
         self._widgets.get_widget('mnPantallaComp').show()
   
-# Action menu actions                 
+# Menu actions                 
 
     def on_mnCrearRecursos_activate(self, menu_item):
         """
@@ -2411,49 +2411,35 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         self.vRecursos.show()
 
-    def on_mnGrafoRoy_activate(self, menu_item):
+    def on_mnGrafo_activate(self, menu_item):
         """
         Roy Graph option invoked
 
         Parameters: menu_item
 
+        XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
         Returns: -
         """
-        # Se calcula el grafo ROY a través de la tabla de sucesoras
-        successors = self.tablaSucesoras(self.actividad)
-        roy = graph.roy(successors)
-        self.grafoRoy=self._widgets.get_widget('imagenGrafoRoy')
+        if menu_item == self._widgets.get_widget('grafoRoy'):
+            # Creates ROY graph from successors table and creates SVG
+            successors = self.tablaSucesoras(self.actividad)
+            roy = graph.roy(successors)
+            svg_text = graph.graph2image(roy)
+        else:
+            # Creates Pert graph renumbered and creates SVG
+            grafoRenumerado = self.pertFinal()
+            svg_text = graph.pert2image(grafoRenumerado)
 
-        # Se dibuja el grafo ROY y se carga la imagen en la ventana
+        # Load SVG as pixel map in Image
         pixbufloader = gtk.gdk.PixbufLoader()
-        pixbufloader.write( graph.graph2image(roy) )
+        pixbufloader.write( svg_text )
         pixbufloader.close()
+        self.grafoRoy = self._widgets.get_widget('imagenGrafoRoy')
         self.grafoRoy.set_from_pixbuf( pixbufloader.get_pixbuf() )
         
         # Se muestra la ventana
         self.vRoy.show()
         
-
-    def on_mnGrafoPert_activate(self, menu_item):
-        """
-        Pert Graph option invoked
-
-        Parameters: menu_item
-
-        Returns: -
-        """
-        # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal()
-  
-        # Se dibuja el grafo Pert y se carga la imagen en la ventana
-        self.grafoPert = self._widgets.get_widget('imagenGrafoPert')
-        pixbufloader = gtk.gdk.PixbufLoader()
-        pixbufloader.write( graph.pert2image(grafoRenumerado) )
-        pixbufloader.close()
-        self.grafoPert.set_from_pixbuf( pixbufloader.get_pixbuf() )
-        
-        # Se muestra la ventana
-        self.vPert.show()
   
     def on_mnActividades_activate(self, menu_item):
         """ User ask for activities in PERT graph """
