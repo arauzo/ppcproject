@@ -1,28 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+ Graph functions
+-----------------------------------------------------------------------
+ PPC-PROJECT
+   Multiplatform software tool for education and research in
+   project management
 
-# Graph functions
-#-----------------------------------------------------------------------
-# PPC-PROJECT
-#   Multiplatform software tool for education and research in
-#   project management
-#
-# Copyright 2007-8 Universidad de Córdoba
-# This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published
-#   by the Free Software Foundation, either version 3 of the License,
-#   or (at your option) any later version.
-# This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+ Copyright 2007-8 Universidad de Córdoba
+ This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+ This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import math, os, sys
-from pert import *
 import copy
 import subprocess
+
+from pert import *
 
 # Prototype of new class Graph
 class Grafo(object):
@@ -472,6 +473,110 @@ def get_activities_start_time(activities, durations, prelations, minimum = True,
 import pygtk
 pygtk.require('2.0')
 import gtk
+import rsvg
+import cairo
+
+
+class SVGViewer(gtk.DrawingArea):
+    """
+    Create a GTK+ widget to draw an SVG using rsvg and Cairo
+    
+    XXX Implement pan operation
+    XXX Zoom centering to pointer
+    XXX Do not allow zoom out over actual size of widget
+    XXX Implement scrollable ??
+    """
+    def __init__(self, svg_text=None):
+        super(SVGViewer, self).__init__()
+        self.svg = None
+        self.update_svg(svg_text)
+        self.connect("expose_event", self.expose_event)
+        self.connect("scroll-event", self.mousewheel_scrolled)
+        self.add_events(gtk.gdk.SCROLL_MASK)
+
+    def update_svg(self, svg_text):
+        self.svg_text = svg_text
+        self.zoom_factor = 1.0
+        if svg_text != None:
+            self.svg = rsvg.Handle(data=svg_text)
+            self.update_transformation()
+            
+    def update_transformation(self):
+        rect = self.get_allocation()
+        width = rect.width
+        height = rect.height
+        
+        pw, ph, graph_width, graph_height = self.svg.get_dimension_data()
+        scale_factor = min(width/graph_width, height/graph_height) # keep proportions
+        #scale_factor *= self.zoom_factor # esto era para cuando no se ampliaba el espacio
+        self.matrix = cairo.Matrix()
+        self.matrix.scale(scale_factor, scale_factor)
+        
+        self.set_size_request(int(graph_width*self.zoom_factor), int(graph_height*self.zoom_factor))
+
+    def expose_event(self, widget, event):
+        """Handle the expose-event by drawing"""
+        context = widget.window.cairo_create()
+         
+        # Restrict Cairo to the exposed area; avoid extra work
+        # (set a clip region for the expose event)
+        context.rectangle(event.area.x, event.area.y,
+                          event.area.width, event.area.height)
+        context.clip()
+         
+        self.draw(context)
+        return False
+
+    def draw(self, cr):
+        rect = self.get_allocation()
+        width = rect.width
+        height = rect.height
+
+#        # Fill the background with default foreground color (just to see if we are not drawing some area)
+#        cr.set_source_color(self.style.fg[self.state]) #rgb(0.5, 0.5, 0.5) #grey
+#        cr.rectangle(0, 0, width, height)
+#        cr.fill()
+
+#        cr.set_source_color(self.style.fg[self.state])
+#        cr.rectangle(BORDER_WIDTH, BORDER_WIDTH,
+#                    width - 2*BORDER_WIDTH, height - 2*BORDER_WIDTH)
+#        cr.set_line_width(5.0)
+#        cr.set_line_join(cairo.LINE_JOIN_ROUND)
+#        cr.stroke()
+
+        if self.svg != None:
+            self.update_transformation()
+            cr.transform(self.matrix)
+            self.svg.render_cairo(cr)
+
+        return True
+
+    def redraw_canvas(self):
+        """Force updating the canvas"""
+        if self.window:
+            alloc = self.get_allocation()
+            rect = gtk.gdk.Rectangle(0, 0, alloc.width, alloc.height)
+            self.window.invalidate_rect(rect, True)
+            self.window.process_updates(True)
+
+    def mousewheel_scrolled(self, widget, event):
+        if event.type == gtk.gdk.SCROLL:
+            # Ctrl-mousewheel (faster zoom)
+            if event.state & gtk.gdk.CONTROL_MASK:
+                if event.direction == gtk.gdk.SCROLL_UP:
+                        self.zoom_factor *= 2.0
+                elif event.direction == gtk.gdk.SCROLL_DOWN:
+                        self.zoom_factor *= 0.5
+            # Mousewheel scroll alone (zoom)
+            else:
+                if event.direction == gtk.gdk.SCROLL_UP:
+                        self.zoom_factor *= 1.25
+                elif event.direction == gtk.gdk.SCROLL_DOWN:
+                        self.zoom_factor *= 0.8
+            zoom_point = event.x, event.y
+            self.redraw_canvas()
+            return True
+
 
 class Test(object):
     def __init__(self):
@@ -479,20 +584,24 @@ class Test(object):
         self.imageIndex = 0
 
         self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_size_request(800, 600)
         self.window.connect("delete_event", self.delete_event)
-        self.window.connect("destroy", self.destroy)
+        self.window.connect("destroy", gtk.main_quit)
 
-        self.grafoGTK = gtk.Image()
+        self.svg_viewer = SVGViewer()
+        self.svg_viewer.show()
+        self.screen = gtk.ScrolledWindow()
+        self.screen.add_with_viewport(self.svg_viewer)
 
         self.button = gtk.Button("Pintar grafo")
         self.button.connect("clicked", self.pinta, None)
 
         self.vBox = gtk.VBox(homogeneous=False, spacing=0)
-        self.vBox.pack_start(self.grafoGTK, expand=True,  fill=True,  padding=0)
+        self.vBox.pack_start(self.screen,   expand=True,  fill=True,  padding=0)
         self.vBox.pack_start(self.button,   expand=False, fill=False, padding=4)
         self.window.add(self.vBox)
 
-        self.grafoGTK.show()
+        self.screen.show()
         self.button.show()
         self.vBox.show()
         self.window.show()
@@ -500,18 +609,10 @@ class Test(object):
     def delete_event(self, widget, event, data=None):
         return False
 
-    def destroy(self, widget, data=None):
-        gtk.main_quit()
-
     def pinta(self, widget, data=None):
-        pixbufloader = gtk.gdk.PixbufLoader()
-        pixbufloader.write( self.images[self.imageIndex] )
-        pixbufloader.close()
-        self.grafoGTK.set_from_pixbuf( pixbufloader.get_pixbuf() )
+        self.svg_viewer.update_svg( self.images[self.imageIndex] )
         self.imageIndex = (self.imageIndex + 1) % len(self.images)
 
-    def main(self):
-        gtk.main()
 
 def main():
     """
@@ -547,7 +648,7 @@ def main():
 ##   s = pertSuccessors(pertP)
 ##   window.images.append( graph2image( roy(s) ) )
 
-    window.main()
+    gtk.main()
     
 
 # If the program is run directly    
