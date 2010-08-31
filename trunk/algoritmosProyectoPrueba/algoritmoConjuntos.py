@@ -1,3 +1,5 @@
+###No dibuja bien cuando porque los guiones no los toma bien para dibujar
+
 prelaciones = {
     '3': [], 
     '2': [], 

@@ -3,21 +3,50 @@ import sys
 import algoritmoConjuntos
 import algoritmoLorenzo
 import yuvalCohen
-prelaciones = {
-    'A' : [],
-    'B' : [],
-    'C' : ['A','B'],
-    'D' : ['A'],
-    'E' : ['B'],
-    'F' : ['A','B'],
-    'G' : ['C'],
-    'H' : ['D','E'],
-    'I' : ['D','E','F'],
-    'J' : ['D','E','F'],
-    'K' : ['D','F','L'],
-    'L' : ['A'],
-}
+import openProject
+filename="j301_2.sm"
+data=openProject.openProject(filename)
+successors={}
+for i in data:
+    successors[i[1]]=i[2]
 
+prelaciones1 = openProject.reversedGraph(successors)
+prelaciones = {
+    'B': [], 
+    'A': [], 
+    'D': ['B'], 
+    'C': [], 
+    'F': ['C'], 
+    'E': ['D'], 
+    'H': ['B'], 
+    'G': ['F'], 
+    'J': ['F'], 
+    'I': ['A'], 
+    'L': ['C', 'E'], 
+    'K': ['I'], 
+    'N': ['B'], 
+    'M': ['H'], 
+    'P': ['D'], 
+    'O': ['E'], 
+    'R': ['F'], 
+    'Q': ['E'], 
+    'S': ['O'], 
+    'T': ['J', 'N', 'P'], 
+    'U': ['I'], 
+    'V': ['Q'], 
+    'W': ['K'],
+    'X': ['L', 'M', 'R'], 
+    'Y': ['J', 'P', 'O'], 
+    'Z': ['Y', 'U', 'G'], 
+    'AB': ['H'], 
+    'AC': ['W', 'U', 'P'],
+    'AD': ['X', 'Z', 'AB'],
+    'AE': ['S', 'T', 'V']
+    }
+print "Sucesores"
+print successors
+print "Prelaciones"
+print prelaciones1
 itime=os.times()
 for i in range(1000):
     g=algoritmoConjuntos.algoritmoN(prelaciones)
