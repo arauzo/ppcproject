@@ -30,13 +30,15 @@ def openProject(filename):
                 except fileFormats.InvalidFileFormatException:
                     pass
 
-        # if not data:
-        # xxx Should we try here to load files in any format independently of their 
-        # extension. It would the same previous code without the 'if extension'
+        if not data:
+            print 'Can not understand file'
+            sys.exit(1)
+
         actividad, schedules, recurso, asignacion = data
         return data[0]
     except IOError:
-        self.dialogoError(gettext.gettext('Error reading file:') + filename) 
+        print 'Error reading file:', filename
+        sys.exit(1)
 
 def reversedGraph(graph):
     """
