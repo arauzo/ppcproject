@@ -26,7 +26,7 @@ import gettext
 import pickle
 import random
 
-class InvalidFilFormatException(Exception):
+class InvalidFileFormatException(Exception):
     """
     Raised when a file does not contain data in the expected format
     """
