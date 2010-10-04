@@ -27,7 +27,7 @@ def openProject(filename):
                 try:
                     data = format.load(filename)
                     break
-                except InvalidFileFormatException:
+                except fileFormats.InvalidFileFormatException:
                     pass
 
         # if not data:

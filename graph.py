@@ -190,6 +190,7 @@ def pert2dot(pert):
 
     returns: string with text of dot language to draw the graph
     """
+    #XXX Necesita poner entre comillas los nombres de los nodos en definicion y en enlaces
     txt = """digraph G {
              rankdir=LR;
              """
