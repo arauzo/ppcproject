@@ -108,61 +108,61 @@ def algoritmoN(prelaciones):
     # Una vez anadidos todos los arcos veo que hay arcos que no deben estar
     # (D a DEF ya que ya anado arco de D a DE y de DE a DEF). Los borro
     for i in gg.successors:
-        a=gg.successors[i]
+        a = gg.successors[i]
         for j in a:
-            s=set(j)
+            s = set(j)
             for k in a:
-                if k!=j:
-                    r=set(k)
-                    t=s&r
-                    if t==s:
-                        arco=i,k
+                if k != j:
+                    r = set(k)
+                    t = s&r
+                    if t == s:
+                        arco = i,k
                         gg.removeArc(arco)
-                    if t==r:
-                        arco=i,j
+                    if t == r:
+                        arco = i,j
                         gg.removeArc(arco)
 
     # para anadir las actividades reales cojo prelaciones y anado arco desde
     # prec a act. Si act no esta definida como nodo busco el nodo de menor tamano
     # que la contenga y act pasa a ser dicho nodo.
 
-    l=""
+    l = ""
     for i in prelaciones:            
-        infinity= sys.maxint -1        # valor infinito para compara tamano en caso de que haga falta
-        ll=[]
+        infinity = sys.maxint -1        # valor infinito para compara tamano en caso de que haga falta
+        ll = []
         ll.append(i)
-        l=i
+        l = i
         l1=""
         if prelaciones[i] == []:
-            l1='start'
+            l1 = 'start'
         else:
             for j in prelaciones[i]:     # como prec siempre va a ser nodo los desmiembro para ponerlo en una cadena
-                l1=l1+j+"-"
-            l1=l1[:-1]
+                l1 = l1 + j + "-"
+            l1 = l1[:-1]
         if ll in NI:                 # si act es un nodo
-            arco=l1,l                 # arco es prec-->act
+            arco = l1,l                 # arco es prec-->act
         else:                         # si act no es nodo
             for j in gg.successors:
                 if l in j:             # busco nodo de menor tamano que contega a act
-                    tam=len(j)
-                    if tam<infinity:
-                        infinity=tam
-                        l=j
-                        arco=l1,l
-        label=i,False
+                    tam = len(j)
+                    if tam < infinity:
+                        infinity = tam
+                        l = j
+                        arco = l1,l
+        label = i,False
         if arco not in gg.arcs:
             gg.addArc(arco,label)         # trazo arco desde prec hasta act
 
     #  anado en una lista los nodos que no tienen sucesores porque es el nodo final
     #  o lo que es lo mismo los que no aparecen como actividades predecesoras de ninguna
 
-    k=[]
+    k = []
     for i in prelaciones:
-        enc=0
+        enc = 0
         for j in prelaciones:
             if i in prelaciones[j]:
-                enc=1
-        if enc==0:
+                enc = 1
+        if enc == 0:
             k.append(i)
 
     # Para cada nodo que no tiene sucesores busco cual es su actividad precedente y trazo arco
@@ -170,24 +170,24 @@ def algoritmoN(prelaciones):
     # puente y actividad ficticia hasta dicho nodo
 
     for i in k:
-        cad=""
+        cad = ""
         for j in prelaciones[i]:
-            cad=cad+j+"-"
-        cad=cad[:-1]
-        arco=cad,'end'
-        hecho=0
+            cad = cad + j + "-"
+        cad = cad[:-1]
+        arco = cad,'end'
+        hecho = 0
         for j in gg.arcs:
-            if arco==j:
-                arco1=cad,i
-                arco2=i,'end'
-                hecho=1
-        if hecho==0:
-            label=i,False
+            if arco == j:
+                arco1 = cad,i
+                arco2 = i,'end'
+                hecho = 1
+        if hecho == 0:
+            label = i,False
             gg.addArc(arco,label)
         else:
-            label='AA',True
+            label = 'AA',True
             gg.addArc(arco1,label)
-            label=i,False
+            label = i,False
             gg.addArc(arco2,label)
     return gg
 
@@ -197,8 +197,8 @@ if __name__ == "__main__":
 
     window = graph1.Test() 
 
-    gg=algoritmoN(graph1.prelaciones4)
-    image1=graph1.pert2image(gg)
+    gg = algoritmoN(graph1.prelaciones4)
+    image1 = graph1.pert2image(gg)
 
     window.images.append(image1)
     graph1.gtk.main()
