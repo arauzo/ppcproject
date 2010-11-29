@@ -57,8 +57,9 @@ from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
-
-
+import SVGViewer
+import algoritmoConjuntos
+import graph1
 
 class PPCproject(object):
     """ Controler of global events in application """
@@ -96,7 +97,13 @@ class PPCproject(object):
         self.vRecursos = self._widgets.get_widget('wndRecursos')
         self.vAsignarRec = self._widgets.get_widget('wndAsignarRec')
         self.vCaminos = self._widgets.get_widget('wndCaminos')
-        self.vRoy = self._widgets.get_widget('wndGrafo')
+
+        # Widget to show graphs in vRoy
+        viewportGrafo = self._widgets.get_widget('viewportGrafo')
+        svg_viewer = SVGViewer.SVGViewer()
+        svg_viewer.show()
+        viewportGrafo.add(svg_viewer)
+
         self.dAyuda = self._widgets.get_widget('dAyuda')
         self.bHerramientas = self._widgets.get_widget('bHerramientas1')
 
@@ -2425,28 +2432,50 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         Parameters: menu_item
 
-        XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
         Returns: -
         """
+        #XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
+
         if menu_item == self._widgets.get_widget('grafoRoy'):
             # Creates ROY graph from successors table and creates SVG
             successors = self.tablaSucesoras(self.actividad)
             roy = graph.roy(successors)
             svg_text = graph.graph2image(roy)
-        else:
+
+        elif menu_item == self._widgets.get_widget('grafoPert'):
             # Creates Pert graph renumbered and creates SVG
             grafoRenumerado = self.pertFinal()
             svg_text = graph.pert2image(grafoRenumerado)
 
-        # Load SVG as pixel map in Image
-        pixbufloader = gtk.gdk.PixbufLoader()
-        pixbufloader.write( svg_text )
-        pixbufloader.close()
-        self.grafoRoy = self._widgets.get_widget('imagenGrafoRoy')
-        self.grafoRoy.set_from_pixbuf( pixbufloader.get_pixbuf() )
-        
+        elif menu_item == self._widgets.get_widget('algoritmoConjuntos'):
+            successors = self.tablaSucesoras(self.actividad)
+            grafo = algoritmoConjuntos.algoritmoN( graph.successors2precedents(successors) )
+            svg_text = graph1.pert2image(grafo)
+
+        elif menu_item == self._widgets.get_widget('algoritmoCohenSadeh'):
+            raise Exception('Graph menu option not implemented')            
+
+        elif menu_item == self._widgets.get_widget('algoritmoSalas'):
+            raise Exception('Graph menu option not implemented')            
+
+        else:
+            raise Exception('Graph menu option not recognized')            
+
+
+#        # Load SVG as pixel map in Image
+#        pixbufloader = gtk.gdk.PixbufLoader()
+#        pixbufloader.write( svg_text )
+#        pixbufloader.close()
+#        self.grafoRoy = self._widgets.get_widget('imagenGrafoRoy')
+#        self.grafoRoy.set_from_pixbuf( pixbufloader.get_pixbuf() )
+
+        # Load SVG in SVGViewer (with zoom)
+        svg_viewer = self._widgets.get_widget('viewportGrafo').get_child()
+        svg_viewer.update_svg(svg_text)
+                
         # Se muestra la ventana
-        self.vRoy.show()
+        vRoy = self._widgets.get_widget('wndGrafo')
+        vRoy.show()
         
   
     def on_mnActividades_activate(self, menu_item):
