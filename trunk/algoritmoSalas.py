@@ -226,7 +226,7 @@ def rf(d,cont,a,af,b):
     return d
 
 
-def al(prelaciones):
+def salas(prelaciones):
     
     matriz,premat = crear_matriz(prelaciones)
     m,t,af,ai,ami,amiD,amf,amfD = previo(matriz)
@@ -490,7 +490,7 @@ if __name__ == "__main__":
 
     window = graph1.Test() 
 
-    gg = al(graph1.prelaciones4)
+    gg = salas(graph1.prelaciones4)
     image1 = graph1.pert2image(gg)
 
     window.images.append(image1)
