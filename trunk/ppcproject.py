@@ -57,7 +57,8 @@ from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
-
+
+
 
 class PPCproject(object):
     """ Controler of global events in application """
@@ -270,7 +271,8 @@ class PPCproject(object):
         self.asignacion=[]
         cont=1
         # Se inserta una fila vacia
-        self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])        self.modeloR.append()
+        self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])
+        self.modeloR.append()
         self.modeloAR.append()
         #Minimum schedule
         start_times = graph.get_activities_start_time([], [], [], True)
@@ -603,7 +605,8 @@ class PPCproject(object):
 
         # Se pasa el nuevo texto a una lista
         modificacion = self.actString2actList(new_text)
-        #print modificacion, 'modificacion'
+        #print modificacion, 'modificacion'
+
         if modificacion == [""]:  # Si no se introduce texto (estamos borrando todas las siguientes)
             modelo[path][2] = ''
 
@@ -1104,9 +1107,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Se extraen todos los caminos (crí­ticos o no) del grafo original
         successors = self.tablaSucesoras(self.actividad)
-        g = graph.roy(successors)
+        g = graph.roy(successors)
+
         # Se eliminan 'begin' y 'end' de todos los caminos
-        caminos = [c[1:-1]for c in graph.findAllPaths(g, 'Begin', 'End')]
+        caminos = [c[1:-1]for c in graph.findAllPaths(g, 'Begin', 'End')]
+
         #print 'caminos', caminos
 
         # Se marca con 1 los caminos crí­ticos en todos los caminos del grafo, el resto se marca con 0
@@ -1533,7 +1538,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Se muestran los caminos en la interfaz
             self.vCaminos.show()
             widget=self._widgets.get_widget('tvCaminos')
-            self.mostrarTextView(widget, camino)
+            self.mostrarTextView(widget, camino)
+
 #              SIMULACIÓN                      
 
     def simulacion(self, n):
@@ -1937,7 +1943,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.set_modified(False)
                 self.modified = 0
                 self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia
-                cont += 1                self.modeloR.append()
+                cont += 1
+                self.modeloR.append()
                 self.modeloAR.append()
             else:
                 self.dialogoError(gettext.gettext('Error reading file:') + filename 
@@ -1982,7 +1989,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.set_modified(False)
             self.modified = 0
         except IOError :
-            self.dialogoError(gettext.gettext('Error saving the file'))    
+            self.dialogoError(gettext.gettext('Error saving the file'))    
+
 
 
 
@@ -2752,7 +2760,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                                            float(rest[grafoRenumerado.activities[a][0]][0])]
 
         return rest
-        
+        
+
 
 # Help menu actions
 
