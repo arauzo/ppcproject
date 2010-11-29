@@ -1124,13 +1124,10 @@
             <property name="hscrollbar_policy">automatic</property>
             <property name="vscrollbar_policy">automatic</property>
             <child>
-              <widget class="GtkViewport" id="viewport1">
+              <widget class="GtkViewport" id="viewportGrafo">
                 <property name="visible">True</property>
                 <child>
-                  <widget class="GtkImage" id="imagenGrafoRoy">
-                    <property name="visible">True</property>
-                    <property name="stock">gtk-missing-image</property>
-                  </widget>
+                  <placeholder/>
                 </child>
               </widget>
             </child>
