@@ -228,7 +228,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Draw PERT Conjuntos</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_algoritmoConjuntos_activate"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -236,7 +236,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Draw PERT Salas</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_algoritmoSalas_activate"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -244,7 +244,7 @@
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Draw PERT CohenSadeh </property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_algoritmoCohenSadeh_activate"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                   </widget>

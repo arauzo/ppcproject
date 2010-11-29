@@ -89,6 +89,31 @@ prelaciones = {
     'AD': ['X', 'Z', 'AB'],
     'AE': ['S', 'T', 'V']
     }
+prelaciones1 = {
+    'A' : [],
+    'B' : [],
+    'C' : ['A','B'],
+    'D' : ['A'],
+    'E' : ['B'],
+    'F' : ['A','B'],
+    'G' : ['C'],
+    'H' : ['D','E'],
+    'I' : ['D','E','F'],
+    'J' : ['D','E','F'],
+    'K' : ['D','F','L'],
+    'L' : ['A'],
+    }
+prelaciones1 = {
+    'A' : [],
+    'B' : [],
+    'D' : ['A','B'],
+    'C' : ['A'],
+    'E' : ['C','D'],
+    'F' : ['D'],
+    'G' : ['E'],
+    'H' : ['F','D','C'],
+    'I' : ['F'],
+    }
 print "Sucesores"
 print successors
 print "Prelaciones"
