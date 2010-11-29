@@ -1,8 +1,8 @@
 import os
 import sys
 import algoritmoConjuntos
-import algoritmoLorenzo
-import yuvalCohen
+import algoritmoSalas
+import algoritmoCohenSadeh
 import graph1
 import fileFormats
 
@@ -107,10 +107,10 @@ print
 
 itime=os.times()
 for i in range(1000):
-    g=yuvalCohen.yuvalCohen(prelaciones1)
+    g = algoritmoCohenSadeh.cohenSadeh(prelaciones1)
 ftime=os.times()
 utime = ftime[0] - itime[0]
-print "Yuval Cohen"
+print "CohenSadeh"
 print "utime %.4f"% (utime)
 print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
@@ -121,7 +121,7 @@ print
 
 itime=os.times()
 for i in range(1000):
-    g=algoritmoLorenzo.al(prelaciones1)
+    g=algoritmoSalas.salas(prelaciones1)
 ftime=os.times()
 utime = ftime[0] - itime[0]
 print "Algoritmo Lorenzo"
