@@ -223,6 +223,30 @@
                         <signal name="activate" handler="on_mnSimAnnealing_activate"/>
                       </widget>
                     </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoConjuntos">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Draw PERT Conjuntos</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_algoritmoConjuntos_activate"/>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoSalas">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Draw PERT Salas</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_algoritmoSalas_activate"/>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoCohenSadeh">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Draw PERT CohenSadeh </property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_algoritmoCohenSadeh_activate"/>
+                      </widget>
+                    </child>
                   </widget>
                 </child>
               </widget>
