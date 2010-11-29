@@ -2,7 +2,7 @@ import copy
 import claseGrafo
 import graph1
 
-def yuvalCohen(prelaciones):
+def cohenSadeh(prelaciones):
     ###dadas las relaciones averiguo la lista de actividades predecesoras
     ###para cada actividad e imprimo la tabla
     LIPA = [] 
@@ -307,7 +307,7 @@ if __name__ == "__main__":
 
     window = graph1.Test() 
 
-    gg = yuvalCohen(graph1.prelaciones4)
+    gg = cohenSadeh(graph1.prelaciones4)
     image1 = graph1.pert2image(gg)
 
     window.images.append(image1)
