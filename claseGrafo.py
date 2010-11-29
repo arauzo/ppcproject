@@ -23,9 +23,11 @@ class Grafo:
             self.addNode(a)
         if c not in self.successors:
             self.addNode(c)
-        self.successors[a].append(c)
-        self.predecessors[c].append(a)
-        self.arcs[(a,c)]= [label] # Una lista de etiquetas??? Es un error o tiene algun motivo?
+        if c not in self.successors[a]:
+            self.successors[a].append(c)
+        if a not in self.predecessors[c]:
+            self.predecessors[c].append(a)
+        self.arcs[(a,c)]= label 
         
     def removeNode(self,nodo):
         if nodo in self.successors:
@@ -59,3 +61,17 @@ class Grafo:
 
     def numArcs(self):
         return len(self.arcs)
+
+    def numArcsReales(self):
+        cont=0
+        for (i,j) in self.arcs:
+            if self.arcs[(i,j)][1]==False:
+                cont = cont+1
+        return cont
+
+    def numArcsFicticios(self):
+        cont=0
+        for (i,j) in self.arcs:
+            if self.arcs[(i,j)][1]==True:
+                cont = cont+1
+        return cont        
