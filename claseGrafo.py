@@ -1,6 +1,7 @@
 class Grafo:
 
     def __init__(self):
+        # Se mantienen las listas de sucesores y predecesores aunque son redundantes para acelerar el acceso
         self.successors = {}
         self.predecessors = {}
         self.arcs = {}
@@ -9,16 +10,22 @@ class Grafo:
         successors = self.successors[nodo]
         return successors
 
-    def pre(self,nodo):
+    def pre(self, nodo):
         predecessors=self.predecessors[nodo]
         return predecessors
         
-    def addNode(self,nodo):
+    def addNode(self, nodo):
         self.successors[nodo] = []
         self.predecessors[nodo] = []
         
-    def addArc(self,arc,label):
-        a,c=arc
+    def addArc(self, arc, label=None):
+        """
+        Insertar arco en el grafo si los nodos no existen los crea
+        
+        arc = (origen, destino)
+        label = etiqueta asociada al arco
+        """
+        a, c = arc
         if a not in self.successors:
             self.addNode(a)
         if c not in self.successors:
@@ -27,7 +34,7 @@ class Grafo:
             self.successors[a].append(c)
         if a not in self.predecessors[c]:
             self.predecessors[c].append(a)
-        self.arcs[(a,c)]= label 
+        self.arcs[(a,c)] = label 
         
     def removeNode(self,nodo):
         if nodo in self.successors:
