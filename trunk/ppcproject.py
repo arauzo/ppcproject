@@ -58,7 +58,7 @@ from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
 import SVGViewer
-import algoritmoConjuntos
+import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph1
 
 class PPCproject(object):
@@ -2435,10 +2435,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Returns: -
         """
         #XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
-
+        successors = self.tablaSucesoras(self.actividad)
         if menu_item == self._widgets.get_widget('grafoRoy'):
             # Creates ROY graph from successors table and creates SVG
-            successors = self.tablaSucesoras(self.actividad)
             roy = graph.roy(successors)
             svg_text = graph.graph2image(roy)
 
@@ -2448,15 +2447,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             svg_text = graph.pert2image(grafoRenumerado)
 
         elif menu_item == self._widgets.get_widget('algoritmoConjuntos'):
-            successors = self.tablaSucesoras(self.actividad)
             grafo = algoritmoConjuntos.algoritmoN( graph.successors2precedents(successors) )
             svg_text = graph1.pert2image(grafo)
 
         elif menu_item == self._widgets.get_widget('algoritmoCohenSadeh'):
-            raise Exception('Graph menu option not implemented')            
+            grafo = algoritmoCohenSadeh.cohenSadeh( graph.successors2precedents(successors) )
+            svg_text = graph1.pert2image(grafo)
 
         elif menu_item == self._widgets.get_widget('algoritmoSalas'):
-            raise Exception('Graph menu option not implemented')            
+            grafo = algoritmoSalas.salas( graph.successors2precedents(successors) )
+            svg_text = graph1.pert2image(grafo)
 
         else:
             raise Exception('Graph menu option not recognized')            
