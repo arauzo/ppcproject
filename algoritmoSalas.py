@@ -193,7 +193,7 @@ def previo(matriz):
     return m,t,af,ai,ami,amiD,amf,amfD
 
 
-def rf(d,cont,a,af,b):
+def ajustes(d,cont,a,af,b):
     ###pone todos los finales de todas las actividades finales en el 
     ###el mismo nodo
     nf=af[0]
@@ -467,7 +467,7 @@ def salas(prelaciones):
             X = 0
     
     d2 = copy.deepcopy(d1)
-    d2 = rf(d1,cont,a,af,b)
+    d2 = ajustes(d1,cont,a,af,b)
     
     ###rellenar grafo
 

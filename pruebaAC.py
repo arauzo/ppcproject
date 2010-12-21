@@ -7,7 +7,6 @@ import graph1
 import fileFormats
 
 REPETICIONES = 1
-
 def openProject(filename):
     """
     Open a project file given by filename
@@ -49,7 +48,7 @@ def openProject(filename):
 
 
 
-filename = "j901_1.sm"
+filename = "j1201_1.sm"
 data = openProject(filename)
 successors = {}
 
@@ -89,7 +88,7 @@ prelaciones = {
     'AD': ['X', 'Z', 'AB'],
     'AE': ['S', 'T', 'V']
     }
-prelaciones1 = {
+prelaciones = {
     'A' : [],
     'B' : [],
     'C' : ['A','B'],
@@ -103,17 +102,28 @@ prelaciones1 = {
     'K' : ['D','F','L'],
     'L' : ['A'],
     }
-prelaciones1 = {
+prelaciones = {
     'A' : [],
     'B' : [],
-    'D' : ['A','B'],
     'C' : ['A'],
+    'D' : ['A','B'],
     'E' : ['C','D'],
     'F' : ['D'],
     'G' : ['E'],
     'H' : ['F','D','C'],
     'I' : ['F'],
     }
+prelaciones = {
+    'A' : [],
+    'B' : [],
+    'C' : [],
+    'D' : ['A'],
+    'E' : ['B'],
+    'F' : ['C'],
+    'G' : ['E','F'],
+    'H' : ['D'],
+    }
+
 print "Sucesores"
 print successors
 print "Prelaciones"
@@ -149,13 +159,16 @@ print "numero de arcos reales: ",g.numArcsReales()
 print "numero de arcos ficticios: ",g.numArcsFicticios()
 print g.successors
 print
-
+image_text = graph1.pert2image(g, format='png')
+fsalida = open('CohenSadeh' + filename + '.png', 'w')
+fsalida.write(image_text)
+fsalida.close()
 itime=os.times()
 for i in range(REPETICIONES):
     g=algoritmoSalas.salas(prelaciones1)
 ftime=os.times()
 utime = ftime[0] - itime[0]
-print "Algoritmo Lorenzo"
+print "Algoritmo Salas"
 print "utime %.4f"% (utime)
 print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
@@ -163,4 +176,7 @@ print "numero de arcos reales: ",g.numArcsReales()
 print "numero de arcos ficticios: ",g.numArcsFicticios()
 print g.successors
 print
-
+image_text = graph1.pert2image(g, format='png')
+fsalida = open('algoritmoSalas' + filename + '.png', 'w')
+fsalida.write(image_text)
+fsalida.close()
