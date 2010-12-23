@@ -141,14 +141,31 @@ def algoritmoN(prelaciones):
             l1 = l1[:-1]
         if ll in NI:                 # si act es un nodo
             arco = l1,l                 # arco es prec-->act
-        else:                         # si act no es nodo
+        else:                         # si act no es nodo            
+           # for j in gg.successors:
+            #    if l in j:             # busco nodo de menor tamano que contega a act
+             #       tam = len(j)
+              #      if tam < infinity:
+               #         infinity = tam
+                        
+                #        arco = l1,j
+            cad=""
+            cadena=""
+            lista=[]
             for j in gg.successors:
-                if l in j:             # busco nodo de menor tamano que contega a act
-                    tam = len(j)
-                    if tam < infinity:
-                        infinity = tam
-                        l = j
-                        arco = l1,l
+                if l in j:
+                    cadena=j+"-"
+                    lista=[]
+                    for k in cadena:
+                        if k !="-":
+                            cad=cad+k
+                        else:
+                            lista.append(cad)
+                            cad=""
+                    if ll[0] in lista:
+                        arco=l1,j
+
+
         label = i,False
         if arco not in gg.arcs:
             gg.addArc(arco,label)         # trazo arco desde prec hasta act
