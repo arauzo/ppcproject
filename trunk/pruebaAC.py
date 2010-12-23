@@ -6,7 +6,7 @@ import algoritmoCohenSadeh
 import graph1
 import fileFormats
 
-REPETICIONES = 1
+REPETICIONES = 1000
 def openProject(filename):
     """
     Open a project file given by filename
@@ -124,28 +124,6 @@ prelaciones = {
     'H' : ['D'],
     }
 
-print "Sucesores"
-print successors
-print "Prelaciones"
-print prelaciones1
-itime=os.times()
-for i in range(REPETICIONES):
-    g=algoritmoConjuntos.algoritmoN(prelaciones1)
-ftime=os.times()
-utime = ftime[0] - itime[0]
-print "Algoritmo Conjuntos"
-print "utime %.4f"% (utime)
-print "numero de nodos: ",g.numNodes()
-print "numero de arcos: ",g.numArcs()
-print "numero de arcos reales: ",g.numArcsReales()
-print "numero de arcos ficticios: ",g.numArcsFicticios()
-print g.successors
-print
-image_text = graph1.pert2image(g, format='png')
-fsalida = open('grafoConjuntos' + filename + '.png', 'w')
-fsalida.write(image_text)
-fsalida.close()
-
 itime=os.times()
 for i in range(REPETICIONES):
     g = algoritmoCohenSadeh.cohenSadeh(prelaciones1)
@@ -157,12 +135,29 @@ print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
 print "numero de arcos reales: ",g.numArcsReales()
 print "numero de arcos ficticios: ",g.numArcsFicticios()
-print g.successors
 print
 image_text = graph1.pert2image(g, format='png')
 fsalida = open('CohenSadeh' + filename + '.png', 'w')
 fsalida.write(image_text)
 fsalida.close()
+
+itime=os.times()
+for i in range(REPETICIONES):
+    g=algoritmoConjuntos.algoritmoN(prelaciones1)
+ftime=os.times()
+utime = ftime[0] - itime[0]
+print "Algoritmo Conjuntos"
+print "utime %.4f"% (utime)
+print "numero de nodos: ",g.numNodes()
+print "numero de arcos: ",g.numArcs()
+print "numero de arcos reales: ",g.numArcsReales()
+print "numero de arcos ficticios: ",g.numArcsFicticios()
+print
+image_text = graph1.pert2image(g, format='png')
+fsalida = open('grafoConjuntos' + filename + '.png', 'w')
+fsalida.write(image_text)
+fsalida.close()
+
 itime=os.times()
 for i in range(REPETICIONES):
     g=algoritmoSalas.salas(prelaciones1)
@@ -174,7 +169,6 @@ print "numero de nodos: ",g.numNodes()
 print "numero de arcos: ",g.numArcs()
 print "numero de arcos reales: ",g.numArcsReales()
 print "numero de arcos ficticios: ",g.numArcsFicticios()
-print g.successors
 print
 image_text = graph1.pert2image(g, format='png')
 fsalida = open('algoritmoSalas' + filename + '.png', 'w')
