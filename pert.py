@@ -25,8 +25,8 @@ from graph import *
 class Pert(object):
     """
     PERT class to store graph data, contains:
-      self.graph = directed graph data structure
-      self.activities = activity labels
+      self.successors = directed graph data structure
+      self.arcs = activity labels
 
     directed graph data structure: see graph.py.
 
@@ -113,17 +113,17 @@ class Pert(object):
 
     def __init__(self, pert=None):
         if pert == None:
-            self.graph = {}
-            self.activities = {}
+            self.successors = {}
+            self.arcs = {}
         else:
-            self.graph, self.activities = pert
+            self.successors, self.arcs = pert
 
     def __repr__(self):
-        return 'Pert( (' + str(self.graph) + ',' + str(self.activities) + ') )'
+        return 'Pert( (' + str(self.successors) + ',' + str(self.arcs) + ') )'
 
     def __str__(self):
-        s = str(self.graph) + '\n'
-        for link, act in self.activities.iteritems():
+        s = str(self.successors) + '\n'
+        for link, act in self.arcs.iteritems():
             s += str(link) + ' ' + str(act) + '\n'
         return s
 
@@ -135,8 +135,8 @@ class Pert(object):
           Valid if nodes are not deleted (or reasigned when deleted
           O(n))
         """
-        if self.graph:
-            return max(self.graph)+1
+        if self.successors:
+            return max(self.successors)+1
         else:
             return 0
 
@@ -146,27 +146,27 @@ class Pert(object):
         """
         if origin == None:
             origin = self.nextNodeNumber()
-            self.graph[origin] = []
+            self.successors[origin] = []
 
         if destination == None:
             destination = self.nextNodeNumber()
-            self.graph[destination] = []
+            self.successors[destination] = []
 
-        self.graph[origin].append(destination)
-        self.activities[(origin,destination)] = (activityName, dummy)
+        self.successors[origin].append(destination)
+        self.arcs[(origin,destination)] = (activityName, dummy)
         return (origin,destination)
 
     def addNode(self, node):
         """
         Adds a new node
         """
-        self.graph[node] = []
+        self.successors[node] = []
 
     def activityArc(self, activityName):
         """
         Given an activity name returns the arc which represents it on graph
         """
-        for arc,act in self.activities.iteritems():
+        for arc,act in self.arcs.iteritems():
             if act[0] == activityName:
                 return arc
         return None
@@ -178,7 +178,7 @@ class Pert(object):
         """
         inAct = []
         for inNode in reversedGraph[node]:
-            act, dummy = self.activities[ (inNode, node) ]
+            act, dummy = self.arcs[ (inNode, node) ]
             if not dummy:
                 inAct.append(act)
 
@@ -191,7 +191,7 @@ class Pert(object):
         """
         inAct = []
         for inNode in reversedGraph[node]:
-            act, dummy = self.activities[ (inNode, node) ]
+            act, dummy = self.arcs[ (inNode, node) ]
             if dummy:
                 inAct += self.inActivitiesR(reversedGraph, inNode)
             else:
@@ -204,8 +204,8 @@ class Pert(object):
         Return the name of activities directly following node
         """
         outAct = []
-        for outNode in self.graph[node]:
-            act, dummy = self.activities[ (node, outNode) ]
+        for outNode in self.successors[node]:
+            act, dummy = self.arcs[ (node, outNode) ]
             if not dummy:
                 outAct.append(act)
 
@@ -217,8 +217,8 @@ class Pert(object):
         dummies)
         """
         outAct = []
-        for outNode in self.graph[node]:
-            act, dummy = self.activities[ (node, outNode) ]
+        for outNode in self.successors[node]:
+            act, dummy = self.arcs[ (node, outNode) ]
             if dummy:
                 outAct += self.outActivitiesR(outNode)
             else:
@@ -231,9 +231,9 @@ class Pert(object):
         """
         Extracts all implicit prelations (not redundant)
         """
-        revGraph = reversedGraph(self.graph)
+        revGraph = reversedGraph(self.successors)
         successors = {}
-        for node,connections in self.graph.items():
+        for node,connections in self.successors.items():
             inputs  = self.inActivities(revGraph, node)
             outputs = self.outActivitiesR(node)
             for i in inputs:
@@ -251,16 +251,16 @@ class Pert(object):
         Algorithm sharma1998 extended
         returns: PERT graph data structure
         """
-        if self.graph or self.activities:
+        if self.successors or self.arcs:
             raise Exception('PERT structure must be empty')
 
         precedents = reversedGraph(successors)
 
         # Close the graph (not in sharma1998)
         origin = self.nextNodeNumber()
-        self.graph[origin] = []
+        self.successors[origin] = []
         dest = self.nextNodeNumber()
-        self.graph[dest] = []
+        self.successors[dest] = []
         beginAct    = beginingActivities(successors)
         endAct      = endingActivities(successors)
         beginEndAct = beginAct.intersection(endAct)
@@ -290,9 +290,9 @@ class Pert(object):
             aOrigin, aDest = self.activityArc(act)
             #print '(', aOrigin, aDest, ')'
             for pre in precedents[act]:
-                #print self.graph
-                #print pre, pre in self.inActivitiesR(reversedGraph(self.graph), aOrigin)
-                if pre not in self.inActivitiesR(reversedGraph(self.graph), aOrigin):
+                #print self.successors
+                #print pre, pre in self.inActivitiesR(reversedGraph(self.successors), aOrigin)
+                if pre not in self.inActivitiesR(reversedGraph(self.successors), aOrigin):
                     if not self.activityArc(pre):
                         self.addActivity(pre)
                         #window.images.append( pert2image(self) )
@@ -306,7 +306,7 @@ class Pert(object):
 
         dummy given as (origin, destination)
         """
-        revGraph = reversedGraph(self.graph)
+        revGraph = reversedGraph(self.successors)
         nodeO, nodeD = dummy
 
         # Stop being a graph?
@@ -315,8 +315,8 @@ class Pert(object):
         for n in inNodesO:
             if n in inNodesD:
                 return False # Two activities would begin and end in the same nodes
-        outNodesO  = self.graph[nodeO]
-        outNodesD = self.graph[nodeD]
+        outNodesO  = self.successors[nodeO]
+        outNodesD = self.successors[nodeD]
         for n in outNodesO:
             if n in outNodesD:
                 return False # Two activities would begin and end in the same nodes
@@ -336,26 +336,26 @@ class Pert(object):
         nodeO, nodeD = dummy
 
         # Removes the dummy activity link from graph
-        self.graph[nodeO].remove(nodeD)
-        revGraph = reversedGraph(self.graph)
+        self.successors[nodeO].remove(nodeD)
+        revGraph = reversedGraph(self.successors)
 
         inD = revGraph[nodeD]
-        outD = self.graph[nodeD]
-        self.graph.pop(nodeD)
+        outD = self.successors[nodeD]
+        self.successors.pop(nodeD)
 
         for node in inD:
-            self.graph[node].remove(nodeD)
-            self.graph[node].append(nodeO)
-        self.graph[nodeO] += outD
+            self.successors[node].remove(nodeD)
+            self.successors[node].append(nodeO)
+        self.successors[nodeO] += outD
 
         # Activities table
-        self.activities.pop( (nodeO, nodeD) )
+        self.arcs.pop( (nodeO, nodeD) )
         for node in inD:
-            act = self.activities.pop( (node,nodeD) )
-            self.activities[ (node,nodeO) ] = act
+            act = self.arcs.pop( (node,nodeD) )
+            self.arcs[ (node,nodeO) ] = act
         for node in outD:
-            act = self.activities.pop( (nodeD,node) )
-            self.activities[ (nodeO,node) ] = act
+            act = self.arcs.pop( (nodeD,node) )
+            self.arcs[ (nodeO,node) ] = act
 
 
     def makePrelation(self, preName, folName):
@@ -370,33 +370,33 @@ class Pert(object):
 
         # New nodes
         newO = self.nextNodeNumber()
-        self.graph[newO] = []
+        self.successors[newO] = []
         newD = self.nextNodeNumber()
-        self.graph[newD] = []
+        self.successors[newD] = []
 
         # Change links of existing nodes to new nodes
-        self.graph[folO].remove(folD)
-        self.graph[folO].append(newD)
-        self.graph[preO].remove(preD)
-        self.graph[preO].append(newO)
+        self.successors[folO].remove(folD)
+        self.successors[folO].append(newD)
+        self.successors[preO].remove(preD)
+        self.successors[preO].append(newO)
         # New links
-        self.graph[newO].append(newD)
-        self.graph[newO].append(preD)
-        self.graph[newD].append(folD)
+        self.successors[newO].append(newD)
+        self.successors[newO].append(preD)
+        self.successors[newD].append(folD)
 
         # Activities table
         # New dummy activities
         dummy1 = (folO, newD)
         dummy2 = (newO, preD)
         dummy3 = (newO, newD)
-        self.activities[ dummy1 ] = ('dummy', True)
-        self.activities[ dummy2 ] = ('dummy', True)
-        self.activities[ dummy3 ] = ('dummy', True)
+        self.arcs[ dummy1 ] = ('dummy', True)
+        self.arcs[ dummy2 ] = ('dummy', True)
+        self.arcs[ dummy3 ] = ('dummy', True)
         # New link of activities with new nodes
-        act = self.activities.pop(pre)
-        self.activities[ (preO, newO) ] = act
-        act = self.activities.pop(fol)
-        self.activities[ (newD, folD) ] = act
+        act = self.arcs.pop(pre)
+        self.arcs[ (preO, newO) ] = act
+        act = self.arcs.pop(fol)
+        self.arcs[ (newD, folD) ] = act
 
         #window.images.append( pert2image(self) )
 
@@ -422,24 +422,24 @@ class Pert(object):
          Divide un grafo PERT en niveles usando el algoritmo de Demoucron
          Return: lista de listas de nodos representando los niveles de inicio a fin
         """
-        nodos = self.graph.keys()
+        nodos = self.successors.keys()
 
         # v inicial, se obtiene un diccionario con la suma de '1' de cada nodo
-        v={}       
+        v = {}       
         for n in nodos:
-            v[n]=0
+            v[n] = 0
             for m in nodos:
-                if (n,m) in self.activities:
-                    v[n]+=1
+                if (n,m) in self.arcs:
+                    v[n] += 1
 
         num = 0
         niveles = []
         # Mientras haya un nodo no marcado
-        while [e for e in v if v[e]!='x']:
+        while [e for e in v if v[e] != 'x']:
             # Se establecen los nodos del nivel
             niveles.append([])
             for i in v:
-                if v[i]==0:
+                if v[i] == 0:
                     v[i] = 'x'
                     niveles[num].append(i)
 
@@ -447,7 +447,7 @@ class Pert(object):
             for m in v:
                 if v[m] != 'x':
                     for a in niveles[num]:
-                        if (m,a) in self.activities:
+                        if (m,a) in self.arcs:
                             v[m] -= 1
             num+=1
 
@@ -464,48 +464,50 @@ class Pert(object):
         """
         niveles = self.demoucron()
         # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
-        s=1
-        nuevosNodos={}
+        s = 1
+        nuevosNodos = {}
         for m in range(len(niveles)):
-            if len(niveles[m])==1:
-                nuevosNodos[niveles[m][0]]=s
-                s+=1
+            if len(niveles[m]) == 1:
+                nuevosNodos[niveles[m][0]] = s
+                s += 1
             else:
                 for a in niveles[m]:
-                    nuevosNodos[a]=s            
-                    s+=1
+                    nuevosNodos[a] = s            
+                    s += 1
 
         # Se crea un nuevo grafo
         nuevoGrafo = Pert()
         
         # New graph
-        for n in self.graph:
+        for n in self.successors:
             #print n, 'n'
             for m in nuevosNodos:            
                 #print  m, 'm'
-                if n==m:
-                    if self.graph[n]!=[]:
-                        for i in range(len(self.graph[n])):
+                if n == m:
+                    if self.successors[n] != []:
+                        for i in range(len(self.successors[n])):
                             for a in nuevosNodos:
-                                if self.graph[n][i]==a:
-                                    if i==0:
-                                        nuevoGrafo.graph[nuevosNodos[m]]=[nuevosNodos[a]]
+                                if self.successors[n][i] == a:
+                                    if i == 0:
+                                        nuevoGrafo.successors[nuevosNodos[m]] = [nuevosNodos[a]]
                                     else:                                   
-                                        nuevoGrafo.graph[nuevosNodos[m]].append(nuevosNodos[a])
+                                        nuevoGrafo.successors[nuevosNodos[m]].append(nuevosNodos[a])
                     else: 
-                        nuevoGrafo.graph[nuevosNodos[m]]=[]
+                        nuevoGrafo.successors[nuevosNodos[m]] = []
 
         # New activities'
-        for n in self.activities:
+        for n in self.arcs:
             for m in nuevosNodos:            
-                if n[0]==m:
+                if n[0] == m:
                     for a in nuevosNodos:
-                        if n[1]==a:
-                            nuevoGrafo.activities[nuevosNodos[m],nuevosNodos[a]]=self.activities[n]
+                        if n[1] == a:
+                            nuevoGrafo.arcs[nuevosNodos[m],nuevosNodos[a]] = self.arcs[n]
 
-                elif n[1]==m:
+                elif n[1] == m:
                     for a in nuevosNodos:
-                        if n[0]==a:
-                            nuevoGrafo.activities[nuevosNodos[a],nuevosNodos[m]]=self.activities[n]
+                        if n[0] == a:
+                            nuevoGrafo.arcs[nuevosNodos[a],nuevosNodos[m]] = self.arcs[n]
 
-        return nuevoGrafo   
+        return nuevoGrafo
+
+

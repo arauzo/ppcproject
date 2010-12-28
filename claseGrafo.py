@@ -1,4 +1,4 @@
-class Grafo:
+class Grafo(object):
 
     def __init__(self):
         # Se mantienen las listas de sucesores y predecesores aunque son redundantes para acelerar el acceso
@@ -6,17 +6,15 @@ class Grafo:
         self.predecessors = {}
         self.arcs = {}
         
-    def suc(self,nodo):
-        successors = self.successors[nodo]
-        return successors
+    def suc(self, node):
+        return self.successors[node]
 
-    def pre(self, nodo):
-        predecessors=self.predecessors[nodo]
-        return predecessors
+    def pre(self, node):
+        return self.predecessors[node]
         
-    def addNode(self, nodo):
-        self.successors[nodo] = []
-        self.predecessors[nodo] = []
+    def addNode(self, node):
+        self.successors[node] = []
+        self.predecessors[node] = []
         
     def addArc(self, arc, label=None):
         """
@@ -57,11 +55,11 @@ class Grafo:
         for i,j in listaBorrar:
             del self.arcs[(i,j)]
 
-    def removeArc(self, arco):
-        i,j=arco
+    def removeArc(self, arc):
+        i,j = arc
         self.successors[i].remove(j)
         self.predecessors[j].remove(i)
-        del self.arcs[arco]
+        del self.arcs[arc]
 
     def numNodes(self):
         return len(self.successors)
@@ -81,4 +79,5 @@ class Grafo:
         for (i,j) in self.arcs:
             if self.arcs[(i,j)][1]==True:
                 cont = cont+1
-        return cont        
+        return cont
+        

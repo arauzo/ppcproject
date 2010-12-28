@@ -1087,11 +1087,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Nuevos nodos
         nodosN = []
-        for n in range(len(grafoRenumerado.graph)):
+        for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
  
         # Se calcula la matriz de Zaderenko
-        matrizZad = mZad(self.actividad,grafoRenumerado.activities, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 1, []) 
 
         # Se calculan los tiempos early y last
         tearly = early(nodosN, matrizZad)      
@@ -1103,9 +1103,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #print duracionProyecto, 'duracion proyecto'            
 
         # Se buscan las actividades que son crí­ticas, que serán aquellas cuya holgura total sea 0
-        holguras = self.holguras(grafoRenumerado.activities, tearly, tlast, []) 
+        holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
         #print holguras, 'holguras'
-        actCriticas = self.actCriticas(holguras, grafoRenumerado.activities)
+        actCriticas = self.actCriticas(holguras, grafoRenumerado.arcs)
         #print 'actividades criticas: ', actCriticas
        
         # Se crea un grafo sólo con las actividades crí­ticas y se extraen los caminos del grafo (todos serán crí­ticos)
@@ -1430,18 +1430,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     
         # Nuevos nodos
         nodosN=[]
-        for n in range(len(grafoRenumerado.graph)):
+        for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
  
         # Se calcula la matriz de Zaderenko
-        matrizZad = mZad(self.actividad, grafoRenumerado.activities, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, []) 
 
         # Se calculan los tiempos early y last
         tearly=early(nodosN, matrizZad) 
         tlast=last(nodosN, tearly, matrizZad)
 
         # Se calculan los tres tipos de holgura y se muestran en la interfaz
-        holguras=self.holguras(grafoRenumerado.activities, tearly, tlast, []) 
+        holguras=self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
         self.mostrarHolguras(self.modeloH, holguras) 
 
 
@@ -1640,8 +1640,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Valor de retorno: - 
         """
         #Se extraen los caminos crí­ticos
-        holguras=self.holguras(grafo.activities, early, last, duraciones)  # Holguras de cada actividad
-        actCriticas=self.actCriticas(holguras, grafo.activities)  # Se extraen las act. crí­ticas
+        holguras=self.holguras(grafo.arcs, early, last, duraciones)  # Holguras de cada actividad
+        actCriticas=self.actCriticas(holguras, grafo.arcs)  # Se extraen las act. crí­ticas
         criticos=self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
   
         # Se extraen todos los caminos (crí­ticos o no) del grafo original
@@ -2484,7 +2484,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         grafoRenumerado=self.pertFinal()
   
         # Se muestran las actividades y su nodo inicio y fí­n  
-        self.mostrarActividades(self.modeloA, grafoRenumerado.activities, grafoRenumerado.graph)
+        self.mostrarActividades(self.modeloA, grafoRenumerado.arcs, grafoRenumerado.successors)
        
     def on_mnZaderenko_activate(self, menu_item):
         """
@@ -2771,11 +2771,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
         # New nodes
         nodosN = []
-        for n in range(len(grafoRenumerado.graph)):
+        for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
    
         # Calculate Zaderenko matrix
-        matrizZad = mZad(self.actividad,grafoRenumerado.activities, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 1, []) 
 
         # Calculate early and last times
         tearly = early(nodosN, matrizZad)      
@@ -2783,10 +2783,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         slack = self.sbSlackSA.get_value()
         # Calculate altered last time
-        for a in grafoRenumerado.activities:
-            if grafoRenumerado.activities[a][0] != 'dummy':
-                rest[grafoRenumerado.activities[a][0]] += [tlast[a[1]-1] + slack - 
-                                                           float(rest[grafoRenumerado.activities[a][0]][0])]
+        for a in grafoRenumerado.arcs:
+            if grafoRenumerado.arcs[a][0] != 'dummy':
+                rest[grafoRenumerado.arcs[a][0]] += [tlast[a[1]-1] + slack - 
+                                                           float(rest[grafoRenumerado.arcs[a][0]][0])]
 
         return rest
         
@@ -3315,7 +3315,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
         # Nuevos nodos
         nodosN=[]
-        for n in range(len(grafoRenumerado.graph)):
+        for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
          
         # Zaderenko
@@ -3323,7 +3323,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             return
         else:
             for s in simulacion: 
-                matrizZad=mZad(self.actividad,grafoRenumerado.activities, nodosN, 0, s)
+                matrizZad=mZad(self.actividad,grafoRenumerado.arcs, nodosN, 0, s)
                 tearly=early(nodosN, matrizZad)  
                 tlast=last(nodosN, tearly, matrizZad)      
                 tam=len(tearly)
