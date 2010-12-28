@@ -194,15 +194,15 @@ def pert2dot(pert):
     txt = """digraph G {
              rankdir=LR;
              """
-    for node in pert.graph:
+    for node in pert.successors:
         txt += str(node) + ';'
     txt += '\n'
 
-    for act,sig in pert.graph.iteritems():
+    for act,sig in pert.successors.iteritems():
         for s in sig:
             txt += str(act) + '->' + str(s)
-            txt += ' [label="' + pert.activities[(act,s)][0] + '"'
-            if pert.activities[(act,s)][1]:
+            txt += ' [label="' + pert.arcs[(act,s)][0] + '"'
+            if pert.arcs[(act,s)][1]:
                 txt += ',style=dashed'
             txt += '];\n'
     txt += '}\n'

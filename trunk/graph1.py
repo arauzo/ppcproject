@@ -183,7 +183,7 @@ def endingActivities(successors):
 #
 ###he tenido que cambiarlo del graph.py original
 ###if pert.arcs[(act,s)][1]=='True':   if pert.arcs[(act,s)][1]   tengo que hacer que false o true no sean cadenas si no los valores boleanos de python
-###pert.successors                     pert.graph
+###pert.successors                     
 ###dobles comillas antes y despues de str(act)
 def pert2dot(pert):
     """
