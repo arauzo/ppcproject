@@ -46,6 +46,7 @@ class Grafo(object):
         for i in self.predecessors:
             if nodo in self.predecessors[i]:
                 self.predecessors[i].remove(nodo)
+
         listaBorrar=[]
         for (i,j) in self.arcs:
             if i==nodo:
@@ -59,7 +60,7 @@ class Grafo(object):
         i,j = arc
         self.successors[i].remove(j)
         self.predecessors[j].remove(i)
-        del self.arcs[arc]
+        return self.arcs.pop(arc)
 
     def numNodes(self):
         return len(self.successors)
