@@ -23,8 +23,6 @@ import math, os, sys
 import copy
 import subprocess
 
-from pert import *
-
 # ----------------
 # Data structures:
 # ----------------
@@ -106,6 +104,90 @@ roy = {'a': ['c', 'e'],
        'Begin': ['a', 'b'],
        'End': [],
        }
+
+# Ejemplos introducidos por J.Fdez Ex.
+prelaciones = {
+    'A' : [],
+    'B' : [],
+    'C' : ['A','B'],
+    'D' : ['A'],
+    'E' : ['B'],
+    'F' : ['A','B'],
+    'G' : ['C'],
+    'H' : ['D','E'],
+    'I' : ['D','E','F'],
+    'J' : ['D','E','F'],
+    'K' : ['D','F','L'],
+    'L' : ['A'],
+    }
+prelaciones1 = {
+    '3': [], 
+    '2': [], 
+    '5': ['3'], 
+    '4': [], 
+    '7': ['4'], 
+    '6': ['5'], 
+    '9': ['3'], 
+    '8': ['7'], 
+    '11': ['7'], 
+    '10': ['2'], 
+    '13': ['4', '6'], 
+    '12': ['10'], 
+    '15': ['3'], 
+    '14': ['9'], 
+    '17': ['5'], 
+    '16': ['6'], 
+    '19': ['7'], 
+    '18': ['6'], 
+    '20': ['16'], 
+    '21': ['11', '15', '17'], 
+    '22': ['10'], 
+    '23': ['18'], 
+    '24': ['12'],
+    '25': ['13', '14', '19'], 
+    '26': ['11', '17', '16'], 
+    '27': ['26', '22', '8'], 
+    '28': ['9'], 
+    '29': ['24', '22', '17'],
+    '30': ['25', '27', '28'],
+    '31': ['20', '21', '23'],
+    }
+prelaciones2 = {
+    'B': [], 
+    'A': [], 
+    'D': ['B'], 
+    'C': [], 
+    'F': ['C'], 
+    'E': ['D'], 
+    'H': ['B'], 
+    'G': ['F'], 
+    'J': ['F'], 
+    'I': ['A'], 
+    'L': ['C', 'E'], 
+    'K': ['I'], 
+    'N': ['B'], 
+    'M': ['H'], 
+    'P': ['D'], 
+    'O': ['E'], 
+    'R': ['F'], 
+    'Q': ['E'], 
+    'S': ['O'], 
+    'T': ['J', 'N', 'P'], 
+    'U': ['I'], 
+    'V': ['Q'], 
+    'W': ['K'],
+    'X': ['L', 'M', 'R'], 
+    'Y': ['J', 'P', 'O'], 
+    'Z': ['Y', 'U', 'G'], 
+    'AB': ['H'], 
+    'AC': ['W', 'U', 'P'],
+    'AD': ['X', 'Z', 'AB'],
+    'AE': ['S', 'T', 'V']
+    }
+prelaciones3={'24': ['21', '17'], '25': ['12'], '26': ['22', '23'], '27': ['25', '22', '14'], '20': ['2'], '21': ['7', '13'], '22': ['3'], '23': ['20', '13', '18'], '28': ['24', '25', '15'], '29': ['28', '16'], '3': [], '2': [], '5': ['2'], '4': [], '7': ['2'], '6': ['5'], '9': ['5'], '8': ['7'], '11': ['7'], '10': ['5'], '13': ['9'], '12': ['11'], '15': ['14'], '14': ['9'], '17': ['12'], '16': ['9'], '19': ['10', '18'], '18': ['4'], '31': ['27', '23', '19'], '30': ['26', '6', '8']}
+
+prelaciones4={'24': ['2'], '25': ['9'], '26': ['6'], '27': ['7'], '20': ['15'], '21': ['18'], '22': ['6'], '23': ['7'], '28': ['20'], '29': ['11'], '4': [], '8': ['3'], '59': ['58', '39'], '58': ['44'], '55': ['35'], '54': ['26', '47'], '57': ['21'], '56': ['14'], '51': ['32'], '50': ['48', '42'], '53': ['33'], '52': ['33', '10'], '88': ['21', '83', '86'], '89': ['88', '82', '87'], '82': ['80', '38', '31'], '83': ['69', '13', '76'], '80': ['56', '75'], '81': ['53', '72'], '86': ['67', '41', '77'], '87': ['50', '85', '79'], '84': ['54', '78'], '85': ['59', '30', '65'], '3': [], '7': ['3'], '39': ['26'], '38': ['16'], '33': ['20'], '32': ['21'], '31': ['24'], '30': ['5'], '37': ['26'], '36': ['15'], '35': ['15'], '34': ['23'], '60': ['56'], '61': ['52', '37', '9'], '62': ['55'], '63': ['22', '28', '40'], '64': ['62'], '65': ['17'], '66': ['18'], '67': ['24'], '68': ['49', '45'], '69': ['56'], '2': [], '6': ['4'], '91': ['81', '84', '5'], '90': ['46', '73', '72'], '11': ['2'], '10': ['5'], '13': ['10'], '12': ['11'], '15': ['3'], '14': ['12'], '17': ['9'], '16': ['12'], '19': ['4'], '18': ['12'], '48': ['36'], '49': ['27'], '46': ['37'], '47': ['24', '18'], '44': ['29'], '45': ['11'], '42': ['8'], '43': ['36'], '40': ['36'], '41': ['28'], '5': ['4'], '9': ['6'], '77': ['28', '43'], '76': ['58', '41'], '75': ['64'], '74': ['60', '61'], '73': ['34', '69', '41'], '72': ['51', '60', '70'], '71': ['32', '19'], '70': ['25', '23', '63'], '79': ['57', '66', '74'], '78': ['33', '68', '71']}
+
 
 
 
@@ -190,17 +272,16 @@ def pert2dot(pert):
 
     returns: string with text of dot language to draw the graph
     """
-    #XXX Necesita poner entre comillas los nombres de los nodos en definicion y en enlaces
     txt = """digraph G {
              rankdir=LR;
              """
     for node in pert.successors:
-        txt += str(node) + ';'
+        txt += '"'+str(node)+'"' + ';'
     txt += '\n'
 
-    for act,sig in pert.successors.iteritems():
+    for act, sig in pert.successors.iteritems():
         for s in sig:
-            txt += str(act) + '->' + str(s)
+            txt += '"'+str(act)+'"' + '->' + '"'+str(s)+'"'
             txt += ' [label="' + pert.arcs[(act,s)][0] + '"'
             if pert.arcs[(act,s)][1]:
                 txt += ',style=dashed'
@@ -421,7 +502,6 @@ import rsvg
 import cairo
 from SVGViewer import SVGViewer
 
-
 class Test(object):
     def __init__(self):
         self.images = []
@@ -437,25 +517,37 @@ class Test(object):
         self.screen = gtk.ScrolledWindow()
         self.screen.add_with_viewport(self.svg_viewer)
 
-        self.button = gtk.Button("Pintar grafo")
+        self.pos_label = gtk.Label(" -- / -- ")
+        self.b_prev = gtk.Button("< Previous")
+        self.b_prev.connect("clicked", self.pinta, True)
+        self.button = gtk.Button("Next >")
         self.button.connect("clicked", self.pinta, None)
 
+        self.hBox = gtk.HBox(homogeneous=False, spacing=0)
+        self.hBox.pack_start(self.pos_label, expand=False, fill=False, padding=4)
+        self.hBox.pack_start(self.b_prev,    expand=False, fill=False, padding=4)
+        self.hBox.pack_start(self.button,    expand=False, fill=False, padding=4)
+
         self.vBox = gtk.VBox(homogeneous=False, spacing=0)
-        self.vBox.pack_start(self.screen,   expand=True,  fill=True,  padding=0)
-        self.vBox.pack_start(self.button,   expand=False, fill=False, padding=4)
+        self.vBox.pack_start(self.screen, expand=True,  fill=True,  padding=0)
+        self.vBox.pack_start(self.hBox,   expand=False, fill=False, padding=4)
         self.window.add(self.vBox)
 
-        self.screen.show()
-        self.button.show()
-        self.vBox.show()
-        self.window.show()
+#        self.screen.show()
+#        self.button.show()
+#        self.vBox.show()
+        self.window.show_all()
 
     def delete_event(self, widget, event, data=None):
         return False
 
     def pinta(self, widget, data=None):
+        if data:
+            self.imageIndex = (self.imageIndex - 1) % len(self.images)
+        else:
+            self.imageIndex = (self.imageIndex + 1) % len(self.images)
         self.svg_viewer.update_svg( self.images[self.imageIndex] )
-        self.imageIndex = (self.imageIndex + 1) % len(self.images)
+        self.pos_label.set_text( str(self.imageIndex+1) + ' / ' + str(len(self.images)) )
 
 
 def main():
@@ -502,7 +594,7 @@ def main():
 
     window.images.append( graph2image(successors2) )
     window.images.append( graph2image(successors3) )
-    pertP = Pert()
+    pertP = pert.Pert()
     pertP.pert(successors2)
     #print pertP
 
