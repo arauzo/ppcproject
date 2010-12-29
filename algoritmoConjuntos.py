@@ -3,7 +3,7 @@ Algoritmo basado en conjuntos para construir el grafo PERT
 """
 import sys
 import claseGrafo
-import graph1
+import graph
 
 def algoritmoN(prelaciones):
     """
@@ -212,10 +212,10 @@ window = None
 
 if __name__ == "__main__":
 
-    window = graph1.Test() 
+    window = graph.Test() 
 
-    gg = algoritmoN(graph1.prelaciones4)
-    image1 = graph1.pert2image(gg)
+    gg = algoritmoN(graph.prelaciones4)
+    image1 = graph.pert2image(gg)
 
     window.images.append(image1)
-    graph1.gtk.main()
+    graph.gtk.main()

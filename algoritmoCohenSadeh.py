@@ -1,6 +1,6 @@
 import copy
 import claseGrafo
-import graph1
+import graph
 
 def cohenSadeh(prelaciones):
     ###dadas las relaciones averiguo la lista de actividades predecesoras
@@ -305,10 +305,10 @@ window = None
 
 if __name__ == "__main__":
 
-    window = graph1.Test() 
+    window = graph.Test() 
 
-    gg = cohenSadeh(graph1.prelaciones4)
-    image1 = graph1.pert2image(gg)
+    gg = cohenSadeh(graph.prelaciones4)
+    image1 = graph.pert2image(gg)
 
     window.images.append(image1)
-    graph1.gtk.main()
+    graph.gtk.main()
