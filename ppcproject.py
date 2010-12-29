@@ -59,7 +59,7 @@ from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
 import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
-import graph1
+import graph
 
 class PPCproject(object):
     """ Controler of global events in application """
@@ -2448,15 +2448,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         elif menu_item == self._widgets.get_widget('algoritmoConjuntos'):
             grafo = algoritmoConjuntos.algoritmoN( graph.successors2precedents(successors) )
-            svg_text = graph1.pert2image(grafo)
+            svg_text = graph.pert2image(grafo)
 
         elif menu_item == self._widgets.get_widget('algoritmoCohenSadeh'):
             grafo = algoritmoCohenSadeh.cohenSadeh( graph.successors2precedents(successors) )
-            svg_text = graph1.pert2image(grafo)
+            svg_text = graph.pert2image(grafo)
 
         elif menu_item == self._widgets.get_widget('algoritmoSalas'):
             grafo = algoritmoSalas.salas( graph.successors2precedents(successors) )
-            svg_text = graph1.pert2image(grafo)
+            svg_text = graph.pert2image(grafo)
 
         else:
             raise Exception('Graph menu option not recognized')            

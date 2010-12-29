@@ -3,7 +3,7 @@ import sys
 import algoritmoConjuntos
 import algoritmoSalas
 import algoritmoCohenSadeh
-import graph1
+import graph
 import fileFormats
 
 #REPETICIONES = 1
@@ -57,7 +57,7 @@ if len(sys.argv)==3:
     for i in data:
         successors[i[1]]=i[2]
 
-    prelaciones1 = graph1.reversedGraph(successors)
+    prelaciones1 = graph.reversedGraph(successors)
     prelaciones = {
         'B': [], 
         'A': [], 
@@ -138,7 +138,7 @@ if len(sys.argv)==3:
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
-    image_text = graph1.pert2image(g, format='png')
+    image_text = graph.pert2image(g, format='png')
     fsalida = open('CohenSadeh' + filename + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
@@ -155,7 +155,7 @@ if len(sys.argv)==3:
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
-    image_text = graph1.pert2image(g, format='png')
+    image_text = graph.pert2image(g, format='png')
     fsalida = open('grafoConjuntos' + filename + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
@@ -172,7 +172,7 @@ if len(sys.argv)==3:
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print 
-    image_text = graph1.pert2image(g, format='png')
+    image_text = graph.pert2image(g, format='png')
     fsalida = open('algoritmoSalas' + filename + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
