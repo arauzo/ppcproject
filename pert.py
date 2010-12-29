@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # PERT graph generation
 #-----------------------------------------------------------------------
@@ -7,7 +6,7 @@
 #   Multiplatform software tool for education and research in
 #   project management
 #
-# Copyright 2007-8 Universidad de Córdoba
+# Copyright 2007-8 Universidad de Cordoba
 # This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published
 #   by the Free Software Foundation, either version 3 of the License,
@@ -19,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import math, os, sys
-from graph import *
+import sys
+import graph
 import claseGrafo
 
 class Pert(claseGrafo.Grafo):
@@ -31,19 +30,19 @@ class Pert(claseGrafo.Grafo):
     DummyActivity: True if dummy, False if real
     """
     def __init__(self, pert=None):
-        super(Pert,self).__init__()
+        super(Pert, self).__init__()
         if pert != None:
             self.successors, self.arcs = pert
-            self.predecesors = reversedGraph(self.successors)
+            self.predecesors = graph.reversedGraph(self.successors)
 
     def __repr__(self):
         return 'Pert( (' + str(self.successors) + ',' + str(self.arcs) + ') )'
 
     def __str__(self):
-        s = str(self.successors) + '\n'
+        rstr = str(self.successors) + '\n'
         for link, act in self.arcs.iteritems():
-            s += str(link) + ' ' + str(act) + '\n'
-        return s
+            rstr += str(link) + ' ' + str(act) + '\n'
+        return rstr
 
     def nextNodeNumber(self):
         """
@@ -70,13 +69,13 @@ class Pert(claseGrafo.Grafo):
             self.addNode(destination)
             
         self.addArc( (origin, destination), (activityName, dummy) )
-        return (origin,destination)
+        return (origin, destination)
 
     def activityArc(self, activityName):
         """
         Given an activity name returns the arc which represents it on graph
         """
-        for arc,act in self.arcs.iteritems():
+        for arc, act in self.arcs.iteritems():
             if act[0] == activityName:
                 return arc
         return None
@@ -142,7 +141,7 @@ class Pert(claseGrafo.Grafo):
         Extracts all implicit prelations (not redundant)
         """
         successors = {}
-        for node,connections in self.successors.items():
+        for node, connections in self.successors.items():
             inputs  = self.inActivities(node)
             outputs = self.outActivitiesR(node)
             for i in inputs:
@@ -164,51 +163,51 @@ class Pert(claseGrafo.Grafo):
             raise Exception('PERT structure must be empty')
 
         #XXX Habria que renombrar pre y suc por in y out en claseGrafo
-        precedents = reversedGraph(successors)  
+        precedents = graph.reversedGraph(successors)  
 
         # Close the graph (not in sharma1998)
         origin = self.nextNodeNumber()
         self.addNode(origin)
         dest = self.nextNodeNumber()
         self.addNode(dest)
-        beginAct    = beginingActivities(successors)
-        endAct      = endingActivities(successors)
-        beginEndAct = beginAct.intersection(endAct)
+        begin_act     = graph.beginingActivities(successors)
+        end_act       = graph.endingActivities(successors)
+        begin_end_act = begin_act.intersection(end_act)
 
         #  -Creates a common node for starting activities
-        for act in beginAct - beginEndAct:
+        for act in begin_act - begin_end_act:
             self.addActivity(act, origin)
 
         #  -Creates a common node for ending activities
-        for act in endAct - beginEndAct:
+        for act in end_act - begin_end_act:
             self.addActivity(act, origin=None, destination=dest)
 
         #  -Deals with begin-end activities
-        if beginEndAct:
-            act = beginEndAct.pop()
+        if begin_end_act:
+            act = begin_end_act.pop()
             self.addActivity(act, origin, dest)
-            for act in beginEndAct:
-                o,d = self.addActivity(act, origin)
+            for act in begin_end_act:
+                o, d = self.addActivity(act, origin)
                 self.addActivity("seDummy", d, dest, dummy=True)
 
         # Sharma1998 algorithm
         for act in successors:
-            print "Processing", act, self
-            #window.images.append( pert2image(self) )
+            #print "Processing", act, self
+            #window.images.append( graph.pert2image(self) )
             if not self.activityArc(act):
                 self.addActivity(act)
-                #window.images.append( pert2image(self) )
-            aOrigin, aDest = self.activityArc(act)
-            #print '(', aOrigin, aDest, ')'
+                #window.images.append( graph.pert2image(self) )
+            a_origin, a_dest = self.activityArc(act)
+            #print '(', a_origin, a_dest, ')'
             for pre in precedents[act]:
                 #print self.successors
-                #print pre, pre in self.inActivitiesR(reversedGraph(self.successors), aOrigin)
-                if pre not in self.inActivitiesR(aOrigin):
+                #print pre, pre in self.inActivitiesR(graph.reversedGraph(self.successors), a_origin)
+                if pre not in self.inActivitiesR(a_origin):
                     if not self.activityArc(pre):
                         self.addActivity(pre)
-                        #window.images.append( pert2image(self) )
+                        #window.images.append( graph.pert2image(self) )
                     self.makePrelation(pre, act)
-                    aOrigin, aDest = self.activityArc(act)
+                    a_origin, a_dest = self.activityArc(act)
 
 
     def equivalentRemovingDummy(self, dummy):
@@ -265,11 +264,11 @@ class Pert(claseGrafo.Grafo):
         # Activities table
         self.arcs.pop( (nodeO, nodeD) )
         for node in inD:
-            act = self.arcs.pop( (node,nodeD) )
-            self.arcs[ (node,nodeO) ] = act
+            act = self.arcs.pop( (node, nodeD) )
+            self.arcs[ (node, nodeO) ] = act
         for node in outD:
-            act = self.arcs.pop( (nodeD,node) )
-            self.arcs[ (nodeO,node) ] = act
+            act = self.arcs.pop( (nodeD, node) )
+            self.arcs[ (nodeO, node) ] = act
 
 
     def makePrelation(self, preName, folName):
@@ -302,24 +301,24 @@ class Pert(claseGrafo.Grafo):
         self.addArc( dummy3, ('dummy', True) )
         self.addArc( dummy2, ('dummy', True) ) 
 
-        #window.images.append( pert2image(self) )
+        #window.images.append( graph.pert2image(self) )
 
         # Remove dummy activities if possible
         if self.equivalentRemovingDummy(dummy2):
             #print dummy2, ':equivalent'
             self.removeDummy(dummy2)
-            #window.images.append( pert2image(self) )
+            #window.images.append( graph.pert2image(self) )
 
         if self.equivalentRemovingDummy(dummy1):
             #print dummy1, ':equivalent'
             self.removeDummy(dummy1)
-            #window.images.append( pert2image(self) )
+            #window.images.append( graph.pert2image(self) )
             dummy3 = (newO, folO)   # Changed by removing dummy1
 
         if self.equivalentRemovingDummy(dummy3):
             #print dummy3, ':equivalent'
             self.removeDummy(dummy3)
-            #window.images.append( pert2image(self) )
+            #window.images.append( graph.pert2image(self) )
 
     def demoucron(self):
         """
@@ -333,7 +332,7 @@ class Pert(claseGrafo.Grafo):
         for n in nodos:
             v[n] = 0
             for m in nodos:
-                if (n,m) in self.arcs:
+                if (n, m) in self.arcs:
                     v[n] += 1
 
         num = 0
@@ -351,9 +350,9 @@ class Pert(claseGrafo.Grafo):
             for m in v:
                 if v[m] != 'x':
                     for a in niveles[num]:
-                        if (m,a) in self.arcs:
+                        if (m, a) in self.arcs:
                             v[m] -= 1
-            num+=1
+            num += 1
 
         niveles.reverse()
         return niveles
@@ -362,8 +361,8 @@ class Pert(claseGrafo.Grafo):
     def renumerar(self):
         """
          Renumera un grafo Pert para que sus nodos vayan desde 1 a N, donde N
-         es el número total de nodos. Cumple que un nodo anterior a otro siempre
-         tenga un número menor.
+         es el numero total de nodos. Cumple que un nodo anterior a otro siempre
+         tenga un numero menor.
          Valor de retorno: nuevoGrafo (grafo renumerardo)
         """
         niveles = self.demoucron()
@@ -423,57 +422,6 @@ class Pert(claseGrafo.Grafo):
 import pygtk
 pygtk.require('2.0')
 import gtk
-import rsvg
-import cairo
-from SVGViewer import SVGViewer
-
-
-class Test(object):
-    def __init__(self):
-        self.images = []
-        self.imageIndex = 0
-
-        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_size_request(800, 600)
-        self.window.connect("delete_event", self.delete_event)
-        self.window.connect("destroy", gtk.main_quit)
-
-        self.svg_viewer = SVGViewer()
-        self.svg_viewer.show()
-        self.screen = gtk.ScrolledWindow()
-        self.screen.add_with_viewport(self.svg_viewer)
-
-        self.pos_label = gtk.Label(" -- / -- ")
-        self.b_prev = gtk.Button("< Previous")
-        self.b_prev.connect("clicked", self.pinta, True)
-        self.button = gtk.Button("Next >")
-        self.button.connect("clicked", self.pinta, None)
-
-        self.hBox = gtk.HBox(homogeneous=False, spacing=0)
-        self.hBox.pack_start(self.pos_label, expand=False, fill=False, padding=4)
-        self.hBox.pack_start(self.b_prev,    expand=False, fill=False, padding=4)
-        self.hBox.pack_start(self.button,    expand=False, fill=False, padding=4)
-
-        self.vBox = gtk.VBox(homogeneous=False, spacing=0)
-        self.vBox.pack_start(self.screen, expand=True,  fill=True,  padding=0)
-        self.vBox.pack_start(self.hBox,   expand=False, fill=False, padding=4)
-        self.window.add(self.vBox)
-
-#        self.screen.show()
-#        self.button.show()
-#        self.vBox.show()
-        self.window.show_all()
-
-    def delete_event(self, widget, event, data=None):
-        return False
-
-    def pinta(self, widget, data=None):
-        if data:
-            self.imageIndex = (self.imageIndex - 1) % len(self.images)
-        else:
-            self.imageIndex = (self.imageIndex + 1) % len(self.images)
-        self.svg_viewer.update_svg( self.images[self.imageIndex] )
-        self.pos_label.set_text( str(self.imageIndex+1) + ' / ' + str(len(self.images)) )
 
 
 def main(window):
@@ -505,34 +453,34 @@ def main(window):
     
 
 
-##   print reversedGraph(pert2[0])
+##   print graph.reversedGraph(pert2[0])
 ##   for n in range(1,6):
-##      print inActivitiesR(pert2, reversedGraph(pert2[0]), n)
+##      print inActivitiesR(pert2, graph.reversedGraph(pert2[0]), n)
 ##   print "OUT"
 ##   for n in range(1,6):
 ##      print outActivitiesR(pert2, n)
 
-##   window.images.append( pert2image(pert4) )
+##   window.images.append( graph.pert2image(pert4) )
 ##   print equivalentRemovingDummy(pert4, (3,4) )
 ##   removeDummy(pert4, (3,4) )
 
 ##   pertP = pert5
-##   window.images.append( pert2image(pertP) )
+##   window.images.append( graph.pert2image(pertP) )
 ##   makePrelation( pertP, (1,5), (3,4) )
 ##   addActivity( pertP, 'nueva' )
 ##   makePrelation( pertP, (1,2), (7,8) )
 ##   makePrelation( pertP, (9,8), (6,4) )
        
-#    window.images.append( pert2image(pert.Pert(pert4)) )
+#    window.images.append( graph.pert2image(pert.Pert(pert4)) )
 
 #    window.images.append( graph2image(successors2) )
 #    window.images.append( graph2image(successors3) )
     try:
         pertP = Pert()
         pertP.pert(successors2)
-        window.images.append( pert2image(pertP) )
+        window.images.append( graph.pert2image(pertP) )
         print pertP
-    except Exception as e:
+    except Exception:
         traceback.print_exception(*sys.exc_info())
 
 ##   s = pertSuccessors(pertP)
@@ -616,5 +564,5 @@ if __name__ == "__main__":
                }
               )
 
-    window = Test()
+    window = graph.Test()
     main(window)
