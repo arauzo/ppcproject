@@ -283,11 +283,11 @@ class Pert(object):
 
         # Sharma1998 algorithm
         for act in successors:
-            print "Processing", act, self
-            window.images.append( pert2image(self) )
+            #print "Processing", act, self
+            #window.images.append( pert2image(self) )
             if not self.activityArc(act):
                 self.addActivity(act)
-                window.images.append( pert2image(self) )
+                #window.images.append( pert2image(self) )
             aOrigin, aDest = self.activityArc(act)
             #print '(', aOrigin, aDest, ')'
             for pre in precedents[act]:
@@ -296,7 +296,7 @@ class Pert(object):
                 if pre not in self.inActivitiesR(reversedGraph(self.successors), aOrigin):
                     if not self.activityArc(pre):
                         self.addActivity(pre)
-                        window.images.append( pert2image(self) )
+                        #window.images.append( pert2image(self) )
                     self.makePrelation(pre, act)
                     aOrigin, aDest = self.activityArc(act)
 
@@ -405,18 +405,18 @@ class Pert(object):
         if self.equivalentRemovingDummy(dummy2):
             #print dummy2, ':equivalent'
             self.removeDummy(dummy2)
-            window.images.append( pert2image(self) )
+            #window.images.append( pert2image(self) )
 
         if self.equivalentRemovingDummy(dummy1):
             #print dummy1, ':equivalent'
             self.removeDummy(dummy1)
-            window.images.append( pert2image(self) )
+            #window.images.append( pert2image(self) )
             dummy3 = (newO, folO)
 
         if self.equivalentRemovingDummy(dummy3):
             #print dummy3, ':equivalent'
             self.removeDummy(dummy3)
-            window.images.append( pert2image(self) )
+            #window.images.append( pert2image(self) )
 
     def demoucron(self):
         """
@@ -624,8 +624,8 @@ def main(window):
     try:
         pertP = Pert()
         pertP.pert(successors2)
-        window.images.append( pert2image(pertP) )
-        print pertP
+        #window.images.append( pert2image(pertP) )
+        #print pertP
     except Exception as e:
         traceback.print_exception(*sys.exc_info())
 
