@@ -1,3 +1,12 @@
+"""
+algoritmo que abre un fichero con extension *.sm pasado como parametro por linea de comandos,
+asi como el numero de repeticiones de cada algoritmo para que de resultados que se puedan comparar,
+y realiza pruebas a los tres algoritmos:
+Conjuntos, Salas, Cohen-Sadeh
+las pruebas consisten en tiempo de ejecucion, numero de arcos, numero de arcos ficticios, numeros de arcos
+reales, y numero de nodos.
+"""
+
 import os
 import sys
 import algoritmoConjuntos
@@ -10,7 +19,7 @@ import fileFormats
 #REPETICIONES = int(sys.argv[2])
 def openProject(filename):
     """
-    Open a project file given by filename
+    abre un proyecto ante un nombre pasado como paramentro por linea de comandos
     """
     try:
         actividad  = []
@@ -47,17 +56,22 @@ def openProject(filename):
         print 'Error reading file:', filename
         sys.exit(1)
 
+###si hay dos argumentos pasados por lineas de comandos 
 if len(sys.argv)==3:
-    repeticiones= int(sys.argv[2])
-    filename=sys.argv[1]
+    repeticiones= int(sys.argv[2]) ###repeticiones es igual al segundo parametro
+    filename=sys.argv[1]           ###el nombre del fichero es el primer parametro
 
     data = openProject(filename)
     successors = {}
-
+    ###obtengo los sucesores de cada actividad
     for i in data:
         successors[i[1]]=i[2]
-
+    ###obtengo prelaciones revertiendo sucesores
     prelaciones1 = graph.reversedGraph(successors)
+
+    """
+    ejemplos de prelaciones
+
     prelaciones = {
         'B': [], 
         'A': [], 
@@ -125,6 +139,7 @@ if len(sys.argv)==3:
         'G' : ['E','F'],
         'H' : ['D'],
         }
+    """
 
     itime=os.times()
     for i in range(repeticiones):

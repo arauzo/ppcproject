@@ -1,3 +1,8 @@
+"""
+algoritmo que compara la eficiencia del algoritmo de Sharma haciendo
+uso o no del tipo de dato grafo
+"""
+
 import os
 import sys
 import graph1
@@ -11,7 +16,7 @@ import fileFormats
 
 def openProject(filename):
     """
-    Open a project file given by filename
+    Abre un proyecto dado un nombre de fichero por linea de comandos
     """
     try:
         actividad  = []
@@ -48,17 +53,20 @@ def openProject(filename):
         print 'Error reading file:', filename
         sys.exit(1)
 
+###si hay dos argumentos pasados por lineas de comandos 
 if len(sys.argv)==3:
-    repeticiones= int(sys.argv[2])
-    filename=sys.argv[1]
+    repeticiones= int(sys.argv[2]) ###repeticiones es igual al segundo parametro
+    filename=sys.argv[1]           ###el nombre del fichero es el primer parametro
 
     data = openProject(filename)
     successors = {}
-
+    ###obtengo los sucesores de cada actividad
     for i in data:
         successors[i[1]]=i[2]
-
-    prelaciones1 = graph1.reversedGraph(successors)    
+    ###obtengo prelaciones revertiendo sucesores
+    prelaciones1 = graph.reversedGraph(successors)
+    """
+    ejemplos de prelaciones
 
     prelaciones = {
         'B': [], 
@@ -127,24 +135,16 @@ if len(sys.argv)==3:
         'G' : ['E','F'],
         'H' : ['D'],
         }
+    """
 
-    #itime=os.times()
-    #for i in range(repeticiones):
-        #g = pert2.Pert()
-        #g.pert(successors)
-    #ftime=os.times()
-    #utime = ftime[0] - itime[0]
-    #print "Sharma sin tipo de dato Grafo"
-    #print "utime %.4f"% (utime)
-    #print "numero de nodos: ",g.numNodes()
-    #print "numero de arcos: ",g.numArcs()
-    #print "numero de arcos reales: ",g.numArcsReales()
-    #print "numero de arcos ficticios: ",g.numArcsFicticios()
-    #print
-    #image_text = graph1.pert2image(g, format='png')
-    #fsalida = open('SharmaSTDgrafo' + filename + '.png', 'w')
-    #fsalida.write(image_text)
-    #fsalida.close()
+    itime=os.times()
+    for i in range(repeticiones):
+        g = pert2.Pert()
+        g.pert(successors)
+    ftime=os.times()
+    utime = ftime[0] - itime[0]
+    print "Sharma sin tipo de dato Grafo"
+    print "utime %.4f"% (utime)
 
     itime=os.times()
     for i in range(repeticiones):
