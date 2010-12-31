@@ -208,6 +208,7 @@ def algoritmoN(prelaciones):
             gg.addArc(arco2,label)
     return gg
 
+### ejecucion del algoritmo por defecto
 window = None
 
 if __name__ == "__main__":
