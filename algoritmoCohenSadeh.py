@@ -1,10 +1,24 @@
+"""
+Algoritmo basado en el algoritmo disenado por Yuval Cohen y Arik Sadeh
+"""
 import copy
 import claseGrafo
 import graph
 
+
 def cohenSadeh(prelaciones):
+    
+    """
+    Dadas las prelaciones construye el grafo PERT
+
+    prelaciones = {'Act': ['Predecesora1','Predecesora2'], ... }
+    
+    Devuelve: un claseGrafo.grafo
+    """
+  
     ###dadas las relaciones averiguo la lista de actividades predecesoras
     ###para cada actividad e imprimo la tabla
+    
     LIPA = [] 
     for label in prelaciones:
         relation = []
@@ -18,6 +32,7 @@ def cohenSadeh(prelaciones):
 
     ###unica combinacion de actividades inmediatas predecesoras e
     ###imprimo la tabla
+    
     UCIP = copy.deepcopy(LIPA)
     for i in UCIP:
         a = i[1]
@@ -28,6 +43,7 @@ def cohenSadeh(prelaciones):
 
     ###Numero de nodo de comienzo de cada actividad(starting Node)
     ###e imprimo la tabla                
+    
     SN = copy.deepcopy(LIPA)
     cont = 0
     l = []
@@ -41,27 +57,35 @@ def cohenSadeh(prelaciones):
 
     ###Dummy activities. Averiguo las actvidades que son ficticias e
     ###imprimo la tabla
+    
     DA = copy.deepcopy(UCIP) 
     
     #Mete en una lista todas las activity precedentes menos los -
+    
     a = []
     for i in UCIP:
         for j in i[1]:
             if j != '-':
                 a.append(j)
+    
     #Mete en una lista los que salen mas de 1 vez
+
     b = []
     for i in a:
         if a.count(i)>1:
             if i not in b:
                 b.append(i)
+
     #Mete en una lista las precedentes en las que aparecen las de la lista anterior
+
     c = []
     for i in UCIP:
         for j in b:
             if j in i[1] and len(i[1]) > 1 and i[1] not in c:
                 c.append(i[1])    
+
     #nombra las actividades dummy(paso3) y rellena las nuevas filas(paso4)
+
     l1 = []
     l2 = []
     l = []
@@ -85,7 +109,9 @@ def cohenSadeh(prelaciones):
             else:
                 d.append(j)
         e.append(d) 
+
     #Rellena DA
+
     for i in DA:
         if i[1] in c:
              t = c.index(i[1])
@@ -93,6 +119,7 @@ def cohenSadeh(prelaciones):
 
     ###modifico LIPA para anadir las nuevas filas con las imaginarias y las
     ###precedentes ya modificadas e imprimo la tabla
+
     LIPA1=copy.deepcopy(LIPA)
     for i in LIPA1:
         if i[1] in c:
@@ -106,6 +133,7 @@ def cohenSadeh(prelaciones):
     #Starting Node ya lo tengo   SN
 
     #Succeeding Activities
+
     SA = []
     for i in LIPA1:
         l1 = []
@@ -122,9 +150,13 @@ def cohenSadeh(prelaciones):
         relation.append(l1)
         relation.append(l2)
         SA.append(relation)
+
     #Successors Star Node
+
     SSN = copy.deepcopy(SA)
+
     #Veo cual es el ultimo comienzo de nodo
+
     b = -1
     for i in SN:
         a = i[1][0]
@@ -134,6 +166,7 @@ def cohenSadeh(prelaciones):
     #Ahora coloco los star node de los sucesores poniendo cuando solo hay
     #ficticias a partir del ultimo nodo y me falta por poner cuando sean
     #'End' el ultimo nodo
+
     for i in SSN:
         cont = 0
         for j in i[1]:
@@ -150,12 +183,14 @@ def cohenSadeh(prelaciones):
 
     ###Asocia actividades ficticias con sus nodos iniciales
     #todas las actividades sucesoras
+
     a = []
     for i in SA:
         for j in i[1]:
                 a.append(j)
 
     #sucesoras que se repiten
+
     b = []
     for i in a:
         if a.count(i) > 1:
@@ -163,6 +198,7 @@ def cohenSadeh(prelaciones):
                 b.append(i)
 
     #las actividades predecesoras de los sucesores que se repiten
+
     c = {}
     for i in b:
         d = []
@@ -172,6 +208,7 @@ def cohenSadeh(prelaciones):
         c[i] = d
          
     ##### new ficticias
+
     ND = []
     for i in b:
         f = []
@@ -212,8 +249,10 @@ def cohenSadeh(prelaciones):
                     rf.append(r)
             ###rf tiene la nueva fila para lIPA1
     LIPA2 = copy.deepcopy(LIPA1)
+
     #con esto obtengo la actividad real y la imaginaria y cambio las actividades
     #precedentes la real por la imaginaria
+
     for i in rf:
         real = i[1][0]
         imaginario = i[0][0]
@@ -221,15 +260,14 @@ def cohenSadeh(prelaciones):
             if real in j[1]:
                 j[1].remove(real)
                 j[1].append(imaginario)
-
     
     for i in rf:
         LIPA2.append(i)
 
     #ya supuestamente tengo todas las ficticias y todo actualizado en LIPA2
 
-
     ####startin node final
+
     SNF = copy.deepcopy(LIPA2) #como hacer para que copie pero no modifique
     
     cont = 0
@@ -241,7 +279,9 @@ def cohenSadeh(prelaciones):
                     l.append(j[1])
                     j[1] = [cont]
             cont = cont + 1
+
     ###Para saber cual es el SNF mas grande
+
     maximo = 0
     for i in SNF:
         a = i[1][0]
@@ -249,6 +289,7 @@ def cohenSadeh(prelaciones):
             maximo = a
         
     ###succeding star node
+
     SA1 = []
     for i in LIPA2:
         l1 = []
@@ -282,6 +323,7 @@ def cohenSadeh(prelaciones):
     grafo=claseGrafo.Grafo()
 
     ###la(lista de arcos) contendra la actividad, y su nodo de comienzo y el de final
+
     la = copy.deepcopy(SNF)
     cont = 0
     for i in SSNF:
@@ -300,7 +342,7 @@ def cohenSadeh(prelaciones):
 
     return grafo
 
-
+### ejecucion del algoritmo por defecto
 window = None
 
 if __name__ == "__main__":

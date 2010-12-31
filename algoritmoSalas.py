@@ -1,12 +1,20 @@
+"""
+Algoritmo que sigue la metodologia de como se hace a mano el grafo pert
+"""
+
 import math, os, sys
 import copy
 import claseGrafo
 import graph
 
 def crear_matriz(prelaciones):
-    
+    """
+    Dadas las prelaciones crea la matriz de encadenamiento del grafo
+    prelaciones = {'Act': ['Predecesora1','Predecesora2'], ... }
+    devuelve la matriz de encadenamiento y identificador de cada fila de la matriz
+    """
     m=[]
-    premat={}
+    premat={} 
     cont=0
     for i in prelaciones.iteritems():
         premat[cont]=i[0]
@@ -20,7 +28,8 @@ def crear_matriz(prelaciones):
                 mf.append(0)
         m.append(mf)
 
-
+    """
+    Ejemplos de matriz de encadenamientos
 
         
     aa=[
@@ -121,10 +130,19 @@ def crear_matriz(prelaciones):
     [0,0,0,0,0,0,1,1,0,0],
     [0,0,0,0,0,0,0,0,0,0]]
 
-    ###m=ee
+    """
     return m,premat
 
 def previo(matriz):
+    """
+    Dada la matriz de encadenamiento realiza unas operaciones para obtener unas variables
+    que no seran de gran utilidad para el algoritmo en si.
+    devuelve la matiz propiamente dicha,la matriz traspuesta, la lista con las actividades finales de grafo,
+    la lista con las actividades iniciales,la lista de listas de las actividades con mismo inicio,
+    el diccionario con las actividades mismo inicio,la lista de listas de las actividades con mismo fin,
+    el diccionario con las actividades mismo fin
+    """
+
     m=matriz
     a=len(m)    ###tamano de la matriz 
     ###t almacenara la traspuesta de la matriz
@@ -194,6 +212,12 @@ def previo(matriz):
 
 
 def ajustes(d,cont,a,af,b):
+    """
+    metodo que realiza varias operaciones al diccionario en el que tengo almacenado el grafo para optimizar
+    el grupo
+    devuelve dicho diccionario modificado
+    """
+
     ###pone todos los finales de todas las actividades finales en el 
     ###el mismo nodo
     nf=af[0]
@@ -227,13 +251,16 @@ def ajustes(d,cont,a,af,b):
 
 
 def salas(prelaciones):
+    """
+    dadas las prelaciones realiza el grafo PERT por el metodo propuesto por Lorenzo Salas Morera
+    """
     
     matriz,premat = crear_matriz(prelaciones)
     m,t,af,ai,ami,amiD,amf,amfD = previo(matriz)
 
     a = len(m)                        ###tamano de la matriz
     b = len(m)                        ###tamano de la matriz
-    analizadas = []                    ###lista que contiene las actividades que ya han sido analizadas                            ###actividad a analizar
+    analizadas = []                    ###lista que contiene las actividades que ya han sido analizadas
 
     d = {}                    
     for i in range(a):
@@ -484,6 +511,7 @@ def salas(prelaciones):
 
     return grafo
 
+### ejecucion del algoritmo por defecto
 window = None
 
 if __name__ == "__main__":
