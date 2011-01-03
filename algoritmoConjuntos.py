@@ -191,7 +191,10 @@ def algoritmoN(prelaciones):
         for j in prelaciones[i]:
             cad = cad + j + "-"
         cad = cad[:-1]
-        arco = cad,'end'
+        if cad!="":
+            arco = cad,'end'
+        else:
+            arco = 'start','end'
         hecho = 0
         for j in gg.arcs:
             if arco == j:

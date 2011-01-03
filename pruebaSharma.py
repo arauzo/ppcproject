@@ -5,7 +5,7 @@ uso o no del tipo de dato grafo
 
 import os
 import sys
-import graph1
+import graph
 import pert
 import pert2
 import fileFormats
@@ -162,7 +162,7 @@ if len(sys.argv)==3:
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
-    image_text = graph1.pert2image(g, format='png')
+    image_text = graph.pert2image(g, format='png')
     fsalida = open('SharmaTDgrafo' + filename + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
