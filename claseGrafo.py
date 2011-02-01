@@ -1,13 +1,11 @@
 """
-Clase que almacenara toda la informacion concerniente a cualquier 
-grafo implementado en la aplicacion
+Directed graph data type using dictionaries (hash tables) to connect nodes and arc labels
 """
 
 class Grafo(object):
 
     def __init__(self):
         """
-        Inicializador que contiene las variables de instancia de la clase Grafo
         Se mantienen las listas de sucesores y predecesores aunque son redundantes 
         para acelerar el acceso
         /successors/ contiene los sucesores de un nodo dado
@@ -15,72 +13,65 @@ class Grafo(object):
         /arcs/ contiene todos los arcos del grafo asi como si es real o ficticia 
         y el nombre del arco
         """
-        self.successors = {}
-        self.predecessors = {}
+        self.successors = {}   #XXX previous?
+        self.predecessors = {} #XXX next? followers?
         self.arcs = {}
         
-    def suc(self, activity):
+    def suc(self, node):
         """
-        Metodo que devuelve las actividades sucesoras(lista) a una actividad dada
-        activity = "Actividad"
+        Returns successors of node
         """
+        # Rename to prev (previous)? XXX
+        # It is faster to access directly to instance var dict. Remove this method? XXX
+        return self.successors[node]
 
-        return self.successors[activity]
-
-    def pre(self, activity):
+    def pre(self, node):
         """
-        Metodo que devuelve las actividades predecesoras(lista) a una actividad dada
-        activity = "Actividad"
+        Returns predecesors of node
         """
-
-        return self.predecessors[activity]
+        # XXX idem as suc
+        return self.predecessors[node]
         
-    def addNode(self, activity):
+    def addNode(self, node):
         """
-        Metodo que anade una actividad
-        activity = "Actividad" 
-        en las variables de instancia successors y predecessor
+        Add an unconnected node to graph
         """
-
-        self.successors[activity] = []
-        self.predecessors[activity] = []
+        self.successors[node] = []
+        self.predecessors[node] = []
         
     def addArc(self, arc, label=None):
         """
-        Insertar arco en el grafo si los nodos no existen los crea
-        arc = (actividad origen, actividad destino)
-        label = etiqueta asociada al arco
-        """
+        Insert an arc in the graph. If origin, destination nodes are not present in graph they get created.
 
-        a, c = arc
-        if a not in self.successors:
-            self.addNode(a)
-        if c not in self.successors:
-            self.addNode(c)
-        if c not in self.successors[a]:
-            self.successors[a].append(c)
-        if a not in self.predecessors[c]:
-            self.predecessors[c].append(a)
-        self.arcs[(a,c)] = label 
+        arc = (origin node, destination)
+        label = label to be linked with arc (maybe None if unlabeled)
+        """
+        origin, destination = arc
+        if origin not in self.successors:
+            self.addNode(origin)
+        if destination not in self.successors:
+            self.addNode(destination)
+        if destination not in self.successors[origin]:
+            self.successors[origin].append(destination)
+        if origin not in self.predecessors[destination]:
+            self.predecessors[destination].append(origin)
+        self.arcs[(origin, destination)] = label 
         
-    def removeNode(self,activity):
+    def removeNode(self,node):
         """
-        Bora una Actividad
-        activity="A"
-        tiene que borrarlo en todas las variables de instancia de la clase
+        Remove a node from the graph and all arcs referencing it
         """
-
-        if activity in self.successors:
-            del self.successors[activity]
-        if activity in self.predecessors:
-            del self.predecessors[activity]
+        if node in self.successors:
+            del self.successors[node]
+        if node in self.predecessors:
+            del self.predecessors[node]
         
         for i in self.successors:
-            if activity in self.successors[i]:
-                self.successors[i].remove(activity)
+            if node in self.successors[i]:
+                self.successors[i].remove(node)
         for i in self.predecessors:
-            if activity in self.predecessors[i]:
-                self.predecessors[i].remove(activity)
+            if node in self.predecessors[i]:
+                self.predecessors[i].remove(node)
 
         listaBorrar=[]
         for (i,j) in self.arcs:
@@ -105,23 +96,21 @@ class Grafo(object):
 
     def numNodes(self):
         """
-        Metodo que devuelve el numero de nodos que conforman el grafo
+        Return the number of nodes in graph
         """
-
         return len(self.successors)
 
     def numArcs(self):
         """
-        Metodo que devuelve el numero de arcos que conforman el grafo
+        Return the number of arcs in graph
         """
-
         return len(self.arcs)
 
     def numArcsReales(self):
         """
         Metodo que devuelve el numero de arcos reales que conforman el grafo
         """
-
+        # XXX Fuera de tipo dato grafo es concreto de grafos PERT
         cont=0
         for (i,j) in self.arcs:
             if self.arcs[(i,j)][1]==False:
@@ -132,10 +121,10 @@ class Grafo(object):
         """
         Metodo que devuelve el numero de arcos ficticios que conforman el grafo
         """
-
+        # XXX Fuera de tipo dato grafo es concreto de grafos PERT
         cont=0
         for (i,j) in self.arcs:
             if self.arcs[(i,j)][1]==True:
                 cont = cont+1
         return cont
-        
+
