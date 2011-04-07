@@ -279,7 +279,7 @@ class PPCproject(object):
         self.asignacion=[]
         cont=1
         # Se inserta una fila vacia
-        self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])
+        self.modelo.append([cont, '', '', '', '', '', '', '', 'Beta', ""])
         self.modeloR.append()
         self.modeloAR.append()
         #Minimum schedule
@@ -377,12 +377,12 @@ class PPCproject(object):
                     #siempre debe existir un elemento más en modelo que en actividades
                     if len(modelo)!=len(self.actividad): 
                         modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '', 
-                                       gettext.gettext('Beta'),""])     
-                        fila=['', '', [], '', '', '', '', '', gettext.gettext('Beta'), 0]
+                                       'Beta',""])     
+                        fila=['', '', [], '', '', '', '', '', 'Beta', 0]
                         self.actividad.append(fila) 
                     else:
                         modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '', 
-                                       gettext.gettext('Beta'),""])
+                                       'Beta',""])
                         #print self.actividad 
                      
                 # Recursos
@@ -416,7 +416,7 @@ class PPCproject(object):
         if row_path != len(self.modelo) - 1:
             row_cont = self.modelo[row_path][0]
             self.modelo.remove(self.modelo.get_iter(row_path))
-            self.modelo.append([row_cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])
+            self.modelo.append([row_cont, '', '', '', '', '', '', '', 'Beta', ""])
         new_actividad = []
         for act in act_list:
             for index in range(len(self.actividad)):
@@ -479,7 +479,7 @@ class PPCproject(object):
                     for i in range(3, 6):
                         self.modelo[path][i] = ''
                         self.actividad[int(path)][i] = ''
-                    if self.modelo[path][8] == gettext.gettext('Normal'):
+                    if self.modelo[path][8] == 'Normal':
                         self.modelo[path][7] = self.actividad[int(path)][7] = 0.2 * float(self.modelo[path][6])
                     self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
                     gantt_modified = True
@@ -996,19 +996,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                            dTipica (desviación típica calculada)
         """
         # Si el tipo de distribución es Beta
-        if distribucion==gettext.gettext('Beta'):
+        if distribucion=='Beta':
             media=(a+b+4.0*m)/6.0
             dTipica=(b-a)/6.0
 
         # Si el tipo de distribución es Triangular
-        elif distribucion==gettext.gettext('Triangular'):
+        elif distribucion=='Triangular':
             media=(a+b+m)/3.0
             dTipica=sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0)
 
         # Si el tipo de distribución es Uniforme
-        else:   
+        elif distribucion=='Uniform':   
             media=(a+b)/2.0
             dTipica=sqrt(((b-a)**2.0)/12.0)
+        else:
+            raise Exception('Not expected distribution:' + distribucion)
 
         # NOTA: La media y la desviación típica de la distribución Normal
         #       no se calculan, se deben introducir manualmente
@@ -1564,10 +1566,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             #print i+1, 'nº iteracion'
             sim=[]
             for m in range(len(self.actividad)):
-                distribucion=self.actividad[m][9]
-                #print distribucion, 'dist'
+                distribucion=self.actividad[m][8]
+                print "XXX distribucion", distribucion
+                print "XXX actividad3", self.actividad[m][3]
+                print "XXX actividad5", self.actividad[m][5]
                 # Si la actividad tiene una distribución 'uniforme'
-                if distribucion==gettext.gettext('Uniform'):
+                if distribucion=='Uniform':
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
                         if self.actividad[m][3]!=self.actividad[m][5]:
                             valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
@@ -1579,9 +1583,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                         return
   
                 # Si la actividad tiene una distribución 'beta'
-                elif distribucion==gettext.gettext('Beta'):
+                elif distribucion=='Beta':
+                    print "XXX BETA"
                     if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
+                        print "XXX No son vacios"
                         if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
+                            print "XXX No son vacios"
+
                             mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
                                                                                  float(self.actividad[m][4]), 
                                                                                  float(self.actividad[m][5]))
@@ -1597,7 +1605,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                         return
  
                 # Si la actividad tiene una distribución 'triangular'
-                elif distribucion == gettext.gettext('Triangular'):
+                elif distribucion == 'Triangular':
                     if self.actividad[m][3] != '' and self.actividad[m][4] != '' and self.actividad[m][5] != '':
                         if self.actividad[m][3] != self.actividad[m][5] != self.actividad[m][4]:
                             valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), 
@@ -1610,7 +1618,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                         return
                         
                 # Si la actividad tiene una distribución 'normal'
-                else:
+                elif distribucion == 'Normal':
                     if self.actividad[m][6]!='' and self.actividad[m][7]!='':
                         if float(self.actividad[m][7])!=0.00:
                             valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
@@ -1619,6 +1627,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     else:
                         self.dialogoError(gettext.gettext('The average duration and the typical deviation of this activity must be introduced')) 
                         return
+                else:
+                    self.dialogoError(gettext.gettext('Unknown distribution')) 
+                    return
                         
                 sim.append(float(valor))
                 #print sim, 'sim'
@@ -1950,7 +1961,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.enableProjectControls(True)
                 self.set_modified(False)
                 self.modified = 0
-                self.modelo.append([cont, '', '', '', '', '', '', '', gettext.gettext('Beta'), ""])  # Se inserta una fila vacia
+                self.modelo.append([cont, '', '', '', '', '', '', '', 'Beta', ""])  # Se inserta una fila vacia
                 cont += 1
                 self.modeloR.append()
                 self.modeloAR.append()
@@ -2524,8 +2535,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         s=0
         m=0
         for a in self.actividad:
-            if (a[9] == gettext.gettext('Uniform') or a[9] == gettext.gettext('Beta') or 
-                a[9]==gettext.gettext('Triangular')):
+            #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]  
+            if (a[9] == 'Uniform' or a[9] == 'Beta' or #XXX Sera a[8]???   #Avanzado, mirar: NamedTuple
+                a[9] == 'Triangular'):
                 if a[3]=='' or a[4]=='' or a[5]=='':
                     s+=1
             else:

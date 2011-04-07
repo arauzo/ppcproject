@@ -498,7 +498,6 @@ def get_activities_start_time(activities, durations, prelations, minimum = True,
 import pygtk
 pygtk.require('2.0')
 import gtk
-import rsvg
 import cairo
 from SVGViewer import SVGViewer
 
