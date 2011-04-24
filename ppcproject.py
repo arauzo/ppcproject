@@ -29,6 +29,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gtk.glade
+import gobject
 
 # Other external modules
 import scipy.stats
@@ -155,8 +156,6 @@ class PPCproject(object):
         self.vistaLista.connect('drag-end', self.reorder_gantt)
         self.modelo.connect('rows-reordered', self.reorder_gantt)
         self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
-        self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
-        self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
         self._widgets.get_widget('vistaListaRec').connect('button-press-event', self.treeview_menu_invoked,
                                                           self._widgets.get_widget('vistaListaRec'))
         self._widgets.get_widget('vistaListaAR').connect('button-press-event', self.treeview_menu_invoked,
@@ -169,6 +168,31 @@ class PPCproject(object):
             fileFormats.PPCProjectOLDFileFormat(),
             fileFormats.PSPProjectFileFormat(),
         ]
+
+# TEST code on route to more usable editing table
+#        self.vistaLista.connect('key-press-event', self.on_vistaListaDatos_key_press_event, self.vistaLista)
+#    def on_vistaListaDatos_key_press_event(self, treeview, event, data):
+#        print 'XXX on_vistaListaDatos_key_press_event', treeview, event, data
+#        # Testing code from: http://www.daa.com.au/pipermail/pygtk/2009-June/017134.html
+#        path, col = treeview.get_cursor()
+#        ## only visible columns!!
+#        columns = [c for c in treeview.get_columns() if c.get_visible()]
+#        colnum = columns.index(col)
+#        if colnum + 1 < len(columns):
+#            next_column = columns[colnum + 1]
+#            next_field_name = next_column.get_data('field_name')
+#            gobject.idle_add(treeview.set_cursor, path, next_column, True)
+#        else:
+#            tmodel = treeview.get_model()
+#            titer = tmodel.iter_next(tmodel.get_iter(path))
+#            if titer is None:
+#                titer = tmodel.get_iter_first()
+#            path = tmodel.get_path(titer)
+#            
+#            next_column = columns[0]
+#            next_field_name = next_column.get_data('field_name')
+#            gobject.idle_add(treeview.set_cursor, path, next_column, True )
+#        return False
 
     def cbtreeview (self, container, widget):
         """
