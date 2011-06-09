@@ -239,12 +239,16 @@ def roy(successors):
     g['Begin'] = list(begining)
     return g
 
-def beginingActivities(successors):
+def beginingActivities(successors, check_as_begin=None):
     """
     Returns a set with the name of activities that are not preceded by
     any other
     """
-    begining = set( successors.keys() )
+    if check_as_begin:
+        begining = check_as_begin
+    else:
+        begining = set( successors.keys() )
+       
     for act,next in successors.iteritems():
         begining -= set(next)
 
