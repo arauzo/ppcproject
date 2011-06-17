@@ -480,7 +480,10 @@ def get_activities_start_time(activities, durations, prelations, minimum = True,
         closed_list.append(chosen)
         time = [0]
         for activity in inv_prelations[chosen]:
-            time.append(start_time[activity] + durations[activity])
+            # print 'XXX start_time[a], duractions[a]', start_time[activity], durations[activity]
+            # El float() de la siguiente linea es porque en algun momento se guarda como cadena
+            # Investigar y corregir.
+            time.append(start_time[activity] + float(durations[activity]) )
         if previous_times != {} and not minimum:
             try:
                 time.append(previous_times[chosen])

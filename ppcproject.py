@@ -2349,7 +2349,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         Returns: -
         """
-        # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
+        # Se comprueba que no haya actividades repetidas (XXX esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas=self.actividadesRepetidas(self.actividad)
 
         if errorActRepetidas==0:

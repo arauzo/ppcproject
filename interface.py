@@ -149,6 +149,9 @@ class Interface(object):
       mode=self.selec.get_mode()   
       self.menu=gtk.Menu()
       self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
+      # XXX Cambiado a float para evitar el problema de la carga
+      # XXX Por que hay dos columnas mas de las que tiene el modelo, como estan manejadas??
+      #self.modelo = gtk.ListStore(int, str, str, float, float, float, float, float, str, str)
       self.vistaLista.set_model(self.modelo)
       self.orden=gtk.TreeModelSort(self.modelo)
       #self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
@@ -205,7 +208,8 @@ class Interface(object):
       self.vistaLista.append_column(self.vistaLista.columna[12])
       self.vistaLista.columna[12].pack_start(self.vistaLista.render, True)
       self.vistaLista.columna[12].set_attributes(self.vistaLista.render)
-      self.vistaLista.columna[12].set_clickable(True)      self.vistaLista.columna[12].connect('clicked', self.parent_application.columna_press, self.menu) 
+      self.vistaLista.columna[12].set_clickable(True)
+      self.vistaLista.columna[12].connect('clicked', self.parent_application.columna_press, self.menu) 
       self.vistaLista.columna[12].set_expand(False)
       self.checkColum=[None]*11
       self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activity'), True)
