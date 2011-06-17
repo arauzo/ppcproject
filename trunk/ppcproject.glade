@@ -1166,8 +1166,6 @@
     </child>
   </widget>
   <widget class="GtkWindow" id="wndProbabilidades">
-    <property name="width_request">1057</property>
-    <property name="height_request">600</property>
     <property name="title" translatable="yes">Probability</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
     <signal name="delete_event" handler="on_wndProbabilidades_delete_event"/>
