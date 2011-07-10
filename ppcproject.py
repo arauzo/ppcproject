@@ -3372,14 +3372,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
                 self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
     
-                # Se añaden la media y la desviación típica a la interfaz
-                duracionMedia=scipy.stats.mean(self.duraciones)
-                media=self._widgets.get_widget('mediaSim')
-                media.set_text(str(duracionMedia))
-    
-                desviacionTipica=scipy.stats.std(self.duraciones)
-                dTipica=self._widgets.get_widget('dTipicaSim')
-                dTipica.set_text(str(desviacionTipica))
+        # Se añaden la media y la desviación típica a la interfaz
+        duracionMedia=scipy.stats.mean(self.duraciones)
+        media=self._widgets.get_widget('mediaSim')
+        media.set_text(str(duracionMedia))
+
+        desviacionTipica=scipy.stats.std(self.duraciones)
+        dTipica=self._widgets.get_widget('dTipicaSim')
+        dTipica.set_text(str(desviacionTipica))
     
         # Se calculan los intervalos
         interv=[]
@@ -3395,7 +3395,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.intervalos=interv
    
         # Se calculan las frecuencias
-        self.Fa, Fr=simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
+        self.Fa, Fr = simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
   
         # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
         self.modeloF.clear()
