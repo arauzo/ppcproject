@@ -1595,7 +1595,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 print "XXX actividad3", self.actividad[m][3]
                 print "XXX actividad5", self.actividad[m][5]
                 # Si la actividad tiene una distribución 'uniforme'
-                if distribucion=='Uniform':
+                if distribucion=='Uniforme':
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
                         if self.actividad[m][3]!=self.actividad[m][5]:
                             valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
