@@ -24,6 +24,10 @@
 import os
 from copy import deepcopy
 
+#Mathematical functions
+global math
+import math
+
 # GTK
 import pygtk
 pygtk.require('2.0')
@@ -62,6 +66,8 @@ from simAnnealing import calculate_loading_sheet
 import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph
+
+
 
 class PPCproject(object):
     """ Controler of global events in application """
@@ -2564,7 +2570,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 a[9] == 'Triangular'):
                 if a[3]=='' or a[4]=='' or a[5]=='':
                     s+=1
-            else:
+            else: #Si no es ninguna de las tres anteriores es la Normal
                 if a[6]=='' or a[7]=='':
                     m=+1
 
