@@ -250,7 +250,7 @@
                     <child>
                       <widget class="GtkMenuItem" id="mnAsignacion">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Assignment menu</property>
+                        <property name="label" translatable="yes">Menu de Asignacion</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_mnAsignacion_activate"/>
                       </widget>
@@ -624,7 +624,7 @@
                           <widget class="GtkScrolledWindow" id="scrolledwindow21">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hadjustment">0 0 160 16 144 160</property>
+                            <property name="hadjustment">0 0 1 0.10000000000000001 0.90000000000000002 1</property>
                             <property name="hscrollbar_policy">never</property>
                             <property name="vscrollbar_policy">never</property>
                             <child>
@@ -2701,6 +2701,138 @@ Alejandro Villagr&#xE1;n Mar&#xED;n
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
         <signal name="activate" handler="delete_tab"/>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="wndAsignacion">
+    <property name="title" translatable="yes">Menu de Asignacion</property>
+    <child>
+      <widget class="GtkVBox" id="vbox1">
+        <property name="visible">True</property>
+        <property name="spacing">24</property>
+        <child>
+          <widget class="GtkHBox" id="hbox1">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkLabel" id="ConstanteK">
+                <property name="visible">True</property>
+                <property name="xalign">0.10000000149011612</property>
+                <property name="label" translatable="yes">Valor de proporcionalidad de
+la desviaci&#xF3;n t&#xED;pica</property>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkSpinButton" id="spinbutton1">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+                <property name="adjustment">1 0 100 1 10 10</property>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="padding">9</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox2">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkLabel" id="Distribucion">
+                <property name="visible">True</property>
+                <property name="xalign">0.10000000149011612</property>
+                <property name="label" translatable="yes">Funci&#xF3;n de distribuci&#xF3;n</property>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkComboBox" id="combobox1">
+                <property name="visible">True</property>
+                <property name="items" translatable="yes">Normal
+Beta
+Triangular
+Uniforme</property>
+              </widget>
+              <packing>
+                <property name="padding">10</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox3">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkButton" id="btProcedimiento">
+                <property name="label" translatable="yes">Ver procedimiento</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="xalign">1</property>
+                <signal name="clicked" handler="on_btProcedimiento_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">3</property>
+                <property name="pack_type">end</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="btCancel">
+                <property name="label" translatable="yes">Cancelar</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="xalign">1</property>
+                <signal name="clicked" handler="on_btCancel_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">3</property>
+                <property name="pack_type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="btAsignar">
+                <property name="label" translatable="yes">Asignar</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="xalign">1</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="padding">3</property>
+                <property name="pack_type">end</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
       </widget>
     </child>
   </widget>

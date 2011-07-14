@@ -24,10 +24,6 @@
 import os
 from copy import deepcopy
 
-#Mathematical functions
-global math
-import math
-
 # GTK
 import pygtk
 pygtk.require('2.0')
@@ -105,6 +101,7 @@ class PPCproject(object):
         self.vRecursos = self._widgets.get_widget('wndRecursos')
         self.vAsignarRec = self._widgets.get_widget('wndAsignarRec')
         self.vCaminos = self._widgets.get_widget('wndCaminos')
+        self.vAsignacion = self._widgets.get_widget('wndAsignacion')
 
         # Widget to show graphs in vRoy
         viewportGrafo = self._widgets.get_widget('viewportGrafo')
@@ -2109,7 +2106,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             respuesta=dialogo.run()
            
             if respuesta==gtk.RESPONSE_OK:
-                self.guardar()
+                self.saveProject(self.openFilename)
                 close = True
             elif respuesta==gtk.RESPONSE_CLOSE:
                 close = True
@@ -3521,6 +3518,42 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.limpiarVentanaSim()
         ventana.hide()
         return True
+
+# --- Ventana de asignacion
+    def on_mnAsignacion_activate (self, menu_item):
+        """ Accion usuario para activar
+            la ventana de asignación automática
+            de valores para la distribución
+        """
+        s = 0
+        m = 0
+        n = 0
+        for a in self.actividad:
+            if (a[6] == ''):
+                s +=1
+            elif (a[6] < 0):
+                m +=1
+            elif (a[3] != '' or a[4] != '' or a[5] != ''):
+                n +=1
+
+        if s > 0:
+            self.dialogoError(gettext.gettext('Todas las duraciones medias han de ser introducidas'))
+        elif m > 0:
+            self.dialogoError(gettext.gettext('No pueden existir duraciones medias negativas'))
+        elif n > 0:
+            self.dialogoError(gettext.gettext('Los tiempos optimista, pesimista y más probable ya están introducidos'))
+        else:
+            self._widgets.get_widget('btAsignar').set_sensitive(True)
+            self._widgets.get_widget('btCancel').set_sensitive(True)
+            self._widgets.get_widget('btProcedimiento').set_sensitive(True)
+            self.vAsignacion.show()
+
+    def on_btCancel_clicked(self,boton):
+        """ Accion usuario para cancelar
+            la opcion de asignacion automática
+        """
+
+        self.vAsignacion.hide()
 
 # --- Resources
   
