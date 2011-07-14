@@ -247,6 +247,14 @@
                         <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
+                    <child>
+                      <widget class="GtkMenuItem" id="mnAsignacion">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Assignment menu</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnAsignacion_activate"/>
+                      </widget>
+                    </child>
                   </widget>
                 </child>
               </widget>
@@ -616,6 +624,7 @@
                           <widget class="GtkScrolledWindow" id="scrolledwindow21">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="hadjustment">0 0 160 16 144 160</property>
                             <property name="hscrollbar_policy">never</property>
                             <property name="vscrollbar_policy">never</property>
                             <child>
@@ -754,7 +763,7 @@
                   <widget class="GtkSpinButton" id="iteracion">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="adjustment">1 0 100 1 10 0</property>
+                    <property name="adjustment">1 1 10000000 1 10 0</property>
                     <property name="climb_rate">1</property>
                     <property name="numeric">True</property>
                   </widget>
