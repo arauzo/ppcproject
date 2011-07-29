@@ -204,6 +204,8 @@ def generaAleatoriosNormal(mean, stdev):
     norm = random.gauss(mean, stdev)
     return norm
 
+#def intervalos(tipo) funcion que devuelve el número de intervalos en funcion del tipo que se seleccione (nº de intervalos o tamaño)
+
 # --- Start running as a program
 if __name__ == '__main__':
 
