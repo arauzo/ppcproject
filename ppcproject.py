@@ -24,6 +24,7 @@
 import os
 from copy import deepcopy
 
+import math
 # GTK
 import pygtk
 pygtk.require('2.0')
@@ -62,7 +63,7 @@ from simAnnealing import calculate_loading_sheet
 import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph
-
+import assignment
 
 
 class PPCproject(object):
@@ -1030,12 +1031,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Si el tipo de distribución es Triangular
         elif distribucion=='Triangular':
             media=(a+b+m)/3.0
-            dTipica=sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0)
+            dTipica=math.sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0)
 
         # Si el tipo de distribución es Uniforme
-        elif distribucion=='Uniform':   
+        elif distribucion=='Uniforme':   
             media=(a+b)/2.0
-            dTipica=sqrt(((b-a)**2.0)/12.0)
+            dTipica=math.sqrt(((b-a)**2.0)/12.0)
         else:
             raise Exception('Not expected distribution:' + distribucion)
 
@@ -1594,9 +1595,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             sim=[]
             for m in range(len(self.actividad)):
                 distribucion=self.actividad[m][8]
-                print "XXX distribucion", distribucion
-                print "XXX actividad3", self.actividad[m][3]
-                print "XXX actividad5", self.actividad[m][5]
+                print distribucion
                 # Si la actividad tiene una distribución 'uniforme'
                 if distribucion=='Uniforme':
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
@@ -1611,11 +1610,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
                 # Si la actividad tiene una distribución 'beta'
                 elif distribucion=='Beta':
-                    print "XXX BETA"
-                    if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':
-                        print "XXX No son vacios"
-                        if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:
-                            print "XXX No son vacios"
+                    if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':                        
+                        if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:                            
 
                             mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
                                                                                  float(self.actividad[m][4]), 
@@ -2561,7 +2557,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         s=0
         m=0
-        for a in self.actividad:
+
+        for a in self.actividad:            
             #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]  
             if (a[9] == 'Uniform' or a[9] == 'Beta' or #XXX Sera a[8]???   #Avanzado, mirar: NamedTuple
                 a[9] == 'Triangular'):
@@ -3332,6 +3329,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         iteracion=self._widgets.get_widget('iteracion')
         it=iteracion.get_value_as_int()
         #print it, 'iteraciones'
+        
   
         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
         totales=self._widgets.get_widget('iteracionesTotales')
@@ -3386,7 +3384,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     
         # Se calculan los intervalos
         interv=[]
-        N=20 # Número de intervalos
+        #iValor = self._widgets.get_widget('iValor') # Número de intervalos
+        N = 100 #int(iValor.get_text()) # XXX Felipe habia 20
         dMax=float(max(self.duraciones)+0.00001)  # duración máxima
         dMin=float(min(self.duraciones))   # duración mí­nima
         #print dMax, 'max', dMin, 'min'
@@ -3527,26 +3526,44 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         s = 0
         m = 0
-        n = 0
+        
         for a in self.actividad:
             if (a[6] == ''):
                 s +=1
             elif (a[6] < 0):
-                m +=1
-            elif (a[3] != '' or a[4] != '' or a[5] != ''):
-                n +=1
+                m +=1            
 
         if s > 0:
             self.dialogoError(gettext.gettext('Todas las duraciones medias han de ser introducidas'))
         elif m > 0:
-            self.dialogoError(gettext.gettext('No pueden existir duraciones medias negativas'))
-        elif n > 0:
-            self.dialogoError(gettext.gettext('Los tiempos optimista, pesimista y más probable ya están introducidos'))
+            self.dialogoError(gettext.gettext('No pueden existir duraciones medias negativas'))        
         else:
             self._widgets.get_widget('btAsignar').set_sensitive(True)
             self._widgets.get_widget('btCancel').set_sensitive(True)
             self._widgets.get_widget('btProcedimiento').set_sensitive(True)
             self.vAsignacion.show()
+
+    def on_btAsignar_clicked(self,boton):
+        """ Accion usuario que rellena la tabla
+            con los valores calculados a partir
+            de la constante de proporcinalidad k
+            y la media de cada actividad
+        """
+
+        # Se extrae el valor de proporcionalidad
+        proporcionalidad = self._widgets.get_widget('proporcionalidad')
+        k = float(proporcionalidad.get_text())
+        
+        print k
+        # Se extrae el tipo de distribución
+        distribucion = self._widgets.get_widget('distribucion')
+        dist = distribucion.get_active_text()
+        print dist        
+        assignment.actualizarInterfaz(self.modelo,k,dist,self.actividad)
+        self.vAsignacion.hide()
+        
+            
+                            
 
     def on_btCancel_clicked(self,boton):
         """ Accion usuario para cancelar

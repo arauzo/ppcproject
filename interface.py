@@ -190,12 +190,12 @@ class Interface(object):
       self.modeloComboD.append([gettext.gettext('Beta')])
       self.modeloComboD.append([gettext.gettext('Uniform')])
 
-      # Se ocultan algunas columnas 
-      self.vistaLista.columna[3].set_visible(False) 
-      self.vistaLista.columna[4].set_visible(False)
-      self.vistaLista.columna[5].set_visible(False)  
+      # Se ocultan algunas columnas XXX Felipe para hacer las pruebas y no tener que abrir siempre estas opciones
+      self.vistaLista.columna[3].set_visible(True) 
+      self.vistaLista.columna[4].set_visible(True)
+      self.vistaLista.columna[5].set_visible(True)  
       self.vistaLista.columna[8].set_visible(False) 
-      self.vistaLista.columna[9].set_visible(False) 
+      self.vistaLista.columna[9].set_visible(True) 
       self.vistaLista.columna[11].set_visible(False) 
 
       # Columna menu
@@ -352,8 +352,8 @@ class Interface(object):
          self.vLCriticidad.columna[n].set_expand(False)
       
       # TREEVIEW for frequencies in simulation window
-      self.vistaFrecuencias=self._widgets.get_widget('vistaFrecuencias')
-      columns_type = [str]  * 21
+      self.vistaFrecuencias=self._widgets.get_widget('vistaFrecuencias')      
+      columns_type = [str]  * 101 #XXX Felipe habia 21
       self.modeloF = gtk.ListStore(*columns_type)
       self.vistaFrecuencias.set_model(self.modeloF)
       #First column
@@ -364,7 +364,7 @@ class Interface(object):
       column.add_attribute(cell, 'text', 0)
       column.set_min_width(50)
       #Intervals
-      for interval in range(1,21):
+      for interval in range(1,101): #XXX Felipe habia (1,21)
          column = gtk.TreeViewColumn("")
          self.vistaFrecuencias.append_column(column)
          cell = gtk.CellRendererText()
