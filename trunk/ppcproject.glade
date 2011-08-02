@@ -811,10 +811,10 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkComboBoxEntry" id="comboboxentry1">
+                  <widget class="GtkComboBoxEntry" id="iOpcion">
                     <property name="visible">True</property>
                     <property name="items" translatable="yes">Numero de intervalos
-Tama&#xF1;o del intervalo</property>
+Tamanio del intervalo</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>

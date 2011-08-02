@@ -3384,10 +3384,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     
         # Se calculan los intervalos
         interv=[]
-        #iValor = self._widgets.get_widget('iValor') # Número de intervalos
-        N = 100 #int(iValor.get_text()) # XXX Felipe habia 20
+        iOpcion = self._widgets.get_widget('iOpcion')
+        opcion = iOpcion.get_active_text()
+        iValor = self._widgets.get_widget('iValor') # Número de intervalos
         dMax=float(max(self.duraciones)+0.00001)  # duración máxima
         dMin=float(min(self.duraciones))   # duración mí­nima
+        valor = int(iValor.get_text())
+
+        N = simulation.nIntervalos(dMax, dMin, valor, str(opcion)) # XXX Felipe habia 20
+
         #print dMax, 'max', dMin, 'min'
         if int(it)==int(itTotales):
             for n in range(N):
