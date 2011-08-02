@@ -77,7 +77,26 @@ def posicion(d, dMax, dMin, N):
     x = int(((d - dMin) / (dMax - dMin)) * N)
     return x
 
+def nIntervalos (dMax, dMin, N, opcion):
+    """
+    Cálculo del número de intervalos
+    en función de la opción elegida por
+    el usuario
 
+    dMax (duración máxima)
+    dMin (duración mínima)
+    N (número de intervalos o tamaño del intervalo)
+    opción (opción seleccionada)
+    """
+    if opcion == 'Numero de intervalos':
+        return int(N)
+    elif opcion == 'Tamanio del intervalo':
+        mini = dMin - (dMin % N)
+        cont = 0
+        while cont < dMax + N:
+            cont = cont + 1
+        return int(cont)
+ 
 def duracion(x, dMax, dMin, N):
     """
      Cálculo de la duración correspondiente a una posición 
