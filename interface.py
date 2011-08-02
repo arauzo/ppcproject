@@ -352,7 +352,7 @@ class Interface(object):
          self.vLCriticidad.columna[n].set_expand(False)
       
       # TREEVIEW for frequencies in simulation window
-      self.vistaFrecuencias=self._widgets.get_widget('vistaFrecuencias')      
+      self.vistaFrecuencias=self._widgets.get_widget('vistaFrecuencias')          
       columns_type = [str]  * 101 #XXX Felipe habia 21
       self.modeloF = gtk.ListStore(*columns_type)
       self.vistaFrecuencias.set_model(self.modeloF)
