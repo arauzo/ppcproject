@@ -23,8 +23,8 @@
 # Python Std. lib.
 import os
 from copy import deepcopy
-
 import math
+
 # GTK
 import pygtk
 pygtk.require('2.0')
@@ -36,7 +36,6 @@ import gobject
 import scipy.stats
 from matplotlib import rcParams
 rcParams['font.family'] = 'monospace'
-#from pylab import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
 
