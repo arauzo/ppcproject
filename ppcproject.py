@@ -62,7 +62,7 @@ from simAnnealing import calculate_loading_sheet
 import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph
-import assignment
+#import assignment
 
 
 class PPCproject(object):
@@ -76,15 +76,13 @@ class PPCproject(object):
         self.optimumSchedule = []
         self.schedules = []
         self.schedule_tab_labels = []
+
         self.bufer = gtk.TextBuffer()
-        # Keeps the name of the open file 
-        # (None = no open file, 'Unnamed' = Project without name yet)
-        self.openFilename = None
-        self.modified = 0
         self.ganttActLoaded = False
         self.interface = interface.Interface(self)
         self._widgets = self.interface._widgets
         self._widgets.signal_autoconnect(self)
+        
         self.vBoxProb = self._widgets.get_widget('vbProb')
         self.grafica = gtk.Image()
         self.box=gtk.VBox()
@@ -150,11 +148,13 @@ class PPCproject(object):
         self.modeloC = self.interface.modeloC
         self.modeloF = self.interface.modeloF
         self.vistaFrecuencias = self.interface.vistaFrecuencias
-        self.checkColum=[None]*11
+
+        self.checkColum = [None]*11
         for n in range(11):
             self.checkColum[n] = self.interface.checkColum[n]
+
         self._widgets.get_widget('mnSalirPantComp').hide()
-        self.enableProjectControls(False)
+
         self.row_height_signal = self.vistaLista.connect("expose-event", self.cbtreeview)
         self.vistaLista.connect('drag-end', self.reorder_gantt)
         self.modelo.connect('rows-reordered', self.reorder_gantt)
@@ -164,6 +164,12 @@ class PPCproject(object):
         self._widgets.get_widget('vistaListaAR').connect('button-press-event', self.treeview_menu_invoked,
                                                          self._widgets.get_widget('vistaListaAR'))
 
+        # Keeps the name of the open file 
+        # (None = no open file, 'Unnamed' = Project without name yet)
+        self.openFilename = None
+        self.set_modified_state(False)
+        self.set_open_state(False)
+        
         # File format loaders and savers
         #  (the order is used to try when loading unknown type files)
         self.fileFormats = [
@@ -212,9 +218,9 @@ class PPCproject(object):
             self.vistaLista.disconnect(self.row_height_signal)
         return False
 
-    def enableProjectControls(self, value):
+    def set_open_state(self, value):
         """
-        Enable project editing controls.
+        Enable or disable project editing controls (when a project is open or not)
     
         Parameters: value (True or False)
 
@@ -231,14 +237,15 @@ class PPCproject(object):
             self._widgets.get_widget('stbStatus').pop(0)
             self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
 
-    def set_modified(self, value):
+    def set_modified_state(self, value):
         """
-        Enable or disable project saving controls.
+        Enable or disable project saving controls (when project is modified or not)
     
         Parameters: value (True or False)
 
         Returns: None.
         """
+        self.modified = value
         self._widgets.get_widget('mnGuardar').set_sensitive(value)
         self._widgets.get_widget('mnGuardarComo').set_sensitive(value)
         self._widgets.get_widget('tbGuardar').set_sensitive(value)
@@ -274,7 +281,7 @@ class PPCproject(object):
   
          Valor de retorno: -
         """
-        if item==self.checkColum[n]:
+        if item == self.checkColum[n]:
             if self.checkColum[n].get_active():
                 self.vistaLista.columna[n+1].set_visible(True)
             else:
@@ -313,9 +320,8 @@ class PPCproject(object):
         start_times = graph.get_activities_start_time([], [], [], True)
         self.add_schedule(gettext.gettext("Min"), start_times)
         self.set_schedule(start_times)
-        self.enableProjectControls(True)
-        self.set_modified(True)
-        self.modified = 1
+        self.set_open_state(True)
+        self.set_modified_state(True)
         self.ntbSchedule.show()
   
     def col_edited_cb( self, renderer, path, new_text, modelo, n):
@@ -332,8 +338,7 @@ class PPCproject(object):
          Valor de retorno: -
         """
         if new_text != modelo[int(path)][n]:
-            self.modified=1   # Controlamos que el proyecto ha cambiado
-            self.set_modified(True)
+            self.set_modified_state(True) # Project data has changed
             #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
           
             actividades=self.actividades2Lista()
@@ -341,7 +346,7 @@ class PPCproject(object):
             if modelo==self.modelo:  # Interfaz de actividades
                 # añadimos las etiquetas de las actividades al selector de las siguientes
                 if n==1:  # Columna de las actividades
-                    if new_text=='':
+                    if new_text == '':
                         modelo[path][1] = new_text
                     else:
                         if modelo[path][1]!='':  # Si modificamos una actividad
@@ -732,8 +737,7 @@ class PPCproject(object):
         self.ntbSchedule.append_page(fixed, label)
         fixed.show()
         label.show()
-        self.set_modified(True)
-        self.modified = 1
+        self.set_modified_state(True)
 
     def set_schedule(self, schedule):
         """
@@ -764,8 +768,7 @@ class PPCproject(object):
             self.ntbSchedule.set_current_page((self.clicked_tab - 1) % self.ntbSchedule.get_n_pages())
         del self.schedules[self.clicked_tab]
         self.ntbSchedule.remove_page(self.clicked_tab)
-        self.set_modified(True)
-        self.modified = 1
+        self.set_modified_state(True)
 
     def new_tab(self, widget):
         """
@@ -1542,56 +1545,24 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             modelo.append([holguras[n][0], holguras[n][1], holguras[n][2], holguras[n][3]])
 
 
-#           CAMINOS DEL GRAFO                  #
-
-    def calcularCaminos(self):
-        """
-         Acción usuario para calcular y mostrar todos los 
-                  caminos de un grafo 
-
-         Parámetros: -
-
-         Valor de retorno: -
-        """
-        # Se comprueba que exista algún grafo
-        if self.actividad==[]:
-            self.dialogoError(gettext.gettext('A graph is needed to calculate its paths'))
- 
-        else:
-            successors = self.tablaSucesoras(self.actividad)
-            roy = graph.roy(successors)
-            #print roy, 'grafo'
- 
-            # Se eliminan 'begin' y 'end' de todos los caminos
-            caminosSinBeginEnd=[c[1:-1]for c in graph.findAllPaths(roy, 'Begin', 'End')]
-            # Se preparan los caminos para mostrarlos en el interfaz
-            numeroCaminos=len(caminosSinBeginEnd) 
-            camino=gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
-            for n in range(len(caminosSinBeginEnd)):
-                cadena = ', '.join(caminosSinBeginEnd[n])
-                camino += cadena
-                camino += '\n'
-           
-            # Se muestran los caminos en la interfaz
-            self.vCaminos.show()
-            widget=self._widgets.get_widget('tvCaminos')
-            self.mostrarTextView(widget, camino)
 
 #              SIMULACIÓN                      
 
-    def simulacion(self, n):
+    def simulacion(self, n): # XXX Pasar a simulation.py convitiendolo en una clase
         """
          Simulación de duraciones de cada actividad según  
                   su tipo de distribución
 
          Parámetros: n (número de iteraciones)
+                     XXX Desacoplar pasandole todos los datos necesarios: actividades, duraciones, tipo de distribucion, caminos...
 
          Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
+         XXX que son simulaciones, necesitamos: lista de la duracion efectiva y lista de los caminos criticos
         """
-        simulacion=[]
+        simulacion = []
         for i in range(n):
             #print i+1, 'nº iteracion'
-            sim=[]
+            sim = []
             for m in range(len(self.actividad)):
                 distribucion=self.actividad[m][8]
                 print distribucion
@@ -1707,41 +1678,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se establece la criticidad de cada camino
         for c in nuevosCaminos:
             if c[0] not in self.criticidad:
-                self.criticidad[c[0]]=1
+                self.criticidad[c[0]] = 1
             else:
-                self.criticidad[c[0]]+=1
+                self.criticidad[c[0]] += 1
         #print self.criticidad
 
         # Se muestran los caminos y el í­ndice de criticidad en la interfaz
         self.modeloC.clear()
         for c in self.criticidad:
-            n=self.criticidad[c]
+            n = self.criticidad[c]
             self.modeloC.append([n, str('%3.2f'%((float(n)/itTotales)*100))+'%', c])
    
-   
-    def limpiarVentanaSim(self):
-        """
-         Limpia los datos de la ventana de simulación 
-
-         Parámetros: -
-
-         Valor de retorno: -
-        """
-        # Se limpian los datos
-        iteracion = self._widgets.get_widget('iteracion')
-        iteracion.set_text('')
-        totales = self._widgets.get_widget('iteracionesTotales')   
-        totales.set_text('')
-        media = self._widgets.get_widget('mediaSim')
-        media.set_text('')
-        dTipica = self._widgets.get_widget('dTipicaSim')
-        dTipica.set_text('')
-        frecuencias = self._widgets.get_widget('vistaFrecuencias')
-        self.modeloF.clear()
-        self.modeloC.clear()
-        if len(self.boxS) > 0:
-            self.hBoxSim.remove(self.boxS)
- 
  
 #            PROBABILIDADES                    
 
@@ -1783,7 +1730,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             p = float(scipy.stats.distributions.norm.cdf(x))
 
 
-        elif dato2=='': # Si no se introduce el dato2
+        elif dato2 == '': # Si no se introduce el dato2
             x = (float(dato1)-float(media))/float(dTipica)
             p = float(scipy.stats.distributions.norm.cdf(x))
 
@@ -1953,8 +1900,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     act_list.append(act[1])
                     dur_dic[act[1]] = act[6]
                     pre_dic[act[1]] = act[2]
-                    self.gantt.add_activity(act[1],act[2],act[6])
-                min_sched = graph.get_activities_start_time(act_list,dur_dic,pre_dic)
+                    self.gantt.add_activity(act[1], act[2], act[6])
+                min_sched = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
                 schedules = [[gettext.gettext('Min'), min_sched]] + schedules
                 
                 cont = 1
@@ -1978,11 +1925,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.modeloComboARA.append([act[1]])
     
                 # Update interface 
-                self.openFilename=filename
+                self.openFilename = filename
                 self.updateWindowTitle()
-                self.enableProjectControls(True)
-                self.set_modified(False)
-                self.modified = 0
+                self.set_open_state(True)
+                self.set_modified_state(False)
                 self.modelo.append([cont, '', '', '', '', '', '', '', 'Beta', ""])  # Se inserta una fila vacia
                 cont += 1
                 self.modeloR.append()
@@ -2027,8 +1973,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Update interface 
             self.openFilename=nombre
             self.updateWindowTitle()
-            self.set_modified(False)
-            self.modified = 0
+            self.set_modified_state(False)
         except IOError :
             self.dialogoError(gettext.gettext('Error saving the file'))    
 
@@ -2084,7 +2029,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Return: True if closed
                 False if canceled
         """
-        if self.modified == 0:   # El proyecto actual ha sido guardado
+        if self.modified == False:   # El proyecto actual ha sido guardado
             close = True
         else:                 # El proyecto actual aún no se ha guardado
             dialogo = gtk.Dialog(gettext.gettext("Attention!!"),
@@ -2096,14 +2041,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                  )
                                  #xxx el dialogo no debe ser modal? Vamos que hasta que el usuario no responda no debe continuar. Corregir mirando doc.
             label = gtk.Label(gettext.gettext('Project has been modified. Do you want to save the changes?'))
-            dialogo.vbox.pack_start(label,True,True,10)
+            dialogo.vbox.pack_start(label, True, True, 10)
             label.show()
-            respuesta=dialogo.run()
+            respuesta = dialogo.run()
            
-            if respuesta==gtk.RESPONSE_OK:
+            if respuesta == gtk.RESPONSE_OK:
                 self.saveProject(self.openFilename)
                 close = True
-            elif respuesta==gtk.RESPONSE_CLOSE:
+            elif respuesta == gtk.RESPONSE_CLOSE:
                 close = True
             else:
                 close = False
@@ -2114,13 +2059,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Se limpian todas las listas de datos
             self.openFilename = None
             self.modelo.clear()
-            self.actividad=[]
+            self.actividad = []
             self.modeloR.clear()
-            self.recurso=[]
+            self.recurso = []
             self.modeloAR.clear()
-            self.asignacion=[]
+            self.asignacion = []
             self.updateWindowTitle()
-            self.modified = 0
             self.gantt.clear()
             self.gantt.update()
             self.modeloComboS.clear()
@@ -2130,8 +2074,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.clicked_tab = len(self.schedule_tab_labels) - 1
                 self.delete_tab(None)
             self.schedules = []
-            self.enableProjectControls(False)
-            self.modified = 0
+            self.set_open_state(False)
+            self.set_modified_state(False)
             self.ntbSchedule.hide()
 
         return close
@@ -2142,8 +2086,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Muestra un mensaje de advertencia si no se han introducido bien las unidades de recurso
 
         Parámetros: tipo (tipo de recurso)
-
-        Valor de retorno: -
         """
         dialogo = gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
@@ -2158,15 +2100,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         dialogo.destroy()   
 
-
      
     def dialogoError(self, cadena):
         """
         Muestra un mensaje de error en la apertura del fichero
-
-        Parámetros: -
-
-        Valor de retorno: -
         """
         dialogo=gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
                                   message_format = cadena,
@@ -2175,14 +2112,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dialogo.destroy()   
 
 
-
     def errorActividadesRepetidas(self, repetidas):
         """
         Muestra un mensaje de error si en la introducción de datos hay alguna actividad repetida
 
         Parámetros: repetidas (lista con las actividades repetidas)
-
-        Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
@@ -2200,8 +2134,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         actividad o algun recurso inexistente
 
         Parámetros: datosErroneos (lista con los datos erróneos) cadena (cadena de texto)
-
-        Valor de retorno: -
         """
         dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
@@ -2215,12 +2147,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def treeview_menu_invoked(self, widget, event, treeview):
         """
         Treeview menu invoked
-
-        Parameters: widget
-                    event
-                    treeview
-
-        Returns: -
         """
         if (event.button == 3 and treeview.get_selection().count_selected_rows() != 0 and 
             treeview.get_model()[treeview.get_selection().get_selected_rows()[1][0]][1] != ""):
@@ -2230,10 +2156,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def delete_tree_row(self, widget):
         """
         Delete treeview row
-
-        Parameters: widget
-
-        Returns: -
         """
         gantt_modified = False
         path = self.treemenu_invoker.get_selection().get_selected_rows()[1][0]
@@ -2242,7 +2164,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for index in range(len(self.actividad)-1,-1, -1):
                 if model[path][1] in self.actividad[index][2]:
                     self.actividad[index][2].remove(model[path][1])
-                    model[index][2]=", ".join(self.actividad[index][2])
+                    model[index][2] = ", ".join(self.actividad[index][2])
                 if self.actividad[index][1] == model[path][1]:
                     del self.actividad[index]
             for index in range(len(self.asignacion)-1,-1, -1):
@@ -2284,8 +2206,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False,
                                                                            self.schedules[index][1])
             self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
-        self.modified=1   # Controlamos que el proyecto ha cambiado
-        self.set_modified(True)
+        self.set_modified_state(True)
   
 # MANEJADORES #
 # --- Menu actions
@@ -2388,20 +2309,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_Close_activate(self, menu_item):
         """
         Close option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         self.closeProject()
    
     def on_Exit_activate(self, *args):
         """
         Exit option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         closed = self.closeProject()
         if closed:
@@ -2418,7 +2331,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Acción usuario para activar o desactivar la barra
         de herramientas, inicialmente inactiva
         """
-        checkMenuItem==self.bHerramientas
+        checkMenuItem == self.bHerramientas
         if checkMenuItem.get_active():
             self.bHerramientas.show()
         else:
@@ -2427,10 +2340,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnPantallaComp_activate(self, menu_item):
         """
         Full screen option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         self.vPrincipal.fullscreen()
         self._widgets.get_widget('mnSalirPantComp').show()
@@ -2439,10 +2348,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnSalirPantComp_activate(self, menu_item):
         """
         Exit full screen option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         self.vPrincipal.unfullscreen()
         self._widgets.get_widget('mnSalirPantComp').hide()
@@ -2453,20 +2358,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnCrearRecursos_activate(self, menu_item):
         """
         Create resources option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         self.vRecursos.show()
 
     def on_mnGrafo_activate(self, menu_item):
         """
         Roy Graph option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         #XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
         successors = self.tablaSucesoras(self.actividad)
@@ -2523,10 +2420,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnZaderenko_activate(self, menu_item):
         """
         Zaderenko option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         s=0
         for a in self.actividad:
@@ -2539,12 +2432,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
    
     def on_mnHolguras_activate(self, menu_item):
         """ User ask for slacks """
-        s=0
+        s = 0
         for a in self.actividad:
-            if a[6]=='':
-                s+=1
+            if a[6] == '':
+                s += 1
                 
-        if s>0:
+        if s > 0:
             self.dialogoError(gettext.gettext('There are uncomplete activities'))
         else:
             self.ventanaHolguras()
@@ -2554,8 +2447,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         los resultados de la simulación de duraciones (tabla
         de frecuencias, gráfica, ...)
         """
-        s=0
-        m=0
+        s = 0
+        m = 0
 
         for a in self.actividad:            
             #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]  
@@ -2567,14 +2460,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 if a[6]=='' or a[7]=='':
                     m=+1
 
-        if s>0 and m==0:
+        if s > 0 and m == 0:
             self.dialogoError(gettext.gettext('You must introduce the durations: ') + '\n' + '\t' + 
                               gettext.gettext('- Optimistic') + '\n' + '\t' + gettext.gettext('- Most probable') +
                               '\n' + '\t' + gettext.gettext('- Pessimistic'))
-        elif s==0 and m>0:
+        elif s == 0 and m > 0:
             self.dialogoError(gettext.gettext('You must introduce the durations: ') + '\n' + '\t' + 
                               gettext.gettext('- Average') + '\n' + '\t' + gettext.gettext('- Typical Dev.'))
-        elif s>0 and m>0:
+        elif s > 0 and m > 0:
             self.dialogoError(gettext.gettext('You must introduce the durations: ') + '\n' + '\t' + 
                               gettext.gettext('- Optimistic')+ '\n' + '\t' + gettext.gettext('- Most probable') +
                               '\n' + '\t' + gettext.gettext('- Pessimistic') + '\n' + '\t' + 
@@ -2592,28 +2485,41 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_mnCalcularCaminos_activate(self, menu_item):
         """ User ask for paths in project """
-        self.calcularCaminos()
+        # Se comprueba que exista algún grafo
+        if self.actividad == []:
+            self.dialogoError(gettext.gettext('A graph is needed to calculate its paths')) 
+        else:
+            successors = self.tablaSucesoras(self.actividad)
+            roy = graph.roy(successors)
+ 
+            # Remove 'begin' and 'end' dummy activities from all paths
+            caminosSinBeginEnd=[c[1:-1]for c in graph.findAllPaths(roy, 'Begin', 'End')]
+            # Se preparan los caminos para mostrarlos en el interfaz
+            numeroCaminos = len(caminosSinBeginEnd) 
+            camino = gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
+            for n in range(len(caminosSinBeginEnd)):
+                cadena = ', '.join(caminosSinBeginEnd[n])
+                camino += cadena
+                camino += '\n'
+           
+            # Se muestran los caminos en la interfaz
+            self.vCaminos.show()
+            widget=self._widgets.get_widget('tvCaminos')
+            self.mostrarTextView(widget, camino)
+
+
 
     def on_wndSimAnnealing_delete_event(self, window, event):
         """
         User action to close the window
-
-        Parameters: window
-                    event
-        Returns: True
         """
         self.btResetSA.clicked()
         window.hide()
-
         return True
         
     def on_btnSaveSA_clicked (self, menu_item):
         """
         Save the schedule calculated
-
-        Parameters: menu_item
-        
-        Returns: -
         """
         optSchDic = {}
         if self.optimumSchedule == []:
@@ -2627,30 +2533,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_rbAllocation_pressed (self, menu_item):
         """
         Choose allocation
-
-        Parameters: menu_item
-        
-        Returns: -
         """
         self.sbSlackSA.set_sensitive(False)
 
     def on_rbLeveling_pressed (self, menu_item):
         """
         Choose leveling
-
-        Parameters: menu_item
-        
-        Returns: -
         """
         self.sbSlackSA.set_sensitive(True)
 
     def on_cbIterationSA_toggled (self, menu_item):
         """
         Choose unlimited number of iterations without improve
-
-        Parameters: menu_item
-        
-        Returns: -
         """
         if self.cbIterationSA.get_active():
             self.sbNoImproveIterSA.set_sensitive(False)
@@ -2660,21 +2554,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnSimAnnealing_activate(self, menu_item):
         """
         User action to open the simulated annealing window
-
-        Parameters: menu_item
-
-        Returns: -
         """
         self.wndSimAnnealing.show()
-
 
     def on_btnSimAnnealingReset_clicked(self,menu_item):
         """
         User action to restart the values of the simulated annealing window fields
-
-        Parameters: menu_item
-
-        Returns: -
         """
         self.ganttActLoaded = False
         self.ganttSA.clear()
@@ -2699,13 +2584,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_btnSimAnnealingCalculate_clicked(self, menu_item):
         """
         User action to start the simulated annealing algorithm
-
-        Parameters: menu_item
-
-        Returns: -
         """
         # Add all activities in rest dictionary
-        rest={}
+        rest = {}
         for a in self.actividad:
             if a[6] == '':
                 self.dialogoError(gettext.gettext('You must introduce the average duration.'))
@@ -2775,7 +2656,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             asignation = resources_per_activities(self.asignacion, resources)
             optSchLoadSheet = calculate_loading_sheet(self.optimumSchedule, resources, asignation, optSchDuration)
             # Add activities to gantt
-            for act,startTime,finalTime in self.optimumSchedule:
+            for act, startTime, finalTime in self.optimumSchedule:
                 self.ganttSA.set_activity_start_time(act, startTime)
                 if act in successors.keys():
                     self.ganttSA.set_activity_prelations(act,successors[act])
@@ -2833,10 +2714,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnAyuda_activate(self, menu_item):
         """
         Help option invoked
-
-        Parameters: menu_item
-
-        Returns: -
         """
         dialogoAyuda = self.dAyuda
         dialogoAyuda.show()
@@ -2847,11 +2724,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_wndGrafoPert_delete_event(self, window, event):
         """
         Close Pert Window
-
-        Parameters: window
-                    event
-
-        Returns: -
         """
         window.hide()
         return True
@@ -2859,11 +2731,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_wndGrafoRoy_delete_event(self, window, event):
         """
         Close Roy Window
-
-        Parameters: window
-                    event
-
-        Returns: -
         """
         window.hide()
         return True
@@ -2875,17 +2742,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
          Acción usuario para acceder aceptar los datos
                   que aparecen en la ventana de actividades
-
-         Parámetros: boton (botón clickeado)
         """
         self.vActividades.hide()
 
     def on_wndActividades_delete_event(self, ventana, evento):
         """
          Acción usuario para acceder cerrar la ventana de actividades
-
-         Parámetros: ventana (ventana actual)
-                     evento (evento cerrar)
         """
         ventana.hide()
         return True
@@ -2915,11 +2777,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Acción usuario para acceder a la ventana que muestra
                  el cálculo de probabilidades
 
-        Parámetros: boton (botón clickeado)
+        boton (botón clickeado)
         """
         # Extraigo los valores de la media y la desviación típica del camino que va a ser objeto del
         # cálculo de probabilidades
-        media, dTipica=self.extraerMediaYDTipica()
+        media, dTipica = self.extraerMediaYDTipica()
 
         if float(dTipica) == 0.00:
             texto=gettext.gettext('Path duration is ') + '%5.2f' % (float(media)) + gettext.gettext(' t.u. with 100% probability')
@@ -2927,28 +2789,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             # Se asigna tí­tulo y gráfica a la ventana de probabilidad
             self.vProbabilidades.set_title(gettext.gettext('Probability related to the path'))
-            #imagen=self._widgets.get_widget('graficaProb')
+            #imagen = self._widgets.get_widget('graficaProb')
             if len(self.vBoxProb)>1:
                 self.vBoxProb.remove(self.grafica)
-                self.grafica=gtk.Image()
+                self.grafica = gtk.Image()
 
             self.grafica.set_from_file('graficaNormal.gif')
             self.vBoxProb.add(self.grafica)
             self.vBoxProb.show_all()
         
             # Se muestran la media y desviación típica en la ventana de probabilidades
-            widgetMedia=self._widgets.get_widget('mediaProb')
+            widgetMedia = self._widgets.get_widget('mediaProb')
             widgetMedia.set_text(media)
             widgetMedia.set_sensitive(False)
-            widgetdTipica=self._widgets.get_widget('dTipicaProb')
+            widgetdTipica = self._widgets.get_widget('dTipicaProb')
             widgetdTipica.set_text(dTipica)
             widgetdTipica.set_sensitive(False)
 
-            # Se insensibilizan las casillas resultado
-            resultado1=self._widgets.get_widget('resultado1Prob')
-            resultado1.set_sensitive(False)
-            resultado2=self._widgets.get_widget('resultado2Prob')
-            resultado2.set_sensitive(False)
+            # Unsensitivize result entries
+            self._widgets.get_widget('resultado1Prob').set_sensitive(False)
+            self._widgets.get_widget('resultado2Prob').set_sensitive(False)
 
             self.vProbabilidades.show()
             self.on_btnIntervalReset_clicked(None)
@@ -2960,7 +2820,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     que aparece en la ventana de Zaderenko: matriz de
                     Zaderenko, tiempos early y last, caminos del grafo, ...
   
-           Parámetros: boton (botón clickeado)
+           boton (botón clickeado)
         """
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         self.vZaderenko.hide()
@@ -2970,7 +2830,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Acción usuario para acceder a la ventana que muestra 
                   las holguras de cada actividad
 
-         Parámetros: boton (botón clickeado)
+          boton (botón clickeado)
         """
         s = 0
         for a in self.actividad:
@@ -2985,9 +2845,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_wndZaderenko_delete_event(self, ventana, evento):
         """
          Acción usuario para cerrar la ventana de Zaderenko
-
-         Parámetros: ventana (ventana actual)
-                     evento (evento cerrar)
         """
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         ventana.hide()
@@ -3001,16 +2858,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
            Acción usuario para aceptar la información 
                     que aparece en la ventana de holguras: los tres
                     tipos de holgura para cada actividad
-  
-           Parámetros: boton (botón clickeado)
         """
         self.vHolguras.hide()
   
     def on_btZadHolg_clicked(self, boton):
         """
          Acción usuario para acceder a la ventana de Zaderenko
-
-         Parámetros: boton (botón clickeado)
         """
         s = 0
         for a in self.actividad:
@@ -3026,9 +2879,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_wndHolguras_delete_event(self, ventana, evento):
         """
          Acción usuario para cerrar la ventana de holguras
-
-         Parámetros: ventana (ventana actual)
-                     evento (evento cerrar)
         """
         ventana.hide()
         return True
@@ -3039,10 +2889,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_btnIntervalReset_clicked(self, button):
         """
         Interval Reset button clicked
-
-        Parameters: button
-
-        Returns: -
         """
         widgetMedia = self._widgets.get_widget('mediaProb')
         media = float(widgetMedia.get_text())
@@ -3056,8 +2902,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario al activar el valor introducido en 
                  el primer gtk.Entry de la ventana de probabilidades          
-
-        Parámetros: entry (entry activado)
         """
 
         # Se extraen los valores de las u.d.t. de la interfaz
@@ -3105,8 +2949,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario al activar el valor introducido en 
                  el primer gtk.Entry de la ventana de probabilidades          
-
-        Parámetros: entry (entry activado)
         """
 
         # Se extraen los valores de las u.d.t. de la interfaz
@@ -3157,10 +2999,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_btnProbabilityReset_clicked(self, button):
         """
         Probability reset button clicked
-
-        Parameters: button
-
-        Returns: -
         """
         self._widgets.get_widget('valor3Prob').set_value(90)
         self.on_probability_changed(None)
@@ -3169,53 +3007,51 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario al activar el valor introducido en 
                  el tercer gtk.Entry de la ventana de probabilidades          
-
-        Parámetros: entry (entry activado)
         """
 
         # Se extrae el valor de probabilidad de la interfaz
-        valor3=self._widgets.get_widget('valor3Prob')   
-        dato3=float(valor3.get_value() / 100)
+        valor3 = self._widgets.get_widget('valor3Prob')   
+        dato3 = float(valor3.get_value() / 100)
         #print dato3, 'dato3'
 
-        x=0
-        titulo=self.vProbabilidades.get_title()
-        if titulo==gettext.gettext('Probability related to the path'):         
+        x = 0
+        titulo = self.vProbabilidades.get_title()
+        if titulo == gettext.gettext('Probability related to the path'):         
             # Se extrae la media y la desviación típica de la interfaz
-            widgetMedia=self._widgets.get_widget('mediaProb')
-            media=widgetMedia.get_text()
-            widgetdTipica=self._widgets.get_widget('dTipicaProb')
-            dTipica=widgetdTipica.get_text()
+            widgetMedia = self._widgets.get_widget('mediaProb')
+            media = widgetMedia.get_text()
+            widgetdTipica = self._widgets.get_widget('dTipicaProb')
+            dTipica = widgetdTipica.get_text()
 
-            valorTabla=float(scipy.stats.distributions.norm.ppf(float(dato3)))
+            valorTabla = float(scipy.stats.distributions.norm.ppf(float(dato3)))
             #print valorTabla
 
-            x=(valorTabla*float(dTipica))+float(media)
+            x = (valorTabla*float(dTipica))+float(media)
 
         else:
             # Extraigo las iteraciones totales
-            totales=self._widgets.get_widget('iteracionesTotales')
-            itTotales=totales.get_text()
+            totales = self._widgets.get_widget('iteracionesTotales')
+            itTotales = totales.get_text()
 
-            intervalos=[]
+            intervalos = []
             for n in self.intervalos:
-                d=n.split('[')
-                interv=d[1].split(',')
+                d = n.split('[')
+                interv = d[1].split(',')
                 intervalos.append(interv) 
 
             # Se calcula la probabilidad
-            suma=0
+            suma = 0
             for n in range(len(intervalos)):
-                suma+=self.Fa[n]/float(itTotales)
-                if suma>float(dato3) or suma==float(dato3):
-                    x=intervalos[n][1]
+                suma += self.Fa[n]/float(itTotales)
+                if suma > float(dato3) or suma == float(dato3):
+                    x = intervalos[n][1]
                     break
              
-        if x==0:
+        if x == 0:
             return             
         # Se muestra el resultado en la casilla correspondiente
-        tiempo='%5.2f'%(float(x))+' u.d.t.'
-        resultado2=self._widgets.get_widget('resultado2Prob')
+        tiempo = '%5.2f'%(float(x))+' u.d.t.'
+        resultado2 = self._widgets.get_widget('resultado2Prob')
         resultado2.set_text(tiempo)
 
     def on_btnProbabilityCalculate_clicked(self, button):
@@ -3227,53 +3063,53 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
 
         # Se extrae el valor de probabilidad de la interfaz
-        valor3=self._widgets.get_widget('valor3Prob')   
-        dato3=float(valor3.get_value() / 100)
+        valor3 = self._widgets.get_widget('valor3Prob')   
+        dato3 = float(valor3.get_value() / 100)
         #print dato3, 'dato3'
 
-        x=0
-        titulo=self.vProbabilidades.get_title()
-        if titulo==gettext.gettext('Probability related to the path'):         
+        x = 0
+        titulo = self.vProbabilidades.get_title()
+        if titulo == gettext.gettext('Probability related to the path'):         
             # Se extrae la media y la desviación típica de la interfaz
-            widgetMedia=self._widgets.get_widget('mediaProb')
-            media=widgetMedia.get_text()
-            widgetdTipica=self._widgets.get_widget('dTipicaProb')
-            dTipica=widgetdTipica.get_text()
+            widgetMedia = self._widgets.get_widget('mediaProb')
+            media = widgetMedia.get_text()
+            widgetdTipica = self._widgets.get_widget('dTipicaProb')
+            dTipica = widgetdTipica.get_text()
 
-            valorTabla=float(scipy.stats.distributions.norm.ppf(float(dato3)))
+            valorTabla = float(scipy.stats.distributions.norm.ppf(float(dato3)))
             #print valorTabla
 
-            x=(valorTabla*float(dTipica))+float(media)
+            x = (valorTabla*float(dTipica))+float(media)
 
         else:
             # Extraigo las iteraciones totales
-            totales=self._widgets.get_widget('iteracionesTotales')
-            itTotales=totales.get_text()
+            totales = self._widgets.get_widget('iteracionesTotales')
+            itTotales = totales.get_text()
 
-            intervalos=[]
+            intervalos = []
             for n in self.intervalos:
-                d=n.split('[')
-                interv=d[1].split(',')
+                d = n.split('[')
+                interv = d[1].split(',')
                 intervalos.append(interv) 
 
             # Se calcula la probabilidad
-            suma=0
+            suma = 0
             for n in range(len(intervalos)):
-                suma+=self.Fa[n]/float(itTotales)
-                if suma>float(dato3) or suma==float(dato3):
-                    x=intervalos[n][1]
+                suma += self.Fa[n]/float(itTotales)
+                if suma > float(dato3) or suma == float(dato3):
+                    x = intervalos[n][1]
                     break
              
-        if x==0:
+        if x == 0:
             return             
         # Se muestra el resultado en la casilla correspondiente
-        tiempo='%5.2f'%(float(x))+' u.d.t.'
-        resultado2=self._widgets.get_widget('resultado2Prob')
+        tiempo = '%5.2f'%(float(x))+' u.d.t.'
+        resultado2 = self._widgets.get_widget('resultado2Prob')
         resultado2.set_text(tiempo)
 
         # Se muestra el resultado completo en el textView
         prob='%5.2f'%(float(dato3)*100)
-        mostrarDato=gettext.gettext('P ( Project < ')+tiempo+' ) = '+str(prob)+' %'
+        mostrarDato = gettext.gettext('P ( Project < ')+tiempo+' ) = '+str(prob)+' %'
         
         self.escribirProb(mostrarDato)
                
@@ -3285,8 +3121,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
            Parámetros: boton (botón clickeado)
         """
-        titulo=self.vProbabilidades.get_title()
-        if titulo==gettext.gettext('Probability related to the path'):
+        titulo = self.vProbabilidades.get_title()
+        if titulo == gettext.gettext('Probability related to the path'):
             self.limpiarVentanaProb(0)
         else:
             self.limpiarVentanaProb(1)
@@ -3301,8 +3137,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Parámetros: ventana (ventana actual)
                      evento (evento cerrar)
         """
-        titulo=self.vProbabilidades.get_title()
-        if titulo==gettext.gettext('Probability related to the path'):
+        titulo = self.vProbabilidades.get_title()
+        if titulo == gettext.gettext('Probability related to the path'):
             self.limpiarVentanaProb(0)
         else:
             self.limpiarVentanaProb(1)
@@ -3316,39 +3152,31 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_btContinuarIterando_clicked(self, boton):
         """
-        -
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
+        Clicked on simulate the project a number of iterations
         """
-        self._widgets.get_widget('btProbSim').set_sensitive(True)
-        self._widgets.get_widget('btGuardarSim').set_sensitive(True)
-        # Se extrae el número de iteraciones 
-        iteracion=self._widgets.get_widget('iteracion')
-        it=iteracion.get_value_as_int()
+        iteracion = self._widgets.get_widget('iteracion')
+        it = iteracion.get_value_as_int()
         #print it, 'iteraciones'
         
-  
         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
-        totales=self._widgets.get_widget('iteracionesTotales')
-        interfaz=totales.get_text()
-        if interfaz!='':
-            itTotales= it +int(interfaz)
+        totales = self._widgets.get_widget('iteracionesTotales')
+        interfaz = totales.get_text()
+        if interfaz != '':
+            itTotales = it + int(interfaz)
         else:
-            itTotales= it
+            itTotales = it
         #print itTotales, 'iteraciones totales'
         totales.set_text(str(itTotales))
   
         # Se realiza la simulación
-        simulacion=self.simulacion(it)
+        simulacion = self.simulacion(it)
         self.simTotales.append(simulacion)
         #print len(self.simTotales), 'simulaciones'
         #for s in self.simTotales:
             #print s
    
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal()
+        grafoRenumerado = self.pertFinal()
   
         # Nuevos nodos
         nodosN=[]
@@ -3356,16 +3184,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             nodosN.append(n+1)
          
         # Zaderenko
-        if simulacion==None:
+        if simulacion == None:
             return
         else:
             for s in simulacion: 
-                matrizZad=mZad(self.actividad,grafoRenumerado.arcs, nodosN, 0, s)
-                tearly=early(nodosN, matrizZad)  
-                tlast=last(nodosN, tearly, matrizZad)      
-                tam=len(tearly)
+                matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 0, s)
+                tearly = early(nodosN, matrizZad)  
+                tlast = last(nodosN, tearly, matrizZad)      
+                tam = len(tearly)
                 # Se calcula la duración del proyecto para cada simulación
-                duracionProyecto=tearly[tam-1]
+                duracionProyecto = tearly[tam-1]
                 #print duracionProyecto, 'duracion proyecto'  
                 self.duraciones.append(duracionProyecto) 
                 #print self.duraciones,'duraciones simuladas'
@@ -3373,32 +3201,32 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
     
         # Se añaden la media y la desviación típica a la interfaz
-        duracionMedia=scipy.stats.mean(self.duraciones)
-        media=self._widgets.get_widget('mediaSim')
+        duracionMedia = scipy.stats.mean(self.duraciones)
+        media = self._widgets.get_widget('mediaSim')
         media.set_text(str(duracionMedia))
 
-        desviacionTipica=scipy.stats.std(self.duraciones)
-        dTipica=self._widgets.get_widget('dTipicaSim')
+        desviacionTipica = scipy.stats.std(self.duraciones)
+        dTipica = self._widgets.get_widget('dTipicaSim')
         dTipica.set_text(str(desviacionTipica))
     
         # Se calculan los intervalos
-        interv=[]
+        interv = []
         iOpcion = self._widgets.get_widget('iOpcion')
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
-        dMax=float(max(self.duraciones)+0.00001)  # duración máxima
-        dMin=float(min(self.duraciones))   # duración mí­nima
+        dMax = float(max(self.duraciones)+0.00001)  # duración máxima
+        dMin = float(min(self.duraciones))   # duración mí­nima
         valor = int(iValor.get_text())
 
         N = simulation.nIntervalos(dMax, dMin, valor, str(opcion)) # XXX Felipe habia 20
 
         #print dMax, 'max', dMin, 'min'
-        if int(it)==int(itTotales):
+        if int(it) == int(itTotales):
             for n in range(N):
-                valor='['+str('%5.2f'%(simulation.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(simulation.duracion((n+1), dMax, dMin, N)))+'['       
+                valor = '['+str('%5.2f'%(simulation.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(simulation.duracion((n+1), dMax, dMin, N)))+'['       
                 interv.append(valor)
-        if self.intervalos==[]:
-            self.intervalos=interv
+        if self.intervalos == []:
+            self.intervalos = interv
    
         # Se calculan las frecuencias
         self.Fa, Fr = simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
@@ -3421,56 +3249,45 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         canvas = FigureCanvas(fig)  # a gtk.DrawingArea
         if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
             self.hBoxSim.remove(self.boxS)
-            self.boxS=gtk.VBox()
+            self.boxS = gtk.VBox()
 
         self.hBoxSim.add(self.boxS)
         self.boxS.pack_start(canvas)
         self.boxS.show_all()
+
+        # Enable Probability and Save buttons
+        self._widgets.get_widget('btProbSim').set_sensitive(True)
+        self._widgets.get_widget('btGuardarSim').set_sensitive(True)
   
-    def on_btAceptarSim_clicked(self, boton):
-        """
-        Acción usuario para aceptar la información que
-                 muestra la ventana de simulación de duraciones:
-                 tabla, gráfica, ....
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
-        """
-        self.limpiarVentanaSim()
-        self.vSimulacion.hide()
-         
     def on_btProbSim_clicked(self, boton):
         """
         Acción usuario para acceder a la ventana de 
                  cálculo de probabilidades
   
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
+         boton (botón clickeado)
         """
         # Se asigna tí­tulo 
         self.vProbabilidades.set_title(gettext.gettext('Probability related to the simulation'))
         
         # Extraigo los valores de la media y la desviación típica
-        media=self._widgets.get_widget('mediaSim')
-        m=media.get_text()
-        dTipica=self._widgets.get_widget('dTipicaSim')
-        dt=dTipica.get_text()
+        media = self._widgets.get_widget('mediaSim')
+        m = media.get_text()
+        dTipica = self._widgets.get_widget('dTipicaSim')
+        dt = dTipica.get_text()
   
         # Se muestran la media y desviación típica en la ventana de probabilidades
-        widgetMedia=self._widgets.get_widget('mediaProb')
+        widgetMedia = self._widgets.get_widget('mediaProb')
         widgetMedia.set_text(m)
-        widgetdTipica=self._widgets.get_widget('dTipicaProb')
+        widgetdTipica = self._widgets.get_widget('dTipicaProb')
         widgetdTipica.set_text(dt)
   
   
         # Se muestra la gráfica
-        fig = Figure(figsize=(5,4), dpi=100)
+        fig = Figure(figsize=(5, 4), dpi=100)
         ax = fig.add_subplot(111)
         n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
         canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-        if len(self.box)>0:
+        if len(self.box) > 0:
             self.vBoxProb.remove(self.box)
             self.box=gtk.VBox()
             
@@ -3487,19 +3304,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                  muestra la ventana de simulación de duraciones
                  tabla, gráfica, ....
   
-        Parámetros: boton (botón clickeado)
+         boton (botón clickeado)
   
-        Valor de retorno: -
         """
         # Se extraen los datos de la interfaz
         # Media y desviación tí­pica
-        media=self._widgets.get_widget('mediaSim')
-        m=media.get_text()
-        dTipica=self._widgets.get_widget('dTipicaSim')
-        dt=dTipica.get_text()
+        media = self._widgets.get_widget('mediaSim')
+        m = media.get_text()
+        dTipica = self._widgets.get_widget('dTipicaSim')
+        dt = dTipica.get_text()
         # Iteraciones
-        totales=self._widgets.get_widget('iteracionesTotales')
-        iteraciones=totales.get_text()
+        totales = self._widgets.get_widget('iteracionesTotales')
+        iteraciones = totales.get_text()
   
         # Se pasan los datos de la simulación a formato CSV
         simulacionCsv = simulation.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
@@ -3510,19 +3326,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
     def on_wndSimulacion_delete_event(self, ventana, evento):
         """
-        Acción usuario para cerrar la ventana de simulación 
-                 de duraciones
+        User closes simulation window
   
-        Parámetros: ventana (ventana actual)
-                    evento (evento cerrar)
-  
-        Valor de retorno: -
+         ventana (ventana actual)
+         evento (evento cerrar)
         """
-        self.limpiarVentanaSim()
+        # Clear data
+        self._widgets.get_widget('iteracion').set_text('')
+        self._widgets.get_widget('iteracionesTotales').set_text('')   
+        self._widgets.get_widget('mediaSim').set_text('')
+        self._widgets.get_widget('dTipicaSim').set_text('')
+        #frecuencias = self._widgets.get_widget('vistaFrecuencias')
+        self.modeloF.clear()
+        self.modeloC.clear()
+        if len(self.boxS) > 0:
+            self.hBoxSim.remove(self.boxS)
+
         ventana.hide()
         return True
 
-# --- Ventana de asignacion
+# --- Assignment window
     def on_mnAsignacion_activate (self, menu_item):
         """ Accion usuario para activar
             la ventana de asignación automática
@@ -3533,9 +3356,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
         for a in self.actividad:
             if (a[6] == ''):
-                s +=1
+                s += 1
             elif (a[6] < 0):
-                m +=1            
+                m += 1            
 
         if s > 0:
             self.dialogoError(gettext.gettext('Todas las duraciones medias han de ser introducidas'))
@@ -3563,7 +3386,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         distribucion = self._widgets.get_widget('distribucion')
         dist = distribucion.get_active_text()
         print dist        
-        assignment.actualizarInterfaz(self.modelo,k,dist,self.actividad)
+        assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
         self.vAsignacion.hide()
         
             
@@ -3582,11 +3405,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario para acceder a la ventana de recursos
                  necesarios por actividad 
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
-        
         Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
         """
         # Se comprueba que se hayan introducido actividades
@@ -3605,11 +3423,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_wndRecursos_delete_event(self, ventana, evento):
         """
         Acción usuario para cerrar la ventana de recursos
-  
-        Parámetros: ventana (ventana actual)
-                    evento (evento cerrar)
-  
-        Valor de retorno: -
         """
         ventana.hide()
         return True
@@ -3623,10 +3436,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Acción usuario para aceptar la información que
                  muestra la ventana de recursos necesarios por
                  actividad: actividad, recurso, unidad necesaria
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
         """
         if self.asignacion==[]: 
             self.vAsignarRec.hide()
@@ -3649,10 +3458,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                  muestra la ventana de recursos necesarios por
                  actividad: actividad, recurso, unidad necesaria. 
                  Si se cancelan los datos, se borran definitivamente
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
         """
         self.modeloAR.clear()
         self.asignacion=[]
@@ -3662,11 +3467,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario para cerrar la ventana de recursos
                  necesarios por actividad 
-  
-        Parámetros: ventana (ventana actual)
-                    evento (evento cerrar)
-  
-        Valor de retorno: -
         """
         ventana.hide()
         return True
@@ -3678,10 +3478,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario para aceptar la información que
                  muestra la ventana de calcular caminos
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
         """
         self.vCaminos.hide()
   
@@ -3690,10 +3486,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Acción usuario para exportar los caminos que se
                  muestran en la ventana a formato CSV para 
                  hoja de cálculo
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
         """
         # Se buscan todos los caminos 
         successors = self.tablaSucesoras(self.actividad)
@@ -3711,11 +3503,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario para cerrar la ventana de calcular
                  caminos
-  
-        Parámetros: ventana (ventana actual)
-                    evento (evento cerrar)
-  
-        Valor de retorno: -
         """
         ventana.hide()
         return True
@@ -3727,21 +3514,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Acción usuario para aceptar la información que
                  muestra el diálodo de ayuda
-  
-        Parámetros: boton (botón clickeado)
-  
-        Valor de retorno: -
         """
         self.dAyuda.hide()
   
     def on_dAyuda_delete_event(self, dialogo, evento):
         """
         Acción usuario para cerrar el diálogo de ayuda 
-  
-        Parámetros: ventana (ventana actual)
-                    evento (evento cerrar)
-  
-        Valor de retorno: -
         """
         self.dAyuda.hide()
         return True
@@ -3749,11 +3527,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_tab_clicked(self, widget, event):
         """
         Tab clicked.
-    
-        Parameters: widget
-                    event
-                    
-        Returns: None.
         """
         if event.button == 3:
             for i in range(self.ntbSchedule.get_n_pages()):
@@ -3767,22 +3540,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_tab_changed(self, notebook, page, page_num):
         """
         Tab changed.
-    
-        Parameters: notebook
-                    page: tab
-                    page_num: number of tab
-                    
-        Returns: None.
         """
         self.set_schedule(self.schedules[page_num][1])
 
     def on_key_pressed(self, widget, event):
         """
         Key pressed.
-    
-        Parameters: widget
-                    event
-                
         Returns: True or false depending if the window should be closed.
         """
         if event.keyval == gtk.keysyms.Escape:
@@ -3793,6 +3556,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
 
 def main(filename=None):
+    """
+    Start PPC project
+    """
     app = PPCproject()
     if filename:
         app.openProject(filename)

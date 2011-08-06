@@ -42,7 +42,6 @@ def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
      Valor de retorno: fa (frecuencias absolutas)
                        fr (frecuencias relativas)
     """
-
     fr = []
 
     # Se inicializa el vector de F.Absolutas
@@ -73,7 +72,6 @@ def posicion(d, dMax, dMin, N):
 
      Valor de retorno: x (posición)
     """
-
     x = int(((d - dMin) / (dMax - dMin)) * N)
     return x
 
@@ -109,7 +107,6 @@ def duracion(x, dMax, dMin, N):
 
      Valor de retorno: d (duración)
     """
-
     d = (x * (dMax - dMin)) / N + dMin
     return d
 
@@ -127,7 +124,6 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
 
      Valor de retorno: s (texto a mostrar en formato CSV) 
     """
-
     s = ''
     s += gettext.gettext('SIMULATION DATA')
     s += '\n'
@@ -170,7 +166,6 @@ def datosBeta(op, mode, pes):
 
     Returned value: (mean, std deviation, shape factor a, shape factor b)
     """
-
     mean = (op + 4 * mode + pes) / 6.0
     stdev = (pes - op) / 6.0
     shape_a = ((mean - op) / (pes - op)) * (((mean - op) * (pes - mean)) / stdev ** 2 - 1)
@@ -183,7 +178,6 @@ def generaAleatoriosUniforme(op, pes):
     """
     Generates a random number in a Uniform distribution in [op, pes]
     """
-
     unif = random.uniform(op, pes)
     return unif
 
@@ -192,7 +186,6 @@ def generaAleatoriosBeta(op, pes, shape_a, shape_b):
     """
     Generates a random number in a Beta distribution in [op, pes]
     """
-
     beta = random.betavariate(shape_a, shape_b) * (pes - op) + op
     return beta
 
@@ -202,7 +195,6 @@ def generaAleatoriosTriangular(op, mode, pes):
     Generates a random number in a triangular distribution in [op, pes]
     with mode
     """
-
     unif = random.random()  # [0,1]
 
     if unif <= (mode - op) / (pes - op):
@@ -219,7 +211,6 @@ def generaAleatoriosNormal(mean, stdev):
     """
     Generates a number from a Normal random variate with mean and stdev
     """
-
     norm = random.gauss(mean, stdev)
     return norm
 
@@ -230,7 +221,6 @@ if __name__ == '__main__':
 
     # Test of python random number generators
     # ---------------------------------------
-    import math
 
     # Generar n aleatorios de cada distribución
     n = 100
