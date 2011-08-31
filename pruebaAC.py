@@ -58,7 +58,7 @@ if len(sys.argv)==3:
     for i in data:
         successors[i[1]]=i[2]
 
-    prelaciones1 = graph.reversedGraph(successors)
+    prelaciones1 = graph.reversed_prelation_table(successors)
     prelaciones = {
         'B': [], 
         'A': [], 
@@ -134,8 +134,8 @@ if len(sys.argv)==3:
     utime = ftime[0] - itime[0]
     print "CohenSadeh"
     print "utime %.4f"% (utime)
-    print "numero de nodos: ",g.numNodes()
-    print "numero de arcos: ",g.numArcs()
+    print "numero de nodos: ",g.number_of_nodes()
+    print "numero de arcos: ",g.number_of_arcs()
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
@@ -151,8 +151,8 @@ if len(sys.argv)==3:
     utime = ftime[0] - itime[0]
     print "Algoritmo Conjuntos"
     print "utime %.4f"% (utime)
-    print "numero de nodos: ",g.numNodes()
-    print "numero de arcos: ",g.numArcs()
+    print "numero de nodos: ",g.number_of_nodes()
+    print "numero de arcos: ",g.number_of_arcs()
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
@@ -168,8 +168,8 @@ if len(sys.argv)==3:
     utime = ftime[0] - itime[0]
     print "Algoritmo Salas"
     print "utime %.4f"% (utime)
-    print "numero de nodos: ",g.numNodes()
-    print "numero de arcos: ",g.numArcs()
+    print "numero de nodos: ",g.number_of_nodes()
+    print "numero de arcos: ",g.number_of_arcs()
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print 

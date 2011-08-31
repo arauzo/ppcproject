@@ -1150,7 +1150,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         g = graph.roy(successors)
 
         # Se eliminan 'begin' y 'end' de todos los caminos
-        caminos = [c[1:-1]for c in graph.findAllPaths(g, 'Begin', 'End')]
+        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
 
         #print 'caminos', caminos
 
@@ -1298,7 +1298,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         gCritico=graph.roy(sucesorasCriticas)
         #print gCritico
         caminosCriticos=[]
-        caminos=graph.findAllPaths(gCritico, 'Begin', 'End')
+        caminos=graph.find_all_paths(gCritico, 'Begin', 'End')
 
         # Se eliminan 'begin' y 'end' de todos los caminos
         caminosCriticos=[c[1:-1]for c in caminos]
@@ -1652,7 +1652,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se extraen todos los caminos (crí­ticos o no) del grafo original
         successors = self.tablaSucesoras(self.actividad)
         g=graph.roy(successors)
-        caminos = [c[1:-1]for c in graph.findAllPaths(g, 'Begin', 'End')]
+        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
      
         # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
         caminosCriticos=[]
@@ -2493,7 +2493,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             roy = graph.roy(successors)
  
             # Remove 'begin' and 'end' dummy activities from all paths
-            caminosSinBeginEnd=[c[1:-1]for c in graph.findAllPaths(roy, 'Begin', 'End')]
+            caminosSinBeginEnd=[c[1:-1]for c in graph.find_all_paths(roy, 'Begin', 'End')]
             # Se preparan los caminos para mostrarlos en el interfaz
             numeroCaminos = len(caminosSinBeginEnd) 
             camino = gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
@@ -3483,21 +3483,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
     def on_btExportarCsv_clicked(self, boton): 
         """
-        Acción usuario para exportar los caminos que se
-                 muestran en la ventana a formato CSV para 
-                 hoja de cálculo
+        Export paths to CSV format (for spreadsheet)
         """
-        # Se buscan todos los caminos 
+        # Generate all paths 
         successors = self.tablaSucesoras(self.actividad)
         g = graph.roy(successors)
-        todosCaminos = graph.findAllPaths(g, 'Begin', 'End')
+        todosCaminos = graph.find_all_paths(g, 'Begin', 'End')
   
-        # Se pasan a formato CSV
-        #pathsInCSV = graph.royPaths2csv2(g)
-        pathsInCSV = graph.royPaths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
-        
-        # Se muestra el diálogo para salvar el archivo
-        fileFormats.guardarCsv(pathsInCSV, self) 
+        # Create CSV and show file dialog
+        paths_csv = graph.roy_paths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
+        fileFormats.guardarCsv(paths_csv, self) 
   
     def on_wndCaminos_delete_event(self, ventana, evento):
         """

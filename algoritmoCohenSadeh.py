@@ -337,7 +337,7 @@ def cohenSadeh(prelaciones):
             label = cad,True
         else:
             label = cad,False
-        grafo.addArc(tup,label)
+        grafo.add_arc(tup,label)
 
     return grafo
 

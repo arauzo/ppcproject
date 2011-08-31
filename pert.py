@@ -33,7 +33,7 @@ class Pert(graph.DirectedGraph):
         self.construct = self.sharma1998ext
         if pert != None:
             self.successors, self.arcs = pert
-            self.predecesors = graph.reversedGraph(self.successors)
+            self.predecesors = graph.reversed_prelation_table(self.successors)
 
     def __repr__(self):
         return 'Pert( (' + str(self.successors) + ',' + str(self.arcs) + ') )'
@@ -83,12 +83,12 @@ class Pert(graph.DirectedGraph):
         """
         if origin == None:
             origin = self.nextNodeNumber()
-            self.addNode(origin)
+            self.add_node(origin)
         if destination == None:
             destination = self.nextNodeNumber()
-            self.addNode(destination)
+            self.add_node(destination)
             
-        self.addArc( (origin, destination), (activityName, dummy) )
+        self.add_arc( (origin, destination), (activityName, dummy) )
         return (origin, destination)
 
     def activityArc(self, activityName):
@@ -181,15 +181,15 @@ class Pert(graph.DirectedGraph):
             raise Exception('PERT structure must be empty')
 
         #XXX Habria que renombrar pre y suc por in y out en DirectedGraph
-        precedents = graph.reversedGraph(successors)  
+        precedents = graph.reversed_prelation_table(successors)  
 
         # Close the graph (not in sharma1998)
         origin = self.nextNodeNumber()
-        self.addNode(origin)
+        self.add_node(origin)
         dest = self.nextNodeNumber()
-        self.addNode(dest)
-        begin_act     = graph.beginingActivities(successors)
-        end_act       = graph.endingActivities(successors)
+        self.add_node(dest)
+        begin_act     = graph.begining_activities(successors)
+        end_act       = graph.ending_activities(successors)
         begin_end_act = begin_act.intersection(end_act)
 
         #  -Creates a common node for starting activities
@@ -219,7 +219,7 @@ class Pert(graph.DirectedGraph):
             #print '(', a_origin, a_dest, ')'
             for pre in precedents[act]:
                 #print self.successors
-                #print pre, pre in self.inActivitiesR(graph.reversedGraph(self.successors), a_origin)
+                #print pre, pre in self.inActivitiesR(graph.reversed_prelation_table(self.successors), a_origin)
                 if pre not in self.inActivitiesR(a_origin):
                     if not self.activityArc(pre):
                         self.addActivity(pre)
@@ -301,23 +301,23 @@ class Pert(graph.DirectedGraph):
 
         # New nodes
         newO = self.nextNodeNumber()
-        self.addNode(newO)
+        self.add_node(newO)
         newD = self.nextNodeNumber()
-        self.addNode(newD)
+        self.add_node(newD)
 
         # Moved activities
-        pre_act = self.removeArc(pre)
-        fol_act = self.removeArc(fol)
-        self.addArc( (preO, newO), pre_act )
-        self.addArc( (newD, folD), fol_act )         
+        pre_act = self.remove_arc(pre)
+        fol_act = self.remove_arc(fol)
+        self.add_arc( (preO, newO), pre_act )
+        self.add_arc( (newD, folD), fol_act )         
 
         # New dummies
         dummy1 = (folO, newD)
         dummy2 = (newO, preD)
         dummy3 = (newO, newD)
-        self.addArc( dummy1, ('dummy', True) )
-        self.addArc( dummy3, ('dummy', True) )
-        self.addArc( dummy2, ('dummy', True) ) 
+        self.add_arc( dummy1, ('dummy', True) )
+        self.add_arc( dummy3, ('dummy', True) )
+        self.add_arc( dummy2, ('dummy', True) ) 
 
         #window.images.append( graph.pert2image(self) )
 
@@ -415,7 +415,7 @@ class Pert(graph.DirectedGraph):
 #                                    else:                                   
 #                                        nuevoGrafo.successors[nuevosNodos[m]].append(nuevosNodos[a])
 #                    else:
-#                        nuevoGrafo.addNode(nuevosNodos[m]) 
+#                        nuevoGrafo.add_node(nuevosNodos[m]) 
 
         # New activities'
         for n in self.arcs:
@@ -423,12 +423,12 @@ class Pert(graph.DirectedGraph):
                 if n[0] == m:
                     for a in nuevosNodos:
                         if n[1] == a:
-                            nuevoGrafo.addArc( (nuevosNodos[m], nuevosNodos[a]), self.arcs[n] )
+                            nuevoGrafo.add_arc( (nuevosNodos[m], nuevosNodos[a]), self.arcs[n] )
 
                 elif n[1] == m:
                     for a in nuevosNodos:
                         if n[0] == a:
-                            nuevoGrafo.addArc( (nuevosNodos[a], nuevosNodos[m]), self.arcs[n] )
+                            nuevoGrafo.add_arc( (nuevosNodos[a], nuevosNodos[m]), self.arcs[n] )
 
         return nuevoGrafo
 
@@ -471,9 +471,9 @@ def main(window):
     
 
 
-##   print graph.reversedGraph(pert2[0])
+##   print graph.reversed_prelation_table(pert2[0])
 ##   for n in range(1,6):
-##      print inActivitiesR(pert2, graph.reversedGraph(pert2[0]), n)
+##      print inActivitiesR(pert2, graph.reversed_prelation_table(pert2[0]), n)
 ##   print "OUT"
 ##   for n in range(1,6):
 ##      print outActivitiesR(pert2, n)

@@ -504,10 +504,10 @@ def salas(prelaciones):
         tupla = i[1][0],i[1][1]        
         if i[0] < b:
             tupla1 = premat[i[0]],False
-            grafo.addArc(tupla,tupla1)
+            grafo.add_arc(tupla,tupla1)
         else:
             tupla1 = 'FICTICIA',True
-            grafo.addArc(tupla,tupla1)
+            grafo.add_arc(tupla,tupla1)
 
     return grafo
 

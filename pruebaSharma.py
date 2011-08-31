@@ -64,7 +64,7 @@ if len(sys.argv)==3:
     for i in data:
         successors[i[1]]=i[2]
     ###obtengo prelaciones revertiendo sucesores
-    prelaciones1 = graph.reversedGraph(successors)
+    prelaciones1 = graph.reversed_prelation_table(successors)
     """
     ejemplos de prelaciones
 
@@ -157,8 +157,8 @@ if len(sys.argv)==3:
     print    
 
     print "Nodos y arcos de Sharma"
-    print "numero de nodos: ",g.numNodes()
-    print "numero de arcos: ",g.numArcs()
+    print "numero de nodos: ",g.number_of_nodes()
+    print "numero de arcos: ",g.number_of_arcs()
     print "numero de arcos reales: ",g.numArcsReales()
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
