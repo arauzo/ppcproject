@@ -4,7 +4,7 @@ Algoritmo que sigue la metodologia de como se hace a mano el grafo pert
 
 import math, os, sys
 import copy
-import claseGrafo
+import pert
 import graph
 
 def crear_matriz(prelaciones):
@@ -498,7 +498,7 @@ def salas(prelaciones):
     
     ###rellenar grafo
 
-    grafo = claseGrafo.Grafo()
+    grafo = pert.Pert()
 
     for i in d2.iteritems():
         tupla = i[1][0],i[1][1]        

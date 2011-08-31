@@ -7,7 +7,41 @@
    Multiplatform software tool for education and research in
    project management
 
- Copyright 2007-8 Universidad de Córdoba
+   Data structures used:
+
+     Precedents data structure
+      { ActivityLabel : [PreviousActivityLabel,  ... ], ... }
+
+     Successors data structure
+      { ActivityLabel : [FollowingActivityLabel, ... ], ... }
+     for example:
+        successors = {'a':['c','e'],
+                      'b':['d'],
+                      'c':[],
+                      'd':[],
+                      'e':['d'],
+                      }
+
+# *** Next structures are deprecated in favour of the Graph class              
+# Directed graph data structure
+# (the same as successors and precedents but using nodes)
+#  { NodeNumber : [FollowingNodeNumber, ... ], ... }
+
+# ROY graph data structure
+#  A successors table with 'Begin' and 'End' activities closing the
+#  graph on both sides
+# for example:
+roy = {'a': ['c', 'e'],
+       'c': ['End'],
+       'b': ['d'],
+       'e': ['d'],
+       'd': ['End'],
+       'Begin': ['a', 'b'],
+       'End': [],
+       }
+
+
+ Copyright 2007-11 Universidad de Córdoba
  This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
    by the Free Software Foundation, either version 3 of the License,
@@ -23,173 +57,122 @@ import math, os, sys
 import copy
 import subprocess
 
-# ----------------
-# Data structures:
-# ----------------
+class DirectedGraph(object):
+    """
+    Directed graph class using dictionaries (hash tables) to connect nodes and arc labels
 
-# Precedents data structure
-#  { ActivityLabel : [PreviousActivityLabel,  ... ], ... }
-# for example:
-precedents =  {'a':[],
-               'b':[],
-               'c':['a'],
-               'd':['b','e'],
-               'e':['a'],
-               }
+    Both lists of incoming and outgoing arcs are ketp (though redundant) to speedup access
 
-# Successors data structure
-#  { ActivityLabel : [FollowingActivityLabel, ... ], ... }
-# for example:
-successors = {'a':['c','e'],
-              'b':['d'],
-              'c':[],
-              'd':[],
-              'e':['d'],
-              }
+        /successors/ contiene los sucesores de un nodo dado, example  {'a' : ['b','c']}
+        /predecessors/ contiene los predecesores de un nodo dado, example {'b' : ['a']}
+        /arcs/ contiene todos los arcos del grafo asi como si es real o ficticia 
+        y el nombre del arco (esto debe ir solo a PERT XXX)
 
-successors2 = {'a':['c','e','d'],
-              'b':['d'],
-              'c':['f'],
-              'd':['f','g'],
-              'e':['g'],
-              'f':['h'],
-              'g':['h'],
-              'h':['i','j','k'],
-              'i':['l'],
-              'j':['l'],
-              'k':[],
-              'l':[],
-               }
+    """
+    # XXX Use set instead of list??
+    # XXX Maybe needed a method reverse (change direction of all arcs)
 
-successors3 = {'a':['c','e'],
-              '1,2,33/-3#':['d/,2,!@9)'],
-              'c':['d/,2,!@9)'],
-              'd/,2,!@9)':[],
-              'e':['d/,2,!@9)'],
-              }
-              
-# Directed graph data structure
-# (the same as successors and precedents but using nodes)
-#  { NodeNumber : [FollowingNodeNumber, ... ], ... }
+    def __init__(self):
+        """
+        Creates an empty graph
+        """
+        self.successors = {}   #XXX previous? in? 
+        self.predecessors = {} #XXX next? followers? out?
+        self.arcs = {}
+        
+    def suc(self, node):
+        """
+        Returns successors of node
+        """
+        # Rename to prev (previous)? XXX
+        # It is faster to access directly to instance var dict. Remove this method? XXX
+        return self.successors[node]
+
+    def pre(self, node):
+        """
+        Returns predecesors of node
+        """
+        # XXX idem as suc
+        return self.predecessors[node]
+        
+    def addNode(self, node):
+        """
+        Add an unconnected node to graph
+        """
+        self.successors[node] = []
+        self.predecessors[node] = []
+        
+    def addArc(self, arc, label=None):
+        """
+        Insert an arc in the graph. If origin, destination nodes are not present in graph they get created.
+
+        arc = (origin node, destination)
+        label = label to be linked with arc (maybe None if unlabeled)
+        """
+        origin, destination = arc
+        if origin not in self.successors:
+            self.addNode(origin)
+        if destination not in self.successors:
+            self.addNode(destination)
+        if destination not in self.successors[origin]:
+            self.successors[origin].append(destination)
+        if origin not in self.predecessors[destination]:
+            self.predecessors[destination].append(origin)
+        self.arcs[(origin, destination)] = label 
+        
+    def removeNode(self,node):
+        """
+        Remove a node from the graph and all arcs referencing it
+        """
+        if node in self.successors:
+            del self.successors[node]
+        if node in self.predecessors:
+            del self.predecessors[node]
+        
+        for i in self.successors:
+            if node in self.successors[i]:
+                self.successors[i].remove(node)
+        for i in self.predecessors:
+            if node in self.predecessors[i]:
+                self.predecessors[i].remove(node)
+
+        listaBorrar=[]
+        for (i,j) in self.arcs:
+            if i==nodo:
+                listaBorrar.append((i,j))
+            if j==nodo:
+                listaBorrar.append((i,j))
+        for i,j in listaBorrar:
+            del self.arcs[(i,j)]
+
+    def removeArc(self, arc):
+        """
+        Remove an Arc from the graph
+         arc = (origin, destination)
+        """
+
+        i,j = arc
+        self.successors[i].remove(j)
+        self.predecessors[j].remove(i)
+        return self.arcs.pop(arc)
+
+    def numNodes(self):
+        """
+        Return the number of nodes in graph
+        """
+        return len(self.successors)
+
+    def numArcs(self):
+        """
+        Return the number of arcs in graph
+        """
+        return len(self.arcs)
+
+
+
 #
-# XXX think about using sets instead of lists
-# for example:
-graph = {1 : [2,3],
-         2 : [4],
-         3 : [4],
-         4 : [],
-         }
-
-graph2 = {1 : [2,3],
-          2 : [5,6,7],
-          3 : [4,6,8],
-          4 : [5],
-          5 : [9],
-          6 : [10],
-          7 : [9],
-          8 : [10],
-          9 : [],
-          10: [],
-          }
-
-# ROY graph data structure
-#  A successors table with 'Begin' and 'End' activities closing the
-#  graph on both sides
-# for example:
-roy = {'a': ['c', 'e'],
-       'c': ['End'],
-       'b': ['d'],
-       'e': ['d'],
-       'd': ['End'],
-       'Begin': ['a', 'b'],
-       'End': [],
-       }
-
-# Ejemplos introducidos por J.Fdez Ex.
-prelaciones = {
-    'A' : [],
-    'B' : [],
-    'C' : ['A','B'],
-    'D' : ['A'],
-    'E' : ['B'],
-    'F' : ['A','B'],
-    'G' : ['C'],
-    'H' : ['D','E'],
-    'I' : ['D','E','F'],
-    'J' : ['D','E','F'],
-    'K' : ['D','F','L'],
-    'L' : ['A'],
-    }
-prelaciones1 = {
-    '3': [], 
-    '2': [], 
-    '5': ['3'], 
-    '4': [], 
-    '7': ['4'], 
-    '6': ['5'], 
-    '9': ['3'], 
-    '8': ['7'], 
-    '11': ['7'], 
-    '10': ['2'], 
-    '13': ['4', '6'], 
-    '12': ['10'], 
-    '15': ['3'], 
-    '14': ['9'], 
-    '17': ['5'], 
-    '16': ['6'], 
-    '19': ['7'], 
-    '18': ['6'], 
-    '20': ['16'], 
-    '21': ['11', '15', '17'], 
-    '22': ['10'], 
-    '23': ['18'], 
-    '24': ['12'],
-    '25': ['13', '14', '19'], 
-    '26': ['11', '17', '16'], 
-    '27': ['26', '22', '8'], 
-    '28': ['9'], 
-    '29': ['24', '22', '17'],
-    '30': ['25', '27', '28'],
-    '31': ['20', '21', '23'],
-    }
-prelaciones2 = {
-    'B': [], 
-    'A': [], 
-    'D': ['B'], 
-    'C': [], 
-    'F': ['C'], 
-    'E': ['D'], 
-    'H': ['B'], 
-    'G': ['F'], 
-    'J': ['F'], 
-    'I': ['A'], 
-    'L': ['C', 'E'], 
-    'K': ['I'], 
-    'N': ['B'], 
-    'M': ['H'], 
-    'P': ['D'], 
-    'O': ['E'], 
-    'R': ['F'], 
-    'Q': ['E'], 
-    'S': ['O'], 
-    'T': ['J', 'N', 'P'], 
-    'U': ['I'], 
-    'V': ['Q'], 
-    'W': ['K'],
-    'X': ['L', 'M', 'R'], 
-    'Y': ['J', 'P', 'O'], 
-    'Z': ['Y', 'U', 'G'], 
-    'AB': ['H'], 
-    'AC': ['W', 'U', 'P'],
-    'AD': ['X', 'Z', 'AB'],
-    'AE': ['S', 'T', 'V']
-    }
-prelaciones3={'24': ['21', '17'], '25': ['12'], '26': ['22', '23'], '27': ['25', '22', '14'], '20': ['2'], '21': ['7', '13'], '22': ['3'], '23': ['20', '13', '18'], '28': ['24', '25', '15'], '29': ['28', '16'], '3': [], '2': [], '5': ['2'], '4': [], '7': ['2'], '6': ['5'], '9': ['5'], '8': ['7'], '11': ['7'], '10': ['5'], '13': ['9'], '12': ['11'], '15': ['14'], '14': ['9'], '17': ['12'], '16': ['9'], '19': ['10', '18'], '18': ['4'], '31': ['27', '23', '19'], '30': ['26', '6', '8']}
-
-prelaciones4={'24': ['2'], '25': ['9'], '26': ['6'], '27': ['7'], '20': ['15'], '21': ['18'], '22': ['6'], '23': ['7'], '28': ['20'], '29': ['11'], '4': [], '8': ['3'], '59': ['58', '39'], '58': ['44'], '55': ['35'], '54': ['26', '47'], '57': ['21'], '56': ['14'], '51': ['32'], '50': ['48', '42'], '53': ['33'], '52': ['33', '10'], '88': ['21', '83', '86'], '89': ['88', '82', '87'], '82': ['80', '38', '31'], '83': ['69', '13', '76'], '80': ['56', '75'], '81': ['53', '72'], '86': ['67', '41', '77'], '87': ['50', '85', '79'], '84': ['54', '78'], '85': ['59', '30', '65'], '3': [], '7': ['3'], '39': ['26'], '38': ['16'], '33': ['20'], '32': ['21'], '31': ['24'], '30': ['5'], '37': ['26'], '36': ['15'], '35': ['15'], '34': ['23'], '60': ['56'], '61': ['52', '37', '9'], '62': ['55'], '63': ['22', '28', '40'], '64': ['62'], '65': ['17'], '66': ['18'], '67': ['24'], '68': ['49', '45'], '69': ['56'], '2': [], '6': ['4'], '91': ['81', '84', '5'], '90': ['46', '73', '72'], '11': ['2'], '10': ['5'], '13': ['10'], '12': ['11'], '15': ['3'], '14': ['12'], '17': ['9'], '16': ['12'], '19': ['4'], '18': ['12'], '48': ['36'], '49': ['27'], '46': ['37'], '47': ['24', '18'], '44': ['29'], '45': ['11'], '42': ['8'], '43': ['36'], '40': ['36'], '41': ['28'], '5': ['4'], '9': ['6'], '77': ['28', '43'], '76': ['58', '41'], '75': ['64'], '74': ['60', '61'], '73': ['34', '69', '41'], '72': ['51', '60', '70'], '71': ['32', '19'], '70': ['25', '23', '63'], '79': ['57', '66', '74'], '78': ['33', '68', '71']}
-
-
-
+# Precedent and successor table operations
+#
 
 def reversedGraph(graph):
     """
@@ -226,7 +209,6 @@ def roy(successors):
 
     returns: ROY graph data structure
     """
-
     g = {'End':[]}
 
     begining = set( successors.keys() )
@@ -243,6 +225,9 @@ def beginingActivities(successors, check_as_begin=None):
     """
     Returns a set with the name of activities that are not preceded by
     any other
+    
+    check_as_begin = None or a subset of activities. 
+                     If specified, only these activities will be considered (faster)
     """
     if check_as_begin:
         begining = check_as_begin
@@ -601,7 +586,7 @@ def main():
     window.images.append( graph2image(successors2) )
     window.images.append( graph2image(successors3) )
     pertP = pert.Pert()
-    pertP.pert(successors2)
+    pertP.construct(successors2)
     #print pertP
 
     window.images.append( pert2image(pertP) )
@@ -614,5 +599,67 @@ def main():
 
 # If the program is run directly    
 if __name__ == "__main__":
+    precedents =  {'a':[],
+                   'b':[],
+                   'c':['a'],
+                   'd':['b','e'],
+                   'e':['a'],
+                   }
+
+    successors = {'a':['c','e'],
+                  'b':['d'],
+                  'c':[],
+                  'd':[],
+                  'e':['d'],
+                  }
+
+    successors2 = {'a':['c','e','d'],
+                  'b':['d'],
+                  'c':['f'],
+                  'd':['f','g'],
+                  'e':['g'],
+                  'f':['h'],
+                  'g':['h'],
+                  'h':['i','j','k'],
+                  'i':['l'],
+                  'j':['l'],
+                  'k':[],
+                  'l':[],
+                   }
+
+    successors3 = {'a':['c','e'],
+                  '1,2,33/-3#':['d/,2,!@9)'],
+                  'c':['d/,2,!@9)'],
+                  'd/,2,!@9)':[],
+                  'e':['d/,2,!@9)'],
+                  }
+                  
+    graph = {1 : [2,3],
+             2 : [4],
+             3 : [4],
+             4 : [],
+             }
+
+    graph2 = {1 : [2,3],
+              2 : [5,6,7],
+              3 : [4,6,8],
+              4 : [5],
+              5 : [9],
+              6 : [10],
+              7 : [9],
+              8 : [10],
+              9 : [],
+              10: [],
+              }
+
+    roy = {'a': ['c', 'e'],
+           'c': ['End'],
+           'b': ['d'],
+           'e': ['d'],
+           'd': ['End'],
+           'Begin': ['a', 'b'],
+           'End': [],
+           }
+
     main()
 

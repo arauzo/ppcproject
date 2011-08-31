@@ -2,7 +2,7 @@
 Algoritmo basado en conjuntos para construir el grafo PERT
 """
 import sys
-import claseGrafo
+import pert
 import graph
 
 def algoritmoN(prelaciones):
@@ -11,7 +11,7 @@ def algoritmoN(prelaciones):
 
     prelaciones = {'Act': ['Predecesora1','Predecesora2'], ... }
     
-    Devuelve: un claseGrafo.grafo
+    Devuelve: un pert.Pert()
     """
 
     # Dada la tabla de predecesores saco los nodos iniciales que
@@ -65,7 +65,7 @@ def algoritmoN(prelaciones):
     # para anadir las actividades ficiticias en el grafo
     # cojo los nodos y veo si alguno esta compuesto por otro nodo, si es asi
     # trazo arco ficticio
-    gg=claseGrafo.Grafo()
+    gg = pert.Pert()
     for i in NI:
         l = ""
         for j in i:
