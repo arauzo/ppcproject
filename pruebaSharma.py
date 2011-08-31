@@ -7,7 +7,7 @@ import os
 import sys
 import graph
 import pert
-import pert2
+#import pert2
 import fileFormats
 
 #REPETICIONES = 1
@@ -137,19 +137,19 @@ if len(sys.argv)==3:
         }
     """
 
-    itime=os.times()
-    for i in range(repeticiones):
-        g = pert2.Pert()
-        g.pert(successors)
-    ftime=os.times()
-    utime = ftime[0] - itime[0]
-    print "Sharma sin tipo de dato Grafo"
-    print "utime %.4f"% (utime)
+#    itime=os.times()
+#    for i in range(repeticiones):
+#        g = pert2.Pert()
+#        g.construct(successors)
+#    ftime=os.times()
+#    utime = ftime[0] - itime[0]
+#    print "Sharma sin tipo de dato Grafo"
+#    print "utime %.4f"% (utime)
 
     itime=os.times()
     for i in range(repeticiones):
         g = pert.Pert()
-        g.pert(successors)
+        g.construct(successors)
     ftime=os.times()
     utime = ftime[0] - itime[0]
     print "Sharma con tipo de dato Grafo"
