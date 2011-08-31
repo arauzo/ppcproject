@@ -2,9 +2,8 @@
 Algoritmo basado en el algoritmo disenado por Yuval Cohen y Arik Sadeh
 """
 import copy
-import claseGrafo
 import graph
-
+import pert
 
 def cohenSadeh(prelaciones):
     
@@ -13,7 +12,7 @@ def cohenSadeh(prelaciones):
 
     prelaciones = {'Act': ['Predecesora1','Predecesora2'], ... }
     
-    Devuelve: un claseGrafo.grafo
+    Devuelve: un pert.Pert()
     """
   
     ###dadas las relaciones averiguo la lista de actividades predecesoras
@@ -320,7 +319,7 @@ def cohenSadeh(prelaciones):
 
     ###rellenar grafo
 
-    grafo=claseGrafo.Grafo()
+    grafo=pert.Pert()
 
     ###la(lista de arcos) contendra la actividad, y su nodo de comienzo y el de final
 

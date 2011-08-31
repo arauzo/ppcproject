@@ -20,9 +20,8 @@
 
 import sys
 import graph
-import claseGrafo
 
-class Pert(claseGrafo.Grafo):
+class Pert(graph.DirectedGraph):
     """
     PERT class to store pert graph data
       arc labels store: (ActivityLabel, DummyActivity)
@@ -31,6 +30,7 @@ class Pert(claseGrafo.Grafo):
     """
     def __init__(self, pert=None):
         super(Pert, self).__init__()
+        self.construct = self.sharma1998ext
         if pert != None:
             self.successors, self.arcs = pert
             self.predecesors = graph.reversedGraph(self.successors)
@@ -43,6 +43,26 @@ class Pert(claseGrafo.Grafo):
         for link, act in self.arcs.iteritems():
             rstr += str(link) + ' ' + str(act) + '\n'
         return rstr
+
+    def numArcsReales(self):
+        """
+        Metodo que devuelve el numero de arcos reales que conforman el grafo
+        """
+        cont=0
+        for (i,j) in self.arcs:
+            if self.arcs[(i,j)][1] == False:
+                cont = cont+1
+        return cont
+
+    def numArcsFicticios(self):
+        """
+        Metodo que devuelve el numero de arcos ficticios que conforman el grafo
+        """
+        cont=0
+        for (i,j) in self.arcs:
+            if self.arcs[(i,j)][1]==True:
+                cont = cont+1
+        return cont
 
     def nextNodeNumber(self):
         """
@@ -151,9 +171,7 @@ class Pert(claseGrafo.Grafo):
                     successors[i] = outputs
         return successors
 
-
-
-    def pert(self, successors):
+    def sharma1998ext(self, successors):
         """
         Generates a AOA graph (PERT) from successors table
         Algorithm sharma1998 extended
@@ -162,7 +180,7 @@ class Pert(claseGrafo.Grafo):
         if self.successors or self.arcs:
             raise Exception('PERT structure must be empty')
 
-        #XXX Habria que renombrar pre y suc por in y out en claseGrafo
+        #XXX Habria que renombrar pre y suc por in y out en DirectedGraph
         precedents = graph.reversedGraph(successors)  
 
         # Close the graph (not in sharma1998)
@@ -477,7 +495,7 @@ def main(window):
 #    window.images.append( graph2image(successors3) )
     try:
         pertP = Pert()
-        pertP.pert(successors2)
+        pertP.construct(successors2)
         window.images.append( graph.pert2image(pertP) )
         print pertP
     except Exception:

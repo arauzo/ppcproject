@@ -1087,7 +1087,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         successors = self.tablaSucesoras(self.actividad)
         grafo = pert.Pert()
-        grafo.pert(successors)
+        grafo.construct(successors)
         grafoRenumerado = grafo.renumerar()
         return grafoRenumerado
 

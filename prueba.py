@@ -8,6 +8,7 @@ reales, y numero de nodos.
 """
 
 import os
+import os.path
 import sys
 import algoritmoConjuntos
 import algoritmoSalas
@@ -154,7 +155,7 @@ if len(sys.argv)==3:
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
     image_text = graph.pert2image(g, format='png')
-    fsalida = open('CohenSadeh' + filename + '.png', 'w')
+    fsalida = open('grafoCohenSadeh' + os.path.split(filename)[1] + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
 
@@ -171,7 +172,7 @@ if len(sys.argv)==3:
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print
     image_text = graph.pert2image(g, format='png')
-    fsalida = open('grafoConjuntos' + filename + '.png', 'w')
+    fsalida = open('grafoConjuntos' + os.path.split(filename)[1] + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
 
@@ -188,7 +189,7 @@ if len(sys.argv)==3:
     print "numero de arcos ficticios: ",g.numArcsFicticios()
     print 
     image_text = graph.pert2image(g, format='png')
-    fsalida = open('algoritmoSalas' + filename + '.png', 'w')
+    fsalida = open('grafoSalas' + os.path.split(filename)[1] + '.png', 'w')
     fsalida.write(image_text)
     fsalida.close()
 else:
