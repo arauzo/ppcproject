@@ -20,7 +20,7 @@ def check_kahn1962(prelations):
     #    output message (proposed topologically sorted order: L)
 
     visited_elements = [] #Empty list that will contain the visited elements
-    no_incoming_edges = graph.beginingActivities(prelations) #Set of all nodes with no incoming edges
+    no_incoming_edges = graph.begining_activities(prelations) #Set of all nodes with no incoming edges
     print "Datos de Entrada\n", prelations, "\n\n"
     iteracion=1
     while len(no_incoming_edges) > 0: #While no_incoming_edges no empty
@@ -34,7 +34,7 @@ def check_kahn1962(prelations):
         print "visitedElements: ", visited_elements, "\n"
         set_prelations = set(prelations[act]) #Get the new set prelations
         del prelations[act] #Delete prelations activity
-        no_incoming_edges.update(graph.beginingActivities(prelations, set_prelations)) #Update no_incoming_edges with new begining activities
+        no_incoming_edges.update(graph.begining_activities(prelations, set_prelations)) #Update no_incoming_edges with new begining activities
     if prelations: #if graph has edges
         print "ERROR" #graph has at least one cycle
     else: #graph has no cycles

@@ -71,7 +71,7 @@ def algoritmoN(prelaciones):
         for j in i:
             l = l + j + "-"
         l = l[:-1]
-        gg.addNode(l)
+        gg.add_node(l)
 
     for i in NI:
         y = set(i)
@@ -93,7 +93,7 @@ def algoritmoN(prelaciones):
                     arco = l,l1
                     arco
                     
-                    gg.addArc(arco,label)
+                    gg.add_arc(arco,label)
                 elif t == w:
                     for k in i:
                         l = l + k + "-"
@@ -103,7 +103,7 @@ def algoritmoN(prelaciones):
                     l1 = l1[:-1]
                     arco = l1, l
                     arco
-                    gg.addArc(arco,label)
+                    gg.add_arc(arco,label)
                     
     # Una vez anadidos todos los arcos veo que hay arcos que no deben estar
     # (D a DEF ya que ya anado arco de D a DE y de DE a DEF). Los borro
@@ -117,10 +117,10 @@ def algoritmoN(prelaciones):
                     t = s&r
                     if t == s:
                         arco = i,k
-                        gg.removeArc(arco)
+                        gg.remove_arc(arco)
                     if t == r:
                         arco = i,j
-                        gg.removeArc(arco)
+                        gg.remove_arc(arco)
 
     # para anadir las actividades reales cojo prelaciones y anado arco desde
     # prec a act. Si act no esta definida como nodo busco el nodo de menor tamano
@@ -168,7 +168,7 @@ def algoritmoN(prelaciones):
 
         label = i,False
         if arco not in gg.arcs:
-            gg.addArc(arco,label)         # trazo arco desde prec hasta act
+            gg.add_arc(arco,label)         # trazo arco desde prec hasta act
 
     #  anado en una lista los nodos que no tienen sucesores porque es el nodo final
     #  o lo que es lo mismo los que no aparecen como actividades predecesoras de ninguna
@@ -203,12 +203,12 @@ def algoritmoN(prelaciones):
                 hecho = 1
         if hecho == 0:
             label = i,False
-            gg.addArc(arco,label)
+            gg.add_arc(arco,label)
         else:
             label = 'AA',True
-            gg.addArc(arco1,label)
+            gg.add_arc(arco1,label)
             label = i,False
-            gg.addArc(arco2,label)
+            gg.add_arc(arco2,label)
     return gg
 
 ### ejecucion del algoritmo por defecto
