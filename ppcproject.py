@@ -2173,10 +2173,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                     self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
                     
-                    
             self.gantt.remove_activity(model[path][1])
             gantt_modified = True
-
+            
+            it=self.modeloComboS.get_iter(path)
+            self.modeloComboS.remove(it)  # Elimina la actividad del combo Sig
+            it=self.modeloComboARA.get_iter(path)
+            self.modeloComboARA.remove(it)  # Elimina la actividad del combo de Actividad en la vista Recursos
 
         elif self.treemenu_invoker == self._widgets.get_widget('vistaListaRec'):
             for index in range(len(self.recurso)-1,-1, -1):
