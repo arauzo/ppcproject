@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
- Graph functions
------------------------------------------------------------------------
- PPC-PROJECT
-   Multiplatform software tool for education and research in
-   project management
+Graph related classes and functions (module of PPC-PROJECT), includes:
 
-   Data structures used:
+ - A generic class for directed graphs
+ - Handling precedent and successor tables
+ - Graph pictures generation
+ - Graph paths
+ - GTK GUI to help test and debugging of graph related code
+ 
+ Data structures used:
 
      Precedents data structure
       { ActivityLabel : [PreviousActivityLabel,  ... ], ... }
@@ -22,24 +24,25 @@
                       'e':['d'],
                       }
 
-# *** Next structures are deprecated in favour of the Graph class              
-# Directed graph data structure
-# (the same as successors and precedents but using nodes)
-#  { NodeNumber : [FollowingNodeNumber, ... ], ... }
+ *** Next structures are deprecated in favour of the Graph class
+ *** however their description is kept here as they are still used inside ppc-project
+               
+ * Directed graph data structure
+ (the same as successors and precedents but using nodes)
+  { NodeNumber : [FollowingNodeNumber, ... ], ... }
 
-# ROY graph data structure
-#  A successors table with 'Begin' and 'End' activities closing the
-#  graph on both sides
-# for example:
-roy = {'a': ['c', 'e'],
-       'c': ['End'],
-       'b': ['d'],
-       'e': ['d'],
-       'd': ['End'],
-       'Begin': ['a', 'b'],
-       'End': [],
-       }
-
+ * ROY graph data structure
+  A successors table with 'Begin' and 'End' activities closing the
+  implicit graph on both sides
+  for example:
+        roy = {'a': ['c', 'e'],
+               'c': ['End'],
+               'b': ['d'],
+               'e': ['d'],
+               'd': ['End'],
+               'Begin': ['a', 'b'],
+               'End': [],
+               }
 
  Copyright 2007-11 Universidad de Córdoba
  This program is free software: you can redistribute it and/or modify
@@ -53,7 +56,6 @@ roy = {'a': ['c', 'e'],
  You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import copy
 import subprocess
 
 class DirectedGraph(object):
@@ -402,70 +404,8 @@ def roy_paths2csv(ordered_activity_list, paths):
     return csv_text
 
 
-def get_activities_start_time(activities, durations, prelations, minimum=True, 
-                              previous_times=None, root_activity=None):
-    """
-    Get activities start time
-    """
-    if previous_times == None:
-        previous_times = {}
-        
-    open_list = []
-    inv_prelations = {}
-    closed_list = []
-    start_time = {}
-    for activity in activities:
-        inv_prelations[activity] = []
-    for activity in activities:
-        for children in prelations[activity]:
-            inv_prelations[children].append(activity)
-    if root_activity == None:
-        for activity in activities:
-            if inv_prelations[activity] == []:
-                open_list.append(activity)
-    else:
-        descendants = [root_activity]
-        open_descendants = copy.deepcopy(prelations[root_activity])
-        while open_descendants != []:
-            activity = open_descendants.pop()
-            descendants.append(activity)
-            for children in prelations[activity]:
-                if children not in descendants and children not in open_descendants:
-                    open_descendants.append(children)
-        for activity in activities:
-            if activity not in descendants:
-                closed_list.append(activity)
-                try:
-                    start_time[activity] = previous_times[activity]
-                except:
-                    start_time[activity] = 0
-        open_list.append(root_activity)
-    while open_list != []:
-        chosen = open_list.pop()
-        closed_list.append(chosen)
-        time = [0]
-        for activity in inv_prelations[chosen]:
-            # print 'XX start_time[a], duractions[a]', start_time[activity], durations[activity]
-            # El float() de la siguiente linea es porque en algun momento se guarda como cadena
-            # Investigar y corregir.
-            time.append(start_time[activity] + float(durations[activity]) )
-        if previous_times != {} and not minimum:
-            try:
-                time.append(previous_times[chosen])
-            except:
-                pass
-        start_time[chosen] = max(time)
-        for activity in prelations[chosen]:
-            pending = False
-            for parent in inv_prelations[activity]:
-                if parent not in closed_list:
-                    pending = True
-            if not pending:
-                open_list.append(activity)
-    return(start_time)
-
 #
-# --- GTK para probar imagen del grafo
+# --- GTK GUI to test and debug
 #
 import pygtk
 pygtk.require('2.0')

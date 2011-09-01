@@ -1,23 +1,22 @@
 #!/usr/bin/env python
+"""
+ PERT graph class (module of PPC-PROJECT)
 
-# PERT graph generation
-#-----------------------------------------------------------------------
-# PPC-PROJECT
-#   Multiplatform software tool for education and research in
-#   project management
-#
-# Copyright 2007-8 Universidad de Cordoba
-# This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published
-#   by the Free Software Foundation, either version 3 of the License,
-#   or (at your option) any later version.
-# This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ A class to construct and represent PERT graphs (also known as AOA networks) and 
+ related functions
 
+ Copyright 2007-11 Universidad de Cordoba
+ This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+ This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import sys
 import graph
 
@@ -180,7 +179,6 @@ class Pert(graph.DirectedGraph):
         if self.successors or self.arcs:
             raise Exception('PERT structure must be empty')
 
-        #XXX Habria que renombrar pre y suc por in y out en DirectedGraph
         precedents = graph.reversed_prelation_table(successors)  
 
         # Close the graph (not in sharma1998)
@@ -433,9 +431,71 @@ class Pert(graph.DirectedGraph):
         return nuevoGrafo
 
 
+def get_activities_start_time(activities, durations, prelations, minimum=True, 
+                              previous_times=None, root_activity=None):
+    """
+    Get activities start time
+    """
+    if previous_times == None:
+        previous_times = {}
+        
+    open_list = []
+    inv_prelations = {}
+    closed_list = []
+    start_time = {}
+    for activity in activities:
+        inv_prelations[activity] = []
+    for activity in activities:
+        for children in prelations[activity]:
+            inv_prelations[children].append(activity)
+    if root_activity == None:
+        for activity in activities:
+            if inv_prelations[activity] == []:
+                open_list.append(activity)
+    else:
+        descendants = [root_activity]
+        open_descendants = copy.deepcopy(prelations[root_activity])
+        while open_descendants != []:
+            activity = open_descendants.pop()
+            descendants.append(activity)
+            for children in prelations[activity]:
+                if children not in descendants and children not in open_descendants:
+                    open_descendants.append(children)
+        for activity in activities:
+            if activity not in descendants:
+                closed_list.append(activity)
+                try:
+                    start_time[activity] = previous_times[activity]
+                except:
+                    start_time[activity] = 0
+        open_list.append(root_activity)
+    while open_list != []:
+        chosen = open_list.pop()
+        closed_list.append(chosen)
+        time = [0]
+        for activity in inv_prelations[chosen]:
+            # print 'XX start_time[a], duractions[a]', start_time[activity], durations[activity]
+            # El float() de la siguiente linea es porque en algun momento se guarda como cadena
+            # Investigar y corregir.
+            time.append(start_time[activity] + float(durations[activity]) )
+        if previous_times != {} and not minimum:
+            try:
+                time.append(previous_times[chosen])
+            except:
+                pass
+        start_time[chosen] = max(time)
+        for activity in prelations[chosen]:
+            pending = False
+            for parent in inv_prelations[activity]:
+                if parent not in closed_list:
+                    pending = True
+            if not pending:
+                open_list.append(activity)
+    return(start_time)
+
 
 #
-# --- GTK para probar imagen del grafo
+# --- Testing code
 #
 import pygtk
 pygtk.require('2.0')

@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
- Main program
------------------------------------------------------------------------
  PPC-PROJECT
    Multiplatform software tool for education and research in
    project management
+
+ Main program, acting as general controller in the Model-View-Controller squema
+ 
+ NOTE: this module should not contain: 
+    * data handling, computations... -> must be placed in Model modules
+    * graphic interface details... -> must be placed in View modules
+
 
  Copyright 2007-10 University of Cordoba
  This program is free software: you can redistribute it and/or modify
@@ -317,7 +322,7 @@ class PPCproject(object):
         self.modeloR.append()
         self.modeloAR.append()
         #Minimum schedule
-        start_times = graph.get_activities_start_time([], [], [], True)
+        start_times = pert.get_activities_start_time([], [], [], True)
         self.add_schedule(gettext.gettext("Min"), start_times)
         self.set_schedule(start_times)
         self.set_open_state(True)
@@ -584,15 +589,15 @@ class PPCproject(object):
                 dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                 pre_dic[self.actividad[i][1]] = self.actividad[i][2]
             if n == 9:
-                self.schedules[self.ntbSchedule.get_current_page()][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
+                self.schedules[self.ntbSchedule.get_current_page()][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
             elif n == 2:
-                self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+                self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
                                                                        self.schedules[0][1])
             else:
-                self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+                self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
                                                                        self.schedules[0][1], modelo[path][1])
                 for index in range(1, len(self.schedules)):
-                    self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False,
+                    self.schedules[index][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, False,
                                                                              self.schedules[index][1], modelo[path][1])
             self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
    
@@ -1491,6 +1496,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: holguras (lista que contiene cada actividad y sus tres
                                       tipos de holguras)
         """
+        # XXX Pasar a pert.py??
         holguras=[]
         #print grafo
         for g in grafo:
@@ -1901,7 +1907,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     dur_dic[act[1]] = act[6]
                     pre_dic[act[1]] = act[2]
                     self.gantt.add_activity(act[1], act[2], act[6])
-                min_sched = graph.get_activities_start_time(act_list, dur_dic, pre_dic)
+                min_sched = pert.get_activities_start_time(act_list, dur_dic, pre_dic)
                 schedules = [[gettext.gettext('Min'), min_sched]] + schedules
                 
                 cont = 1
@@ -2203,10 +2209,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 act_list.append(self.actividad[i][1])
                 dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                 pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-            self.schedules[0][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+            self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
                                                                    self.schedules[0][1])
             for index in range(1, len(self.schedules)):
-                self.schedules[index][1] = graph.get_activities_start_time(act_list, dur_dic, pre_dic, False,
+                self.schedules[index][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, False,
                                                                            self.schedules[index][1])
             self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
         self.set_modified_state(True)
