@@ -383,7 +383,7 @@
                         <property name="can_focus">True</property>
                         <property name="reorderable">True</property>
                         <property name="enable_grid_lines">both</property>
-			<signal name="key_press_event" handler="on_key_pressed"/>
+			            <signal name="key_press_event" handler="on_key_pressed"/>
                       </widget>
                     </child>
                   </widget>
