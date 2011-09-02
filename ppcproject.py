@@ -169,6 +169,8 @@ class PPCproject(object):
         self._widgets.get_widget('vistaListaAR').connect('button-press-event', self.treeview_menu_invoked,
                                                          self._widgets.get_widget('vistaListaAR'))
 
+
+        
         # Keeps the name of the open file 
         # (None = no open file, 'Unnamed' = Project without name yet)
         self.openFilename = None
@@ -2152,14 +2154,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def treeview_menu_invoked(self, widget, event, treeview):
         """
-        Treeview menu invoked
+        Treeview menu invoked 
         """
-        if (event.button == 3 and treeview.get_selection().count_selected_rows() != 0 and 
+        if (treeview.get_selection().count_selected_rows() != 0 and 
             treeview.get_model()[treeview.get_selection().get_selected_rows()[1][0]][1] != ""):
-            self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
-            self.treemenu_invoker = treeview
+			if event.button == 3:
+				self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
+			self.treemenu_invoker = treeview
 
-    def delete_tree_row(self, widget):
+    def delete_tree_row(self, widget=None):
         """
         Delete treeview row
         """
@@ -2182,10 +2185,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.gantt.remove_activity(model[path][1])
             gantt_modified = True
             
-            it=self.modeloComboS.get_iter(path)
-            self.modeloComboS.remove(it)  # Elimina la actividad del combo Sig
-            it=self.modeloComboARA.get_iter(path)
-            self.modeloComboARA.remove(it)  # Elimina la actividad del combo de Actividad en la vista Recursos
+            it = self.modeloComboS.get_iter(path)
+            self.modeloComboS.remove(it)  # Remove the activity of the comboBox (Next)
+            it = self.modeloComboARA.get_iter(path)
+            self.modeloComboARA.remove(it)  # Remove the activity of the comboBox (Resources view)
 
         elif self.treemenu_invoker == self._widgets.get_widget('vistaListaRec'):
             for index in range(len(self.recurso)-1,-1, -1):
@@ -3554,6 +3557,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         if event.keyval == gtk.keysyms.Escape:
             widget.hide()
+            return True
+        elif event.keyval == gtk.keysyms.Delete:  # Delete key
+            self.delete_tree_row()  # Delete Activity
             return True
         else:
             return False
