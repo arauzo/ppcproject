@@ -2731,7 +2731,6 @@ Alejandro Villagr&#xE1;n Mar&#xED;n
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-	<signal name="key_press_event" handler="on_key_pressed"/>
         <signal name="activate" handler="delete_tree_row"/>
       </widget>
     </child>
