@@ -2158,9 +2158,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         if (treeview.get_selection().count_selected_rows() != 0 and 
             treeview.get_model()[treeview.get_selection().get_selected_rows()[1][0]][1] != ""):
-			if event.button == 3:
-				self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
-			self.treemenu_invoker = treeview
+            if event.button == 3:
+                self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
+            self.treemenu_invoker = treeview
 
     def delete_tree_row(self, widget=None):
         """
