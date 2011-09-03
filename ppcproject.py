@@ -1941,12 +1941,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 cont += 1
                 self.modeloR.append()
                 self.modeloAR.append()
+                return True
             else:
                 self.dialogoError(gettext.gettext('Error reading file:') + filename 
-                      + ' ' + gettext.gettext('Unknown format')) 
+                      + ' ' + gettext.gettext('Unknown format'))
+                return False 
 
-        except IOError:
-            self.dialogoError(gettext.gettext('Error reading file:') + filename) 
+        except:
+            self.dialogoError(gettext.gettext('Error reading file:') + filename)
+            return False
 
 
     def saveProject(self, nombre):
@@ -2263,15 +2266,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         ffilter.set_name(gettext.gettext('All files'))
         dialogoFicheros.add_filter(ffilter)                 
 
-        dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
-        resultado = dialogoFicheros.run()
-        if resultado == gtk.RESPONSE_OK:
-            # Close open project if any
-            closed = self.closeProject()
-            if closed:
-                self.openProject(dialogoFicheros.get_filename())
-        dialogoFicheros.destroy()
+        opened = False
+        resultado = gtk.RESPONSE_OK
         
+        # The Dialog window will close after opening a project or click "Cancel"
+        while(opened == False and resultado == gtk.RESPONSE_OK):
+            dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
+            resultado = dialogoFicheros.run()
+            if resultado == gtk.RESPONSE_OK:
+                # Close open project if any
+                closed = self.closeProject()
+                if closed:
+                    filename = dialogoFicheros.get_filename()
+                    opened = self.openProject(filename)
+        dialogoFicheros.destroy()
+
     def  on_Save_activate(self, item):
         """
         Save option invoked
