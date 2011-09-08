@@ -59,6 +59,7 @@ import pert
 import graph
 import interface
 import fileFormats
+import assignment
 from zaderenko import mZad, early, last
 from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
