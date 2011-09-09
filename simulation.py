@@ -214,7 +214,12 @@ def generaAleatoriosNormal(mean, stdev):
     norm = random.gauss(mean, stdev)
     return norm
 
-#def intervalos(tipo) funcion que devuelve el número de intervalos en funcion del tipo que se seleccione (nº de intervalos o tamaño)
+def infoCaminos (grafo, duraciones): #XXX Felipe
+    """
+    Calcula la varianza y desviación tipica de los caminos del grafo
+    Devuelve la varianza y desviación típica de cada camino asi como m y m'
+    """
+    
 
 # --- Start running as a program
 if __name__ == '__main__':

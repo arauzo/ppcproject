@@ -106,6 +106,7 @@ class PPCproject(object):
         self.vAsignarRec = self._widgets.get_widget('wndAsignarRec')
         self.vCaminos = self._widgets.get_widget('wndCaminos')
         self.vAsignacion = self._widgets.get_widget('wndAsignacion')
+        self.vTestKS = self._widgets.get_widget('wndTestKS')
 
         # Widget to show graphs in vRoy
         viewportGrafo = self._widgets.get_widget('viewportGrafo')
@@ -1411,6 +1412,42 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #print t
 
         return '%5.2f'%(d), '%5.2f'%(t)
+
+    def mediaYvarianza(self, camino):
+        """
+         Cálculo de la duración media y la desviación tí­pica
+                  de un camino del grafo
+
+         Parámetros: camino (camino del grafo)
+
+         Valor de retorno: d (duración media)
+                           t (desviación tí­pica)
+        """
+        # Se calcula la duración de cada camino. Se suman las duraciones de
+        # todas las actividades que forman dicho camino.
+
+        d=0
+        for a in camino:
+            for n in range(len(self.actividad)):
+                if a==self.actividad[n][1] and self.actividad[n][6]!='':
+                    d+=float(self.actividad[n][6])
+                else:  #controlamos las ficticias
+                    d+=0
+        #print d
+
+        # Se calcula la desviación típica de cada camino. Se suman las desviaciones
+        # tí­picas de todas las actividades que forman dicho camino.
+
+        t=0
+        for a in camino:
+            for n in range(len(self.actividad)):
+                if a==self.actividad[n][1] and self.actividad[n][7]!='':
+                    t+=(float(self.actividad[n][7])*float(self.actividad[n][7]))
+                else:  #controlamos las ficticias
+                    t+=0
+        #print t
+
+        return '%5.2f'%(d), '%5.2f'%(t)
     
 
 #              ACTIVIDADES                 
@@ -1574,7 +1611,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             sim = []
             for m in range(len(self.actividad)):
                 distribucion=self.actividad[m][8]
-                print distribucion
                 # Si la actividad tiene una distribución 'uniforme'
                 if distribucion=='Uniforme':
                     if self.actividad[m][3]!='' and self.actividad[m][5]!='':
@@ -2497,6 +2533,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             self._widgets.get_widget('btProbSim').set_sensitive(False)
             self._widgets.get_widget('btGuardarSim').set_sensitive(False)
+            self._widgets.get_widget('btKS').set_sensitive(False)
             for column in self.vistaFrecuencias.get_columns()[1:]:
                 column.set_title("")
             self.vSimulacion.show()
@@ -3280,6 +3317,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Enable Probability and Save buttons
         self._widgets.get_widget('btProbSim').set_sensitive(True)
         self._widgets.get_widget('btGuardarSim').set_sensitive(True)
+
+        # Enable K-S Test
+        self._widgets.get_widget('btKS').set_sensitive(True)
   
     def on_btProbSim_clicked(self, boton):
         """
@@ -3420,6 +3460,50 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
 
         self.vAsignacion.hide()
+
+# ---Kolmogorov-Smirnoff test
+
+    def on_btKS_clicked(self, boton):
+        """
+        Accion usuario para acceder al test de kolmogorv smirnoff
+        """
+        self._widgets.get_widget('btResultadosTest').set_sensitive(True)
+        self._widgets.get_widget('btGuardarTest').set_sensitive(True)
+        self._widgets.get_widget('btAceptarTest').set_sensitive(True)
+        self.vTestKS.show()
+
+    def on_btResultadosTest_clicked(self, boton):
+        """
+        Accion usuario para mostrar los resultados
+        del test de forma detallada
+        """
+
+        informacionCaminos = []
+        # Se extraen todos los caminos (crí­ticos o no) del grafo original
+        successors = self.tablaSucesoras(self.actividad)
+        g = graph.roy(successors)
+
+        # Se eliminan 'begin' y 'end' de todos los caminos
+        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
+
+        # Se crea una lista con los caminos, sus duraciones y sus desviaciones tí­picas
+        for camino in caminos:   
+            media, varianza=self.mediaYvarianza(camino) 
+            info=[camino, media, varianza]      
+            informacionCaminos.append(info)
+
+        #print informacionCaminos
+        print 'Caminos      Duracion media      Varianza        Desviacion Tipica'
+        for n in range(len(informacionCaminos)):
+            s=''
+            for c in informacionCaminos[n][0]:
+                if s!='':
+                    s+=' -> '
+                    s+=str(c)
+                else:
+                    s+=str(c)
+            print s,'       ',informacionCaminos[n][1],'        ',informacionCaminos[n][2],'        ',math.sqrt(float(informacionCaminos[n][2]))
+
 
 # --- Resources
   
