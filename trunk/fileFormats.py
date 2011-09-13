@@ -1,26 +1,25 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Load, Save, Import and Export files
-#  Classes here should deal with data storing and recovering. They should
-#  not have anything to do with graphical or text user interface (filenames,
-#  and options should be received by parameter).
-# -----------------------------------------------------------------------
-# PPC-PROJECT
-#   Multiplatform software tool for education and research in
-#   project management
-#
-# Copyright 2007-8 Universidad de Córdoba
-# This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published
-#   by the Free Software Foundation, either version 3 of the License,
-#   or (at your option) any later version.
-# This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+ Load, Save, Import and Export files with project related data (module of PPC-PROJECT)
 
+  Classes here should deal with data storing and recovering. They should
+  not have anything to do with graphical or text user interface (filenames,
+  and options should be received by parameter).
+
+
+ Copyright 2007-11 Universidad de Córdoba
+ This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+ This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import gtk
 import gettext
 import pickle
@@ -31,6 +30,7 @@ class InvalidFileFormatException(Exception):
     Raised when a file does not contain data in the expected format
     """
     pass
+
 
 class ProjectFileFormat(object):
     """
@@ -64,21 +64,26 @@ class ProjectFileFormat(object):
         
     def canLoad(self):
         """
-        Returns if this project format allows to save all data
+        Returns if this project format allows to load data
 
         Implementing this function on subclasses is: not appropiate.
         """
         #xxx should be corrected to work on all subclass hierarchy
-
         return 'load' in self.__class__.__dict__
 
     def load(self, filename):
         """
         Return: project data=(activities, schedules, resources, resourceAsignaments)
-           activities: table with the following fields: (act_number, act_name, next_acts, opt.dur, most prob. dur, pes. dur, avg. dur, typ. dev, distribution)
-           schedules: list containing lists with two elements: a string (schedule name) and a dictionary which uses activity names as keys and start times as definitions.
-           resources: table with the following fields: (name, type, project units, period units)
-           resourceAsignaments: table with the following fields: (activity name, resource, units)
+           activities: list of tuples with the following fields: 
+                (act_number, act_name, next_acts, optimistic, most probable, pessimistic, 
+                 average, standard deviation, distribution)
+           schedules: list containing lists with: 
+                a string (schedule name)
+                a dictionary which uses activity names as keys and start times as definitions.
+           resources: table with the following fields: 
+                (name, type, project units, period units)
+           resourceAsignaments: table with the following fields: 
+                (activity name, resource, units)
 
         Raises: InvalidFileFormatException if data in file does not follow the format
         Implementing this function on subclasses is: optional.
@@ -87,18 +92,17 @@ class ProjectFileFormat(object):
 
     def canSave(self):
         """
-        Return: if this project format allows to save all data
+        Return: if this project format allows to save data
 
         Implementing this function on subclasses is: not appropiate.
         """
         #xxx should be corrected to work on all subclass hierarchy
-
         return 'save' in self.__class__.__dict__
         
     def save(self, projectData, filename):
         """
         project data: exactly the same structure as load method: 
-          (activities, schedules, resources, resourceAsignaments)
+            (activities, schedules, resources, resourceAsignaments)
           See load method for details.
         filename: path and filename to save (should include extension)
         Returns: None
@@ -133,7 +137,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
         rec = []
         l = f.readline()
         while l:
-        # Lectura de las actividades y sus siguientes
+        # Activities and following activities
             if l[0] == 'j' and l[10] == '#':
                 l = f.readline()
                 while l[0] != '*':
@@ -141,15 +145,14 @@ class PSPProjectFileFormat(ProjectFileFormat):
                     prelaciones.append(prel)
                     l = f.readline()
 
-            # Lectura de la duración de las actividades y de las unidades de recursos 
-            # necesarias por actividad
+            # Activity duration and resource units needed
             if l[0] == '-':
                 l = f.readline()
                 while l[0] != '*':
                     asig.append(l.split())
                     l = f.readline()
 
-            # Lectura del nombre, tipo y unidad de los recursos
+            # Name, type and unit of resources
             if l[0:22] == 'RESOURCEAVAILABILITIES':
                 l = f.readline()
                 while l[0] != '*':
@@ -182,12 +185,12 @@ class PSPProjectFileFormat(ProjectFileFormat):
                 #activities[m][5]=float(1.2*float(asig[n][2])+float(activities[m][3]))
                 #activities[m][7]=float((float(activities[m][5])-float(activities[m][3]))/6.0)
 
-        # Se actualizan los recursos
+        # Update resources
         i=1
         m=0
         resources = []
         for n in range(len(rec[1])):
-            # Si el recurso es Renovable
+            # Renewable
             if rec[0][m]=='R' or rec[0][m][0]=='R':
                 if rec[0][m]=='R':
                     row=[rec[0][m]+rec[0][i], 'Renewable', '', rec[1][n]] 
@@ -195,7 +198,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
                 else:
                     row=[rec[0][m], 'Renewable', '', rec[1][n]] 
                     m+=1      
-            # Si el recurso es No Renovable
+            # Non Renewable
             elif rec[0][m]=='N' or rec[0][m][0]=='N':
                 if rec[0][m]=='N':
                     row=[rec[0][m]+rec[0][i], 'Non renewable', rec[1][n], '']
@@ -203,7 +206,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
                 else:
                     row=[rec[0][m], 'Non renewable', rec[1][n], ''] 
                     m+=1
-            # Si el recurso es Doblemente restringido
+            # Double constrained
             elif rec[0][m]=='D' or rec[0][m][0]=='D':
                 if rec[0][m]=='D':
                     row=[rec[0][m]+rec[0][i], 'Double constrained', rec[1][n], rec[1][n]]
@@ -215,14 +218,14 @@ class PSPProjectFileFormat(ProjectFileFormat):
             resources.append(row)
             i += 2
             
-            # NOTA: no tenemos en cuenta si el recurso es Ilimitado porque éste tipo de recurso no existe en 
-            #       en la librería de proyectos PSPLIB   
+            # Note: Unlimited resources are not present on PSPLIB projects and so 
+            #       not taken into account here
 
-        # Se actualizan los recursos necesarios por actividad
+        # Resources needed per activity
         asignation = []
         for n in range(len(asig)):                     
-            for m in range(3, 3+len(rec[1])):  #len(self.rec[1]): número de recursos 
-                if asig[n][m] != '0':          #los recursos no usados no se muestran
+            for m in range(3, 3+len(rec[1])):  #len(self.rec[1]): number of resources 
+                if asig[n][m] != '0':          #unused resources are not shown
                     i = m-3
                     row = [asig[n][0], resources[i][0], asig[n][m]] 
                     asignation.append(row)
@@ -330,38 +333,38 @@ class PPCProjectFileFormat(ProjectFileFormat):
         f.close()
 
 
-class TxtProjectFileFormat(ProjectFileFormat):
-    """
-    New project file format (xxx to define)
-    """
-    def __init__(self):
-        self.filenameExtensions = ['txt']
+#class TxtProjectFileFormat(ProjectFileFormat):
+#    """
+#    New project file format (xxx to define)
+#    """
+#    def __init__(self):
+#        self.filenameExtensions = ['txt']
 
-    def description(self):
-        """
-        Returns a string with the name or description of this format to show on 
-        dialogs
+#    def description(self):
+#        """
+#        Returns a string with the name or description of this format to show on 
+#        dialogs
 
-        """
-        return gettext.gettext('Text file')+ " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+#        """
+#        return gettext.gettext('Text file')+ " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
 
-    def load(self, filename):
-        """
-        Lectura de un fichero con extensión '.txt' ¿qué formato era este y para que??
-        xxx Funcion incorrecta hay que adaptarla para que devuelva lo que debe (load)
-        """
-        f = open(filename)
-        tabla = []
-        l = f.readline()
-        while l:
-            linea = l.split('\t')
-            linea[1] = linea[1].split(',')
-            tabla.append(linea)
-            l = f.readline()
+#    def load(self, filename):
+#        """
+#        Lectura de un fichero con extensión '.txt' ¿qué formato era este y para que??
+#        xxx Funcion incorrecta hay que adaptarla para que devuelva lo que debe (load)
+#        """
+#        f = open(filename)
+#        tabla = []
+#        l = f.readline()
+#        while l:
+#            linea = l.split('\t')
+#            linea[1] = linea[1].split(',')
+#            tabla.append(linea)
+#            l = f.readline()
 
-        l = f.readline()
+#        l = f.readline()
 
-        return tabla
+#        return tabla
 
 def guardarCsv(texto, principal):
     """
@@ -393,27 +396,6 @@ def guardarCsv(texto, principal):
         # print "No hay elementos seleccionados"
 
     dialogoGuardar.destroy()
-
-def leerTxt(f):
-    """
-    xxx To be removed (code copied to class TxtProjectFileFormat)
-    Lectura de un fichero con extensión '.txt'
-    Parámetros: f (fichero)
-
-    Valor de retorno: tabla (datos leidos)
-    """
-
-    tabla = []
-    l = f.readline()
-    while l:
-        linea = l.split('\t')
-        linea[1] = linea[1].split(',')
-        tabla.append(linea)
-        l = f.readline()
-
-    l = f.readline()
-
-    return tabla
 
 
 
