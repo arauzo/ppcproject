@@ -88,7 +88,7 @@ def actualizarInterfaz (modelo, k, dist,actividad):
         if dist == 'Uniforme':
             for m in range(len(actividad)):                
                 actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
-                modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = float(actividad [m][3]), float(actividad[m][5]), float(actividad[m][7]), float(actividad[m][4])
+                modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
         elif dist == 'Beta':
             for m in range(len(actividad)):
                 actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
@@ -97,10 +97,12 @@ def actualizarInterfaz (modelo, k, dist,actividad):
             for m in range(len(actividad)):
                 actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosTriangularMedia(actividad[m][6], k)
                 modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
-        else:
+        elif dist == 'Normal':
             for m in range(len(actividad)):
                 actividad[m][7] = datosNormalMedia(actividad[m][6], k)
                 modelo[m][7] = actividad[m][7]
+        else:
+            raise Exception('Distribution not expected')
 
         return modelo, actividad
         

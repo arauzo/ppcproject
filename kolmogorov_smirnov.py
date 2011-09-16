@@ -1,0 +1,234 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Functions for simulation of project duration
+# -----------------------------------------------------------------------
+# PPC-PROJECT
+#   Multiplatform software tool for education and research in
+#   project management
+#
+# Copyright 2007-9 Universidad de Córdoba
+# This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation, either version 3 of the License,
+#   or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import random
+import math
+
+# Internationalization
+import gettext
+from operator import itemgetter
+from scipy.stats import norm
+from scipy.stats import gamma
+from scipy.stats import gumbel_r
+
+APP = 'PPC-Project'  # Program name
+DIR = 'po'  # Directory containing translations, usually /usr/share/locale
+gettext.bindtextdomain(APP, DIR)
+gettext.textdomain(APP)
+
+def tablaCaminos (infoCaminos):
+    """
+    Funcion de ordenacion de los caminos por el campo
+    de tiempo medio de cada camino
+    """
+    infoCaminos.sort(key=itemgetter(1))
+    print 'Caminos      Duracion media      Varianza        Desviacion Tipica'
+
+    for n in range(len(infoCaminos)):
+        s=''
+        for c in infoCaminos[n][0]:
+            if s!='':
+                s+=' -> '
+                s+=str(c)
+            else:
+                s+=str(c)
+        print s,'       ',infoCaminos[n][1],'        ',infoCaminos[n][2],'        ',infoCaminos[n][3]
+
+    return infoCaminos
+
+def calculoValoresGamma (infoCaminos):
+    """
+    Funcion que asigna los valores a las datos necesarios para
+    la realizacion del test de Kolmogorov-Smirnof con la funcion gamma.
+    Asignara el numero de caminos dominantes segun Dodin y segun nosotros,
+    la media de la poblacion estimada, la sigma de la poblacion estimada
+    y los valores de alfa y beta necesarios para la funcion de distribucion gamma.
+    Devuelve todos estos valores ya asignados.
+    """
+
+    m = 0
+    m1 = 0
+    sigma = 0
+    mCritico = float(infoCaminos[len(infoCaminos)-1][1])
+    dCritico = float(infoCaminos[len(infoCaminos)-1][3])
+    #Caluculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
+    for n in range(len(infoCaminos)):
+        if ((mCritico - float(infoCaminos[n][1])) < max(0.05*mCritico, 0.02* dCritico)):
+            m += 1
+        if ((float(infoCaminos[n][1]) + 0.5*float(infoCaminos[n][3])) >= (mCritico - 0.25* dCritico)):
+            m1 +=1
+            aux = float(infoCaminos[n][3])
+            if sigma == 0:
+                sigma = aux
+            elif aux < sigma:
+                sigma = aux
+
+    #Calculo de la media de la poblacion estimada, de alfa y de beta
+    media = mCritico + ((math.pi* math.log(m1))/sigma)
+    beta = (sigma*sigma)/media
+    alfa = media/beta
+
+    return m, m1, media, sigma, alfa, beta
+
+def calculoMcriticoDcritico (infoCaminos):
+    """
+    Funcion que devuelve la media del camino critico
+    y la desviacion tipica del mismo
+    """
+
+    return float(infoCaminos[len(infoCaminos)-1][1]), float(infoCaminos[len(infoCaminos)-1][3])
+
+def calculoValoresExtremos (media, sigma, m):
+    """
+    Funcion que nos devuelve los valores necesarios para
+    realizar la distribucion de valores extremos
+    """
+    a = media + sigma * ((2*math.log(m))**0.5 - 0.5 * (math.log(math.log(m)) + math.log(4*math.pi)) / (2* math.log(m))**0.5)
+    b = ((2 * math.log(m))**0.5) / sigma
+
+    return a, b
+
+def nIntervalos(duraciones, tamanio=0.5):
+    
+    #Funcion que devuelve el número de intervalos que tendrá
+    #el test de Kolmogorov-Smirnov
+    
+    #Ordenamos las duraciones de la simulacion
+    #duraciones.sort()
+    #Obtenemos el tiempo maximo y minimo
+    mini,maxi = min(duraciones), max(duraciones)
+    print 'El minimo y el maximo de la simulacion es: ', mini, maxi, '\n'
+    x = mini - (mini % tamanio)
+    inicio = x + tamanio
+    cont = 0
+    aux = inicio
+    while aux < maxi + tamanio:
+        aux = aux + tamanio
+        cont += 1
+
+    print 'El inicio y el numero de intervalos es: ', inicio, cont, '\n'
+
+    return cont
+
+def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
+    """
+    Funcion que realiza el test de kolmogorv_smirnoff y
+    devuelve la bondad de cada distribucion
+    """
+
+
+
+    #Obtenemos el primer valor del intervalo
+    x = min(duraciones) - (min(duraciones) % tamanio)
+    inicio = x + tamanio
+    #Obtenemos el numero de intervalos
+    cont = nIntervalos(duraciones,tamanio)
+    #Creacion de una lista con los intervalos de 0.5 en 0.5
+    intervalos = [inicio]
+    for n in range(cont-1):
+        intervalos.append(intervalos[n] + tamanio)
+
+    duraciones.sort()
+    #Calculo de las frecuencias
+    frecuencia = []
+    for n in range(len(intervalos)):
+        cont2 = 0
+        for x in range(len(duraciones)):
+            if float(duraciones[x]) <= float(intervalos[n]):
+                cont2 = cont2 + 1
+            else:
+                continue
+        frecuencia.append(float(cont2)/1000) #XXX Cambiar para que sea el numero de iteraciones de la simulacion count(duraciones)
+    #Calculo de la funcion normal acumulativa para cada intervalo
+    normal = []
+    dNormal = norm (loc = mCrit, scale = dCrit)
+    for n in range(len(intervalos)):
+        normal.append(dNormal.cdf(intervalos[n]))
+
+    #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
+    for n in range(len(intervalos)):
+        if (n == 0):
+            normalD = [[normal[0]],[abs(normal[0] - frecuencia[0])]]
+        else:
+            normalD[0].append(abs(normal[n] - frecuencia [n-1]))
+            normalD[1].append(abs(normal[n] - frecuencia [n]))
+
+    #Calculo de la funcion gamma acumulativa para cada intervalo
+    gammaV = []
+    dGamma = gamma(alfa, scale=beta)
+    for n in range(len(intervalos)):
+        gammaV.append(dGamma.cdf(intervalos[n]))
+
+    #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
+    for n in range(len(intervalos)):
+        if (n == 0):
+            gammaD = [[gammaV[0]],[abs(gammaV[0] - frecuencia[0])]]
+        else:
+            gammaD[0].append(abs(gammaV[n] - frecuencia [n-1]))
+            gammaD[1].append(abs(gammaV[n] - frecuencia [n]))
+
+    #Calculo de la funcion de valores extremos para cada intervalo
+    if (a != 0 and b !=0):
+        gev = []
+        dGev = gumbel_r (loc = a, scale = 1/b)
+        for n in range(len(intervalos)):
+            gev.append(dGev.cdf(intervalos[n]))
+
+        for n in range(len(intervalos)):
+            if (n == 0):
+                gevD = [[gev[0]],[abs(gev[0] - frecuencia[0])]]
+            else:
+                gevD[0].append(abs(gev[n] - frecuencia [n-1]))
+                gevD[1].append(abs(gev[n] - frecuencia [n]))
+
+    if (a != 0 and b != 0):
+        for n in range(cont):
+            print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n],gammaV[n],gammaD[0][n],gammaD[1][n], gev[n], gevD[0][n],gevD[1][n], '\n'
+    else:
+        for n in range (cont):
+            print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n], gammaV[n],gammaD[0][n], gammaD[1][n], '\n'
+
+    #Maximos de las columnas de diferencias y maximo de los máximos
+    maxNormal = max(max(normalD[0]), max(normalD[1]))
+    maxGamma = max(max(gammaD[0]), max(gammaD[1]))
+    if (a != 0 and b != 0):
+        maxVE = max(max(gevD[0]), max(gevD[1]))
+
+    print 'El maximo de cada columna es: ', max(normalD[0]), max (normalD[1])
+    print 'El valor de alfa es: ', alfa, '   El valor de beta es: ',beta, '\n'
+    print 'La media del camino critico es: ', mCrit, '   La desviación típica es: ', dCrit, '\n'
+    print 'El valor de a es:', a, 'El valor de b es:', b, '\n'
+    if (a != 0 and b != 0):
+        return maxNormal, maxGamma, maxVE
+    else:
+        return maxNormal, maxGamma, 'No definido'
+  
+
+def valorComparacion(precision, totalIntervalos):
+    """
+    Funcion que comprueba que los valores obtenidos se
+    aproximan a los reales
+    """
+    aux = ((-math.log(precision/2)/(2*totalIntervalos))**0.5)
+    return aux
+    
+    
+
