@@ -60,6 +60,7 @@ import graph
 import interface
 import fileFormats
 import assignment
+import kolmogorov_smirnov
 from zaderenko import mZad, early, last
 from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
@@ -1094,26 +1095,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Creación del grafo Pert numerado en orden
         Valor de retorno: grafoRenumerado (grafo final)
         """
-        successors = self.tablaSucesoras(self.actividad)
+        successors = dict(((act[1], act[2]) for act in self.actividad))
         grafo = pert.Pert()
         grafo.construct(successors)
         grafoRenumerado = grafo.renumerar()
-        return grafoRenumerado
-
-    def tablaSucesoras(self, actividades):
-        """
-        Obtiene un diccionario que contiene las actividades 
-                  y sus sucesoras  
-
-        Parámetros: actividades (lista de actividades)
-
-        Valor de retorno: successors(diccionario con las actividades y sus sucesoras)
-        """
-        successors = {}
-        for n in range(len(actividades)):
-            successors[actividades[n][1]]=actividades[n][2]
-        return successors
-                 
+        return grafoRenumerado                 
 
     
 #          ZADERENKO                     
@@ -1154,11 +1140,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         caminosCriticos = self.grafoCriticas(actCriticas) 
         #print caminosCriticos, 'caminos criticos'
 
-        # Se extraen todos los caminos (crí­ticos o no) del grafo original
-        successors = self.tablaSucesoras(self.actividad)
+        # Get all paths removing 'begin' y 'end' from each path
+        successors = dict(((act[1], act[2]) for act in self.actividad))
         g = graph.roy(successors)
-
-        # Se eliminan 'begin' y 'end' de todos los caminos
         caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
 
         #print 'caminos', caminos
@@ -1325,24 +1309,24 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: sucesorasCriticas(diccionario que almacena 
                            las actividades críticas y sus sucesoras)
         """
-        cr=[]
+        cr = []
         for n in criticas:
             cr.append(n[0])
         #print cr, 'cr'
 
-        sucesorasCriticas={}
+        sucesorasCriticas = {}
         for n in cr:
             for m in range(len(self.actividad)):
-                if n==self.actividad[m][1]:
+                if n == self.actividad[m][1]:
                     for a in self.actividad[m][2]:
                         if a in cr:
                             if n not in sucesorasCriticas:
-                                sucesorasCriticas[n]=[a]
+                                sucesorasCriticas[n] = [a]
                             else:
                                 sucesorasCriticas[n].append(a)
 
             if n not in sucesorasCriticas:  
-                sucesorasCriticas[n]=[]
+                sucesorasCriticas[n] = []
 
         return sucesorasCriticas
 
@@ -1613,60 +1597,47 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 distribucion=self.actividad[m][8]
                 # Si la actividad tiene una distribución 'uniforme'
                 if distribucion=='Uniforme':
-                    if self.actividad[m][3]!='' and self.actividad[m][5]!='':
-                        if self.actividad[m][3]!=self.actividad[m][5]:
-                            valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
-                                                                        float(self.actividad[m][5]))
-                        else: # Si d.optimista=d.pesimista
-                            valor=self.actividad[m][3]
-                    else:
-                        self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
-                        return
+                    if self.actividad[m][3]!=self.actividad[m][5]:
+                        valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
+                                                                    float(self.actividad[m][5]))
+                    else: # Si d.optimista=d.pesimista
+                        valor=self.actividad[m][3]
   
                 # Si la actividad tiene una distribución 'beta'
                 elif distribucion=='Beta':
-                    if self.actividad[m][3]!='' and self.actividad[m][4]!='' and self.actividad[m][5]!='':                        
-                        if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:                            
+                    if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:                            
 
-                            mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
-                                                                                 float(self.actividad[m][4]), 
-                                                                                 float(self.actividad[m][5]))
-                        #print "Mean=", mean, "Stdev=", stdev
-                        #print "shape_a=", shape_a, "shape_b=", shape_b
-                            valor = simulation.generaAleatoriosBeta(float(self.actividad[m][3]), 
-                                                                    float(self.actividad[m][5]), 
-                                                                    float(shape_a), float(shape_b))
-                        else:  # Si d.optimista=d.pesimista=d.mas probable
-                            valor = self.actividad[m][3]
-                    else:
-                        self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
-                        return
+                        mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
+                                                                             float(self.actividad[m][4]), 
+                                                                             float(self.actividad[m][5]))
+                    #print "Mean=", mean, "Stdev=", stdev
+                    #print "shape_a=", shape_a, "shape_b=", shape_b
+                        valor = simulation.generaAleatoriosBeta(float(self.actividad[m][3]), 
+                                                                float(self.actividad[m][5]), 
+                                                                float(shape_a), float(shape_b))
+                    else:  # Si d.optimista=d.pesimista=d.mas probable
+                        valor = self.actividad[m][3]
  
                 # Si la actividad tiene una distribución 'triangular'
                 elif distribucion == 'Triangular':
-                    if self.actividad[m][3] != '' and self.actividad[m][4] != '' and self.actividad[m][5] != '':
-                        if self.actividad[m][3] != self.actividad[m][5] != self.actividad[m][4]:
-                            valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), 
-                                                                        float(self.actividad[m][4]), 
-                                                                        float(self.actividad[m][5]))
-                        else:   # Si d.optimista=d.pesimista=d.mas probable
-                            valor=self.actividad[m][3]
-                    else:
-                        self.dialogoError(gettext.gettext('Optimistic, pessimistic and most probable durations of this activity must be introduced')) 
-                        return
-                        
+                
+                    if self.actividad[m][3] != self.actividad[m][5] != self.actividad[m][4]:
+                        valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), 
+                                                                    float(self.actividad[m][4]), 
+                                                                    float(self.actividad[m][5]))
+                    else:   # Si d.optimista=d.pesimista=d.mas probable
+                        valor=self.actividad[m][3]
+                                        
                 # Si la actividad tiene una distribución 'normal'
                 elif distribucion == 'Normal':
-                    if self.actividad[m][6]!='' and self.actividad[m][7]!='':
-                        if float(self.actividad[m][7])!=0.00:
-                            valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
-                        else:   # Si d.tipica=0
-                            valor=self.actividad[m][6]
-                    else:
-                        self.dialogoError(gettext.gettext('The average duration and the typical deviation of this activity must be introduced')) 
-                        return
+                
+                    if float(self.actividad[m][7])!=0.00:
+                        valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
+                    else:   # Si d.tipica=0
+                        valor=self.actividad[m][6]
+                
                 else:
-                    self.dialogoError(gettext.gettext('Unknown distribution')) 
+                    self.dialogoError(gettext.gettext('S Unknown distribution')) 
                     return
                         
                 sim.append(float(valor))
@@ -1690,33 +1661,33 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Valor de retorno: - 
         """
         #Se extraen los caminos crí­ticos
-        holguras=self.holguras(grafo.arcs, early, last, duraciones)  # Holguras de cada actividad
-        actCriticas=self.actCriticas(holguras, grafo.arcs)  # Se extraen las act. crí­ticas
-        criticos=self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
-  
-        # Se extraen todos los caminos (crí­ticos o no) del grafo original
-        successors = self.tablaSucesoras(self.actividad)
-        g=graph.roy(successors)
+        holguras = self.holguras(grafo.arcs, early, last, duraciones)  # Holguras de cada actividad
+        actCriticas = self.actCriticas(holguras, grafo.arcs)  # Se extraen las act. crí­ticas
+        criticos = self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
+
+        # Get all paths removing 'begin' y 'end' from each path
+        successors = dict(((act[1], act[2]) for act in self.actividad))
+        g = graph.roy(successors)
         caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
-     
+  
         # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
-        caminosCriticos=[]
+        caminosCriticos = []
         for c in criticos:
             if c in caminos:
                 caminosCriticos.append(c)
         #print caminosCriticos, 'caminos criticos'
   
         # Se pasan todos los caminos a formato cadena
-        nuevosCaminos=[]
+        nuevosCaminos = []
         for c in caminosCriticos:
-            s=''
+            s = ''
             for m in c:
-                if s!='':
-                    s+=' -> '
-                    s+=str(m)
+                if s != '':
+                    s += ' -> '
+                    s += str(m)
                 else:
-                    s+=str(m)
-            nuevo=[s]
+                    s += str(m)
+            nuevo = [s]
             nuevosCaminos.append(nuevo)
             #print nuevosCaminos, 'formato'
    
@@ -2424,7 +2395,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Roy Graph option invoked
         """
         #XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
-        successors = self.tablaSucesoras(self.actividad)
+        successors = dict(((act[1], act[2]) for act in self.actividad))
         if menu_item == self._widgets.get_widget('grafoRoy'):
             # Creates ROY graph from successors table and creates SVG
             roy = graph.roy(successors)
@@ -2548,7 +2519,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if self.actividad == []:
             self.dialogoError(gettext.gettext('A graph is needed to calculate its paths')) 
         else:
-            successors = self.tablaSucesoras(self.actividad)
+            successors = dict(((act[1], act[2]) for act in self.actividad))
             roy = graph.roy(successors)
  
             # Remove 'begin' and 'end' dummy activities from all paths
@@ -2664,7 +2635,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             
         # Create main dictionaries
         asignation = resources_per_activities(self.asignacion, resources)
-        successors = self.tablaSucesoras(self.actividad)
+        successors = dict(((act[1], act[2]) for act in self.actividad))
         activities = self.altered_last(rest)
         if activities == {}:
             self.dialogoError(gettext.gettext('There are no activities'))
@@ -3443,11 +3414,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         proporcionalidad = self._widgets.get_widget('proporcionalidad')
         k = float(proporcionalidad.get_text())
         
-        print k
         # Se extrae el tipo de distribución
         distribucion = self._widgets.get_widget('distribucion')
-        dist = distribucion.get_active_text()
-        print dist        
+        dist = distribucion.get_active_text()        
         assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
         self.vAsignacion.hide()
         
@@ -3479,31 +3448,48 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
 
         informacionCaminos = []
-        # Se extraen todos los caminos (crí­ticos o no) del grafo original
-        successors = self.tablaSucesoras(self.actividad)
+        # Get all paths removing 'begin' y 'end' from each path
+        successors = dict(((act[1], act[2]) for act in self.actividad))
         g = graph.roy(successors)
-
-        # Se eliminan 'begin' y 'end' de todos los caminos
         caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
 
-        # Se crea una lista con los caminos, sus duraciones y sus desviaciones tí­picas
+        # Se crea una lista con los caminos, sus duraciones y sus varianzas
         for camino in caminos:   
-            media, varianza=self.mediaYvarianza(camino) 
-            info=[camino, media, varianza]      
+            media, varianza = self.mediaYvarianza(camino) 
+            info = [camino, media, varianza, math.sqrt(float(varianza))]      
             informacionCaminos.append(info)
 
-        #print informacionCaminos
-        print 'Caminos      Duracion media      Varianza        Desviacion Tipica'
-        for n in range(len(informacionCaminos)):
-            s=''
-            for c in informacionCaminos[n][0]:
-                if s!='':
-                    s+=' -> '
-                    s+=str(c)
-                else:
-                    s+=str(c)
-            print s,'       ',informacionCaminos[n][1],'        ',informacionCaminos[n][2],'        ',math.sqrt(float(informacionCaminos[n][2]))
+        #Se ordena la lista en orden creciente por duracion media de los caminos
+        informacionCaminos = kolmogorov_smirnov.tablaCaminos(informacionCaminos)
 
+        #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
+        #Se asignan los valores a la media de la poblacion estimada, sigma de la poblacion estimada, alfa y beta
+        m, m1, mediaPoblacion, sigmaPoblacion, alfa, beta = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        print m, m1, mediaPoblacion, sigmaPoblacion, alfa, beta ,'\n'
+
+        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcritico(informacionCaminos)
+        print mediaCritico, dTipicaCritico ,m,'\n'
+        
+
+        if (m != 1):
+            a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+        #Creamos un vector con las duraciones totales para pasarselo al test
+        duracionesTotales = self.duraciones
+
+        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, kolmogorov_smirnov.nIntervalos(duracionesTotales)) 
+        if (m != 1):
+            bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
+            print bondadNormal, bondadGamma , bondadVE, '\n'
+        else:
+            bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
+            print bondadNormal, bondadGamma, bondadVE, '\n'
+
+        
+        print 'El valor de comparacion es: ', valorComparacion, '\n'  
+        print 'La media y la varianza que selecciona es: ', mediaCritico, dTipicaCritico, '\n'
+        print 'Y deberia ser media = 83 y varianza = 5.26', '\n'
+        if (m != 1):
+            print 'Los valores de a y b son respectivamente', a, b, '\n'
 
 # --- Resources
   
@@ -3592,7 +3578,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Export paths to CSV format (for spreadsheet)
         """
         # Generate all paths 
-        successors = self.tablaSucesoras(self.actividad)
+        successors = dict(((act[1], act[2]) for act in self.actividad))
         g = graph.roy(successors)
         todosCaminos = graph.find_all_paths(g, 'Begin', 'End')
   
