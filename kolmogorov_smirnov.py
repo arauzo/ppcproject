@@ -34,7 +34,7 @@ DIR = 'po'  # Directory containing translations, usually /usr/share/locale
 gettext.bindtextdomain(APP, DIR)
 gettext.textdomain(APP)
 
-def tablaCaminos (infoCaminos):
+def ordenaCaminos (infoCaminos):
     """
     Funcion de ordenacion de los caminos por el campo
     de tiempo medio de cada camino
@@ -86,9 +86,9 @@ def calculoValoresGamma (infoCaminos):
     beta = (sigma*sigma)/media
     alfa = media/beta
 
-    return m, m1, media, sigma, alfa, beta
+    return m, m1, alfa, beta
 
-def calculoMcriticoDcritico (infoCaminos):
+def calculoMcriticoDcriticoNormal (infoCaminos):
     """
     Funcion que devuelve la media del camino critico
     y la desviacion tipica del mismo
@@ -115,7 +115,6 @@ def nIntervalos(duraciones, tamanio=0.5):
     #duraciones.sort()
     #Obtenemos el tiempo maximo y minimo
     mini,maxi = min(duraciones), max(duraciones)
-    print 'El minimo y el maximo de la simulacion es: ', mini, maxi, '\n'
     x = mini - (mini % tamanio)
     inicio = x + tamanio
     cont = 0
@@ -123,8 +122,6 @@ def nIntervalos(duraciones, tamanio=0.5):
     while aux < maxi + tamanio:
         aux = aux + tamanio
         cont += 1
-
-    print 'El inicio y el numero de intervalos es: ', inicio, cont, '\n'
 
     return cont
 
@@ -156,20 +153,16 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
                 cont2 = cont2 + 1
             else:
                 continue
-        frecuencia.append(float(cont2)/1000) #XXX Cambiar para que sea el numero de iteraciones de la simulacion count(duraciones)
+        frecuencia.append(float(cont2)/len(duraciones))
     #Calculo de la funcion normal acumulativa para cada intervalo
+
     normal = []
     dNormal = norm (loc = mCrit, scale = dCrit)
     for n in range(len(intervalos)):
         normal.append(dNormal.cdf(intervalos[n]))
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
-    for n in range(len(intervalos)):
-        if (n == 0):
-            normalD = [[normal[0]],[abs(normal[0] - frecuencia[0])]]
-        else:
-            normalD[0].append(abs(normal[n] - frecuencia [n-1]))
-            normalD[1].append(abs(normal[n] - frecuencia [n]))
+    normalD = diferencias (normal, intervalos, frecuencia)
 
     #Calculo de la funcion gamma acumulativa para cada intervalo
     gammaV = []
@@ -178,12 +171,7 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
         gammaV.append(dGamma.cdf(intervalos[n]))
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
-    for n in range(len(intervalos)):
-        if (n == 0):
-            gammaD = [[gammaV[0]],[abs(gammaV[0] - frecuencia[0])]]
-        else:
-            gammaD[0].append(abs(gammaV[n] - frecuencia [n-1]))
-            gammaD[1].append(abs(gammaV[n] - frecuencia [n]))
+    gammaD = diferencias (gammaV, intervalos, frecuencia)
 
     #Calculo de la funcion de valores extremos para cada intervalo
     if (a != 0 and b !=0):
@@ -191,14 +179,10 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
         dGev = gumbel_r (loc = a, scale = 1/b)
         for n in range(len(intervalos)):
             gev.append(dGev.cdf(intervalos[n]))
+        
+        gevD = diferencias (gev, intervalos, frecuencia)
 
-        for n in range(len(intervalos)):
-            if (n == 0):
-                gevD = [[gev[0]],[abs(gev[0] - frecuencia[0])]]
-            else:
-                gevD[0].append(abs(gev[n] - frecuencia [n-1]))
-                gevD[1].append(abs(gev[n] - frecuencia [n]))
-
+    #Mostramos los resultados del test
     if (a != 0 and b != 0):
         for n in range(cont):
             print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n],gammaV[n],gammaD[0][n],gammaD[1][n], gev[n], gevD[0][n],gevD[1][n], '\n'
@@ -212,23 +196,38 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
     if (a != 0 and b != 0):
         maxVE = max(max(gevD[0]), max(gevD[1]))
 
-    print 'El maximo de cada columna es: ', max(normalD[0]), max (normalD[1])
-    print 'El valor de alfa es: ', alfa, '   El valor de beta es: ',beta, '\n'
-    print 'La media del camino critico es: ', mCrit, '   La desviación típica es: ', dCrit, '\n'
-    print 'El valor de a es:', a, 'El valor de b es:', b, '\n'
+    #Devuelve el máximo de los máximos de cada columna de diferencias, en el caso de que la de valores
+    #extremos no se pueda realizar devuelve no definido
     if (a != 0 and b != 0):
         return maxNormal, maxGamma, maxVE
     else:
         return maxNormal, maxGamma, 'No definido'
   
 
-def valorComparacion(precision, totalIntervalos):
+def valorComparacion(precision, totalIteraciones):
     """
     Funcion que comprueba que los valores obtenidos se
     aproximan a los reales
     """
-    aux = ((-math.log(precision/2)/(2*totalIntervalos))**0.5)
+    aux = ((-math.log(precision/2)/(2*totalIteraciones))**0.5)
     return aux
+
+def diferencias (distribucion, intervalos, frecuencia):
+    """
+    Devuelve dos vecotres con las diferencias por la
+    izquierda y por la derecha con respecto a la funcion de
+    distribucion seleccionada y a las frecuencias obtenidas
+    de la similuacion
+    """
+    for n in range(len(intervalos)):
+        if (n == 0):
+            distribucionD = [[distribucion[0]],[abs(distribucion[0] - frecuencia[0])]]
+        else:
+            distribucionD[0].append(abs(distribucion[n] - frecuencia [n-1]))
+            distribucionD[1].append(abs(distribucion[n] - frecuencia [n]))
+
+    return distribucionD
+    
     
     
 

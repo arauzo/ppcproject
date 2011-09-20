@@ -3460,14 +3460,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             informacionCaminos.append(info)
 
         #Se ordena la lista en orden creciente por duracion media de los caminos
-        informacionCaminos = kolmogorov_smirnov.tablaCaminos(informacionCaminos)
+        informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
 
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
-        #Se asignan los valores a la media de la poblacion estimada, sigma de la poblacion estimada, alfa y beta
-        m, m1, mediaPoblacion, sigmaPoblacion, alfa, beta = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-        print m, m1, mediaPoblacion, sigmaPoblacion, alfa, beta ,'\n'
+        #Se asignan los valores a alfa y beta para poder realizar la función gamma
+        m, m1, alfa, beta = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        print m, m1, alfa, beta ,'\n'
 
-        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcritico(informacionCaminos)
+        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
         print mediaCritico, dTipicaCritico ,m,'\n'
         
 
@@ -3476,7 +3476,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
-        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, kolmogorov_smirnov.nIntervalos(duracionesTotales)) 
+        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales)) 
         if (m != 1):
             bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
             print bondadNormal, bondadGamma , bondadVE, '\n'
@@ -3487,7 +3487,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
         print 'El valor de comparacion es: ', valorComparacion, '\n'  
         print 'La media y la varianza que selecciona es: ', mediaCritico, dTipicaCritico, '\n'
-        print 'Y deberia ser media = 83 y varianza = 5.26', '\n'
         if (m != 1):
             print 'Los valores de a y b son respectivamente', a, b, '\n'
 
