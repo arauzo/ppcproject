@@ -52,7 +52,7 @@ class ProjectFileFormat(object):
         """
         return ['*.'+e for e in self.filenameExtensions]
 
-    def description(self):
+    def __str__(self):
         """
         Returns a string with the name or description of this format to show on 
         dialogs
@@ -119,7 +119,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
     def __init__(self):
         self.filenameExtensions = ['sm']
 
-    def description(self):
+    def __str__(self):
         """
         Returns a string with the name or description of this format to show on 
         dialogs
@@ -131,6 +131,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
         """
         Load project data (see base class)
         """
+        # XXX Hay que comprobar los datos leidos y lanzar excepcion
         f = open(filename)
         prelaciones = []
         asig = []
@@ -162,33 +163,32 @@ class PSPProjectFileFormat(ProjectFileFormat):
             l = f.readline()
         
         # Modify data structure
-        cont=1
-        longitud=len(prelaciones)
+        cont = 1
+        longitud = len(prelaciones)
         activities = []
 
         for prelacion in prelaciones:
-            if prelacion!=prelaciones[0] and prelacion!=prelaciones[longitud-1]:   
-                if prelacion[1]==[str(longitud)]:  #activities with the last activity as next 
+            if prelacion != prelaciones[0] and prelacion!=prelaciones[longitud-1]:   
+                if prelacion[1] == [str(longitud)]:  #activities with the last activity as next 
                     activities.append([cont, prelacion[0], [], '', '', '', '', '', gettext.gettext('Beta')] )
                 else:
                     activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', gettext.gettext('Beta')])
                                     
                 cont += 1  
 
-        # Update activities duration (adaptado por Rocio para cargar valores PERT Lorenzo) XXX Felipe. No se deberían cargar con valores predeterminados
+        # Update activities duration
         for n in range(len(asig)-1):   
-            if asig[n][2]!='0':
-                m=n-1
-                activities[m][6]=float(asig[n][2])
-                #activities[m][4]=float(round(random.uniform(0.8*activities[m][6],1.2*activities[m][6]),2))
-                #activities[m][3]=float(2.4*float(asig[n][2])-2*float(activities[m][4]))
-                #activities[m][5]=float(1.2*float(asig[n][2])+float(activities[m][3]))
-                #activities[m][7]=float((float(activities[m][5])-float(activities[m][3]))/6.0)
+            if asig[n][2] != '0':
+                m = n-1
+                activities[m][6] = float(asig[n][2])
 
         # Update resources
-        i=1
-        m=0
+        i = 1
+        m = 0
         resources = []
+        if len(rec) < 2:
+            raise InvalidFileFormatException()
+
         for n in range(len(rec[1])):
             # Renewable
             if rec[0][m]=='R' or rec[0][m][0]=='R':
@@ -237,13 +237,14 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
     """
     Permite cargar los fichero .prj generados con la versión anterior
 
+    - DEPRECATED -
     (está a drede en español ya que esta clase debe ser eliminada cuando 
     se consolide el formato nuevo (convirtamos los ficheros útiles))
     """
     def __init__(self):
         self.filenameExtensions = ['prj']
 
-    def description(self):
+    def __str__(self):
         """
         Returns a string with the name or description of this format to show on 
         dialogs
@@ -258,7 +259,7 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
         f = open(filename, 'rb')
         try:
             table = pickle.load(f)
-        except (UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
+        except (pickle.UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
             raise InvalidFileFormatException('Unpickle failed')
 
         f.close()
@@ -297,7 +298,7 @@ class PPCProjectFileFormat(ProjectFileFormat):
     def __init__(self):
         self.filenameExtensions = ['ppc']
 
-    def description(self):
+    def __str__(self): #XXX Cambiar a __str__(self)
         """
         Returns a string with the name or description of this format to show on 
         dialogs
@@ -313,7 +314,7 @@ class PPCProjectFileFormat(ProjectFileFormat):
         try:
             data = pickle.load(f)
             activities, schedules, resources, resourceAsignaments = data
-        except (UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
+        except (pickle.UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError, KeyError):
             raise InvalidFileFormatException('Unpickle failed')
 
         # Check activities, schedules, resources, resourceAsignaments have the right data structure
@@ -340,7 +341,7 @@ class PPCProjectFileFormat(ProjectFileFormat):
 #    def __init__(self):
 #        self.filenameExtensions = ['txt']
 
-#    def description(self):
+#    def __str__(self):
 #        """
 #        Returns a string with the name or description of this format to show on 
 #        dialogs
