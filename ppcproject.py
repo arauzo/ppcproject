@@ -184,7 +184,7 @@ class PPCproject(object):
         #  (the order is used to try when loading unknown type files)
         self.fileFormats = [
             fileFormats.PPCProjectFileFormat(),
-            fileFormats.PPCProjectOLDFileFormat(),
+            #fileFormats.PPCProjectOLDFileFormat(),
             fileFormats.PSPProjectFileFormat(),
         ]
 
@@ -1897,9 +1897,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     except fileFormats.InvalidFileFormatException:
                         pass
 
-            # if not data:
-            # xxx Should we try here to load files in any format independently of their 
-            # extension. It would be the same previous code without the 'if extension'
+            # If load by extension failed, try to load files in any format independently of their extension
+            if not data:
+                for format in self.fileFormats:
+                    try:
+                        data = format.load(filename)
+                        break
+                    except fileFormats.InvalidFileFormatException:
+                        pass
             
             #Data successfully loaded
             if data:
@@ -1955,8 +1960,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                       + ' ' + gettext.gettext('Unknown format'))
                 return False 
 
-        except:
+        except IOError:
             self.dialogoError(gettext.gettext('Error reading file:') + filename)
+            #traceback.print_exc() 
             return False
 
 
@@ -2261,11 +2267,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dialogoFicheros.add_filter(ffilter)                 
 
         # Creates a filter for each supported file format
-        for f in self.fileFormats:
+        for format in self.fileFormats:
             ffilter = gtk.FileFilter()
-            for pat in f.filenamePatterns():
+            for pat in format.filenamePatterns():
                 ffilter.add_pattern(pat)
-            ffilter.set_name(f.description())
+            ffilter.set_name( str(format) )
             dialogoFicheros.add_filter(ffilter)                 
 
         # Creates the filter allowing to see all files            
