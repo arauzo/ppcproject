@@ -86,7 +86,7 @@ def calculoValoresGamma (infoCaminos):
     beta = (sigma*sigma)/media
     alfa = media/beta
 
-    return m, m1, alfa, beta
+    return m, m1, alfa, beta, media, sigma
 
 def calculoMcriticoDcriticoNormal (infoCaminos):
     """

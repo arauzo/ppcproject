@@ -75,7 +75,7 @@ def test (actividad,it):
     # Se crea una lista con los caminos, sus duraciones y sus varianzas
     for camino in caminos:   
         media, varianza = mediaYvarianza(camino,actividad) 
-        info = [camino, media, varianza, math.sqrt(float(varianza))]      
+        info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
         informacionCaminos.append(info)
 
     #Se ordena la lista en orden creciente por duracion media de los caminos

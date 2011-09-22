@@ -3456,7 +3456,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se crea una lista con los caminos, sus duraciones y sus varianzas
         for camino in caminos:   
             media, varianza = self.mediaYvarianza(camino) 
-            info = [camino, media, varianza, math.sqrt(float(varianza))]      
+            info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
             informacionCaminos.append(info)
 
         #Se ordena la lista en orden creciente por duracion media de los caminos
@@ -3464,8 +3464,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
-        m, m1, alfa, beta = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-        print m, m1, alfa, beta ,'\n'
+        m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        print m, m1, alfa, beta ,mediaES, sigmaES,'\n'
 
         mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
         print mediaCritico, dTipicaCritico ,m,'\n'
