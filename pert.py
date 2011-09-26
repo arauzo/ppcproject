@@ -19,6 +19,7 @@
 """
 import sys
 import graph
+import copy
 
 class Pert(graph.DirectedGraph):
     """
