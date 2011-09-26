@@ -765,7 +765,7 @@ class PPCproject(object):
             self.gantt.set_activity_start_time(row[1], row[9])
         self.gantt.update()
 
-    def delete_tab(self, widget):
+    def on_mnTabsDelete_activate(self, widget):
         """
         Delete tab.
     
@@ -780,16 +780,16 @@ class PPCproject(object):
         self.ntbSchedule.remove_page(self.clicked_tab)
         self.set_modified_state(True)
 
-    def new_tab(self, widget):
+    def on_mnTabsNew_activate(self, widget):
         """
-        Create new tab.
+        Action when new schedule tab is requested from context menu
     
         Parameters: widget.
 
         Returns: None.
         """
         new_sched = deepcopy(self.schedules[0][1])
-        self.add_schedule(None, new_sched )
+        self.add_schedule(None, new_sched)
 
 
     def actualizarColR(self, columnaRec):
@@ -2097,7 +2097,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modeloComboARR.clear()
             while self.ntbSchedule.get_current_page() != -1:
                 self.clicked_tab = len(self.schedule_tab_labels) - 1
-                self.delete_tab(None)
+                self.on_mnTabsDelete_activate(None)
             self.schedules = []
             self.set_open_state(False)
             self.set_modified_state(False)
