@@ -2511,6 +2511,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('btProbSim').set_sensitive(False)
             self._widgets.get_widget('btGuardarSim').set_sensitive(False)
             self._widgets.get_widget('btKS').set_sensitive(False)
+            self._widgets.get_widget('iOpcion').set_active(0)
+            self._widgets.get_widget('iValor').set_text('100')
             for column in self.vistaFrecuencias.get_columns()[1:]:
                 column.set_title("")
             self.vSimulacion.show()
@@ -3405,6 +3407,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.dialogoError(gettext.gettext('No pueden existir duraciones medias negativas'))        
         else:
             self._widgets.get_widget('btAsignar').set_sensitive(True)
+            self._widgets.get_widget('proporcionalidad').set_text('0.2')
+            self._widgets.get_widget('distribucion').set_active(1)
             self._widgets.get_widget('btCancel').set_sensitive(True)
             self._widgets.get_widget('btProcedimiento').set_sensitive(True)
             self.vAsignacion.show()
@@ -3447,7 +3451,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self._widgets.get_widget('btAceptarTest').set_sensitive(True)
         self.vTestKS.show()
 
-    def on_btResultadosTest_clicked(self, boton):
         """
         Accion usuario para mostrar los resultados
         del test de forma detallada
@@ -3471,10 +3474,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
         m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-        print m, m1, alfa, beta ,mediaES, sigmaES,'\n'
+        
 
         mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-        print mediaCritico, dTipicaCritico ,m,'\n'
+        
         
 
         if (m != 1):
@@ -3485,16 +3488,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales)) 
         if (m != 1):
             bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
-            print bondadNormal, bondadGamma , bondadVE, '\n'
+            self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
+            self._widgets.get_widget('iEV').set_text(str(bondadVE))
+            self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
+            self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
         else:
             bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
-            print bondadNormal, bondadGamma, bondadVE, '\n'
+            self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
+            self._widgets.get_widget('iEV').set_text(str(bondadVE))
+            self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
+            self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
         
-        print 'El valor de comparacion es: ', valorComparacion, '\n'  
-        print 'La media y la varianza que selecciona es: ', mediaCritico, dTipicaCritico, '\n'
-        if (m != 1):
-            print 'Los valores de a y b son respectivamente', a, b, '\n'
 
 # --- Resources
   

@@ -40,17 +40,17 @@ def ordenaCaminos (infoCaminos):
     de tiempo medio de cada camino
     """
     infoCaminos.sort(key=itemgetter(1))
-    print 'Caminos      Duracion media      Varianza        Desviacion Tipica'
+    #print 'Caminos      Duracion media      Varianza        Desviacion Tipica'
 
-    for n in range(len(infoCaminos)):
-        s=''
-        for c in infoCaminos[n][0]:
-            if s!='':
-                s+=' -> '
-                s+=str(c)
-            else:
-                s+=str(c)
-        print s,'       ',infoCaminos[n][1],'        ',infoCaminos[n][2],'        ',infoCaminos[n][3]
+    #for n in range(len(infoCaminos)):
+     #   s=''
+      #  for c in infoCaminos[n][0]:
+       #     if s!='':
+        #        s+=' -> '
+         #       s+=str(c)
+          #  else:
+           #     s+=str(c)
+        #print s,'       ',infoCaminos[n][1],'        ',infoCaminos[n][2],'        ',infoCaminos[n][3]
 
     return infoCaminos
 
@@ -183,12 +183,12 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
         gevD = diferencias (gev, intervalos, frecuencia)
 
     #Mostramos los resultados del test
-    if (a != 0 and b != 0):
-        for n in range(cont):
-            print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n],gammaV[n],gammaD[0][n],gammaD[1][n], gev[n], gevD[0][n],gevD[1][n], '\n'
-    else:
-        for n in range (cont):
-            print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n], gammaV[n],gammaD[0][n], gammaD[1][n], '\n'
+    #if (a != 0 and b != 0):
+     #   for n in range(cont):
+    #        print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n],gammaV[n],gammaD[0][n],gammaD[1][n], gev[n], gevD[0][n],gevD[1][n], '\n'
+    #else:
+     #   for n in range (cont):
+     #       print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n], gammaV[n],gammaD[0][n], gammaD[1][n], '\n'
 
     #Maximos de las columnas de diferencias y maximo de los máximos
     maxNormal = max(max(normalD[0]), max(normalD[1]))
