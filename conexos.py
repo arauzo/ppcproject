@@ -75,4 +75,4 @@ if __name__ == '__main__':
         part_conected.update(conected)
         new_dict = update_dictionary(part_conected, prelations)
         aux_dict = new_dict
-    print "List of Part Conected: ", list_conected
+    print "List Part Conected: ", list_conected
