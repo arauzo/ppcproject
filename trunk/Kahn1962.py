@@ -4,6 +4,7 @@ import graph
 
 def check_kahn1962(prelations):
     """
+        Check if graph has cycles
     """
     #L ← Empty list that will contain the sorted elements
     #S ← Set of all nodes with no incoming edges
