@@ -3676,18 +3676,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             return False
 
-    def on_prueba(self, widget, event):
-        print event
-        #variaScr = gtk.Adjustment()
-        #self.ventanaScroll.set_vadjustment(variaScr)
-        adjust = self.ventanaScroll.get_vadjustment()
-        print "lower", adjust.get_lower()
-        print "upper", adjust.get_upper()
-        print "total", self.ventanaScroll.page_size
-        print "HOLA", adjust.get_page_increment()
-        print adjust.get_value()
-
-
 def main(filename=None):
     """
     Start PPC project
