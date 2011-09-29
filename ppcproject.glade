@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <glade-interface>
   <!-- interface-requires gtk+ 2.24 -->
   <!-- interface-naming-policy toplevel-contextual -->
@@ -42,7 +42,7 @@
     <property name="type_hint">normal</property>
     <property name="program_name">PPC-Project</property>
     <property name="version">2.0</property>
-    <property name="copyright" translatable="yes">&#xA9; 2007 - 2010 University of C&#xF3;rdoba</property>
+    <property name="copyright" translatable="yes">© 2007 - 2010 University of Córdoba</property>
     <property name="comments" translatable="yes">Multiplatform software tool for education and research in project management</property>
     <property name="website">http://code.google.com/p/ppcproject/</property>
     <property name="website_label" translatable="yes">Official Repository</property>
@@ -52,13 +52,13 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</property>
     <property name="authors">Antonio Arauzo Azofra
-Alfonso Jim&#xE9;nez V&#xED;lchez
+Alfonso Jiménez Vílchez
 Lorenzo Salas Morera
-Cristina Urbano Rold&#xE1;n
-Alejandro Villagr&#xE1;n Mar&#xED;n
+Cristina Urbano Roldán
+Alejandro Villagrán Marín
 </property>
     <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
-    <property name="artists">Alfonso Jim&#xE9;nez V&#xED;lchez</property>
+    <property name="artists">Alfonso Jiménez Vílchez</property>
     <property name="wrap_license">True</property>
     <signal name="key_press_event" handler="on_key_pressed"/>
     <signal name="response" handler="on_dAyuda_response"/>
@@ -287,7 +287,7 @@ Alejandro Villagr&#xE1;n Mar&#xED;n
                 <property name="visible">True</property>
                 <property name="xalign">0.10000000149011612</property>
                 <property name="label" translatable="yes">Valor de proporcionalidad de
-la desviaci&#xF3;n t&#xED;pica</property>
+la desviación típica</property>
               </widget>
               <packing>
                 <property name="position">0</property>
@@ -297,7 +297,7 @@ la desviaci&#xF3;n t&#xED;pica</property>
               <widget class="GtkEntry" id="proporcionalidad">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="invisible_char">&#x25CF;</property>
+                <property name="invisible_char">●</property>
                 <property name="primary_icon_sensitive">True</property>
                 <property name="secondary_icon_sensitive">True</property>
               </widget>
@@ -319,7 +319,7 @@ la desviaci&#xF3;n t&#xED;pica</property>
               <widget class="GtkLabel" id="Distribucion">
                 <property name="visible">True</property>
                 <property name="xalign">0.10000000149011612</property>
-                <property name="label" translatable="yes">Funci&#xF3;n de distribuci&#xF3;n</property>
+                <property name="label" translatable="yes">Función de distribución</property>
               </widget>
               <packing>
                 <property name="position">0</property>
@@ -732,7 +732,7 @@ Uniforme</property>
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Action</property>
                 <property name="use_underline">True</property>
-                <signal name="activate" handler="on_mnAcci&#xF3;n_activate"/>
+                <signal name="activate" handler="on_mnAcción_activate"/>
                 <child>
                   <widget class="GtkMenu" id="mnAccion_menu">
                     <child>
@@ -1644,7 +1644,7 @@ Uniforme</property>
                       <widget class="GtkLabel" id="label7">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">&#x3BC;</property>
+                        <property name="label" translatable="yes">μ</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1657,7 +1657,7 @@ Uniforme</property>
                       <widget class="GtkLabel" id="label6">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="label" translatable="yes">&#x3C6;</property>
+                        <property name="label" translatable="yes">φ</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1853,7 +1853,7 @@ Uniforme</property>
                     <child>
                       <widget class="GtkLabel" id="label3">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">&#x3B1;</property>
+                        <property name="label" translatable="yes">α</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2520,7 +2520,7 @@ Uniforme</property>
                           <widget class="GtkScrolledWindow" id="scrolledwindow21">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hadjustment">0 0 160 16 144 160</property>
+                            <property name="hadjustment">0 0 1 0.10000000000000001 0.90000000000000002 1</property>
                             <property name="hscrollbar_policy">never</property>
                             <property name="vscrollbar_policy">never</property>
                             <child>
@@ -2735,7 +2735,7 @@ Tamanio del intervalo</property>
                   <widget class="GtkEntry" id="iValor">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
                   </widget>
@@ -2854,7 +2854,7 @@ Tamanio del intervalo</property>
             <child>
               <widget class="GtkLabel" id="label2">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Bondad de la distribuci&#xF3;n</property>
+                <property name="label" translatable="yes">Bondad de la distribución</property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -2898,7 +2898,7 @@ Tamanio del intervalo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
                   </widget>
@@ -2912,7 +2912,7 @@ Tamanio del intervalo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
                   </widget>
@@ -2928,7 +2928,7 @@ Tamanio del intervalo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
                     <property name="primary_icon_sensitive">True</property>
                     <property name="secondary_icon_sensitive">True</property>
                   </widget>
@@ -2942,7 +2942,7 @@ Tamanio del intervalo</property>
                 <child>
                   <widget class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Valor de comparaci&#xF3;n</property>
+                    <property name="label" translatable="yes">Valor de comparación</property>
                   </widget>
                   <packing>
                     <property name="top_attach">3</property>
@@ -2964,7 +2964,7 @@ Tamanio del intervalo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -2977,7 +2977,7 @@ Tamanio del intervalo</property>
                   <widget class="GtkEntry" id="iAlfa">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
+                    <property name="invisible_char">●</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
@@ -3007,6 +3007,21 @@ Tamanio del intervalo</property>
         <child>
           <widget class="GtkHBox" id="hbox1">
             <property name="visible">True</property>
+            <property name="spacing">6</property>
+            <child>
+              <widget class="GtkButton" id="btAlfa">
+                <property name="label" translatable="yes">Calcular Alfa</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btAlfa_clicked"/>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="pack_type">end</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
             <child>
               <widget class="GtkButton" id="btGuardarTest">
                 <property name="label" translatable="yes">Guardar</property>
@@ -3024,8 +3039,7 @@ Tamanio del intervalo</property>
             </child>
             <child>
               <widget class="GtkButton" id="btResultadosTest">
-                <property name="label" translatable="yes">Mostrar
-resultados</property>
+                <property name="label" translatable="yes">Resultados</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -3172,6 +3186,22 @@ resultados</property>
           <packing>
             <property name="position">1</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="wndKSTestResults">
+    <child>
+      <widget class="GtkScrolledWindow" id="scrolledwindow1">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hscrollbar_policy">automatic</property>
+        <property name="vscrollbar_policy">automatic</property>
+        <child>
+          <widget class="GtkTextView" id="KSResults">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+          </widget>
         </child>
       </widget>
     </child>

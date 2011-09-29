@@ -69,6 +69,7 @@ from simAnnealing import calculate_loading_sheet
 import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph
+import pruebaInterface
 #import assignment
 
 
@@ -108,6 +109,7 @@ class PPCproject(object):
         self.vCaminos = self._widgets.get_widget('wndCaminos')
         self.vAsignacion = self._widgets.get_widget('wndAsignacion')
         self.vTestKS = self._widgets.get_widget('wndTestKS')
+        self.vKSResults = self._widgets.get_widget('wndKSTestResults')
 
         # Widget to show graphs in vRoy
         viewportGrafo = self._widgets.get_widget('viewportGrafo')
@@ -3192,6 +3194,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Clicked on simulate the project a number of iterations
         """
+        
         iteracion = self._widgets.get_widget('iteracion')
         it = iteracion.get_value_as_int()
         #print it, 'iteraciones'
@@ -3257,7 +3260,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valor = int(iValor.get_text())
 
         N = simulation.nIntervalos(dMax, dMin, valor, str(opcion)) # XXX Felipe habia 20
-
+        #pruebaInterface.create_simulation_treeviews2(self, N)
         #print dMax, 'max', dMin, 'min'
         if int(it) == int(itTotales):
             for n in range(N):
@@ -3272,6 +3275,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
         self.modeloF.clear()
         i = 0
+        print len(self.intervalos), len(self.vistaFrecuencias.get_columns())
         for column in self.vistaFrecuencias.get_columns()[1:]:
             column.set_title(self.intervalos[i])
             i = i + 1
@@ -3428,6 +3432,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         distribucion = self._widgets.get_widget('distribucion')
         dist = distribucion.get_active_text()        
         assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
+        self.set_modified_state(True)
         self.vAsignacion.hide()
         
             
@@ -3446,15 +3451,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Accion usuario para acceder al test de kolmogorv smirnoff
         """
-        self._widgets.get_widget('btResultadosTest').set_sensitive(True)
-        self._widgets.get_widget('btGuardarTest').set_sensitive(True)
-        self._widgets.get_widget('btAceptarTest').set_sensitive(True)
+        #Mostrar la ventana de resultados del test        
         self.vTestKS.show()
 
-        """
-        Accion usuario para mostrar los resultados
-        del test de forma detallada
-        """
 
         informacionCaminos = []
         # Get all paths removing 'begin' y 'end' from each path
@@ -3485,7 +3484,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
-        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales)) 
+        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
+        self._widgets.get_widget('iAlfa').set_text(str(0.05))
         if (m != 1):
             bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
             self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
@@ -3498,6 +3498,22 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('iEV').set_text(str(bondadVE))
             self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
             self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
+
+    def on_btAlfa_clicked(self, boton):
+        """
+        Accion usuario para cambiar el valor de alfa
+        """
+        alfa = float(self._widgets.get_widget('iAlfa').get_text())
+        valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
+        self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
+
+    def on_btResultadosTest_clicked(self,boton):
+        """
+        Accion usuario para ver los resultados detallados del test
+        """
+
+        self.vKSResults.show()
+        self._widgets.get_widget('KSResults').set_overwrite(str('Hola mundo'))
 
         
 
