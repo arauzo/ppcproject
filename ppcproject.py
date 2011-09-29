@@ -69,7 +69,7 @@ from simAnnealing import calculate_loading_sheet
 import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph
-import pruebaInterface
+#import pruebaInterface
 #import assignment
 
 
@@ -140,6 +140,7 @@ class PPCproject(object):
 
         self.zadViewList = self._widgets.get_widget('vistaZad')
         self.vistaLista = self._widgets.get_widget('vistaListaDatos')
+        self.ventanaScroll = self._widgets.get_widget('scrolledwindow10') #YO
         
         self.modelo = self.interface.modelo
         self.gantt = self.interface.gantt
@@ -356,6 +357,7 @@ class PPCproject(object):
             actividades=self.actividades2Lista()
             # Controlamos la introduccion de las siguientes
             if modelo==self.modelo:  # Interfaz de actividades
+                preVal = modelo[path][n]  # Previous Value
                 # añadimos las etiquetas de las actividades al selector de las siguientes
                 if n==1:  # Columna de las actividades
                     if new_text == '':
@@ -442,7 +444,8 @@ class PPCproject(object):
                     self.asignacion.append(filaAR)
                        
             # Actualizamos las listas con los nuevos datos introducidos
-            self.actualizacion(modelo, path, n)
+
+            self.actualizacion(modelo, path, n, preVal)
         return
 
     def reorder_gantt(self):
@@ -473,7 +476,7 @@ class PPCproject(object):
         self.gantt.reorder(act_list)
         self.gantt.update()
   
-    def actualizacion(self, modelo, path, n):
+    def actualizacion(self, modelo, path, n, preVal):
         """
          Actualización de las tres listas con los nuevos datos introducidos 
                   (lista de actividades, de recursos y de asignacion)
@@ -481,6 +484,7 @@ class PPCproject(object):
          modelo (interfaz)
          path (fila)
          n (columna)
+         preVal (Valor Anterior)
          
          Valor de retorno: -
         """
@@ -509,13 +513,15 @@ class PPCproject(object):
                         if ok:  #se actualizan la media y la desviación tí­pica
                             #distribucion=str(self.modelo[path][8])
                             self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
+                            self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
+                            gantt_modified = True
                             
                         else:  #se emite un mensaje de error
                             self.dialogoError(gettext.gettext('Wrong durations introduced.'))
+                            self.modelo[path][n]=self.actividad[int(path)][n] = preVal
  
-                            self.modelo[path][6]=self.actividad[int(path)][6]=''
-                        self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
-                        gantt_modified = True
+                            #self.modelo[path][6]=self.actividad[int(path)][6]=''
+                        
                               
                 # Si se introduce la media, se elimina el resto de duraciones MODIFICADO POR MI    
                 elif n == 6:   
@@ -3669,6 +3675,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             return True
         else:
             return False
+
+    def on_prueba(self, widget, event):
+        print event
+        #variaScr = gtk.Adjustment()
+        #self.ventanaScroll.set_vadjustment(variaScr)
+        adjust = self.ventanaScroll.get_vadjustment()
+        print "lower", adjust.get_lower()
+        print "upper", adjust.get_upper()
+        print "total", self.ventanaScroll.page_size
+        print "HOLA", adjust.get_page_increment()
+        print adjust.get_value()
 
 
 def main(filename=None):
