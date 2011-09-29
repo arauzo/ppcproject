@@ -948,7 +948,6 @@ Uniforme</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="position">400</property>
-                <signal name="scroll_event" handler="on_prueba"/>
                 <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow10">
                     <property name="visible">True</property>
