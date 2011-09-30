@@ -39,7 +39,6 @@ def datosBetaMedia(mean, k):
 
     stdev = (k*mean) 
     mode = random.uniform(mean*(1-k),mean*(1+k))
-    print mode
     op = ((3*mean*(1-k))-(2*mode))
     pes = (op+(6*k*mean))
 
@@ -52,7 +51,6 @@ def datosTriangularMedia(mean,k):
     """
     stdev = (k*mean)
     mode = random.uniform(mean*(1-(k*math.sqrt(2))),mean*(1+(k*math.sqrt(2))))
-    print mode
     op = ((3*mean-mode)-math.sqrt(pow((3*mean-mode),2)-4*(-3*mean*mode+pow(mode,2)+6*pow(mean,2)*(0.5-pow(0.2,2)))))/2
     pes = 3*mean-op-mode
 
