@@ -83,8 +83,13 @@ def test (actividad,it):
 
     #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
     #Se asignan los valores a alfa y beta para poder realizar la funcion gamma
-    m, m1, alfa, beta = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-    print m, m1, alfa, beta ,'\n'
+    m, m1, alfa, beta,media1,sigma1 = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+    print 'Caminos criticos segun Dodin', m, '\n'
+    print 'Caminos criticos segun Lorenzo', m1, '\n'
+    print 'Alfa de la distribucion gamma', alfa, '\n'
+    print 'Beta de la distribucion gama', beta , '\n'
+    print 'Media calculada', media1, '\n'
+    print 'Sigma calculada', sigma1, '\n'
 
     mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
     print mediaCritico, dTipicaCritico ,m,'\n'

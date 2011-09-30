@@ -28,6 +28,7 @@ import gtk.glade
 import GTKgantt
 import loadSheet
 import loadTable
+import simulation
 
 # Internationalization
 import gettext
@@ -360,9 +361,12 @@ class Interface(object):
         for n in range(2):
             self.vLCriticidad.columna[n].set_expand(False)
           
+        
+
+    def update_frecuency_intervals_treeview (self, n, durations, itTotales):
         # TreeView for frequencies
         self.vistaFrecuencias = self._widgets.get_widget('vistaFrecuencias')          
-        columns_type = [str] * 101 #XXX Felipe habia 21
+        columns_type = [str] * n
         self.modeloF = gtk.ListStore(*columns_type)
         self.vistaFrecuencias.set_model(self.modeloF)
         #First column
@@ -373,13 +377,66 @@ class Interface(object):
         column.add_attribute(cell, 'text', 0)
         column.set_min_width(50)
         #Intervals
-        for interval in range(1, 101): #XXX Felipe habia (1, 21)
+        for interval in range(n):
             column = gtk.TreeViewColumn("")
             self.vistaFrecuencias.append_column(column)
             cell = gtk.CellRendererText()
             column.pack_start(cell, False)
             column.add_attribute(cell, 'text', interval)
             column.set_min_width(50)
+
+        # Se calculan los intervalos
+        interv = []
+        iOpcion = self._widgets.get_widget('iOpcion')
+        opcion = iOpcion.get_active_text()
+        iValor = self._widgets.get_widget('iValor') # Número de intervalos
+        dmax = float(max(durations)+0.00001)  # duración máxima
+        dmin = float(min(durations))   # duración mí­nima
+        valor = float(iValor.get_text())
+
+        n = simulation.nIntervalos(dmax, dmin, valor, str(opcion)) # XXX Felipe habia 20
+        #pruebaInterface.create_simulation_treeviews2(self, int(N))
+        #print dMax, 'max', dMin, 'min'
+  
+        for ni in range(n):
+            valor = '['+str('%5.2f'%(simulation.duracion(ni, dmax, dmin, n)))+', '+str('%5.2f'%(simulation.duracion((ni+1), dmax, dmin, n)))+'['       
+            interv.append(valor)
+  
+
+        # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
+        self.modeloF.clear()
+        i = 0
+        for column in self.vistaFrecuencias.get_columns()[1:]:
+            column.set_title(interv[i])
+            i = i + 1
+   
+        
+        self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
+
+    def update_frecuency_values(self, dmax, dmin, n, durations, itTotales):
+    
+        # Se calculan las frecuencias
+        Fa, Fr = simulation.calcularFrecuencias(durations, dmax, dmin, itTotales, n)
+  
+        
+        self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str, Fa))
+        self.modeloF.append([gettext.gettext("Relative freq.")] + map(str, Fr))
+        #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
+  
+        # Dibuja histograma devolviendo los intervalos (bins) y otros datos
+        fig = Figure(figsize=(5,4), dpi=100)
+        ax = fig.add_subplot(111)
+  
+        n, bins, patches = ax.hist(durations, n, normed=1) #XXX Felipe n era 100
+        canvas = FigureCanvas(fig)  # a gtk.DrawingArea
+        if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
+            self.hBoxSim.remove(self.boxS)
+            self.boxS = gtk.VBox()
+
+        self.hBoxSim.add(self.boxS)
+        self.boxS.pack_start(canvas)
+        self.boxS.show_all()
+
 
 ### FUNCIONES RELACIONADAS CON LOS TREEVIEW
 

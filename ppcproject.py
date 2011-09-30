@@ -157,8 +157,7 @@ class PPCproject(object):
         self.vistaListaZ = self.interface.vistaListaZ
         self.modeloH = self.interface.modeloH
         self.modeloC = self.interface.modeloC
-        self.modeloF = self.interface.modeloF
-        self.vistaFrecuencias = self.interface.vistaFrecuencias
+        
 
         self.checkColum = [None]*11
         for n in range(11):
@@ -2521,8 +2520,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('btKS').set_sensitive(False)
             self._widgets.get_widget('iOpcion').set_active(0)
             self._widgets.get_widget('iValor').set_text('100')
-            for column in self.vistaFrecuencias.get_columns()[1:]:
-                column.set_title("")
             self.vSimulacion.show()
             self.simTotales=[] # Lista con las simulaciones totales
             self.duraciones=[] # Lista con las duraciones de las simulaciones
@@ -3256,52 +3253,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dTipica = self._widgets.get_widget('dTipicaSim')
         dTipica.set_text(str(desviacionTipica))
     
-        # Se calculan los intervalos
-        interv = []
-        iOpcion = self._widgets.get_widget('iOpcion')
-        opcion = iOpcion.get_active_text()
-        iValor = self._widgets.get_widget('iValor') # Número de intervalos
-        dMax = float(max(self.duraciones)+0.00001)  # duración máxima
-        dMin = float(min(self.duraciones))   # duración mí­nima
-        valor = int(iValor.get_text())
-
-        N = simulation.nIntervalos(dMax, dMin, valor, str(opcion)) # XXX Felipe habia 20
-        #pruebaInterface.create_simulation_treeviews2(self, N)
-        #print dMax, 'max', dMin, 'min'
-        if int(it) == int(itTotales):
-            for n in range(N):
-                valor = '['+str('%5.2f'%(simulation.duracion(n, dMax, dMin, N)))+', '+str('%5.2f'%(simulation.duracion((n+1), dMax, dMin, N)))+'['       
-                interv.append(valor)
-        if self.intervalos == []:
-            self.intervalos = interv
-   
-        # Se calculan las frecuencias
-        self.Fa, Fr = simulation.calcularFrecuencias(self.duraciones, dMax, dMin, itTotales, N)
-  
-        # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
-        self.modeloF.clear()
-        i = 0
-        print len(self.intervalos), len(self.vistaFrecuencias.get_columns())
-        for column in self.vistaFrecuencias.get_columns()[1:]:
-            column.set_title(self.intervalos[i])
-            i = i + 1
-        self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str,self.Fa))
-        self.modeloF.append([gettext.gettext("Relative freq.")] + map(str,Fr))
-        #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
-  
-        # Dibuja histograma devolviendo los intervalos (bins) y otros datos
-        fig = Figure(figsize=(5,4), dpi=100)
-        ax = fig.add_subplot(111)
-  
-        n, bins, patches = ax.hist(self.duraciones, 100, normed=1)
-        canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-        if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-            self.hBoxSim.remove(self.boxS)
-            self.boxS = gtk.VBox()
-
-        self.hBoxSim.add(self.boxS)
-        self.boxS.pack_start(canvas)
-        self.boxS.show_all()
+        #XXX
+        self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
         # Enable Probability and Save buttons
         self._widgets.get_widget('btProbSim').set_sensitive(True)
@@ -3387,8 +3340,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self._widgets.get_widget('iteracionesTotales').set_text('')   
         self._widgets.get_widget('mediaSim').set_text('')
         self._widgets.get_widget('dTipicaSim').set_text('')
-        #frecuencias = self._widgets.get_widget('vistaFrecuencias')
-        self.modeloF.clear()
+        self.interface.modeloF.clear()
         self.modeloC.clear()
         if len(self.boxS) > 0:
             self.hBoxSim.remove(self.boxS)
@@ -3519,8 +3471,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
 
         self.vKSResults.show()
-        self._widgets.get_widget('KSResults').set_overwrite(str('Hola mundo'))
-
+        self.entryForText = self._widgets.get_widget('KSResults')
+        self.entryForText.get_buffer().set_text(alfa)
         
 
 # --- Resources
