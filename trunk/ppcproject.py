@@ -43,6 +43,7 @@ from matplotlib import rcParams
 rcParams['font.family'] = 'monospace'
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
+import numpy
 
 # Internationalization
 import gettext
@@ -3245,15 +3246,24 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
     
         # Se añaden la media y la desviación típica a la interfaz
-        duracionMedia = scipy.stats.mean(self.duraciones)
+        duracionMedia = numpy.mean(self.duraciones) #XXX Felipe antes con scipy.stats.mean()
         media = self._widgets.get_widget('mediaSim')
         media.set_text(str(duracionMedia))
 
-        desviacionTipica = scipy.stats.std(self.duraciones)
+        desviacionTipica = numpy.std(self.duraciones) #XXX Felipe antes con scipy.stats.mean()
         dTipica = self._widgets.get_widget('dTipicaSim')
         dTipica.set_text(str(desviacionTipica))
     
-        #XXX
+        #XXX Para refrescar los intervalos lo que si necesitamos es el numero de intervalos y la opcion
+        iOpcion = self._widgets.get_widget('iOpcion')
+        opcion = iOpcion.get_active_text()
+        iValor = self._widgets.get_widget('iValor') # Número de intervalos
+        #dmax = float(max(durations)+0.00001)  # duración máxima
+        #dmin = float(min(durations))   # duración mí­nima
+        valor = float(iValor.get_text())
+        #XXX Felipe Mirar lo que verdaderamente hace falta aqui, esta puesto así para que funcionase, y de momento
+        #funciona tanto con numero de intervalos como con tamaño, aunque con tamaño no funciona bien. (Con 0.5 si funciona bien jejeje)
+        n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion)) # XXX Felipe habia 20
         self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
         # Enable Probability and Save buttons
