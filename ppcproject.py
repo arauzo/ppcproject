@@ -168,7 +168,7 @@ class PPCproject(object):
 
         self.row_height_signal = self.vistaLista.connect("expose-event", self.cbtreeview)
         self.vistaLista.connect('drag-end', self.reorder_gantt)
-        self.modelo.connect('rows-reordered', self.reorder_gantt)
+        #self.modelo.connect('rows-reordered', self.reorder_gantt)
         self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
         self._widgets.get_widget('vistaListaRec').connect('button-press-event', self.treeview_menu_invoked,
                                                           self._widgets.get_widget('vistaListaRec'))
@@ -350,6 +350,7 @@ class PPCproject(object):
   
          Valor de retorno: -
         """
+        preVal = None  # Previous value of the durations
         if new_text != modelo[int(path)][n]:
             self.set_modified_state(True) # Project data has changed
             #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
@@ -448,16 +449,18 @@ class PPCproject(object):
             self.actualizacion(modelo, path, n, preVal)
         return
 
-    def reorder_gantt(self):
+    def reorder_gantt(self, widget, dragContext):
         """
         Reorder Gantt diagram according to activities new order.
 
         Returns: None.
         """
         act_list = []
+        new_order = []
         for index in range(len(self.modelo)):
             if self.modelo[index][1] != "":
                 act_list.append(self.modelo[index][1])
+                new_order.append(self.modelo[index][0]-1)
             else:
                 row_path = index
         if row_path != len(self.modelo) - 1:
@@ -475,6 +478,9 @@ class PPCproject(object):
         self.actividad = new_actividad
         self.gantt.reorder(act_list)
         self.gantt.update()
+        self.modeloComboS.reorder(new_order)
+        self.modeloComboARA.reorder(new_order)
+        self.reorder_activities()
   
     def actualizacion(self, modelo, path, n, preVal):
         """
@@ -2224,11 +2230,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     del self.asignacion[index]
                 if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                     self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
+        
         else:
             for index in range(len(self.asignacion)-1,-1, -1):
                 if self.asignacion[index][0] == model[path][0] and self.asignacion[index][1] == model[path][1]:
                     del self.asignacion[index]
-        model.remove(model.get_iter(path))
+        
+        model.remove(model.get_iter(path))      
+        if self.treemenu_invoker == self.vistaLista:
+            self.reorder_activities()
         if gantt_modified == True:
             act_list = []
             dur_dic = {}
@@ -2244,7 +2254,20 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                                                            self.schedules[index][1])
             self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
         self.set_modified_state(True)
-  
+    
+    def reorder_activities(self):
+        """
+        Reorder numbers of activities.
+
+        Returns: None.
+        """ 
+        it = self.modelo.get_iter_first()
+        actNumber = 1
+        while it != None:
+            self.modelo.set_value(it, 0, actNumber)
+            it = self.modelo.iter_next(it)
+            actNumber = actNumber + 1
+        
 # MANEJADORES #
 # --- Menu actions
 
