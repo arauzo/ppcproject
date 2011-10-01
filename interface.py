@@ -39,6 +39,10 @@ gettext.textdomain(APP)
 gtk.glade.bindtextdomain(APP, DIR)
 gtk.glade.textdomain(APP)
 
+#XXX Felipe para dibujar el gráfico
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
+
 class Interface(object):
     __gsignals__ = {'gantt-width-changed' : (gobject.SIGNAL_RUN_FIRST, 
                                              gobject.TYPE_NONE,
@@ -365,8 +369,10 @@ class Interface(object):
 
     def update_frecuency_intervals_treeview (self, n, durations, itTotales):
         # TreeView for frequencies
-        self.vistaFrecuencias = self._widgets.get_widget('vistaFrecuencias')          
-        columns_type = [str] * n
+        self.vistaFrecuencias = self._widgets.get_widget('vistaFrecuencias')
+        felipe = n+1
+        print felipe
+        columns_type = [str] * felipe #XXX Felipe aqui habia n, el problema esta aqui o un pelin mas abajo
         self.modeloF = gtk.ListStore(*columns_type)
         self.vistaFrecuencias.set_model(self.modeloF)
         #First column
@@ -377,7 +383,7 @@ class Interface(object):
         column.add_attribute(cell, 'text', 0)
         column.set_min_width(50)
         #Intervals
-        for interval in range(n):
+        for interval in range(1, felipe): #XXX Felipe aqui que tambien habia n
             column = gtk.TreeViewColumn("")
             self.vistaFrecuencias.append_column(column)
             cell = gtk.CellRendererText()
@@ -392,20 +398,28 @@ class Interface(object):
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
         dmax = float(max(durations)+0.00001)  # duración máxima
         dmin = float(min(durations))   # duración mí­nima
-        valor = float(iValor.get_text())
+        valor_i = float(iValor.get_text())
 
-        n = simulation.nIntervalos(dmax, dmin, valor, str(opcion)) # XXX Felipe habia 20
+        #n = simulation.nIntervalos(dmax, dmin, valor, str(opcion)) # XXX Felipe habia 20
         #pruebaInterface.create_simulation_treeviews2(self, int(N))
         #print dMax, 'max', dMin, 'min'
-  
-        for ni in range(n):
-            valor = '['+str('%5.2f'%(simulation.duracion(ni, dmax, dmin, n)))+', '+str('%5.2f'%(simulation.duracion((ni+1), dmax, dmin, n)))+'['       
-            interv.append(valor)
+        
+        if opcion == 'Numero de intervalos':
+            for ni in range(n):
+                valor = '['+str('%5.2f'%(simulation.duracion(ni, dmax, dmin, n)))+', '+str('%5.2f'%(simulation.duracion((ni+1), dmax, dmin, n)))+'['       
+                interv.append(valor)
+        elif opcion == 'Tamanio del intervalo':
+            mini = dmin - (dmin % valor_i)
+            for ni in range(n): #XXX Esto hay que cambiarlo porque no funciona bien
+                valor = '['+str(mini)+', '+str(mini + valor_i)+'['
+                mini = mini + valor_i
+                interv.append(valor)
   
 
         # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
         self.modeloF.clear()
         i = 0
+        print 'Aqui da el fallo:', len(interv) #XXX Felipe aquí es donde se sale del rango al pasarlo dos veces, mirar.
         for column in self.vistaFrecuencias.get_columns()[1:]:
             column.set_title(interv[i])
             i = i + 1
@@ -418,7 +432,7 @@ class Interface(object):
         # Se calculan las frecuencias
         Fa, Fr = simulation.calcularFrecuencias(durations, dmax, dmin, itTotales, n)
   
-        
+        print len(Fa), len(Fr)
         self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str, Fa))
         self.modeloF.append([gettext.gettext("Relative freq.")] + map(str, Fr))
         #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
@@ -426,16 +440,17 @@ class Interface(object):
         # Dibuja histograma devolviendo los intervalos (bins) y otros datos
         fig = Figure(figsize=(5,4), dpi=100)
         ax = fig.add_subplot(111)
-  
+        hBoxSim = self._widgets.get_widget('hbSim') #XXX Felipe
         n, bins, patches = ax.hist(durations, n, normed=1) #XXX Felipe n era 100
         canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-        if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-            self.hBoxSim.remove(self.boxS)
-            self.boxS = gtk.VBox()
+        boxS = gtk.VBox()
+        if len(boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
+            hBoxSim.remove(self.boxS)
+            boxS = gtk.VBox()
 
-        self.hBoxSim.add(self.boxS)
-        self.boxS.pack_start(canvas)
-        self.boxS.show_all()
+        hBoxSim.add(boxS)
+        boxS.pack_start(canvas)
+        boxS.show_all()
 
 
 ### FUNCIONES RELACIONADAS CON LOS TREEVIEW
