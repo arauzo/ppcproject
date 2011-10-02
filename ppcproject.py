@@ -2004,8 +2004,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
         activities = []
         for act in self.actividad:
-            act[6] = float(act[6])
-            act[7] = float(act[7])
+            if act[6] != '':
+                act[6] = float(act[6])
+            if act[7] != '':
+                act[7] = float(act[7])
             activities.append(act[0:-1])
 
         try:
