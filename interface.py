@@ -153,6 +153,9 @@ class Interface(object):
         Valor de retorno: -
         """
         # TreeView for main data table
+        self.main_table_treeview = self._widgets.get_widget('vistaListaDatos')
+        self.main_table_treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+
         columns = [ gettext.gettext('#'),                   # 0
                     gettext.gettext('Activity'),            # 1
                     gettext.gettext('Following Act.'),      # 2
@@ -167,16 +170,12 @@ class Interface(object):
                     gettext.gettext('End Time'),            #11
                     ]
 
-        self.main_table_treeview = self._widgets.get_widget('vistaListaDatos')
-        self.main_table_treeview.show() 
-        self.selec = self.main_table_treeview.get_selection()
-        self.selec.set_mode(gtk.SELECTION_MULTIPLE)
-        mode = self.selec.get_mode()   
         self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
         # XXX Cambiado a float para evitar el problema de la carga
         # XXX Por que hay dos columnas mas de las que tiene el modelo, como estan manejadas??
         #self.modelo = gtk.ListStore(int, str, str, float, float, float, float, float, str, str)
         self.main_table_treeview.set_model(self.modelo)
+
         self.orden = gtk.TreeModelSort(self.modelo)
         #self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
 
@@ -184,10 +183,21 @@ class Interface(object):
         self.main_table_treeview.columna = []
         for column_name in columns:
             self.main_table_treeview.columna.append(gtk.TreeViewColumn(column_name))
+        # XXX Las dos siguientes variables lista no deberian crearse dentro del objeto TreeView
         self.main_table_treeview.columna.append(gtk.TreeViewColumn()) # Menu column
         self.main_table_treeview.renderer = [None]*12 
 
-        self.columnaNoEditableColor(0)
+        # Create column 0-# (id order number for task)
+        self.main_table_treeview.renderer[0] = gtk.CellRendererText()
+        self.main_table_treeview.renderer[0].set_property('editable', False)
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[0])
+        #self.main_table_treeview.columna[0].set_sort_column_id(0)
+        self.main_table_treeview.columna[0].pack_start(self.main_table_treeview.renderer[0], True)
+        self.main_table_treeview.columna[0].set_attributes(self.main_table_treeview.renderer[0], text=0)
+        self.main_table_treeview.columna[0].set_spacing(8)
+        self.main_table_treeview.columna[0].set_resizable(False)
+        self.main_table_treeview.columna[0].set_expand(False)
+
         self.columnaEditable(self.main_table_treeview, self.modelo, 1)
         self.modeloComboS = self.columnaCombo(self.main_table_treeview, self.modelo, 2)
         self.columnaEditable(self.main_table_treeview, self.modelo, 3)
@@ -195,27 +205,57 @@ class Interface(object):
         self.columnaEditable(self.main_table_treeview, self.modelo, 5)
         self.columnaEditable(self.main_table_treeview, self.modelo, 6)
         self.columnaEditable(self.main_table_treeview, self.modelo, 7)
-        self.resourcesColumn()
-        self.modeloComboD = self.columnaCombo(self.main_table_treeview, self.modelo, 9, True)
-        self.columnaEditable(self.main_table_treeview, self.modelo, 10, True)
-        self.endTimeColumn()
 
-        # Statistical distribution types allowed in column Distribution
+        # Create column 8-Resources
+        self.main_table_treeview.renderer[8] = gtk.CellRendererText()
+        self.main_table_treeview.renderer[8].set_property('editable', False)
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[8])
+        #self.main_table_treeview.columna[8].set_sort_column_id(8)
+        self.main_table_treeview.columna[8].pack_start(self.main_table_treeview.renderer[8], True)
+        self.main_table_treeview.columna[8].set_cell_data_func(self.main_table_treeview.renderer[8], self.resourcesRendererFunc)
+        self.main_table_treeview.columna[8].set_spacing(8)
+        self.main_table_treeview.columna[8].set_expand(True)
+        self.main_table_treeview.columna[0].set_expand(False)
+        self.main_table_treeview.columna[8].set_resizable(True)
+
+        # Create column 9-Distribution
+        self.modeloComboD = self.columnaCombo(self.main_table_treeview, self.modelo, 9, True)
         self.modeloComboD.append([gettext.gettext('Normal')])
         self.modeloComboD.append([gettext.gettext('Triangular')])
         self.modeloComboD.append([gettext.gettext('Beta')])
         self.modeloComboD.append([gettext.gettext('Uniform')])
 
+        self.columnaEditable(self.main_table_treeview, self.modelo, 10, True)
+
+        # Create column 11-End time
+        self.main_table_treeview.renderer[11] = gtk.CellRendererText()
+        self.main_table_treeview.renderer[11].set_property('editable', False)
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[11])
+        #self.main_table_treeview.columna[11].set_sort_column_id(11)
+        self.main_table_treeview.columna[11].pack_start(self.main_table_treeview.renderer[11], True)
+        self.main_table_treeview.columna[11].set_cell_data_func(self.main_table_treeview.renderer[11],
+                                                                self.endTimeRendererFunc)
+        self.main_table_treeview.columna[11].set_spacing(8)
+        self.main_table_treeview.columna[11].set_expand(True)
+        self.main_table_treeview.columna[0].set_expand(False)
+        self.main_table_treeview.columna[11].set_resizable(True)
+
         # Default visible or hidden columns
+        self.main_table_treeview.columna[0].set_visible(True)
+        self.main_table_treeview.columna[1].set_visible(True)
+        self.main_table_treeview.columna[2].set_visible(True)
         self.main_table_treeview.columna[3].set_visible(True) 
         self.main_table_treeview.columna[4].set_visible(True)
         self.main_table_treeview.columna[5].set_visible(True)  
+        self.main_table_treeview.columna[6].set_visible(True)  
+        self.main_table_treeview.columna[7].set_visible(True)  
         self.main_table_treeview.columna[8].set_visible(False) 
         self.main_table_treeview.columna[9].set_visible(True) 
+        self.main_table_treeview.columna[10].set_visible(True)  
         self.main_table_treeview.columna[11].set_visible(False) 
 
         # Menu column to make columns visible or hidden
-        self.menu = gtk.Menu()
+        menu = gtk.Menu()
         self.imagen = gtk.image_new_from_stock(gtk.STOCK_PROPERTIES, gtk.ICON_SIZE_MENU)
         self.imagen.show()
         self.main_table_treeview.columna[12].set_widget(self.imagen)
@@ -224,25 +264,19 @@ class Interface(object):
         self.main_table_treeview.columna[12].pack_start(self.main_table_treeview.render, True)
         self.main_table_treeview.columna[12].set_attributes(self.main_table_treeview.render)
         self.main_table_treeview.columna[12].set_clickable(True)
-        self.main_table_treeview.columna[12].connect('clicked', self.parent_application.columna_press, self.menu) 
+        self.main_table_treeview.columna[12].connect('clicked', self.columna_press, menu) 
         self.main_table_treeview.columna[12].set_expand(False)
 
         # Create items for column menu
-        self.checkColum = []
-        for column_name in columns:
-            self.checkColum.append( gtk.CheckMenuItem(column_name) )
-        for n in range(11):
-            self.menu.add(self.checkColum[n])
-            self.checkColum[n].set_active(True)
+        for i in range(len(columns)):
+            menu_item = gtk.CheckMenuItem(columns[i])
+            menu.add(menu_item)
+            active = self.main_table_treeview.columna[i].get_visible()
+            menu_item.set_active(active)
+            menu_item.connect('activate', self.activarItem, i)
 
-        # Las columnas inactivas aparecen desactivadas en el menú
-        #XXX Esto deberia extraerse del estado de self.main_table_treeview.columna
-        self.checkColum[2].set_active(False)
-        self.checkColum[3].set_active(False)
-        self.checkColum[4].set_active(False)
-        self.checkColum[7].set_active(False)
-        self.checkColum[8].set_active(False)
-        self.checkColum[10].set_active(False)
+        self.main_table_treeview.show_all() 
+
 
         # TREEVIEW para los caminos (ventana de ZADERENKO)
         self.vistaListaZ = self._widgets.get_widget('vistaListaZad')
@@ -339,6 +373,31 @@ class Interface(object):
         self.modeloComboARA = self.columnaCombo(self.vistaListaAR, self.modeloAR, 0)
         self.modeloComboARR = self.columnaCombo(self.vistaListaAR, self.modeloAR, 1)
         self.columnaEditable(self.vistaListaAR, self.modeloAR, 2)
+
+    def columna_press(self, columna, menu): 
+        """
+        Show column menu when last column pressed
+  
+         columna (columna presionada)
+         menu (gtk.Menu)
+        """
+        menu.show_all()
+        menu.popup(None, None, None, 1, 0)
+   
+   
+    def activarItem(self, item, n):
+        """
+         Activación o desactivación de las columnas según el item 
+                  seleccionado en el menu
+  
+         Parámetros: item (item seleccionado)
+                     n (posición en el menu del item seleccionado)
+        """
+        if item.get_active():
+            self.main_table_treeview.columna[n].set_visible(True)
+        else:
+            self.main_table_treeview.columna[n].set_visible(False)
+
 
     def create_simulation_treeviews(self):
         """
@@ -453,57 +512,6 @@ class Interface(object):
 
 ### FUNCIONES RELACIONADAS CON LOS TREEVIEW
 
-    def columnaNoEditableColor(self, n):  
-        """
-        Creación de las columnas no editables y con color de celda
-        Parámetros: n (columna)
-        Valor de retorno: -
-        """
-        self.main_table_treeview.renderer[n] = gtk.CellRendererText()
-        self.main_table_treeview.renderer[n].set_property('editable', False)
-        self.main_table_treeview.append_column(self.main_table_treeview.columna[n])
-        #self.main_table_treeview.columna[n].set_sort_column_id(n)
-        self.main_table_treeview.columna[n].pack_start(self.main_table_treeview.renderer[n], True)
-        self.main_table_treeview.columna[n].set_attributes(self.main_table_treeview.renderer[n], text=n)
-        self.main_table_treeview.columna[n].set_spacing(8)
-        self.main_table_treeview.columna[n].set_expand(True)
-        self.main_table_treeview.columna[0].set_expand(False)
-        self.main_table_treeview.columna[n].set_resizable(True)
-
-    def endTimeColumn(self):
-        """
-        Creates End times column.
-        Parameters: -
-        Returns: -
-        """
-        self.main_table_treeview.renderer[11] = gtk.CellRendererText()
-        self.main_table_treeview.renderer[11].set_property('editable', False)
-        self.main_table_treeview.append_column(self.main_table_treeview.columna[11])
-        #self.main_table_treeview.columna[11].set_sort_column_id(11)
-        self.main_table_treeview.columna[11].pack_start(self.main_table_treeview.renderer[11], True)
-        self.main_table_treeview.columna[11].set_cell_data_func(self.main_table_treeview.renderer[11], self.endTimeRendererFunc)
-        self.main_table_treeview.columna[11].set_spacing(8)
-        self.main_table_treeview.columna[11].set_expand(True)
-        self.main_table_treeview.columna[0].set_expand(False)
-        self.main_table_treeview.columna[11].set_resizable(True)
-       
-    def resourcesColumn(self):
-        """
-        Creates Resources column.
-        Parameters: -
-        Returns: -
-        """
-        self.main_table_treeview.renderer[8] = gtk.CellRendererText()
-        self.main_table_treeview.renderer[8].set_property('editable', False)
-        self.main_table_treeview.append_column(self.main_table_treeview.columna[8])
-        #self.main_table_treeview.columna[8].set_sort_column_id(8)
-        self.main_table_treeview.columna[8].pack_start(self.main_table_treeview.renderer[8], True)
-        self.main_table_treeview.columna[8].set_cell_data_func(self.main_table_treeview.renderer[8], self.resourcesRendererFunc)
-        self.main_table_treeview.columna[8].set_spacing(8)
-        self.main_table_treeview.columna[8].set_expand(True)
-        self.main_table_treeview.columna[0].set_expand(False)
-        self.main_table_treeview.columna[8].set_resizable(True)
-
     def resourcesRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
         """
         Function called by the "Resources" column when its content needs to be shown 
@@ -512,8 +520,6 @@ class Interface(object):
                    cell_renderer: cell renderer
                    model: activities model.
                    iter: row pointer.
-
-        Return value: -
         """
         activity = model.get_value(iter, 1)
         text = ""
@@ -554,16 +560,12 @@ class Interface(object):
             cell_renderer.set_property('text', str(start + duration))
         return
 
-
     def columnaNoEditable(self, vista, n):
         """
-        Creación de las columnas no editables y 
-                sin color de celda 
+        Create a non-editable column without cell color
 
-        Parámetros: vista (widget que muestra el treeview)
-                   n (columna)
-
-        Valor de retorno: -
+         vista (widget que muestra el treeview)
+         n (columna)
         """
         vista.renderer[n] = gtk.CellRendererText()
         vista.append_column(vista.columna[n])
@@ -574,18 +576,13 @@ class Interface(object):
         vista.columna[n].set_expand(True)
         #vista.columna[n].set_reorderable(True)
 
-#-----------------------------------------------------------                           
-     
-    def columnaEditable(self, vista, modelo, n, offset = False):
+    def columnaEditable(self, vista, modelo, n, offset=False):
         """
-        Creación de las columnas editables y con color
-                de celda
+        Create an editable column with cell color
 
-        Parámetros: vista (widget que muestra el treeview)
-                   modelo (lista) 
-                   n (columna)
-
-        Valor de retorno: -
+         vista (widget que muestra el treeview)
+         modelo (lista) 
+         n (columna)
         """
         vista.renderer[n] = gtk.CellRendererText()
         vista.renderer[n].set_property('editable', True)
@@ -593,22 +590,21 @@ class Interface(object):
         vista.append_column(vista.columna[n])
         #vista.columna[n].set_sort_column_id(n)
         vista.columna[n].pack_start(vista.renderer[n], True)
-        vista.columna[n].set_attributes(vista.renderer[n], text= (n - 1 if offset else n))
+        vista.columna[n].set_attributes(vista.renderer[n], text=(n - 1 if offset else n))
         vista.columna[n].set_spacing(8)
         vista.columna[n].set_expand(True)
         vista.columna[n].set_resizable(True)
         #vista.columna[n].set_reorderable(True)
       
-     
-    def columnaCombo(self, vista, modelo, n, offset = False):
+    def columnaCombo(self, vista, modelo, n, offset=False):
         """
-        Creación de todas las columnas combo (selector)
+        Create a combo column for a treeview
 
-        Parámetros: vista (widget que muestra el treeview)
-                   modelo (lista) 
-                   n (columna)
+         vista (widget que muestra el treeview)
+         modelo (lista) 
+         n (columna)
 
-        Valor de retorno: modeloCombo (lista para los datos del selector)
+        Return: modeloCombo (lista para los datos del selector)
         """
         modeloCombo = gtk.ListStore(str)
         vista.renderer[n] = gtk.CellRendererCombo()
