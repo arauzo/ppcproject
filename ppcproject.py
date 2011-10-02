@@ -157,11 +157,6 @@ class PPCproject(object):
         self.vistaListaZ = self.interface.vistaListaZ
         self.modeloH = self.interface.modeloH
         self.modeloC = self.interface.modeloC
-        
-
-        self.checkColum = [None]*11
-        for n in range(11):
-            self.checkColum[n] = self.interface.checkColum[n]
 
         self._widgets.get_widget('mnSalirPantComp').hide()
 
@@ -266,39 +261,7 @@ class PPCproject(object):
             self._widgets.get_widget('stbStatus').push(0, gettext.gettext("Project modified"))
         else:
             self._widgets.get_widget('stbStatus').push(0, gettext.gettext("Project without changes"))
-   
-    def columna_press(self, columna, menu): 
-        """
-         Muestra los items del menu en la última columna del treeview de 
-                  introducción de datos al presionar sobre dicha columna
-  
-         Parámetros: columna (columna presionada)
-                     menu (gtk.Menu)
-  
-         Valor de retorno: -
-        """
-        menu.show_all()
-        menu.popup(None, None, None, 1, 0)
-        for n in range(11):
-            self.checkColum[n].connect('activate', self.activarItem, n)
-   
-   
-    def activarItem(self, item, n):
-        """
-         Activación o desactivación de las columnas según el item 
-                  seleccionado en el menu
-  
-         Parámetros: item (item seleccionado)
-                     n (posición en el menu del item seleccionado)
-  
-         Valor de retorno: -
-        """
-        if item == self.checkColum[n]:
-            if self.checkColum[n].get_active():
-                self.interface.main_table_treeview.columna[n+1].set_visible(True)
-            else:
-                self.interface.main_table_treeview.columna[n+1].set_visible(False)
-    
+       
     
     
 ### FUNCIONES DE INTRODUCCIÓN, CARGA Y ACTUALIZACIÓN DATOS
