@@ -152,93 +152,91 @@ class Interface(object):
 
         Valor de retorno: -
         """
-        # TREEVIEW para la INTRODUCCIÓN DE DATOS
-        self.vistaLista = self._widgets.get_widget('vistaListaDatos')
-        self.vistaLista.show() 
-        self.selec = self.vistaLista.get_selection()
+        # TreeView for main data table
+        columns = [ gettext.gettext('#'),                   # 0
+                    gettext.gettext('Activity'),            # 1
+                    gettext.gettext('Following Act.'),      # 2
+                    gettext.gettext('Optimistic Dur.'),     # 3
+                    gettext.gettext('Most Probable Dur.'),  # 4
+                    gettext.gettext('Pessimistic Dur.'),    # 5
+                    gettext.gettext('Average Dur.'),        # 6
+                    gettext.gettext('Typical Dev.'),        # 7
+                    gettext.gettext('Resources'),           # 8
+                    gettext.gettext('Distribution'),        # 9
+                    gettext.gettext('Start Time'),          #10
+                    gettext.gettext('End Time'),            #11
+                    ]
+
+        self.main_table_treeview = self._widgets.get_widget('vistaListaDatos')
+        self.main_table_treeview.show() 
+        self.selec = self.main_table_treeview.get_selection()
         self.selec.set_mode(gtk.SELECTION_MULTIPLE)
         mode = self.selec.get_mode()   
-        self.menu = gtk.Menu()
         self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
         # XXX Cambiado a float para evitar el problema de la carga
         # XXX Por que hay dos columnas mas de las que tiene el modelo, como estan manejadas??
         #self.modelo = gtk.ListStore(int, str, str, float, float, float, float, float, str, str)
-        self.vistaLista.set_model(self.modelo)
+        self.main_table_treeview.set_model(self.modelo)
         self.orden = gtk.TreeModelSort(self.modelo)
         #self.orden.set_sort_column_id(0,gtk.SORT_ASCENDING)
-        self.vistaLista.columna = [None]*13
-        self.vistaLista.columna[0] = gtk.TreeViewColumn(gettext.gettext('#'))
-        self.vistaLista.columna[1] = gtk.TreeViewColumn(gettext.gettext('Activity'))
-        self.vistaLista.columna[2] = gtk.TreeViewColumn(gettext.gettext('Following Act.'))
-        self.vistaLista.columna[3] = gtk.TreeViewColumn(gettext.gettext('Optimistic Dur.'))
-        self.vistaLista.columna[4] = gtk.TreeViewColumn(gettext.gettext('Most Probable Dur.'))
-        self.vistaLista.columna[5] = gtk.TreeViewColumn(gettext.gettext('Pessimistic Dur.'))
-        self.vistaLista.columna[6] = gtk.TreeViewColumn(gettext.gettext('Average Dur.'))
-        self.vistaLista.columna[7] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
-        self.vistaLista.columna[8] = gtk.TreeViewColumn(gettext.gettext('Resources'))
-        self.vistaLista.columna[9] = gtk.TreeViewColumn(gettext.gettext('Distribution'))
-        self.vistaLista.columna[10] = gtk.TreeViewColumn(gettext.gettext('Start Time'))
-        self.vistaLista.columna[11] = gtk.TreeViewColumn(gettext.gettext('End Time'))
-        self.vistaLista.columna[12] = gtk.TreeViewColumn()
-        self.vistaLista.renderer = [None]*12 
+
+        # Create columns
+        self.main_table_treeview.columna = []
+        for column_name in columns:
+            self.main_table_treeview.columna.append(gtk.TreeViewColumn(column_name))
+        self.main_table_treeview.columna.append(gtk.TreeViewColumn()) # Menu column
+        self.main_table_treeview.renderer = [None]*12 
 
         self.columnaNoEditableColor(0)
-        self.columnaEditable(self.vistaLista, self.modelo, 1)
-        self.modeloComboS = self.columnaCombo(self.vistaLista, self.modelo, 2)
-        self.columnaEditable(self.vistaLista, self.modelo, 3)
-        self.columnaEditable(self.vistaLista, self.modelo, 4)
-        self.columnaEditable(self.vistaLista, self.modelo, 5)
-        self.columnaEditable(self.vistaLista, self.modelo, 6)
-        self.columnaEditable(self.vistaLista, self.modelo, 7)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 1)
+        self.modeloComboS = self.columnaCombo(self.main_table_treeview, self.modelo, 2)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 3)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 4)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 5)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 6)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 7)
         self.resourcesColumn()
-        self.modeloComboD = self.columnaCombo(self.vistaLista, self.modelo, 9, True)
-        self.columnaEditable(self.vistaLista, self.modelo, 10, True)
+        self.modeloComboD = self.columnaCombo(self.main_table_treeview, self.modelo, 9, True)
+        self.columnaEditable(self.main_table_treeview, self.modelo, 10, True)
         self.endTimeColumn()
 
-        # Se añaden los tipos de distribución
+        # Statistical distribution types allowed in column Distribution
         self.modeloComboD.append([gettext.gettext('Normal')])
         self.modeloComboD.append([gettext.gettext('Triangular')])
         self.modeloComboD.append([gettext.gettext('Beta')])
         self.modeloComboD.append([gettext.gettext('Uniform')])
 
-        # Se ocultan algunas columnas XXX Felipe para hacer las pruebas y no tener que abrir siempre estas opciones
-        self.vistaLista.columna[3].set_visible(True) 
-        self.vistaLista.columna[4].set_visible(True)
-        self.vistaLista.columna[5].set_visible(True)  
-        self.vistaLista.columna[8].set_visible(False) 
-        self.vistaLista.columna[9].set_visible(True) 
-        self.vistaLista.columna[11].set_visible(False) 
+        # Default visible or hidden columns
+        self.main_table_treeview.columna[3].set_visible(True) 
+        self.main_table_treeview.columna[4].set_visible(True)
+        self.main_table_treeview.columna[5].set_visible(True)  
+        self.main_table_treeview.columna[8].set_visible(False) 
+        self.main_table_treeview.columna[9].set_visible(True) 
+        self.main_table_treeview.columna[11].set_visible(False) 
 
-        # Columna menu
+        # Menu column to make columns visible or hidden
         self.menu = gtk.Menu()
-        self.imagen = gtk.Image()
-        self.imagen.set_from_file('icono076.gif')
+        self.imagen = gtk.image_new_from_stock(gtk.STOCK_PROPERTIES, gtk.ICON_SIZE_MENU)
         self.imagen.show()
-        self.vistaLista.columna[12].set_widget(self.imagen)
-        self.vistaLista.render = gtk.CellRendererText()
-        self.vistaLista.append_column(self.vistaLista.columna[12])
-        self.vistaLista.columna[12].pack_start(self.vistaLista.render, True)
-        self.vistaLista.columna[12].set_attributes(self.vistaLista.render)
-        self.vistaLista.columna[12].set_clickable(True)
-        self.vistaLista.columna[12].connect('clicked', self.parent_application.columna_press, self.menu) 
-        self.vistaLista.columna[12].set_expand(False)
-        self.checkColum = [None]*11
-        self.checkColum[0] = gtk.CheckMenuItem(gettext.gettext('Activity'), True)
-        self.checkColum[1] = gtk.CheckMenuItem(gettext.gettext('Following Act.'), True)
-        self.checkColum[2] = gtk.CheckMenuItem(gettext.gettext('Optimistic Dur.'), True)
-        self.checkColum[3] = gtk.CheckMenuItem(gettext.gettext('Most Probable Dur.'), True)
-        self.checkColum[4] = gtk.CheckMenuItem(gettext.gettext('Pessimistic Dur.'), True)
-        self.checkColum[5] = gtk.CheckMenuItem(gettext.gettext('Average Dur.'), True)
-        self.checkColum[6] = gtk.CheckMenuItem(gettext.gettext('Typical Dev.'), True)
-        self.checkColum[7] = gtk.CheckMenuItem(gettext.gettext('Resources'), True)
-        self.checkColum[8] = gtk.CheckMenuItem(gettext.gettext('Distribution'), True)
-        self.checkColum[9] = gtk.CheckMenuItem(gettext.gettext('Start Time'), True)
-        self.checkColum[10] = gtk.CheckMenuItem(gettext.gettext('End Time'), True)
+        self.main_table_treeview.columna[12].set_widget(self.imagen)
+        self.main_table_treeview.render = gtk.CellRendererText()
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[12])
+        self.main_table_treeview.columna[12].pack_start(self.main_table_treeview.render, True)
+        self.main_table_treeview.columna[12].set_attributes(self.main_table_treeview.render)
+        self.main_table_treeview.columna[12].set_clickable(True)
+        self.main_table_treeview.columna[12].connect('clicked', self.parent_application.columna_press, self.menu) 
+        self.main_table_treeview.columna[12].set_expand(False)
+
+        # Create items for column menu
+        self.checkColum = []
+        for column_name in columns:
+            self.checkColum.append( gtk.CheckMenuItem(column_name) )
         for n in range(11):
             self.menu.add(self.checkColum[n])
             self.checkColum[n].set_active(True)
 
         # Las columnas inactivas aparecen desactivadas en el menú
+        #XXX Esto deberia extraerse del estado de self.main_table_treeview.columna
         self.checkColum[2].set_active(False)
         self.checkColum[3].set_active(False)
         self.checkColum[4].set_active(False)
@@ -461,16 +459,16 @@ class Interface(object):
         Parámetros: n (columna)
         Valor de retorno: -
         """
-        self.vistaLista.renderer[n] = gtk.CellRendererText()
-        self.vistaLista.renderer[n].set_property('editable', False)
-        self.vistaLista.append_column(self.vistaLista.columna[n])
-        #self.vistaLista.columna[n].set_sort_column_id(n)
-        self.vistaLista.columna[n].pack_start(self.vistaLista.renderer[n], True)
-        self.vistaLista.columna[n].set_attributes(self.vistaLista.renderer[n], text=n)
-        self.vistaLista.columna[n].set_spacing(8)
-        self.vistaLista.columna[n].set_expand(True)
-        self.vistaLista.columna[0].set_expand(False)
-        self.vistaLista.columna[n].set_resizable(True)
+        self.main_table_treeview.renderer[n] = gtk.CellRendererText()
+        self.main_table_treeview.renderer[n].set_property('editable', False)
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[n])
+        #self.main_table_treeview.columna[n].set_sort_column_id(n)
+        self.main_table_treeview.columna[n].pack_start(self.main_table_treeview.renderer[n], True)
+        self.main_table_treeview.columna[n].set_attributes(self.main_table_treeview.renderer[n], text=n)
+        self.main_table_treeview.columna[n].set_spacing(8)
+        self.main_table_treeview.columna[n].set_expand(True)
+        self.main_table_treeview.columna[0].set_expand(False)
+        self.main_table_treeview.columna[n].set_resizable(True)
 
     def endTimeColumn(self):
         """
@@ -478,16 +476,16 @@ class Interface(object):
         Parameters: -
         Returns: -
         """
-        self.vistaLista.renderer[11] = gtk.CellRendererText()
-        self.vistaLista.renderer[11].set_property('editable', False)
-        self.vistaLista.append_column(self.vistaLista.columna[11])
-        #self.vistaLista.columna[11].set_sort_column_id(11)
-        self.vistaLista.columna[11].pack_start(self.vistaLista.renderer[11], True)
-        self.vistaLista.columna[11].set_cell_data_func(self.vistaLista.renderer[11], self.endTimeRendererFunc)
-        self.vistaLista.columna[11].set_spacing(8)
-        self.vistaLista.columna[11].set_expand(True)
-        self.vistaLista.columna[0].set_expand(False)
-        self.vistaLista.columna[11].set_resizable(True)
+        self.main_table_treeview.renderer[11] = gtk.CellRendererText()
+        self.main_table_treeview.renderer[11].set_property('editable', False)
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[11])
+        #self.main_table_treeview.columna[11].set_sort_column_id(11)
+        self.main_table_treeview.columna[11].pack_start(self.main_table_treeview.renderer[11], True)
+        self.main_table_treeview.columna[11].set_cell_data_func(self.main_table_treeview.renderer[11], self.endTimeRendererFunc)
+        self.main_table_treeview.columna[11].set_spacing(8)
+        self.main_table_treeview.columna[11].set_expand(True)
+        self.main_table_treeview.columna[0].set_expand(False)
+        self.main_table_treeview.columna[11].set_resizable(True)
        
     def resourcesColumn(self):
         """
@@ -495,16 +493,16 @@ class Interface(object):
         Parameters: -
         Returns: -
         """
-        self.vistaLista.renderer[8] = gtk.CellRendererText()
-        self.vistaLista.renderer[8].set_property('editable', False)
-        self.vistaLista.append_column(self.vistaLista.columna[8])
-        #self.vistaLista.columna[8].set_sort_column_id(8)
-        self.vistaLista.columna[8].pack_start(self.vistaLista.renderer[8], True)
-        self.vistaLista.columna[8].set_cell_data_func(self.vistaLista.renderer[8], self.resourcesRendererFunc)
-        self.vistaLista.columna[8].set_spacing(8)
-        self.vistaLista.columna[8].set_expand(True)
-        self.vistaLista.columna[0].set_expand(False)
-        self.vistaLista.columna[8].set_resizable(True)
+        self.main_table_treeview.renderer[8] = gtk.CellRendererText()
+        self.main_table_treeview.renderer[8].set_property('editable', False)
+        self.main_table_treeview.append_column(self.main_table_treeview.columna[8])
+        #self.main_table_treeview.columna[8].set_sort_column_id(8)
+        self.main_table_treeview.columna[8].pack_start(self.main_table_treeview.renderer[8], True)
+        self.main_table_treeview.columna[8].set_cell_data_func(self.main_table_treeview.renderer[8], self.resourcesRendererFunc)
+        self.main_table_treeview.columna[8].set_spacing(8)
+        self.main_table_treeview.columna[8].set_expand(True)
+        self.main_table_treeview.columna[0].set_expand(False)
+        self.main_table_treeview.columna[8].set_resizable(True)
 
     def resourcesRendererFunc(self, treeviewcolumn, cell_renderer, model, iter):
         """
