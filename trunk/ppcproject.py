@@ -1982,7 +1982,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def saveProject(self, nombre):
         """
-        Saves a project in ppcproject format '.prj'
+        Saves a project in ppcproject format '.ppc'
         """
         
         # Here extension should be checked to choose the save format
@@ -2005,6 +2005,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
         activities = []
         for act in self.actividad:
+            act[6] = float(act[6])
+            act[7] = float(act[7])
             activities.append(act[0:-1])
 
         try:
