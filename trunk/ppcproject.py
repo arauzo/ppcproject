@@ -94,7 +94,7 @@ class PPCproject(object):
         
         self.vBoxProb = self._widgets.get_widget('vbProb')
         self.grafica = gtk.Image()
-        self.box=gtk.VBox()
+        self.box = gtk.VBox()
         self.hBoxSim = self._widgets.get_widget('hbSim')
         self.boxS = gtk.VBox()
         self.vPrincipal = self._widgets.get_widget('wndPrincipal')
@@ -140,7 +140,6 @@ class PPCproject(object):
         self.ntbSchedule = self.interface.ntbSchedule
 
         self.zadViewList = self._widgets.get_widget('vistaZad')
-        self.vistaLista = self._widgets.get_widget('vistaListaDatos')
         self.ventanaScroll = self._widgets.get_widget('scrolledwindow10') #YO
         
         self.modelo = self.interface.modelo
@@ -166,10 +165,10 @@ class PPCproject(object):
 
         self._widgets.get_widget('mnSalirPantComp').hide()
 
-        self.row_height_signal = self.vistaLista.connect("expose-event", self.cbtreeview)
-        self.vistaLista.connect('drag-end', self.reorder_gantt)
+        self.row_height_signal = self.interface.main_table_treeview.connect("expose-event", self.cbtreeview)
+        self.interface.main_table_treeview.connect('drag-end', self.reorder_gantt)
         #self.modelo.connect('rows-reordered', self.reorder_gantt)
-        self.vistaLista.connect('button-press-event', self.treeview_menu_invoked, self.vistaLista)
+        self.interface.main_table_treeview.connect('button-press-event', self.treeview_menu_invoked, self.interface.main_table_treeview)
         self._widgets.get_widget('vistaListaRec').connect('button-press-event', self.treeview_menu_invoked,
                                                           self._widgets.get_widget('vistaListaRec'))
         self._widgets.get_widget('vistaListaAR').connect('button-press-event', self.treeview_menu_invoked,
@@ -192,7 +191,7 @@ class PPCproject(object):
         ]
 
 # TEST code on route to more usable editing table
-#        self.vistaLista.connect('key-press-event', self.on_vistaListaDatos_key_press_event, self.vistaLista)
+#        self.interface.main_table_treeview.connect('key-press-event', self.on_vistaListaDatos_key_press_event, self.interface.main_table_treeview)
 #    def on_vistaListaDatos_key_press_event(self, treeview, event, data):
 #        print 'XXX on_vistaListaDatos_key_press_event', treeview, event, data
 #        # Testing code from: http://www.daa.com.au/pipermail/pygtk/2009-June/017134.html
@@ -225,10 +224,10 @@ class PPCproject(object):
 
         Returns: False.
         """
-        self.gantt.set_header_height(self.vistaLista.convert_tree_to_widget_coords(0, 1)[1])
+        self.gantt.set_header_height(self.interface.main_table_treeview.convert_tree_to_widget_coords(0, 1)[1])
         if len (self.modelo) > 0 and self.modelo[0][1] != "":
-            self.gantt.set_row_height(self.vistaLista.get_background_area(0,self.vistaLista.columna[0]).height)
-            self.vistaLista.disconnect(self.row_height_signal)
+            self.gantt.set_row_height(self.interface.main_table_treeview.get_background_area(0,self.interface.main_table_treeview.columna[0]).height)
+            self.interface.main_table_treeview.disconnect(self.row_height_signal)
         return False
 
     def set_open_state(self, value):
@@ -296,9 +295,9 @@ class PPCproject(object):
         """
         if item == self.checkColum[n]:
             if self.checkColum[n].get_active():
-                self.vistaLista.columna[n+1].set_visible(True)
+                self.interface.main_table_treeview.columna[n+1].set_visible(True)
             else:
-                self.vistaLista.columna[n+1].set_visible(False)
+                self.interface.main_table_treeview.columna[n+1].set_visible(False)
     
     
     
@@ -2202,7 +2201,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         gantt_modified = False
         path = self.treemenu_invoker.get_selection().get_selected_rows()[1][0]
         model = self.treemenu_invoker.get_model()
-        if self.treemenu_invoker == self.vistaLista:
+        if self.treemenu_invoker == self.interface.main_table_treeview:
             for index in range(len(self.actividad)-1,-1, -1):
                 if model[path][1] in self.actividad[index][2]:
                     self.actividad[index][2].remove(model[path][1])
@@ -2239,7 +2238,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     del self.asignacion[index]
         
         model.remove(model.get_iter(path))      
-        if self.treemenu_invoker == self.vistaLista:
+        if self.treemenu_invoker == self.interface.main_table_treeview:
             self.reorder_activities()
         if gantt_modified == True:
             act_list = []
