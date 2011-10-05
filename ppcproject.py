@@ -299,7 +299,7 @@ class PPCproject(object):
         self.set_modified_state(True)
         self.ntbSchedule.show()
   
-    def col_edited_cb( self, renderer, path, new_text, modelo, n):
+    def col_edited_cb(self, renderer, path, new_text, modelo, n):
         """
          Edicción de filas y adicción de una fila vacía  
                   cuando escribimos sobre la última insertada
@@ -645,7 +645,7 @@ class PPCproject(object):
         # Se introducen en una lista las etiquetas de las actividades
         actividades = self.actividades2Lista()
 
-    # Se pasa a una lista las actividades que tengo como siguientes antes de la modificación
+        # Se pasa a una lista las actividades que tengo como siguientes antes de la modificación
         anterior = self.actString2actList(modelo[path][2]) 
         #print anterior, 'anterior' 
 
@@ -2050,8 +2050,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png", "png")
         dialogoGuardar.destroy()
 
-
-# --- DIÁLOGOS DE ADVERTENCIA Y ERRORES       
+   
 
     def closeProject(self):
         """
@@ -2061,9 +2060,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Return: True if closed
                 False if canceled
         """
-        if self.modified == False:   # El proyecto actual ha sido guardado
+        if self.modified == False:  # Project is already saved
             close = True
-        else:                 # El proyecto actual aún no se ha guardado
+        else:                       # Project changes need saving
             dialogo = gtk.Dialog(gettext.gettext("Attention!!"),
                                  None,
                                  gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -2320,7 +2319,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     opened = self.openProject(filename)
         dialogoFicheros.destroy()
 
-    def  on_Save_activate(self, item):
+    def on_Save_activate(self, item):
         """
         Save option invoked
 
