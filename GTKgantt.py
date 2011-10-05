@@ -707,7 +707,8 @@ class GanttDrawing(gtk.Layout, gtk.EventBox):
             context.rectangle(self.graph.start_time[activity]* self.cell_width, self.graph.activities.index(activity) * self.row_height, self.graph.durations[activity] * self.cell_width , self.row_height - 1 )
             x_bearing, y_bearing, txt_width, txt_height = context.text_extents(self.graph.comments[activity])[:4]
             context.move_to((self.graph.start_time[activity] + self.graph.durations[activity] + self.graph.slacks[activity] + 0.25)* self.cell_width + x_bearing, (self.graph.activities.index(activity)+ 0.90) * self.row_height + y_bearing)
-            context.show_text(self.graph.comments[activity])
+            if self.graph.durations[activity] > 0:
+                context.show_text(self.graph.comments[activity])
             context.set_source_rgba(red, green, blue, 0.2 if activity in selected_activities else 0.5 )
             context.fill_preserve()
             context.set_source_color(self.get_style().fg[gtk.STATE_NORMAL])
