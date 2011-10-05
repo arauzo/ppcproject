@@ -388,6 +388,10 @@ class PPCproject(object):
                 elif modelo[int(path)][0] == "" or modelo[int(path)][0] == None:
                     self.dialogoError(gettext.gettext('Resource name must be introduced first.'))
                     return
+                
+                else:
+                    modelo[path][n] = new_text
+                
             else:  # Otras interfaces 
                 modelo[path][n] = new_text
                     
