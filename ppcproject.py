@@ -1093,12 +1093,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 ### FUNCIONES VENTANAS DE ACCIÓN
 
 # GRAFO PERT                     
-    def pertFinal(self):
+    def pertFinal(self, actividad):
         """
         Creación del grafo Pert numerado en orden
         Valor de retorno: grafoRenumerado (grafo final)
         """
-        successors = dict(((act[1], act[2]) for act in self.actividad))
+        successors = dict(((act[1], act[2]) for act in actividad))
         grafo = pert.Pert()
         grafo.construct(successors)
         grafoRenumerado = grafo.renumerar()
@@ -1114,7 +1114,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         informacionCaminos = []
 
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado = self.pertFinal()
+        grafoRenumerado = self.pertFinal(self.actividad)
 
         # Nuevos nodos
         nodosN = []
@@ -1400,7 +1400,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         return '%5.2f'%(d), '%5.2f'%(t)
 
-    def mediaYvarianza(self, camino):
+    def mediaYvarianza(self, camino, actividad):
         """
          Cálculo de la duración media y la desviación tí­pica
                   de un camino del grafo
@@ -1415,9 +1415,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         d=0
         for a in camino:
-            for n in range(len(self.actividad)):
-                if a==self.actividad[n][1] and self.actividad[n][6]!='':
-                    d+=float(self.actividad[n][6])
+            for n in range(len(actividad)):
+                if a==actividad[n][1] and actividad[n][6]!='':
+                    d+=float(actividad[n][6])
                 else:  #controlamos las ficticias
                     d+=0
         #print d
@@ -1427,9 +1427,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         t=0
         for a in camino:
-            for n in range(len(self.actividad)):
-                if a==self.actividad[n][1] and self.actividad[n][7]!='':
-                    t+=(float(self.actividad[n][7])*float(self.actividad[n][7]))
+            for n in range(len(actividad)):
+                if a==actividad[n][1] and actividad[n][7]!='':
+                    t+=(float(actividad[n][7])*float(actividad[n][7]))
                 else:  #controlamos las ficticias
                     t+=0
         #print t
@@ -1491,7 +1491,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: -
         """
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal()
+        grafoRenumerado=self.pertFinal(self.actividad)
     
         # Nuevos nodos
         nodosN=[]
@@ -1581,73 +1581,73 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
 #              SIMULACIÓN                      
 
-    def simulacion(self, n): # XXX Pasar a simulation.py convitiendolo en una clase
-        """
-         Simulación de duraciones de cada actividad según  
-                  su tipo de distribución
-
-         Parámetros: n (número de iteraciones)
-                     XXX Desacoplar pasandole todos los datos necesarios: actividades, duraciones, tipo de distribucion, caminos...
-
-         Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
-         XXX que son simulaciones, necesitamos: lista de la duracion efectiva y lista de los caminos criticos
-        """
-        simulacion = []
-        for i in range(n):
-            #print i+1, 'nº iteracion'
-            sim = []
-            for m in range(len(self.actividad)):
-                distribucion=self.actividad[m][8]
+#    def simulacion(self, n): # XXX Pasar a simulation.py convitiendolo en una clase
+ #       """
+  #       Simulación de duraciones de cada actividad según  
+   #               su tipo de distribución
+#
+ #        Parámetros: n (número de iteraciones)
+  #                   XXX Desacoplar pasandole todos los datos necesarios: actividades, duraciones, tipo de distribucion, caminos...
+#
+ #        Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
+  #       XXX que son simulaciones, necesitamos: lista de la duracion efectiva y lista de los caminos criticos
+   #     """
+    #    simulacion = []
+     #   for i in range(n):
+      #      #print i+1, 'nº iteracion'
+       #     sim = []
+        #    for m in range(len(self.actividad)):
+         #       distribucion=self.actividad[m][8]
                 # Si la actividad tiene una distribución 'uniforme'
-                if distribucion=='Uniforme':
-                    if self.actividad[m][3]!=self.actividad[m][5]:
-                        valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
-                                                                    float(self.actividad[m][5]))
-                    else: # Si d.optimista=d.pesimista
-                        valor=self.actividad[m][3]
-  
-                # Si la actividad tiene una distribución 'beta'
-                elif distribucion=='Beta':
-                    if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:                            
-
-                        mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
-                                                                             float(self.actividad[m][4]), 
-                                                                             float(self.actividad[m][5]))
-                    #print "Mean=", mean, "Stdev=", stdev
-                    #print "shape_a=", shape_a, "shape_b=", shape_b
-                        valor = simulation.generaAleatoriosBeta(float(self.actividad[m][3]), 
-                                                                float(self.actividad[m][5]), 
-                                                                float(shape_a), float(shape_b))
-                    else:  # Si d.optimista=d.pesimista=d.mas probable
-                        valor = self.actividad[m][3]
+#                if distribucion=='Uniforme':
+ #                   if self.actividad[m][3]!=self.actividad[m][5]:
+  #                      valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
+   #                                                                 float(self.actividad[m][5]))
+    #                else: # Si d.optimista=d.pesimista
+     #                   valor=self.actividad[m][3]
+  #
+   #             # Si la actividad tiene una distribución 'beta'
+    #            elif distribucion=='Beta':
+     #               if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:                            
+#
+ #                       mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
+  #                                                                           float(self.actividad[m][4]), 
+   #                                                                          float(self.actividad[m][5]))
+    #                #print "Mean=", mean, "Stdev=", stdev
+     #               #print "shape_a=", shape_a, "shape_b=", shape_b
+      #                  valor = simulation.generaAleatoriosBeta(float(self.actividad[m][3]), 
+       #                                                         float(self.actividad[m][5]), 
+        #                                                        float(shape_a), float(shape_b))
+         #           else:  # Si d.optimista=d.pesimista=d.mas probable
+          #              valor = self.actividad[m][3]
  
                 # Si la actividad tiene una distribución 'triangular'
-                elif distribucion == 'Triangular':
+           #     elif distribucion == 'Triangular':
                 
-                    if self.actividad[m][3] != self.actividad[m][5] != self.actividad[m][4]:
-                        valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), 
-                                                                    float(self.actividad[m][4]), 
-                                                                    float(self.actividad[m][5]))
-                    else:   # Si d.optimista=d.pesimista=d.mas probable
-                        valor=self.actividad[m][3]
+            #        if self.actividad[m][3] != self.actividad[m][5] != self.actividad[m][4]:
+             #           valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), 
+              #                                                      float(self.actividad[m][4]), 
+               #                                                     float(self.actividad[m][5]))
+                #    else:   # Si d.optimista=d.pesimista=d.mas probable
+                 #       valor=self.actividad[m][3]
                                         
                 # Si la actividad tiene una distribución 'normal'
-                elif distribucion == 'Normal':
+                #elif distribucion == 'Normal':
                 
-                    if float(self.actividad[m][7])!=0.00:
-                        valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
-                    else:   # Si d.tipica=0
-                        valor=self.actividad[m][6]
+                 #   if float(self.actividad[m][7])!=0.00:
+                  #      valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
+                   # else:   # Si d.tipica=0
+                    #    valor=self.actividad[m][6]
                 
-                else:
-                    self.dialogoError(gettext.gettext('S Unknown distribution')) 
-                    return
+                #else:
+                 #   self.dialogoError(gettext.gettext('S Unknown distribution')) 
+                  #  return
                         
-                sim.append(float(valor))
+                #sim.append(float(valor))
                 #print sim, 'sim'
-            simulacion.append(sim)
+            #simulacion.append(sim)
 
-        return simulacion
+        #return simulacion
 
 
     def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
@@ -2434,7 +2434,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         elif menu_item == self._widgets.get_widget('grafoPert'):
             # Creates Pert graph renumbered and creates SVG
-            grafoRenumerado = self.pertFinal()
+            grafoRenumerado = self.pertFinal(self.actividad)
             svg_text = graph.pert2image(grafoRenumerado)
 
         elif menu_item == self._widgets.get_widget('algoritmoConjuntos'):
@@ -2472,7 +2472,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnActividades_activate(self, menu_item):
         """ User ask for activities in PERT graph """
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal()
+        grafoRenumerado=self.pertFinal(self.actividad)
   
         # Se muestran las actividades y su nodo inicio y fí­n  
         self.mostrarActividades(self.modeloA, grafoRenumerado.arcs, grafoRenumerado.successors)
@@ -2745,7 +2745,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Returns: rest (dictionary of the activities and their characteristics (duration, last time))
         """
         # Create graph and number it
-        grafoRenumerado = self.pertFinal()
+        grafoRenumerado = self.pertFinal(self.actividad)
   
         # New nodes
         nodosN = []
@@ -3231,14 +3231,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         totales.set_text(str(itTotales))
   
         # Se realiza la simulación
-        simulacion = self.simulacion(it)
+        simulacion = simulation.simulacion(it, self.actividad)
         self.simTotales.append(simulacion)
         #print len(self.simTotales), 'simulaciones'
         #for s in self.simTotales:
             #print s
    
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado = self.pertFinal()
+        grafoRenumerado = self.pertFinal(self.actividad)
   
         # Nuevos nodos
         nodosN=[]
@@ -3446,7 +3446,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Se crea una lista con los caminos, sus duraciones y sus varianzas
         for camino in caminos:   
-            media, varianza = self.mediaYvarianza(camino) 
+            media, varianza = self.mediaYvarianza(camino, self.actividad) 
             info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
             informacionCaminos.append(info)
 
