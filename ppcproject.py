@@ -484,8 +484,11 @@ class PPCproject(object):
                 else:
                     self.actividad[int(path)][n] = self.modelo[path][n]
             else: # Si hay datos introducidos
+                if n == 1:  # Name of activity
+                    self.gantt.set_activity_comment(self.modelo[path][1],self.modelo[path][1])
+                    self.actividad[int(path)][n] = self.modelo[path][n]
                 # Si se introduce la duración optimista, pesimista o mas probable
-                if n in range(3, 6):   
+                elif n in range(3, 6):   
                     self.actividad[int(path)][n]=float(self.modelo[path][n])
                     if self.modelo[path][3] != '' and self.modelo[path][4] != '' and self.modelo[path][5] != '':
                         a = float(self.modelo[path][3]) #d.optimista
