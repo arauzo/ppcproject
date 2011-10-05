@@ -219,6 +219,74 @@ def generaAleatoriosNormal(mean, stdev):
     return norm
 
 
+def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una clase
+    """
+     Simulación de duraciones de cada actividad según  
+              su tipo de distribución
+
+     Parámetros: n (número de iteraciones)
+                 XXX Desacoplar pasandole todos los datos necesarios: actividades, duraciones, tipo de distribucion, caminos...
+
+     Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
+     XXX que son simulaciones, necesitamos: lista de la duracion efectiva y lista de los caminos criticos
+    """
+    simulacion = []
+
+    for i in range(n):
+        #print i+1, 'nº iteracion'
+        sim = []
+        for m in range(len(actividad)):
+            distribucion=actividad[m][8]
+            # Si la actividad tiene una distribución 'uniforme'
+            if distribucion=='Uniforme':
+                if actividad[m][3]!=actividad[m][5]:
+                    valor = generaAleatoriosUniforme(float(actividad[m][3]), 
+                                                                float(actividad[m][5]))
+                else: # Si d.optimista=d.pesimista
+                    valor=actividad[m][3]
+
+            # Si la actividad tiene una distribución 'beta'
+            elif distribucion=='Beta':
+                if actividad[m][3]!=actividad[m][5]!=actividad[m][4]:                            
+
+                    mean, stdev, shape_a, shape_b = datosBeta(float(actividad[m][3]), 
+                                                                         float(actividad[m][4]), 
+                                                                         float(actividad[m][5]))
+                #print "Mean=", mean, "Stdev=", stdev
+                #print "shape_a=", shape_a, "shape_b=", shape_b
+                    valor = generaAleatoriosBeta(float(actividad[m][3]), 
+                                                            float(actividad[m][5]), 
+                                                            float(shape_a), float(shape_b))
+                else:  # Si d.optimista=d.pesimista=d.mas probable
+                    valor = actividad[m][3]
+
+            # Si la actividad tiene una distribución 'triangular'
+            elif distribucion == 'Triangular':
+            
+                if actividad[m][3] != actividad[m][5] != actividad[m][4]:
+                    valor = generaAleatoriosTriangular(float(actividad[m][3]), 
+                                                                float(actividad[m][4]), 
+                                                                float(actividad[m][5]))
+                else:   # Si d.optimista=d.pesimista=d.mas probable
+                    valor=actividad[m][3]
+                                    
+            # Si la actividad tiene una distribución 'normal'
+            elif distribucion == 'Normal':
+            
+                if float(actividad[m][7])!=0.00:
+                    valor = generaAleatoriosNormal(float(actividad[m][6]), float(actividad[m][7]))
+                else:   # Si d.tipica=0
+                    valor=actividad[m][6]
+            
+            else:
+                dialogoError(gettext.gettext('S Unknown distribution')) 
+                return
+                    
+            sim.append(float(valor))
+            #print sim, 'sim'
+        simulacion.append(sim)
+
+    return simulacion
     
 
 # --- Start running as a program
