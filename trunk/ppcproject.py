@@ -312,22 +312,22 @@ class PPCproject(object):
   
          Valor de retorno: -
         """
-        preVal = None  # Previous value of the durations
+        preVal = None  # Previous value
         if new_text != modelo[int(path)][n]:
             self.set_modified_state(True) # Project data has changed
-            #print "cambio '%s' por '%s'" % (modelo[path][n], new_text) 
-          
-            actividades=self.actividades2Lista()
+            #print "cambio '%s' por '%s'" % (modelo[path][n], new_text)
             # Controlamos la introduccion de las siguientes
             if modelo==self.modelo:  # Interfaz de actividades
+                actividades=self.actividades2Lista()
                 preVal = modelo[path][n]  # Previous Value
                 # añadimos las etiquetas de las actividades al selector de las siguientes
                 if n==1:  # Columna de las actividades
                     if new_text == '':
-                        modelo[path][1] = new_text
+                        self.dialogoError(gettext.gettext('The name of activity must not be empty.'))
+                        return
                     else:
-                        if modelo[path][1]!='':  # Si modificamos una actividad
-                            if new_text not in actividades:  # Si no está introducida                     
+                        if new_text not in actividades:
+                            if modelo[path][1]!='':  # Si modificamos una actividad
                                 #print modelo[path][1], new_text, 'valores a intercambiar'
                                 modelo=self.modificarSig(modelo, modelo[path][1], new_text)
                                 self.gantt.rename_activity(modelo[path][1],new_text)
@@ -343,16 +343,17 @@ class PPCproject(object):
                                 self.modeloComboS.set_value(it, 0, new_text)
                                 it=self.modeloComboARA.get_iter(path)
                                 self.modeloComboARA.set_value(it, 0, new_text)
-                            #else:
-                                #print 'actividad repetida'
-                                #self.dialogoError('Actividad repetida')
                                     
-                        else:  # Se inserta normalmente
-                            modelo[path][1] = new_text
-                            self.modeloComboS.append([modelo[path][1]])
-                            self.modeloComboARA.append([modelo[path][1]])
-                            self.gantt.add_activity(new_text)
-                            self.gantt.update()
+                            else:  # Se inserta normalmente
+                                modelo[path][1] = new_text
+                                self.modeloComboS.append([modelo[path][1]])
+                                self.modeloComboARA.append([modelo[path][1]])
+                                self.gantt.add_activity(new_text)
+                                self.gantt.update()
+
+                        else:
+                            self.dialogoError(gettext.gettext('Repeated activity.'))
+                            return
       
       
                 elif modelo[int(path)][1] != "":
@@ -364,23 +365,35 @@ class PPCproject(object):
                     self.dialogoError(gettext.gettext('Activity name must be introduced first.'))
                     return
                 
-            elif modelo == self.modeloR and n == 0:
-                if new_text!='':
-                    if modelo[path][1]!='':  # Si modificamos un recurso
-                        try:
-                            it=self.modeloComboARR.get_iter(path)
-                            self.modeloComboARR.set_value(it, 0, new_text)
-                        except:
-                            self.modeloComboARR.append([new_text])
-                    else:  # Se inserta normalmente
-                        self.modeloComboARR.append([new_text])
-                modelo[path][0] = new_text
+            elif modelo == self.modeloR:  # Resources
+                if n == 0:
+                    recursos = self.resources2List()
+                    if new_text == '':
+                        self.dialogoError(gettext.gettext('The name of resource must not be empty.'))
+                        return
+                    else:
+                        if new_text not in recursos:
+                            if modelo[path][1]!='':  # Si modificamos un recurso
+                                try:
+                                    it=self.modeloComboARR.get_iter(path)
+                                    self.modeloComboARR.set_value(it, 0, new_text)
+                                except:
+                                    self.modeloComboARR.append([new_text])
+                            else:  # Se inserta normalmente
+                                self.modeloComboARR.append([new_text])
+                            modelo[path][0] = new_text
+                        else:
+                            self.dialogoError(gettext.gettext('Repeated activity.'))
+                            return
+                elif modelo[int(path)][0] == "" or modelo[int(path)][0] == None:
+                    self.dialogoError(gettext.gettext('Resource name must be introduced first.'))
+                    return
             else:  # Otras interfaces 
                 modelo[path][n] = new_text
                     
             iterador=modelo.get_iter(path)
             proximo=modelo.iter_next(iterador)
-            if proximo==None:  #si estamos en la última fila, insertamos otra vací­a
+            if proximo == None:  #si estamos en la última fila, insertamos otra vací­a
                 # Actividades
                 if modelo==self.modelo:
                     #siempre debe existir un elemento más en modelo que en actividades
@@ -996,6 +1009,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: listaAct (lista de actividades)
         """
         return [n[1] for n in self.actividad]
+    
+    def resources2List(self):
+        """
+         Introduce en una lista todas las etiquetas de los recursos  
+         Valor de retorno: listaAct (lista de actividades)
+        """
+        return [n[0] for n in self.recurso]
 
      
     def calcularMediaYDTipica(self, distribucion, a, b, m):
@@ -2233,7 +2253,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.modelo.set_value(it, 0, actNumber)
             it = self.modelo.iter_next(it)
             actNumber = actNumber + 1
-        
+
+                   
 # MANEJADORES #
 # --- Menu actions
 
