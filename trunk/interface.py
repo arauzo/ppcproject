@@ -425,31 +425,8 @@ class Interface(object):
         
 
     def update_frecuency_intervals_treeview (self, n, durations, itTotales):
-        # TreeView for frequencies
-        self.vistaFrecuencias = self._widgets.get_widget('vistaFrecuencias')
-        felipe = n+1
-        print felipe
-        columns_type = [str] * felipe #XXX Felipe aqui habia n, el problema esta aqui o un pelin mas abajo
-        self.modeloF = gtk.ListStore(*columns_type)
-        self.vistaFrecuencias.set_model(self.modeloF)
-        #First column
-        column = gtk.TreeViewColumn(gettext.gettext("Durations"))
-        self.vistaFrecuencias.append_column(column)
-        cell = gtk.CellRendererText()
-        column.pack_start(cell, False)
-        column.add_attribute(cell, 'text', 0)
-        column.set_min_width(50)
-        #Intervals
-        for interval in range(1, felipe): #XXX Felipe aqui que tambien habia n
-            column = gtk.TreeViewColumn("")
-            self.vistaFrecuencias.append_column(column)
-            cell = gtk.CellRendererText()
-            column.pack_start(cell, False)
-            column.add_attribute(cell, 'text', interval)
-            column.set_min_width(50)
-
         # Se calculan los intervalos
-        interv = []
+        interv = [] # Column interval titles
         iOpcion = self._widgets.get_widget('iOpcion')
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
@@ -472,16 +449,34 @@ class Interface(object):
                 mini = mini + valor_i
                 interv.append(valor)
   
+        # TreeView for frequencies
+        self.vistaFrecuencias = self._widgets.get_widget('vistaFrecuencias')
+        # - Clean old columns
+        for col in self.vistaFrecuencias.get_columns():
+            self.vistaFrecuencias.remove_column(col)
 
-        # Se muestran los intervalos y las frecuencias en forma de tabla en la interfaz
-        self.modeloF.clear()
-        i = 0
-        print 'Aqui da el fallo:', len(interv) #XXX Felipe aquí es donde se sale del rango al pasarlo dos veces, mirar.
-        for column in self.vistaFrecuencias.get_columns()[1:]:
-            column.set_title(interv[i])
-            i = i + 1
-   
-        
+        # - First column
+        column = gtk.TreeViewColumn(gettext.gettext("Durations"))
+        cell = gtk.CellRendererText()
+        column.pack_start(cell, False)
+        column.add_attribute(cell, 'text', 0)
+        column.set_min_width(50)
+        self.vistaFrecuencias.append_column(column)
+
+        # - Interval columns
+        for interval in range(n):
+            column = gtk.TreeViewColumn(interv[interval])
+            cell = gtk.CellRendererText()
+            column.pack_start(cell, False)
+            column.add_attribute(cell, 'text', interval+1) # Duration is column 0
+            column.set_min_width(50)
+            self.vistaFrecuencias.append_column(column)
+
+        # - Set model
+        columns_type = [str] * (n+1) # Duration col + n interval cols
+        self.modeloF = gtk.ListStore(*columns_type)
+        self.vistaFrecuencias.set_model(self.modeloF)
+
         self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
 
     def update_frecuency_values(self, dmax, dmin, n, durations, itTotales):
@@ -501,8 +496,9 @@ class Interface(object):
         n, bins, patches = ax.hist(durations, n, normed=1) #XXX Felipe n era 100
         canvas = FigureCanvas(fig)  # a gtk.DrawingArea
         boxS = gtk.VBox()
+        print 'Longitud del boxS', boxS, '\n'
         if len(boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-            hBoxSim.remove(self.boxS)
+            hBoxSim.remove(boxS)
             boxS = gtk.VBox()
 
         hBoxSim.add(boxS)

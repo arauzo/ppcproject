@@ -86,14 +86,18 @@ def nIntervalos (dMax, dMin, N, opcion):
     N (número de intervalos o tamaño del intervalo)
     opción (opción seleccionada)
     """
+
+    print 'Maximo y minimo: ', dMax, dMin, '\n'
     if opcion == 'Numero de intervalos':
         return int(N)
     elif opcion == 'Tamanio del intervalo':
         mini = dMin - (dMin % N)
-        cont = 0
-        while cont < dMax + N:
-            cont = cont + 1
-        return int(cont)
+        cont = mini
+        aux = 0
+        while cont < dMax:
+            cont = cont + N
+            aux += 1 
+        return int(aux)
  
 def duracion(x, dMax, dMin, N):
     """

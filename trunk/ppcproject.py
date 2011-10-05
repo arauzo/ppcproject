@@ -3275,8 +3275,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         iOpcion = self._widgets.get_widget('iOpcion')
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
-        #dmax = float(max(durations)+0.00001)  # duración máxima
-        #dmin = float(min(durations))   # duración mí­nima
         valor = float(iValor.get_text())
         #XXX Felipe Mirar lo que verdaderamente hace falta aqui, esta puesto así para que funcionase, y de momento
         #funciona tanto con numero de intervalos como con tamaño, aunque con tamaño no funciona bien. (Con 0.5 si funciona bien jejeje)
