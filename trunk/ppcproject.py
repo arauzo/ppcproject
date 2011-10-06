@@ -1925,6 +1925,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     dur_dic[act[1]] = act[6]
                     pre_dic[act[1]] = act[2]
                     self.gantt.add_activity(act[1], act[2], act[6])
+                    self.gantt.set_activity_comment(act[1], act[1])
                 min_sched = pert.get_activities_start_time(act_list, dur_dic, pre_dic)
                 schedules = [[gettext.gettext('Min'), min_sched]] + schedules
                 
