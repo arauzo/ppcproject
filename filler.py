@@ -32,17 +32,71 @@ miObjeto = ppcproject.PPCproject()
 
 def load (filename, distribucion, k):
 
-    format = fileFormats.PSPProjectFileFormat()
-    activities, none, none1, none2 = format.load(filename)
-    activity = assignment.actualizarActividadesFichero(k,distribucion,activities)
-    return activity
+    formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
+    try:
+        # Tries to load file with formats that match its extension in format order
+        data = None
+        extension = filename[filename.rfind('.')+1:]
 
-def save (actividades, filename):
+        for format in formatos:
+            if extension in format.filenameExtensions:
+                try:
+                    data = format.load(filename)
+                    break
+                except fileFormats.InvalidFileFormatException:
+                    pass
 
-    f = open(filename,"w")
-    for line in actividades:
-        f.write(str(line))
-        f.write('\n')
+        # If load by extension failed, try to load files in any format independently of their extension
+        if not data:
+            for format in fileFormats:
+                try:
+                    data = format.load(filename)
+                    break
+                except fileFormats.InvalidFileFormatException:
+                    pass
+        
+        #Data successfully loaded
+        if data:
+            actividad, schedules, recurso, asignacion = data
+            activity = assignment.actualizarActividadesFichero(k,distribucion,actividad)
+            return activity
+        else:
+            print 'ERROR: Formato del archivo origen no reconocido', '\n'
+
+    except IOError:
+        print 'ERROR: Formato del archivo origen no reconocido', '\n'
+        
+
+
+def save (resultados, filename, inputfile, distribution, k, i):
+
+    f = open(filename,"a")
+    f.write('Nombre del archivo de entrada: ')
+    f.write(str(inputfile))
+    f.write('\n')
+    f.write('Tipo de distribucion utilizado: ') 
+    f.write(str(distribution))
+    f.write('\n')
+    f.write('Constante de proporcionalidad de la desviacion tipica utilizado: ') 
+    f.write(str(k))
+    f.write('\n')
+    f.write('Numero de iteraciones realizadas: ')
+    f.write(str(i))
+    f.write('\n')
+    f.write('El valor de la alfa del test es: ')
+    f.write(str(resultados[3]))
+    f.write('\n')
+    f.write('Valor para la normal..........Valor para la gamma...........Valor para VE')
+    f.write('\n')
+    f.write(str(resultados[0]))
+    f.write('..................')
+    f.write(str(resultados[1]))
+    f.write('..................')
+    f.write(str(resultados[2]))
+    f.write('\n\n')
+    #for line in actividades:
+     #   f.write(str(line))
+      #  f.write('\n')
 
     f.close()
    
@@ -69,29 +123,34 @@ def test (it,activity):
     #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
     #Se asignan los valores a alfa y beta para poder realizar la funcion gamma
     m, m1, alfa, beta, mediaestimada, sigma = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-    print m, m1, alfa, beta , mediaestimada, sigma, '\n'
+    #print m, m1, alfa, beta , mediaestimada, sigma, '\n'
 
     mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-    print mediaCritico, dTipicaCritico ,m,'\n'
+    #print mediaCritico, dTipicaCritico ,m,'\n'
 
     if (m != 1):
         a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
     #Creamos un vector con las duraciones totales para pasarselo al test
     duracionesTotales = vectorDuraciones(it,activity)
-
-    valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales)) 
+    results = []
+    valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
     if (m != 1):
         bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
-        print bondadNormal, bondadGamma , bondadVE, '\n'
+        results.append(bondadNormal)
+        results.append(bondadGamma)
+        results.append(bondadVE)
     else:
         bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
-        print bondadNormal, bondadGamma, bondadVE, '\n'
+        results.append(bondadNormal)
+        results.append(bondadGamma)
+        results.append(bondadVE)
 
-    
-    print 'El valor de comparacion es: ', valorComparacion, '\n'  
-    print 'La media y la varianza que selecciona es: ', mediaCritico, dTipicaCritico, '\n'
-    if (m != 1):
-        print 'Los valores de a y b son respectivamente', a, b, '\n'
+    results.append(valorComparacion)
+    return results
+    #print 'El valor de comparacion es: ', valorComparacion, '\n'  
+    #print 'La media y la varianza que selecciona es: ', mediaCritico, dTipicaCritico, '\n'
+    #if (m != 1):
+        #print 'Los valores de a y b son respectivamente', a, b, '\n'
 
 
 def vectorDuraciones(it,actividad):
@@ -132,12 +191,14 @@ def main():
                         help='Statistical distribution (default: Beta)')
     parser.add_argument('-k', default=0.2, type=float, 
                         help='Value of constant to generate missing values (default: 0.2)')
+    parser.add_argument('-i', default=1000,type=int,
+                        help='Number of iterations (default: 1000)')
 
     args = parser.parse_args()
 
     act = load(args.infile,args.distribution,args.k)
-    test(1000,act)
-    save(act,args.outfile)  
+    resultados = test(args.i,act)
+    save(resultados,args.outfile, args.infile, args.distribution, args.k, args.i)  
 
     # XXX Place here the code for test or main program
     print 'We will read from', args.infile
