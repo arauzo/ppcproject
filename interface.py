@@ -29,6 +29,7 @@ import GTKgantt
 import loadSheet
 import loadTable
 import simulation
+import svgviewer
 
 # Internationalization
 import gettext
@@ -617,4 +618,79 @@ class Interface(object):
         #vista.columna[n].set_min_width(150)
 
         return modeloCombo
+
+
+class GraphWindow(object):
+    """
+    Shows a window with a graphical representation of a graph and a save button to export the data to a SVG file
+    """
+
+    def __init__(self, svg_text, title):
+        """
+        Create the GTK window
+        """
+        self.svg_text = svg_text
+
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.set_default_size(800, 600)
+        self.window.set_title(title)
+        self.window.connect("delete_event", self.delete_event)
+
+        # Use SVGViewer to display graph (with zoom)
+        self.svg_viewer = svgviewer.SVGViewer(svg_text)
+
+        screen = gtk.ScrolledWindow()
+        screen.add_with_viewport(self.svg_viewer)
+
+        self.button = gtk.Button("Save")
+        self.button.connect("clicked", self.on_button_save_clicked, None)
+
+        h_box = gtk.HBox(homogeneous=False, spacing=0)
+        h_box.pack_start(self.button,    expand=False, fill=False, padding=4)
+
+        v_box = gtk.VBox(homogeneous=False, spacing=0)
+        v_box.pack_start(screen, expand=True,  fill=True,  padding=0)
+        v_box.pack_start(h_box,   expand=False, fill=False, padding=4)
+
+        self.window.add(v_box)
+        self.window.show_all()
+
+    def delete_event(self, widget, event, data=None):
+        """ Close window """
+        return False
+
+    def on_button_save_clicked(self, button, data=None):
+        """
+        Save Pert graph image
+        """
+        finish = False
+        while not finish:
+            destination_dialog = gtk.FileChooserDialog(gettext.gettext("Save Image"),
+                                                   None,
+                                                   gtk.FILE_CHOOSER_ACTION_SAVE,
+                                                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                                   gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+            destination_dialog.set_default_response(gtk.RESPONSE_OK)
+            resultado = destination_dialog.run()
+
+            if resultado == gtk.RESPONSE_OK:
+                try:
+                    filename = destination_dialog.get_filename()
+                    filename = filename if filename[-4:] == ".svg" else filename + ".svg"
+                    svg_file = open(filename, "wb")
+                    svg_file.write(self.svg_text)
+                    svg_file.close()
+                    finish = True
+                except IOError:
+                    dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+                                               message_format='Error trying to write ' + filename,
+                                               buttons=gtk.BUTTONS_OK)
+                    dialog.run()
+                    dialog.destroy()   
+                finally:
+                    destination_dialog.destroy()
+                
+            else:
+                destination_dialog.destroy()
+                finish = True
 
