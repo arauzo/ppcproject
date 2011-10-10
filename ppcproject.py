@@ -67,7 +67,6 @@ from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
-import SVGViewer
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
 import graph
 #import pruebaInterface
@@ -111,12 +110,6 @@ class PPCproject(object):
         self.vAsignacion = self._widgets.get_widget('wndAsignacion')
         self.vTestKS = self._widgets.get_widget('wndTestKS')
         self.vKSResults = self._widgets.get_widget('wndKSTestResults')
-
-        # Widget to show graphs in vRoy
-        viewportGrafo = self._widgets.get_widget('viewportGrafo')
-        svg_viewer = SVGViewer.SVGViewer()
-        svg_viewer.show()
-        viewportGrafo.add(svg_viewer)
 
         self.dAyuda = self._widgets.get_widget('dAyuda')
         self.bHerramientas = self._widgets.get_widget('bHerramientas1')
@@ -2015,43 +2008,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
  
 # --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #            
-  
-    def on_btnSaveRoy_clicked(self, button):
-        """
-        Close the project checking if it has been modified.
-        If it has been modified, show a dialog: Save-Discard-Cancel
-
-        Return: True if closed
-                False if canceled
-        """
-        self.save_graph_image(self.grafoRoy.get_pixbuf())
-
-    def on_btnSavePert_clicked(self, button):
-        """
-        Save Pert graph image
-        """
-        self.save_graph_image(self.grafoPert.get_pixbuf())
-
-    def save_graph_image(self, pixbuf):
-        """
-        Save graph image
-        
-        Parameter: pixbuf (image)
-        """
-        dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save Image"),
-                                               None,
-                                               gtk.FILE_CHOOSER_ACTION_SAVE,
-                                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                               gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-        dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-        resultado = dialogoGuardar.run()
-
-        if resultado == gtk.RESPONSE_OK:
-            filename = dialogoGuardar.get_filename()
-            pixbuf.save(filename if filename[-4:] == ".png" else filename + ".png", "png")
-        dialogoGuardar.destroy()
-
-   
 
     def closeProject(self):
         """
@@ -2350,18 +2306,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas = self.actividadesRepetidas(self.actividad)
         if errorActRepetidas == 0:
-            dialogoGuardar = gtk.FileChooserDialog(gettext.gettext("Save as"),
+            destination_dialog = gtk.FileChooserDialog(gettext.gettext("Save as"),
                                                    None,
                                                    gtk.FILE_CHOOSER_ACTION_SAVE,
                                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                                                    gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-            dialogoGuardar.set_default_response(gtk.RESPONSE_OK)
-            resultado = dialogoGuardar.run()
+            destination_dialog.set_default_response(gtk.RESPONSE_OK)
+            resultado = destination_dialog.run()
       
             if resultado == gtk.RESPONSE_OK:
-                self.openFilename = dialogoGuardar.get_filename()
+                self.openFilename = destination_dialog.get_filename()
                 self.saveProject(self.openFilename)
-            dialogoGuardar.destroy() 
+            destination_dialog.destroy() 
         else:
             self.errorActividadesRepetidas(actividadesRepetidas) 
        
@@ -2423,50 +2379,42 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_mnGrafo_activate(self, menu_item):
         """
-        Roy Graph option invoked
+        Some drawing Graph menu option invoked
         """
-        #XXX El SVG debe almacenarse para poder exportar luego ese formato cuando grabe el usuario.
+        # Create graph and its graphic representation in SVG
         successors = dict(((act[1], act[2]) for act in self.actividad))
         if menu_item == self._widgets.get_widget('grafoRoy'):
             # Creates ROY graph from successors table and creates SVG
             roy = graph.roy(successors)
             svg_text = graph.graph2image(roy)
+            title = 'Roy graph'
 
         elif menu_item == self._widgets.get_widget('grafoPert'):
             # Creates Pert graph renumbered and creates SVG
             grafoRenumerado = self.pertFinal(self.actividad)
             svg_text = graph.pert2image(grafoRenumerado)
+            title = 'PERT graph'
 
         elif menu_item == self._widgets.get_widget('algoritmoConjuntos'):
             grafo = algoritmoConjuntos.algoritmoN( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
+            title = 'PERT-Conjuntos graph'
 
         elif menu_item == self._widgets.get_widget('algoritmoCohenSadeh'):
             grafo = algoritmoCohenSadeh.cohenSadeh( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
+            title = 'PERT-CohenSadeh graph'
 
         elif menu_item == self._widgets.get_widget('algoritmoSalas'):
             grafo = algoritmoSalas.salas( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
+            title = 'PERT-Salas graph'
 
         else:
             raise Exception('Graph menu option not recognized')            
 
-
-#        # Load SVG as pixel map in Image
-#        pixbufloader = gtk.gdk.PixbufLoader()
-#        pixbufloader.write( svg_text )
-#        pixbufloader.close()
-#        self.grafoRoy = self._widgets.get_widget('imagenGrafoRoy')
-#        self.grafoRoy.set_from_pixbuf( pixbufloader.get_pixbuf() )
-
-        # Load SVG in SVGViewer (with zoom)
-        svg_viewer = self._widgets.get_widget('viewportGrafo').get_child()
-        svg_viewer.update_svg(svg_text)
-                
-        # Se muestra la ventana
-        vRoy = self._widgets.get_widget('wndGrafo')
-        vRoy.show()
+        # Show in graph window
+        graph_window = interface.GraphWindow(svg_text, title)
         
   
     def on_mnActividades_activate(self, menu_item):
