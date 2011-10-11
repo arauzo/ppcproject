@@ -176,8 +176,6 @@ def main():
     act, schedules, recurso, asignacion = load(args.infile)
     resultados = test(args.i,act, args.a)
     save(resultados, args.outfile, args.infile, args.i)  
-
-    # XXX Place here the code for test or main program
     print 'We will read from', args.infile
     print 'We will write to', args.outfile
     print 'Alfa value for the test is ', args.a
