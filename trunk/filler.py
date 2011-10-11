@@ -18,16 +18,7 @@ has the method .error to return when something is wrong on arguments (note that 
 
 # Imports from our libraries
 import assignment
-#import graph
-#import kolmogorov_smirnov
-#import math
-#import pert
-#import zaderenko
-#import simulation
 import fileFormats
-# XXX Here functions and classes...
-
-#miObjeto = ppcproject.PPCproject()
 
 def load (filename):
 
@@ -103,10 +94,7 @@ def main():
 
     act, schedules, recurso, asignacion = load(args.infile)
     activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
-    #resultados = test(args.i,activity)
     saveProject(args.outfile, activity, schedules, recurso, asignacion)  
-
-    # XXX Place here the code for test or main program
     print 'We have readed from ', args.infile
     print 'We have saved in ', args.outfile
     print 'The distribution used have been', args.distribution

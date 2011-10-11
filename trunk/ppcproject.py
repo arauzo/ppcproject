@@ -2885,7 +2885,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dato2 = str(valor2.get_value())
         if valor2.get_value() > valor1.get_value():
             titulo = self.vProbabilidades.get_title()
-            if titulo == gettext.gettext('Probability related to the path'):
+            print titulo
+            if titulo == gettext.gettext('Probabilidad relacionada con la simulación'): #XXX Felipe Probability related to the path'):
                 # Se extrae la media y la desviación típica de la interfaz
                 widgetMedia = self._widgets.get_widget('mediaProb')
                 media = widgetMedia.get_text()
@@ -2941,6 +2942,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          
             # Se calcula la probabilidad
             x = self.calcularProb(dato1, dato2, media, dTipica)
+            print dato1, dato2, media, dTipica, x
 
         else:
                 # Extraigo las iteraciones totales
@@ -3189,8 +3191,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
         valor = float(iValor.get_text())
-        #XXX Felipe Mirar lo que verdaderamente hace falta aqui, esta puesto así para que funcionase, y de momento
-        #funciona tanto con numero de intervalos como con tamaño, aunque con tamaño no funciona bien. (Con 0.5 si funciona bien jejeje)
         n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion)) # XXX Felipe habia 20
         self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
