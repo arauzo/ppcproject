@@ -18,19 +18,18 @@ has the method .error to return when something is wrong on arguments (note that 
 
 # Imports from our libraries
 import assignment
-import graph
-import kolmogorov_smirnov
-import math
-import pert
-import zaderenko
-import simulation
+#import graph
+#import kolmogorov_smirnov
+#import math
+#import pert
+#import zaderenko
+#import simulation
 import fileFormats
-import ppcproject
 # XXX Here functions and classes...
 
-miObjeto = ppcproject.PPCproject()
+#miObjeto = ppcproject.PPCproject()
 
-def load (filename, distribucion, k):
+def load (filename):
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
     try:
@@ -58,124 +57,32 @@ def load (filename, distribucion, k):
         #Data successfully loaded
         if data:
             actividad, schedules, recurso, asignacion = data
-            activity = assignment.actualizarActividadesFichero(k,distribucion,actividad)
-            return activity
+            return actividad, schedules, recurso, asignacion
         else:
-            print 'ERROR: Formato del archivo origen no reconocido', '\n'
+            raise Exception('ERROR: Formato del archivo origen no reconocido')
 
     except IOError:
         print 'ERROR: Formato del archivo origen no reconocido', '\n'
         
 
+def saveProject( nombre, activities, schedules, resources, asignacion):
+    """
+    Saves a project in ppcproject format '.ppc'
+    """
+    
+    # Here extension should be checked to choose the save format
+    # by now we suppose it is .ppc
+    if nombre[-4:] != '.ppc':
+        nombre = nombre + '.ppc'
 
-def save (resultados, filename, inputfile, distribution, k, i):
-
-    f = open(filename,"a")
-    f.write('Nombre del archivo de entrada: ')
-    f.write(str(inputfile))
-    f.write('\n')
-    f.write('Tipo de distribucion utilizado: ') 
-    f.write(str(distribution))
-    f.write('\n')
-    f.write('Constante de proporcionalidad de la desviacion tipica utilizado: ') 
-    f.write(str(k))
-    f.write('\n')
-    f.write('Numero de iteraciones realizadas: ')
-    f.write(str(i))
-    f.write('\n')
-    f.write('El valor de la alfa del test es: ')
-    f.write(str(resultados[3]))
-    f.write('\n')
-    f.write('Valor para la normal..........Valor para la gamma...........Valor para VE')
-    f.write('\n')
-    f.write(str(resultados[0]))
-    f.write('..................')
-    f.write(str(resultados[1]))
-    f.write('..................')
-    f.write(str(resultados[2]))
-    f.write('\n\n')
-    #for line in actividades:
-     #   f.write(str(line))
-      #  f.write('\n')
-
-    f.close()
+    format = fileFormats.PPCProjectFileFormat()
    
+    try:
+        format.save((activities, schedules, resources, asignacion), nombre)
+        
+    except IOError :
+        self.dialogoError(gettext.gettext('Error saving the file'))  
 
-def test (it,activity):
-    
-
-    informacionCaminos = []
-    # Get all paths removing 'begin' y 'end' from each path
-    successors = dict(((act[1], act[2]) for act in activity))
-    g = graph.roy(successors)
-    caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
-
-    # Se crea una lista con los caminos, sus duraciones y sus varianzas
-#    miObjeto2 = ppcproject.PPCproject()
-    for camino in caminos:   
-        media, varianza = miObjeto.mediaYvarianza(camino,activity) 
-        info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
-        informacionCaminos.append(info)
-
-    #Se ordena la lista en orden creciente por duracion media de los caminos
-    informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
-
-    #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
-    #Se asignan los valores a alfa y beta para poder realizar la funcion gamma
-    m, m1, alfa, beta, mediaestimada, sigma = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-    #print m, m1, alfa, beta , mediaestimada, sigma, '\n'
-
-    mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-    #print mediaCritico, dTipicaCritico ,m,'\n'
-
-    if (m != 1):
-        a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
-    #Creamos un vector con las duraciones totales para pasarselo al test
-    duracionesTotales = vectorDuraciones(it,activity)
-    results = []
-    valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
-    if (m != 1):
-        bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
-        results.append(bondadNormal)
-        results.append(bondadGamma)
-        results.append(bondadVE)
-    else:
-        bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
-        results.append(bondadNormal)
-        results.append(bondadGamma)
-        results.append(bondadVE)
-
-    results.append(valorComparacion)
-    return results
-    #print 'El valor de comparacion es: ', valorComparacion, '\n'  
-    #print 'La media y la varianza que selecciona es: ', mediaCritico, dTipicaCritico, '\n'
-    #if (m != 1):
-        #print 'Los valores de a y b son respectivamente', a, b, '\n'
-
-
-def vectorDuraciones(it,actividad):
-    
-    simulaciones = simulation.simulacion(it, actividad)
- #   miObjeto = ppcproject.PPCproject()
-    grafoRenumerado = miObjeto.pertFinal(actividad)
-
-    nodosN=[]
-    for n in range(len(grafoRenumerado.successors)):
-        nodosN.append(n+1)
-
-    duraciones = []
-    if simulaciones == None:
-            return
-    else:
-        for s in simulaciones: 
-            matrizZad = zaderenko.mZad(actividad,grafoRenumerado.arcs, nodosN, 0, s)
-            tearly = zaderenko.early(nodosN, matrizZad)  
-            tlast = zaderenko.last(nodosN, tearly, matrizZad)      
-            tam = len(tearly)
-            duracionProyecto = tearly[tam-1]
-            duraciones.append(duracionProyecto)
-
-    return duraciones
 def main():
     """
     XXX Main program or test code
@@ -191,20 +98,19 @@ def main():
                         help='Statistical distribution (default: Beta)')
     parser.add_argument('-k', default=0.2, type=float, 
                         help='Value of constant to generate missing values (default: 0.2)')
-    parser.add_argument('-i', default=1000,type=int,
-                        help='Number of iterations (default: 1000)')
-
+   
     args = parser.parse_args()
 
-    act = load(args.infile,args.distribution,args.k)
-    resultados = test(args.i,act)
-    save(resultados,args.outfile, args.infile, args.distribution, args.k, args.i)  
+    act, schedules, recurso, asignacion = load(args.infile)
+    activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
+    #resultados = test(args.i,activity)
+    saveProject(args.outfile, activity, schedules, recurso, asignacion)  
 
     # XXX Place here the code for test or main program
-    print 'We will read from', args.infile
-    print 'We will write to', args.outfile
-    print 'Distribution will be', args.distribution
-    print 'and constant', args.k
+    print 'We have readed from ', args.infile
+    print 'We have saved in ', args.outfile
+    print 'The distribution used have been', args.distribution
+    print 'Constant value for k have been', args.k
 
     # XXX Use return 1 or any non 0 code to finish with error state
     return 0

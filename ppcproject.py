@@ -1086,16 +1086,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 ### FUNCIONES VENTANAS DE ACCIÓN
 
 # GRAFO PERT                     
-    def pertFinal(self, actividad):
-        """
-        Creación del grafo Pert numerado en orden
-        Valor de retorno: grafoRenumerado (grafo final)
-        """
-        successors = dict(((act[1], act[2]) for act in actividad))
-        grafo = pert.Pert()
-        grafo.construct(successors)
-        grafoRenumerado = grafo.renumerar()
-        return grafoRenumerado                 
+    #def pertFinal(self, actividad):
+    #    """
+    #    Creación del grafo Pert numerado en orden
+    #    Valor de retorno: grafoRenumerado (grafo final)
+    #    """
+    #    successors = dict(((act[1], act[2]) for act in actividad))
+    #    grafo = pert.Pert()
+    #    grafo.construct(successors)
+    #    grafoRenumerado = grafo.renumerar()
+    #    return grafoRenumerado                 
 
     
 #          ZADERENKO                     
@@ -1107,7 +1107,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         informacionCaminos = []
 
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado = self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
 
         # Nuevos nodos
         nodosN = []
@@ -1393,41 +1393,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         return '%5.2f'%(d), '%5.2f'%(t)
 
-    def mediaYvarianza(self, camino, actividad):
-        """
-         Cálculo de la duración media y la desviación tí­pica
-                  de un camino del grafo
-
-         Parámetros: camino (camino del grafo)
-
-         Valor de retorno: d (duración media)
-                           t (desviación tí­pica)
-        """
-        # Se calcula la duración de cada camino. Se suman las duraciones de
-        # todas las actividades que forman dicho camino.
-
-        d=0
-        for a in camino:
-            for n in range(len(actividad)):
-                if a==actividad[n][1] and actividad[n][6]!='':
-                    d+=float(actividad[n][6])
-                else:  #controlamos las ficticias
-                    d+=0
-        #print d
-
-        # Se calcula la desviación típica de cada camino. Se suman las desviaciones
-        # tí­picas de todas las actividades que forman dicho camino.
-
-        t=0
-        for a in camino:
-            for n in range(len(actividad)):
-                if a==actividad[n][1] and actividad[n][7]!='':
-                    t+=(float(actividad[n][7])*float(actividad[n][7]))
-                else:  #controlamos las ficticias
-                    t+=0
-        #print t
-
-        return '%5.2f'%(d), '%5.2f'%(t)
     
 
 #              ACTIVIDADES                 
@@ -1484,7 +1449,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: -
         """
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
     
         # Nuevos nodos
         nodosN=[]
@@ -2391,7 +2356,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         elif menu_item == self._widgets.get_widget('grafoPert'):
             # Creates Pert graph renumbered and creates SVG
-            grafoRenumerado = self.pertFinal(self.actividad)
+            grafoRenumerado = pert.pertFinal(self.actividad)
             svg_text = graph.pert2image(grafoRenumerado)
             title = 'PERT graph'
 
@@ -2420,7 +2385,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnActividades_activate(self, menu_item):
         """ User ask for activities in PERT graph """
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
   
         # Se muestran las actividades y su nodo inicio y fí­n  
         self.mostrarActividades(self.modeloA, grafoRenumerado.arcs, grafoRenumerado.successors)
@@ -2693,7 +2658,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Returns: rest (dictionary of the activities and their characteristics (duration, last time))
         """
         # Create graph and number it
-        grafoRenumerado = self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
   
         # New nodes
         nodosN = []
@@ -3186,7 +3151,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             #print s
    
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado = self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
   
         # Nuevos nodos
         nodosN=[]
@@ -3394,7 +3359,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Se crea una lista con los caminos, sus duraciones y sus varianzas
         for camino in caminos:   
-            media, varianza = self.mediaYvarianza(camino, self.actividad) 
+            media, varianza = pert.mediaYvarianza(camino, self.actividad) 
             info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
             informacionCaminos.append(info)
 
