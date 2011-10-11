@@ -410,7 +410,7 @@ def roy_paths2csv(ordered_activity_list, paths):
 import pygtk
 pygtk.require('2.0')
 import gtk
-from SVGViewer import SVGViewer
+from svgviewer import SVGViewer
 
 class Test(object):
     """
