@@ -445,7 +445,7 @@ class Interface(object):
                 interv.append(valor)
         elif opcion == 'Tamanio del intervalo':
             mini = dmin - (dmin % valor_i)
-            for ni in range(n): #XXX Esto hay que cambiarlo porque no funciona bien
+            for ni in range(n):
                 valor = '['+str(mini)+', '+str(mini + valor_i)+'['
                 mini = mini + valor_i
                 interv.append(valor)
@@ -494,10 +494,10 @@ class Interface(object):
         fig = Figure(figsize=(5,4), dpi=100)
         ax = fig.add_subplot(111)
         hBoxSim = self._widgets.get_widget('hbSim') #XXX Felipe
-        n, bins, patches = ax.hist(durations, n, normed=1) #XXX Felipe n era 100
+        n, bins, patches = ax.hist(durations, n, normed=1)
         canvas = FigureCanvas(fig)  # a gtk.DrawingArea
         boxS = gtk.VBox()
-        print 'Longitud del boxS', boxS, '\n'
+        print 'Longitud del boxS', len(boxS), '\n'
         if len(boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
             hBoxSim.remove(boxS)
             boxS = gtk.VBox()
@@ -505,6 +505,7 @@ class Interface(object):
         hBoxSim.add(boxS)
         boxS.pack_start(canvas)
         boxS.show_all()
+        
 
 
 ### FUNCIONES RELACIONADAS CON LOS TREEVIEW
