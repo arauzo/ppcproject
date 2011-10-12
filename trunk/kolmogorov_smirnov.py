@@ -125,7 +125,7 @@ def nIntervalos(duraciones, tamanio=0.5):
 
     return cont
 
-def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
+def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0):
     """
     Funcion que realiza el test de kolmogorv_smirnoff y
     devuelve la bondad de cada distribucion
@@ -198,10 +198,14 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
 
     #Devuelve el máximo de los máximos de cada columna de diferencias, en el caso de que la de valores
     #extremos no se pueda realizar devuelve no definido
-    if (a != 0 and b != 0):
+    if (a != 0 and b != 0 and save == 0):
         return maxNormal, maxGamma, maxVE
-    else:
+    elif (a == 0 and b == 0 and save == 0):
         return maxNormal, maxGamma, 'No definido'
+    elif (a != 0 and b != 0 and save == 1):
+        return intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont
+    elif (a == 0 and b == 0 and save == 1):
+        return intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont
   
 
 def valorComparacion(precision, totalIteraciones):

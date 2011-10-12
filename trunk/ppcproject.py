@@ -3341,6 +3341,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         self.vAsignacion.hide()
 
+    def on_wndAsignacion_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana de calcular
+                 caminos
+        """
+        ventana.hide()
+        return True
+
 # ---Kolmogorov-Smirnoff test
 
     def on_btKS_clicked(self, boton):
@@ -3403,15 +3411,75 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
         self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
-    def on_btResultadosTest_clicked(self,boton):
+    def on_btGuardarTest_clicked(self,boton):
         """
-        Accion usuario para ver los resultados detallados del test
+        Accion usuario para guardar los resultados del test
         """
 
-        self.vKSResults.show()
-        self.entryForText = self._widgets.get_widget('KSResults')
-        self.entryForText.get_buffer().set_text(alfa)
+        informacionCaminos = []
+        # Get all paths removing 'begin' y 'end' from each path
+        successors = dict(((act[1], act[2]) for act in self.actividad))
+        g = graph.roy(successors)
+        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
+
+        # Se crea una lista con los caminos, sus duraciones y sus varianzas
+        for camino in caminos:   
+            media, varianza = pert.mediaYvarianza(camino, self.actividad) 
+            info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
+            informacionCaminos.append(info)
+
+        #Se ordena la lista en orden creciente por duracion media de los caminos
+        informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
+
+        #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
+        #Se asignan los valores a alfa y beta para poder realizar la función gamma
+        m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
         
+        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
+     
+        if (m != 1):
+            a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+        #Creamos un vector con las duraciones totales para pasarselo al test
+        duracionesTotales = self.duraciones
+
+        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
+        self._widgets.get_widget('iAlfa').set_text(str(0.05))
+        if (m != 1):
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
+        else:
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
+
+        f = open('salidatest.txt',"w")
+        if (m != 1):
+            for n in range(cont):
+                f.write('%1.2f'%(intervalos[n]) + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t')
+                f.write('%1.14f'%(normal[n])+ '\t')
+                f.write('%1.14f'%(normalD[0][n])+ '\t')
+                f.write('%1.14f'%(normalD[1][n])+ '\t')
+                f.write('%1.14f'%(gammaV[n])+ '\t')
+                f.write('%1.14f'%(gammaD[0][n])+ '\t')
+                f.write('%1.14f'%(gammaD[1][n])+ '\t')
+                f.write('%1.14f'%(gev[n])+ '\t')
+                f.write('%1.14f'%(gevD[0][n])+ '\t')
+                f.write('%1.14f'%(gevD[1][n])+ '\t')
+                f.write('\n')
+        else:
+            for n in range (cont):
+                f.write('%1.2f'%(intervalos[n]) + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t')
+                f.write('%1.14f'%(normal[n])+ '\t')
+                f.write('%1.14f'%(normalD[0][n])+ '\t')
+                f.write('%1.14f'%(normalD[1][n])+ '\t')
+                f.write('%1.14f'%(gammaV[n])+ '\t')
+                f.write('%1.14f'%(gammaD[0][n])+ '\t')
+                f.write('%1.14f'%(gammaD[1][n])+ '\t')
+                f.write('\n')
+
+            
+        
+        
+    
 
 # --- Resources
   
