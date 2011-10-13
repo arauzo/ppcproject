@@ -38,7 +38,7 @@ def load (filename):
 
         # If load by extension failed, try to load files in any format independently of their extension
         if not data:
-            for format in fileFormats:
+            for format in formatos:
                 try:
                     data = format.load(filename)
                     break
@@ -80,9 +80,9 @@ def main():
     """
     # Parse arguments and options
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?', default=sys.stdin,
+    parser.add_argument('infile', nargs=1,
                         help='Project file to fill (default: stdin)')
-    parser.add_argument('outfile', nargs='?', default=sys.stdout,
+    parser.add_argument('outfile', nargs=1,
                         help='Name of file to store new project (default: stdout)')
     parser.add_argument('-d', '--distribution', default='Beta', 
                         choices=['Beta', 'Normal', 'Uniform', 'Triangular'],
