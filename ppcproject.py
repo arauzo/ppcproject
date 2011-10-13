@@ -1086,16 +1086,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 ### FUNCIONES VENTANAS DE ACCIÓN
 
 # GRAFO PERT                     
-    def pertFinal(self, actividad):
-        """
-        Creación del grafo Pert numerado en orden
-        Valor de retorno: grafoRenumerado (grafo final)
-        """
-        successors = dict(((act[1], act[2]) for act in actividad))
-        grafo = pert.Pert()
-        grafo.construct(successors)
-        grafoRenumerado = grafo.renumerar()
-        return grafoRenumerado                 
+    #def pertFinal(self, actividad):
+    #    """
+    #    Creación del grafo Pert numerado en orden
+    #    Valor de retorno: grafoRenumerado (grafo final)
+    #    """
+    #    successors = dict(((act[1], act[2]) for act in actividad))
+    #    grafo = pert.Pert()
+    #    grafo.construct(successors)
+    #    grafoRenumerado = grafo.renumerar()
+    #    return grafoRenumerado                 
 
     
 #          ZADERENKO                     
@@ -1107,7 +1107,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         informacionCaminos = []
 
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado = self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
 
         # Nuevos nodos
         nodosN = []
@@ -1393,41 +1393,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         return '%5.2f'%(d), '%5.2f'%(t)
 
-    def mediaYvarianza(self, camino, actividad):
-        """
-         Cálculo de la duración media y la desviación tí­pica
-                  de un camino del grafo
-
-         Parámetros: camino (camino del grafo)
-
-         Valor de retorno: d (duración media)
-                           t (desviación tí­pica)
-        """
-        # Se calcula la duración de cada camino. Se suman las duraciones de
-        # todas las actividades que forman dicho camino.
-
-        d=0
-        for a in camino:
-            for n in range(len(actividad)):
-                if a==actividad[n][1] and actividad[n][6]!='':
-                    d+=float(actividad[n][6])
-                else:  #controlamos las ficticias
-                    d+=0
-        #print d
-
-        # Se calcula la desviación típica de cada camino. Se suman las desviaciones
-        # tí­picas de todas las actividades que forman dicho camino.
-
-        t=0
-        for a in camino:
-            for n in range(len(actividad)):
-                if a==actividad[n][1] and actividad[n][7]!='':
-                    t+=(float(actividad[n][7])*float(actividad[n][7]))
-                else:  #controlamos las ficticias
-                    t+=0
-        #print t
-
-        return '%5.2f'%(d), '%5.2f'%(t)
     
 
 #              ACTIVIDADES                 
@@ -1484,7 +1449,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: -
         """
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
     
         # Nuevos nodos
         nodosN=[]
@@ -2391,7 +2356,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         elif menu_item == self._widgets.get_widget('grafoPert'):
             # Creates Pert graph renumbered and creates SVG
-            grafoRenumerado = self.pertFinal(self.actividad)
+            grafoRenumerado = pert.pertFinal(self.actividad)
             svg_text = graph.pert2image(grafoRenumerado)
             title = 'PERT graph'
 
@@ -2420,7 +2385,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_mnActividades_activate(self, menu_item):
         """ User ask for activities in PERT graph """
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado=self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
   
         # Se muestran las actividades y su nodo inicio y fí­n  
         self.mostrarActividades(self.modeloA, grafoRenumerado.arcs, grafoRenumerado.successors)
@@ -2693,7 +2658,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Returns: rest (dictionary of the activities and their characteristics (duration, last time))
         """
         # Create graph and number it
-        grafoRenumerado = self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
   
         # New nodes
         nodosN = []
@@ -2920,7 +2885,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dato2 = str(valor2.get_value())
         if valor2.get_value() > valor1.get_value():
             titulo = self.vProbabilidades.get_title()
-            if titulo == gettext.gettext('Probability related to the path'):
+            print titulo
+            if titulo == gettext.gettext('Probabilidad relacionada con la simulación'): #XXX Felipe Probability related to the path'):
                 # Se extrae la media y la desviación típica de la interfaz
                 widgetMedia = self._widgets.get_widget('mediaProb')
                 media = widgetMedia.get_text()
@@ -2976,6 +2942,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          
             # Se calcula la probabilidad
             x = self.calcularProb(dato1, dato2, media, dTipica)
+            print dato1, dato2, media, dTipica, x
 
         else:
                 # Extraigo las iteraciones totales
@@ -3186,7 +3153,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             #print s
    
         # Se crea el grafo Pert y se renumera
-        grafoRenumerado = self.pertFinal(self.actividad)
+        grafoRenumerado = pert.pertFinal(self.actividad)
   
         # Nuevos nodos
         nodosN=[]
@@ -3224,8 +3191,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
         valor = float(iValor.get_text())
-        #XXX Felipe Mirar lo que verdaderamente hace falta aqui, esta puesto así para que funcionase, y de momento
-        #funciona tanto con numero de intervalos como con tamaño, aunque con tamaño no funciona bien. (Con 0.5 si funciona bien jejeje)
         n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion)) # XXX Felipe habia 20
         self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
@@ -3376,6 +3341,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         self.vAsignacion.hide()
 
+    def on_wndAsignacion_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana de calcular
+                 caminos
+        """
+        ventana.hide()
+        return True
+
 # ---Kolmogorov-Smirnoff test
 
     def on_btKS_clicked(self, boton):
@@ -3394,7 +3367,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Se crea una lista con los caminos, sus duraciones y sus varianzas
         for camino in caminos:   
-            media, varianza = self.mediaYvarianza(camino, self.actividad) 
+            media, varianza = pert.mediaYvarianza(camino, self.actividad) 
             info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
             informacionCaminos.append(info)
 
@@ -3438,15 +3411,75 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
         self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
-    def on_btResultadosTest_clicked(self,boton):
+    def on_btGuardarTest_clicked(self,boton):
         """
-        Accion usuario para ver los resultados detallados del test
+        Accion usuario para guardar los resultados del test
         """
 
-        self.vKSResults.show()
-        self.entryForText = self._widgets.get_widget('KSResults')
-        self.entryForText.get_buffer().set_text(alfa)
+        informacionCaminos = []
+        # Get all paths removing 'begin' y 'end' from each path
+        successors = dict(((act[1], act[2]) for act in self.actividad))
+        g = graph.roy(successors)
+        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
+
+        # Se crea una lista con los caminos, sus duraciones y sus varianzas
+        for camino in caminos:   
+            media, varianza = pert.mediaYvarianza(camino, self.actividad) 
+            info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
+            informacionCaminos.append(info)
+
+        #Se ordena la lista en orden creciente por duracion media de los caminos
+        informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
+
+        #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
+        #Se asignan los valores a alfa y beta para poder realizar la función gamma
+        m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
         
+        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
+     
+        if (m != 1):
+            a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+        #Creamos un vector con las duraciones totales para pasarselo al test
+        duracionesTotales = self.duraciones
+
+        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
+        self._widgets.get_widget('iAlfa').set_text(str(0.05))
+        if (m != 1):
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
+        else:
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
+
+        f = open('salidatest.txt',"w")
+        if (m != 1):
+            for n in range(cont):
+                f.write('%1.2f'%(intervalos[n]) + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t')
+                f.write('%1.14f'%(normal[n])+ '\t')
+                f.write('%1.14f'%(normalD[0][n])+ '\t')
+                f.write('%1.14f'%(normalD[1][n])+ '\t')
+                f.write('%1.14f'%(gammaV[n])+ '\t')
+                f.write('%1.14f'%(gammaD[0][n])+ '\t')
+                f.write('%1.14f'%(gammaD[1][n])+ '\t')
+                f.write('%1.14f'%(gev[n])+ '\t')
+                f.write('%1.14f'%(gevD[0][n])+ '\t')
+                f.write('%1.14f'%(gevD[1][n])+ '\t')
+                f.write('\n')
+        else:
+            for n in range (cont):
+                f.write('%1.2f'%(intervalos[n]) + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t')
+                f.write('%1.14f'%(normal[n])+ '\t')
+                f.write('%1.14f'%(normalD[0][n])+ '\t')
+                f.write('%1.14f'%(normalD[1][n])+ '\t')
+                f.write('%1.14f'%(gammaV[n])+ '\t')
+                f.write('%1.14f'%(gammaD[0][n])+ '\t')
+                f.write('%1.14f'%(gammaD[1][n])+ '\t')
+                f.write('\n')
+
+            
+        
+        
+    
 
 # --- Resources
   

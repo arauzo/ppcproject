@@ -495,6 +495,47 @@ def get_activities_start_time(activities, durations, prelations, minimum=True,
     return(start_time)
 
 
+def mediaYvarianza(camino, actividad):
+    """
+     Calculo de la duracion media y la desviacin tpica
+              de un camino del grafo
+
+     Parametros: camino (camino del grafo)
+
+    Return: (average string, stddev string)
+    """
+    # Path duration (sum of all activities duration in path)
+    d = 0
+    for a in camino:
+        for n in range(len(actividad)):
+            if a == actividad[n][1] and actividad[n][6] != '':
+                d += float(actividad[n][6])
+            else:  #controlamos las ficticias
+                d += 0
+
+    # Std. Dev. of each path. Sum of std dev of all activities in path
+    t = 0
+    for a in camino:
+        for n in range(len(actividad)):
+            if a == actividad[n][1] and actividad[n][7] != '':
+                t += (float(actividad[n][7])*float(actividad[n][7]))
+            else:  #controlamos las ficticias
+                t += 0
+
+    return '%5.2f'%(d), '%5.2f'%(t)
+
+def pertFinal(actividad):
+    """
+    Creacion del grafo Pert numerado en orden
+    Valor de retorno: grafoRenumerado (grafo final)
+    """
+    successors = dict(((act[1], act[2]) for act in actividad))
+    grafo = Pert()
+    grafo.construct(successors)
+    grafoRenumerado = grafo.renumerar()
+    return grafoRenumerado                 
+
+
 #
 # --- Testing code
 #
