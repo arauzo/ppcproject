@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <glade-interface>
-  <!-- interface-requires gtk+ 2.24 -->
+  <!-- interface-requires gtk+ 2.18 -->
   <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkMenu" id="ctxTabsMenu">
     <property name="visible">True</property>
@@ -13,7 +13,7 @@
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <signal name="activate" handler="on_mnTabsNew_activate" swapped="no"/>
+        <signal name="activate" handler="on_mnTabsNew_activate"/>
       </widget>
     </child>
     <child>
@@ -24,7 +24,7 @@
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <signal name="activate" handler="on_mnTabsDelete_activate" swapped="no"/>
+        <signal name="activate" handler="on_mnTabsDelete_activate"/>
       </widget>
     </child>
   </widget>
@@ -39,7 +39,7 @@
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <signal name="activate" handler="delete_tree_row" swapped="no"/>
+        <signal name="activate" handler="delete_tree_row"/>
       </widget>
     </child>
   </widget>
@@ -69,9 +69,9 @@ Alejandro Villagrán Marín
     <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
     <property name="artists">Alfonso Jiménez Vílchez</property>
     <property name="wrap_license">True</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_dAyuda_delete_event" swapped="no"/>
-    <signal name="response" handler="on_dAyuda_response" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_dAyuda_delete_event"/>
+    <signal name="response" handler="on_dAyuda_response"/>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox1">
         <property name="can_focus">False</property>
@@ -94,8 +94,8 @@ Alejandro Villagrán Marín
     <property name="title" translatable="yes">PERT Graph Activities</property>
     <property name="window_position">center</property>
     <property name="default_height">600</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndActividades_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndActividades_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox19">
         <property name="visible">True</property>
@@ -310,6 +310,7 @@ Alejandro Villagrán Marín
   <widget class="GtkWindow" id="wndAsignacion">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Menu de Asignacion</property>
+    <signal name="delete_event" handler="on_wndAsignacion_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -409,7 +410,7 @@ Uniforme</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="xalign">1</property>
-                <signal name="clicked" handler="on_btAsignar_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btAsignar_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -427,7 +428,7 @@ Uniforme</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="xalign">1</property>
-                <signal name="clicked" handler="on_btCancel_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btCancel_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -445,7 +446,7 @@ Uniforme</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
                 <property name="xalign">1</property>
-                <signal name="clicked" handler="on_btProcedimiento_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btProcedimiento_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -471,8 +472,8 @@ Uniforme</property>
     <property name="window_position">center</property>
     <property name="default_width">450</property>
     <property name="default_height">500</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndAsignarRec_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndAsignarRec_delete_event"/>
     <child>
       <widget class="GtkScrolledWindow" id="scrolledwindow24">
         <property name="visible">True</property>
@@ -497,8 +498,8 @@ Uniforme</property>
     <property name="window_position">center</property>
     <property name="default_width">450</property>
     <property name="default_height">600</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndCaminos_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndCaminos_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox21">
         <property name="visible">True</property>
@@ -540,7 +541,7 @@ Uniforme</property>
                 <property name="tooltip" translatable="yes">Export to CSV Format</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_underline">True</property>
-                <signal name="clicked" handler="on_btExportarCsv_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btExportarCsv_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -565,8 +566,8 @@ Uniforme</property>
     <property name="window_position">center</property>
     <property name="default_width">450</property>
     <property name="default_height">600</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndHolguras_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndHolguras_delete_event"/>
     <child>
       <widget class="GtkScrolledWindow" id="scrolledwindow13">
         <property name="visible">True</property>
@@ -610,7 +611,7 @@ Uniforme</property>
     <property name="window_position">center</property>
     <property name="default_width">1000</property>
     <property name="default_height">500</property>
-    <signal name="delete_event" handler="on_Exit_activate" swapped="no"/>
+    <signal name="delete_event" handler="on_Exit_activate"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -637,7 +638,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_New_activate" swapped="no"/>
+                        <signal name="activate" handler="on_New_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -648,7 +649,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_Open_activate" swapped="no"/>
+                        <signal name="activate" handler="on_Open_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -659,7 +660,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_Save_activate" swapped="no"/>
+                        <signal name="activate" handler="on_Save_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -670,7 +671,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_SaveAs_activate" swapped="no"/>
+                        <signal name="activate" handler="on_SaveAs_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -681,7 +682,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_Close_activate" swapped="no"/>
+                        <signal name="activate" handler="on_Close_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -698,7 +699,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_Exit_activate" swapped="no"/>
+                        <signal name="activate" handler="on_Exit_activate"/>
                       </widget>
                     </child>
                   </widget>
@@ -723,7 +724,7 @@ Uniforme</property>
                         <property name="label" translatable="yes">Toolbar</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
-                        <signal name="activate" handler="on_bHerramientas_activate" swapped="no"/>
+                        <signal name="activate" handler="on_bHerramientas_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -734,7 +735,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_mnPantallaComp_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnPantallaComp_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -745,7 +746,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_mnSalirPantComp_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnSalirPantComp_activate"/>
                       </widget>
                     </child>
                   </widget>
@@ -770,7 +771,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Edit</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnCrearRecursos_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnCrearRecursos_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -780,7 +781,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Assi_gn</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_btAsignarRec_clicked" swapped="no"/>
+                        <signal name="activate" handler="on_btAsignarRec_clicked"/>
                       </widget>
                     </child>
                   </widget>
@@ -794,7 +795,7 @@ Uniforme</property>
                 <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Action</property>
                 <property name="use_underline">True</property>
-                <signal name="activate" handler="on_mnAcción_activate" swapped="no"/>
+                <signal name="activate" handler="on_mnAcción_activate"/>
                 <child>
                   <widget class="GtkMenu" id="mnAccion_menu">
                     <property name="can_focus">False</property>
@@ -805,7 +806,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Calculate paths</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnCalcularCaminos_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnCalcularCaminos_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -815,7 +816,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Draw _ROY graph</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -825,7 +826,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Draw _PERT graph</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -835,7 +836,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">PERT graph _Activities</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnActividades_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnActividades_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -845,7 +846,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Zaderenko</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnZaderenko_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnZaderenko_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -855,7 +856,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">_Slacks</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnHolguras_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnHolguras_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -865,7 +866,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Durations _simulation</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnSimulacion_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnSimulacion_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -875,7 +876,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Leveling / Allocation</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnSimAnnealing_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnSimAnnealing_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -885,7 +886,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Draw PERT Conjuntos</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -895,7 +896,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Draw PERT Salas</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -905,7 +906,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Draw PERT CohenSadeh </property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnGrafo_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -915,7 +916,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Menu de Asignacion</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnAsignacion_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnAsignacion_activate"/>
                       </widget>
                     </child>
                   </widget>
@@ -940,7 +941,7 @@ Uniforme</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_mnAyuda_activate" swapped="no"/>
+                        <signal name="activate" handler="on_mnAyuda_activate"/>
                       </widget>
                     </child>
                   </widget>
@@ -965,7 +966,7 @@ Uniforme</property>
                 <property name="tooltip" translatable="yes">New project</property>
                 <property name="use_action_appearance">False</property>
                 <property name="stock_id">gtk-new</property>
-                <signal name="clicked" handler="on_New_activate" swapped="no"/>
+                <signal name="clicked" handler="on_New_activate"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -979,7 +980,7 @@ Uniforme</property>
                 <property name="tooltip" translatable="yes">Open project</property>
                 <property name="use_action_appearance">False</property>
                 <property name="stock_id">gtk-open</property>
-                <signal name="clicked" handler="on_Open_activate" swapped="no"/>
+                <signal name="clicked" handler="on_Open_activate"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -993,7 +994,7 @@ Uniforme</property>
                 <property name="tooltip" translatable="yes">Save project</property>
                 <property name="use_action_appearance">False</property>
                 <property name="stock_id">gtk-save</property>
-                <signal name="clicked" handler="on_Save_activate" swapped="no"/>
+                <signal name="clicked" handler="on_Save_activate"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -1007,7 +1008,7 @@ Uniforme</property>
                 <property name="tooltip" translatable="yes">Close actual project</property>
                 <property name="use_action_appearance">False</property>
                 <property name="stock_id">gtk-close</property>
-                <signal name="clicked" handler="on_Close_activate" swapped="no"/>
+                <signal name="clicked" handler="on_Close_activate"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -1030,7 +1031,7 @@ Uniforme</property>
                 <property name="tooltip" translatable="yes">Quit PPC-Project</property>
                 <property name="use_action_appearance">False</property>
                 <property name="stock_id">gtk-quit</property>
-                <signal name="clicked" handler="on_Exit_activate" swapped="no"/>
+                <signal name="clicked" handler="on_Exit_activate"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -1064,7 +1065,7 @@ Uniforme</property>
                         <property name="can_focus">True</property>
                         <property name="reorderable">True</property>
                         <property name="enable_grid_lines">both</property>
-                        <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
+                        <signal name="key_press_event" handler="on_key_pressed"/>
                       </widget>
                     </child>
                   </widget>
@@ -1089,8 +1090,8 @@ Uniforme</property>
                 <property name="can_focus">True</property>
                 <property name="tab_pos">right</property>
                 <property name="show_border">False</property>
-                <signal name="button_press_event" handler="on_tab_clicked" swapped="no"/>
-                <signal name="switch_page" handler="on_tab_changed" swapped="no"/>
+                <signal name="button_press_event" handler="on_tab_clicked"/>
+                <signal name="switch_page" handler="on_tab_changed"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -1122,8 +1123,8 @@ Uniforme</property>
   <widget class="GtkWindow" id="wndProbabilidades">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Probability</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndProbabilidades_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndProbabilidades_delete_event"/>
     <child>
       <widget class="GtkHBox" id="hbox24">
         <property name="visible">True</property>
@@ -1307,7 +1308,7 @@ Uniforme</property>
                                     <property name="adjustment">0 0 9999.9899999999998 0.10000000000000001 10 0</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">1</property>
-                                    <signal name="output" handler="on_interval_changed" swapped="no"/>
+                                    <signal name="output" handler="on_interval_changed"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1338,7 +1339,7 @@ Uniforme</property>
                                     <property name="adjustment">0 0 9999.9899999999998 0.10000000000000001 10 0</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">1</property>
-                                    <signal name="output" handler="on_interval_changed" swapped="no"/>
+                                    <signal name="output" handler="on_interval_changed"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1393,7 +1394,7 @@ Uniforme</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="use_stock">True</property>
-                                    <signal name="clicked" handler="on_bntIntervalCalculate_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_bntIntervalCalculate_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1410,7 +1411,7 @@ Uniforme</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="use_stock">True</property>
-                                    <signal name="clicked" handler="on_btnIntervalReset_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_btnIntervalReset_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1520,7 +1521,7 @@ Uniforme</property>
                                     <property name="adjustment">0 0 100 0.10000000000000001 10 0</property>
                                     <property name="climb_rate">1</property>
                                     <property name="digits">2</property>
-                                    <signal name="value_changed" handler="on_probability_changed" swapped="no"/>
+                                    <signal name="value_changed" handler="on_probability_changed"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1559,7 +1560,7 @@ Uniforme</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="use_stock">True</property>
-                                    <signal name="clicked" handler="on_btnProbabilityCalculate_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_btnProbabilityCalculate_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1576,7 +1577,7 @@ Uniforme</property>
                                     <property name="receives_default">False</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="use_stock">True</property>
-                                    <signal name="clicked" handler="on_btnProbabilityReset_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_btnProbabilityReset_clicked"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1661,8 +1662,8 @@ Uniforme</property>
     <property name="window_position">center</property>
     <property name="default_width">600</property>
     <property name="default_height">500</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndRecursos_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndRecursos_delete_event"/>
     <child>
       <widget class="GtkScrolledWindow" id="scrolledwindow25">
         <property name="visible">True</property>
@@ -1689,8 +1690,8 @@ Uniforme</property>
     <property name="window_position">center</property>
     <property name="default_width">800</property>
     <property name="default_height">500</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndSimAnnealing_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndSimAnnealing_delete_event"/>
     <child>
       <widget class="GtkHBox" id="hbox1">
         <property name="visible">True</property>
@@ -1723,7 +1724,7 @@ Uniforme</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="pressed" handler="on_rbLeveling_pressed" swapped="no"/>
+                        <signal name="pressed" handler="on_rbLeveling_pressed"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1776,7 +1777,7 @@ Uniforme</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">rbLeveling</property>
-                        <signal name="pressed" handler="on_rbAllocation_pressed" swapped="no"/>
+                        <signal name="pressed" handler="on_rbAllocation_pressed"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2234,7 +2235,7 @@ Uniforme</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_action_appearance">False</property>
                         <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_cbIterationSA_toggled" swapped="no"/>
+                        <signal name="toggled" handler="on_cbIterationSA_toggled"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2461,7 +2462,7 @@ Uniforme</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_btnSimAnnealingReset_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_btnSimAnnealingReset_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2478,7 +2479,7 @@ Uniforme</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_btnSimAnnealingCalculate_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_btnSimAnnealingCalculate_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2514,7 +2515,7 @@ Uniforme</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_btnSaveSA_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_btnSaveSA_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -2749,8 +2750,8 @@ Uniforme</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Durations Simulation</property>
     <property name="window_position">center</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndSimulacion_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndSimulacion_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox16">
         <property name="visible">True</property>
@@ -3018,7 +3019,7 @@ Uniforme</property>
                     <property name="border_width">4</property>
                     <property name="use_action_appearance">False</property>
                     <property name="use_underline">True</property>
-                    <signal name="clicked" handler="on_btContinuarIterando_clicked" swapped="no"/>
+                    <signal name="clicked" handler="on_btContinuarIterando_clicked"/>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -3128,7 +3129,7 @@ Tamanio del intervalo</property>
                 <property name="tooltip" translatable="yes">Calculate probability</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_underline">True</property>
-                <signal name="clicked" handler="on_btProbSim_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btProbSim_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3146,7 +3147,7 @@ Tamanio del intervalo</property>
                 <property name="tooltip" translatable="yes">Save results</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_btGuardarSim_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btGuardarSim_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3162,7 +3163,7 @@ Tamanio del intervalo</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_btKS_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btKS_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3412,7 +3413,7 @@ Tamanio del intervalo</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_btAceptarTest_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btAceptarTest_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3422,20 +3423,7 @@ Tamanio del intervalo</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="btResultadosTest">
-                <property name="label" translatable="yes">Resultados</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_btResultadosTest_clicked" swapped="no"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="pack_type">end</property>
-                <property name="position">1</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
               <widget class="GtkButton" id="btGuardarTest">
@@ -3444,7 +3432,7 @@ Tamanio del intervalo</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_btGuardarTest_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btGuardarTest_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3460,7 +3448,7 @@ Tamanio del intervalo</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_btAlfa_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_btAlfa_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3483,8 +3471,8 @@ Tamanio del intervalo</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Zaderenko and project paths</property>
     <property name="window_position">center</property>
-    <signal name="key_press_event" handler="on_key_pressed" swapped="no"/>
-    <signal name="delete_event" handler="on_wndZaderenko_delete_event" swapped="no"/>
+    <signal name="key_press_event" handler="on_key_pressed"/>
+    <signal name="delete_event" handler="on_wndZaderenko_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox9">
         <property name="visible">True</property>
@@ -3551,7 +3539,7 @@ Tamanio del intervalo</property>
                         <property name="reorderable">True</property>
                         <property name="rules_hint">True</property>
                         <property name="enable_grid_lines">both</property>
-                        <signal name="cursor_changed" handler="on_vistaListaZad_cursor_changed" swapped="no"/>
+                        <signal name="cursor_changed" handler="on_vistaListaZad_cursor_changed"/>
                       </widget>
                     </child>
                   </widget>
@@ -3584,7 +3572,7 @@ Tamanio del intervalo</property>
                     <property name="tooltip" translatable="yes">Calculate probabilities</property>
                     <property name="use_action_appearance">False</property>
                     <property name="use_underline">True</property>
-                    <signal name="clicked" handler="on_btCalcularProb_clicked" swapped="no"/>
+                    <signal name="clicked" handler="on_btCalcularProb_clicked"/>
                   </widget>
                   <packing>
                     <property name="x_options"></property>
