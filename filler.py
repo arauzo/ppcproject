@@ -23,6 +23,7 @@ import fileFormats
 def load (filename):
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
+    print filename
     try:
         # Tries to load file with formats that match its extension in format order
         data = None
@@ -60,6 +61,7 @@ def saveProject( nombre, activities, schedules, resources, asignacion):
     """
     Saves a project in ppcproject format '.ppc'
     """
+    print nombre
     
     # Here extension should be checked to choose the save format
     # by now we suppose it is .ppc
@@ -80,10 +82,10 @@ def main():
     """
     # Parse arguments and options
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs=1,
-                        help='Project file to fill (default: stdin)')
-    parser.add_argument('outfile', nargs=1,
-                        help='Name of file to store new project (default: stdout)')
+    parser.add_argument('infile')#, """nargs=1,"""
+                        #help='Project file to fill (default: stdin)')
+    parser.add_argument('outfile')#, nargs=1,
+                        #help='Name of file to store new project (default: stdout)')
     parser.add_argument('-d', '--distribution', default='Beta', 
                         choices=['Beta', 'Normal', 'Uniform', 'Triangular'],
                         help='Statistical distribution (default: Beta)')
