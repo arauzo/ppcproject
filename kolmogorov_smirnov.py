@@ -28,6 +28,7 @@ from operator import itemgetter
 from scipy.stats import norm
 from scipy.stats import gamma
 from scipy.stats import gumbel_r
+from scipy.stats import kstest
 
 APP = 'PPC-Project'  # Program name
 DIR = 'po'  # Directory containing translations, usually /usr/share/locale
@@ -131,8 +132,6 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     devuelve la bondad de cada distribucion
     """
 
-
-
     #Obtenemos el primer valor del intervalo
     x = min(duraciones) - (min(duraciones) % tamanio)
     inicio = x + tamanio
@@ -160,6 +159,8 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     dNormal = norm (loc = mCrit, scale = dCrit)
     for n in range(len(intervalos)):
         normal.append(dNormal.cdf(intervalos[n]))
+    pvalue = kstest (duraciones, dNormal.cdf)
+    print pvalue
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
     normalD = diferencias (normal, intervalos, frecuencia)
@@ -170,6 +171,9 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     for n in range(len(intervalos)):
         gammaV.append(dGamma.cdf(intervalos[n]))
 
+    pvalue2 = kstest (duraciones, dGamma.cdf)
+    print pvalue2
+
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
     gammaD = diferencias (gammaV, intervalos, frecuencia)
 
@@ -179,16 +183,12 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
         dGev = gumbel_r (loc = a, scale = 1/b)
         for n in range(len(intervalos)):
             gev.append(dGev.cdf(intervalos[n]))
+
+        pvalue3 = kstest (duraciones, dGev.cdf)
+        print pvalue3
         
         gevD = diferencias (gev, intervalos, frecuencia)
 
-    #Mostramos los resultados del test
-    #if (a != 0 and b != 0):
-     #   for n in range(cont):
-    #        print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n],gammaV[n],gammaD[0][n],gammaD[1][n], gev[n], gevD[0][n],gevD[1][n], '\n'
-    #else:
-     #   for n in range (cont):
-     #       print intervalos[n], frecuencia[n], normal[n], normalD[0][n], normalD[1][n], gammaV[n],gammaD[0][n], gammaD[1][n], '\n'
 
     #Maximos de las columnas de diferencias y maximo de los máximos
     maxNormal = max(max(normalD[0]), max(normalD[1]))
@@ -199,9 +199,9 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     #Devuelve el máximo de los máximos de cada columna de diferencias, en el caso de que la de valores
     #extremos no se pueda realizar devuelve no definido
     if (a != 0 and b != 0 and save == 0):
-        return maxNormal, maxGamma, maxVE
+        return maxNormal, maxGamma, maxVE, pvalue, pvalue2, pvalue3
     elif (a == 0 and b == 0 and save == 0):
-        return maxNormal, maxGamma, 'No definido'
+        return maxNormal, maxGamma, 'No definido', pvalue, pvalue2
     elif (a != 0 and b != 0 and save == 1):
         return intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont
     elif (a == 0 and b == 0 and save == 1):

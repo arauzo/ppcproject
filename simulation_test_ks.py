@@ -67,17 +67,26 @@ def save (resultados, filename, inputfile, i):
     f.write('Numero de iteraciones realizadas: ')
     f.write(str(i))
     f.write('\n')
-    f.write('El valor de la alfa del test es: ')
-    f.write(str(resultados[3]))
-    f.write('\n')
-    f.write('Valor para la normal..........Valor para la gamma...........Valor para VE')
-    f.write('\n')
+    f.write('El valor de comparacion es: ')
     f.write(str(resultados[0]))
-    f.write('..................')
-    f.write(str(resultados[1]))
-    f.write('..................')
-    f.write(str(resultados[2]))
-    f.write('\n\n')
+    f.write('\t' + 'Para un alfa = ' + str(resultados[1]))
+    f.write('\n')
+    f.write('Valor para la normal' + '\t' + 'Valor para la gamma' + '\t'+'\t' + 'Valor para VE')
+    f.write('\n')
+    f.write(str(resultados[2]) + '\t'+'\t'+'\t' + str(resultados[3]) + '\t' + '\t'+'\t' + str(resultados[4]))
+    f.write('\n')
+    distribuciones = ['Normal', 'Gamma', 'Extreme Values']
+    cont = 0
+    for n in range(2,5):
+        if resultados[n] <= resultados [0]:
+            cont += 1
+            f.write('TEST SUPERADO!! La distribucion ' + distribuciones[n-2] + ' ha pasado el test' + '\n')
+    if (cont == 0):
+        f.write('NINGUNA DISTRIBUCION HA PASADO EL TEST' + '\n')
+    f.write('El valor del test usando scipy con la normal es: ' + str(resultados[5]) + '\n')
+    f.write('El valor del test usando scipy con la gamma es: ' + str(resultados[6]) + '\n')
+    f.write('El valor del test usando scipy con la de valores extremos es: ' + str(resultados[7]) + '\n')
+    f.write('\n' + '\n')
     
     f.close()
    
@@ -116,18 +125,27 @@ def test (it,activity,alfa_test):
     results = []
     print alfa_test
     valorComparacion = kolmogorov_smirnov.valorComparacion(alfa_test, len(duracionesTotales))
-    if (m != 1):
-        bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
-        results.append(bondadNormal)
-        results.append(bondadGamma)
-        results.append(bondadVE)
-    else:
-        bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
-        results.append(bondadNormal)
-        results.append(bondadGamma)
-        results.append(bondadVE)
-
+    print valorComparacion
     results.append(valorComparacion)
+    results.append(alfa_test)
+    if (m != 1):
+        bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
+        results.append(bondadNormal)
+        results.append(bondadGamma)
+        results.append(bondadVE)
+        results.append(pvalueN)
+        results.append(pvalueG)
+        results.append(pvalueEV)
+    else:
+        bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
+        results.append(bondadNormal)
+        results.append(bondadGamma)
+        results.append(bondadVE)
+        results.append(pvalueN)
+        results.append(pvalueG)
+        results.append('No definido')
+
+    
 
     return results
 

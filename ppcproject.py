@@ -2886,7 +2886,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if valor2.get_value() > valor1.get_value():
             titulo = self.vProbabilidades.get_title()
             print titulo
-            if titulo == gettext.gettext('Probabilidad relacionada con la simulación'): #XXX Felipe Probability related to the path'):
+            if titulo == gettext.gettext('Probability related to the path'):
                 # Se extrae la media y la desviación típica de la interfaz
                 widgetMedia = self._widgets.get_widget('mediaProb')
                 media = widgetMedia.get_text()
@@ -3377,27 +3377,29 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
         m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 
         mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-        
+        print 'mediaCritico, dtipicaCritico: ',mediaCritico,dTipicaCritico, '\n'
         
 
         if (m != 1):
             a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+            print 'a,b: ', a, b, '\n'
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
         self._widgets.get_widget('iAlfa').set_text(str(0.05))
-        if (m != 1):
-            bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
+        if (m != 1): #Mirar porque aqui le estoy pasando la media critico y la des critico lo mismo tengo q pasar mediaEs y sigmaES
+            bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
             self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
             self._widgets.get_widget('iEV').set_text(str(bondadVE))
             self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
             self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
         else:
-            bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
+            bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
             self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
             self._widgets.get_widget('iEV').set_text(str(bondadVE))
             self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
@@ -3451,29 +3453,32 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         f = open('salidatest.txt',"w")
         if (m != 1):
+            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'\t'+'NormalI'+'\t'+'\t'+'NormalD'+'\t'+'\t'+'Gamma'+'\t'+'\t'+'GammaI'+'\t'+'\t'+'GammaD')
+            f.write('\t'+'\t'+'EV'+'\t'+'\t'+'\t'+'EVI'+'\t'+'\t'+'\t'+'EVD'+'\t'+'\t'+'\n')
             for n in range(cont):
-                f.write('%1.2f'%(intervalos[n]) + '\t')
-                f.write('%1.3f'%(frecuencia[n])+ '\t')
-                f.write('%1.14f'%(normal[n])+ '\t')
-                f.write('%1.14f'%(normalD[0][n])+ '\t')
-                f.write('%1.14f'%(normalD[1][n])+ '\t')
-                f.write('%1.14f'%(gammaV[n])+ '\t')
-                f.write('%1.14f'%(gammaD[0][n])+ '\t')
-                f.write('%1.14f'%(gammaD[1][n])+ '\t')
-                f.write('%1.14f'%(gev[n])+ '\t')
-                f.write('%1.14f'%(gevD[0][n])+ '\t')
-                f.write('%1.14f'%(gevD[1][n])+ '\t')
+                f.write('%1.2f'%(intervalos[n]) + '\t' + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t' + '\t')
+                f.write('%1.9f'%(normal[n])+ ' ')
+                f.write('%1.9f'%(normalD[0][n])+ ' ')
+                f.write('%1.9f'%(normalD[1][n])+ ' ')
+                f.write('%1.9f'%(gammaV[n])+ ' ')
+                f.write('%1.9f'%(gammaD[0][n])+ ' ')
+                f.write('%1.9f'%(gammaD[1][n])+ ' ')
+                f.write('%1.9f'%(gev[n])+ ' ')
+                f.write('%1.9f'%(gevD[0][n])+ ' ')
+                f.write('%1.9f'%(gevD[1][n])+ ' ')
                 f.write('\n')
         else:
+            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'NormalI'+'\t'+'NormalD'+'\t'+'Gamma'+'\t'+'GammaI'+'\t'+'GammaD'+'\n')       
             for n in range (cont):
-                f.write('%1.2f'%(intervalos[n]) + '\t')
-                f.write('%1.3f'%(frecuencia[n])+ '\t')
-                f.write('%1.14f'%(normal[n])+ '\t')
-                f.write('%1.14f'%(normalD[0][n])+ '\t')
-                f.write('%1.14f'%(normalD[1][n])+ '\t')
-                f.write('%1.14f'%(gammaV[n])+ '\t')
-                f.write('%1.14f'%(gammaD[0][n])+ '\t')
-                f.write('%1.14f'%(gammaD[1][n])+ '\t')
+                f.write('%1.2f'%(intervalos[n]))
+                f.write('%1.3f'%(frecuencia[n]))
+                f.write('%1.7f'%(normal[n]))
+                f.write('%1.7f'%(normalD[0][n]))
+                f.write('%1.7f'%(normalD[1][n]))
+                f.write('%1.7f'%(gammaV[n]))
+                f.write('%1.7f'%(gammaD[0][n]))
+                f.write('%1.7f'%(gammaD[1][n]))
                 f.write('\n')
 
             
