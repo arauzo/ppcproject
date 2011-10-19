@@ -478,7 +478,8 @@ class Interface(object):
         self.modeloF = gtk.ListStore(*columns_type)
         self.vistaFrecuencias.set_model(self.modeloF)
 
-        self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
+        Fa, Fr = self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
+        return interv, Fa, Fr #XXX Felipe antes no estaba
 
     def update_frecuency_values(self, dmax, dmin, n, durations, itTotales):
     
@@ -505,6 +506,7 @@ class Interface(object):
         hBoxSim.add(boxS)
         boxS.pack_start(canvas)
         boxS.show_all()
+        return Fa, Fr
         
 
 
