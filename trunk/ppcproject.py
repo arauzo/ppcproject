@@ -2885,7 +2885,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dato2 = str(valor2.get_value())
         if valor2.get_value() > valor1.get_value():
             titulo = self.vProbabilidades.get_title()
-            print titulo
             if titulo == gettext.gettext('Probability related to the path'):
                 # Se extrae la media y la desviación típica de la interfaz
                 widgetMedia = self._widgets.get_widget('mediaProb')
@@ -2896,11 +2895,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 x = self.calcularProb(dato1, dato2, media, dTipica)
  
             else:
+
                 # Extraigo las iteraciones totales
                 totales = self._widgets.get_widget('iteracionesTotales')
                 itTotales = totales.get_text()
 
                 intervalos = []
+
                 for n in self.intervalos:
                     d = n.split('[')
                     interv = d[1].split(',')
@@ -3191,8 +3192,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
         valor = float(iValor.get_text())
-        n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion)) # XXX Felipe habia 20
-        self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
+        n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion))
+
+        #Update frecuency intervals and returns intervals values, absolute frecuency and relative frecuency
+        self.intervalos, self.Fa, self.Fr = self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
         # Enable Probability and Save buttons
         self._widgets.get_widget('btProbSim').set_sensitive(True)
