@@ -159,7 +159,7 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     dNormal = norm (loc = mCrit, scale = dCrit)
     for n in range(len(intervalos)):
         normal.append(dNormal.cdf(intervalos[n]))
-    pvalue = kstest (duraciones, dNormal.cdf)
+    pvalue = kstest (duraciones, dNormal) # dNormal.cdf)
     print pvalue
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
@@ -171,7 +171,7 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     for n in range(len(intervalos)):
         gammaV.append(dGamma.cdf(intervalos[n]))
 
-    pvalue2 = kstest (duraciones, dGamma.cdf)
+    pvalue2 = kstest (duraciones,dGamma.cdf)
     print pvalue2
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
