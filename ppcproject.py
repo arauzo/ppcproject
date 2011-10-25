@@ -3450,9 +3450,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
         self._widgets.get_widget('iAlfa').set_text(str(0.05))
         if (m != 1):
-            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont, pvalue, pvalue2, pvalue3 = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
         else:
-            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont, pvalue, pvalue2 = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
 
         f = open('salidatest.txt',"w")
         if (m != 1):
@@ -3471,18 +3471,37 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 f.write('%1.9f'%(gevD[0][n])+ ' ')
                 f.write('%1.9f'%(gevD[1][n])+ ' ')
                 f.write('\n')
+
+            f.write('Maxima diferencia de la normal por la izquiedra y por la derecha: ' + str(maxNormal) + '\n')
+            f.write('Maxima diferencia de la gamma por la izquierda y por la derecha: ' + str(maxGamma) + '\n')
+            f.write('Maxima diferencia de valores extremos por la izquierda y por la derecha: ' + str(maxVE) + '\n')
+            f.write('Numero de iteraciones utilizado en la simulacion: ' + str(len(duracionesTotales)) + '\n')
+            f.write('Valores de media critico, desviacion critico, alfa, beta, a y b respectivamente: ' + str(mediaCritico) + ', ' + str(dTipicaCritico)+ ', ' + str(alfa) + ', ' + str(beta) + ', '+ str(a) + ', ' + str(b) + '\n')
+            f.write('Valor de alfa usado para el test = 0.05' + '\n')
+            f.write('El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
+            f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
+            f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
+            f.write('El resultado del test ks de scipy para la de valores extremos es: ' + str(pvalue3) + '\n')
         else:
-            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'NormalI'+'\t'+'NormalD'+'\t'+'Gamma'+'\t'+'GammaI'+'\t'+'GammaD'+'\n')       
-            for n in range (cont):
-                f.write('%1.2f'%(intervalos[n]))
-                f.write('%1.3f'%(frecuencia[n]))
-                f.write('%1.7f'%(normal[n]))
-                f.write('%1.7f'%(normalD[0][n]))
-                f.write('%1.7f'%(normalD[1][n]))
-                f.write('%1.7f'%(gammaV[n]))
-                f.write('%1.7f'%(gammaD[0][n]))
-                f.write('%1.7f'%(gammaD[1][n]))
+            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'\t'+'NormalI'+'\t'+'\t'+'NormalD'+'\t'+'\t'+'Gamma'+'\t'+'\t'+'GammaI'+'\t'+'\t'+'GammaD'+ '\n')
+            for n in range(cont):
+                f.write('%1.2f'%(intervalos[n]) + '\t' + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t' + '\t')
+                f.write('%1.9f'%(normal[n])+ ' ')
+                f.write('%1.9f'%(normalD[0][n])+ ' ')
+                f.write('%1.9f'%(normalD[1][n])+ ' ')
+                f.write('%1.9f'%(gammaV[n])+ ' ')
+                f.write('%1.9f'%(gammaD[0][n])+ ' ')
+                f.write('%1.9f'%(gammaD[1][n])+ ' ')
                 f.write('\n')
+            f.write('Maxima diferencia de la normal por la izquiedra y por la derecha: ' + str(maxNormal) + '\n')
+            f.write('Maxima diferencia de la gamma por la izquierda y por la derecha: ' + str(maxGamma) + '\n')
+            f.write('Numero de iteraciones utilizado en la simulacion: ' + str(len(duracionesTotales)) + '\n')
+            f.write('Valores de media critico, desviacion critico, alfa, beta respectivamente: ' + str(mediaCritico) + ', ' + str(dTipicaCritico)+ ', ' + str(alfa) + ', ' + str(beta) + '\n')
+            f.write('Valor de alfa usado para el test = 0.05' + '\n')
+            f.write(' El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
+            f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
+            f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
 
             
         
