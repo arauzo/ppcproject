@@ -159,8 +159,8 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     dNormal = norm (loc = mCrit, scale = dCrit)
     for n in range(len(intervalos)):
         normal.append(dNormal.cdf(intervalos[n]))
-    pvalue = kstest (duraciones, dNormal) # dNormal.cdf)
-    print pvalue
+    pvalue = kstest (duraciones, dNormal.cdf )
+    #print pvalue
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
     normalD = diferencias (normal, intervalos, frecuencia)
@@ -172,7 +172,7 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
         gammaV.append(dGamma.cdf(intervalos[n]))
 
     pvalue2 = kstest (duraciones,dGamma.cdf)
-    print pvalue2
+    #print pvalue2
 
     #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
     gammaD = diferencias (gammaV, intervalos, frecuencia)
@@ -185,7 +185,7 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
             gev.append(dGev.cdf(intervalos[n]))
 
         pvalue3 = kstest (duraciones, dGev.cdf)
-        print pvalue3
+        #print pvalue3
         
         gevD = diferencias (gev, intervalos, frecuencia)
 
@@ -203,9 +203,9 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     elif (a == 0 and b == 0 and save == 0):
         return maxNormal, maxGamma, 'No definido', pvalue, pvalue2
     elif (a != 0 and b != 0 and save == 1):
-        return intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont
+        return intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont, pvalue, pvalue2, pvalue3
     elif (a == 0 and b == 0 and save == 1):
-        return intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont
+        return intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont, pvalue, pvalue2
   
 
 def valorComparacion(precision, totalIteraciones):
