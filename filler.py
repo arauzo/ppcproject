@@ -48,13 +48,12 @@ def load (filename):
         
         #Data successfully loaded
         if data:
-            actividad, schedules, recurso, asignacion = data
-            return actividad, schedules, recurso, asignacion
+            return data
         else:
             raise Exception('ERROR: Formato del archivo origen no reconocido')
 
     except IOError:
-        print 'ERROR: Formato del archivo origen no reconocido', '\n'
+        print 'ERROR: leyendo el archivo origen', '\n'
         
 
 def saveProject( nombre, activities, schedules, resources, asignacion):
