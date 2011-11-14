@@ -2768,7 +2768,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.vBoxProb.remove(self.grafica)
                 self.grafica = gtk.Image()
 
-            self.grafica.set_from_file('graficaNormal.gif')
+            # XXX We should generate the picture with the same tool than used for interval distribution
+            self.grafica.set_from_file(os.path.join(os.path.dirname( os.path.realpath( __file__ ) ), 
+                                                    'graficaNormal.gif'))
             self.vBoxProb.add(self.grafica)
             self.vBoxProb.show_all()
         
