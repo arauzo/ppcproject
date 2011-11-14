@@ -76,7 +76,7 @@ import graph
 class PPCproject(object):
     """ Controler of global events in application """
 
-    def __init__(self):
+    def __init__(self, program_dir):
         # Data globaly used in application
         self.actividad  = []
         self.recurso    = []
@@ -87,7 +87,7 @@ class PPCproject(object):
 
         self.bufer = gtk.TextBuffer()
         self.ganttActLoaded = False
-        self.interface = interface.Interface(self)
+        self.interface = interface.Interface(self, program_dir)
         self._widgets = self.interface._widgets
         self._widgets.signal_autoconnect(self)
         
@@ -2885,8 +2885,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dato2 = str(valor2.get_value())
         if valor2.get_value() > valor1.get_value():
             titulo = self.vProbabilidades.get_title()
-            print titulo
-            if titulo == gettext.gettext('Probabilidad relacionada con la simulación'): #XXX Felipe Probability related to the path'):
+            if titulo == gettext.gettext('Probability related to the path'):
                 # Se extrae la media y la desviación típica de la interfaz
                 widgetMedia = self._widgets.get_widget('mediaProb')
                 media = widgetMedia.get_text()
@@ -2896,11 +2895,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 x = self.calcularProb(dato1, dato2, media, dTipica)
  
             else:
+
                 # Extraigo las iteraciones totales
                 totales = self._widgets.get_widget('iteracionesTotales')
                 itTotales = totales.get_text()
 
                 intervalos = []
+
                 for n in self.intervalos:
                     d = n.split('[')
                     interv = d[1].split(',')
@@ -3191,8 +3192,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         opcion = iOpcion.get_active_text()
         iValor = self._widgets.get_widget('iValor') # Número de intervalos
         valor = float(iValor.get_text())
-        n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion)) # XXX Felipe habia 20
-        self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
+        n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion))
+
+        #Update frecuency intervals and returns intervals values, absolute frecuency and relative frecuency
+        self.intervalos, self.Fa, self.Fr = self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
         # Enable Probability and Save buttons
         self._widgets.get_widget('btProbSim').set_sensitive(True)
@@ -3377,27 +3380,29 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
         m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 
         mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-        
+        print 'mediaCritico, dtipicaCritico: ',mediaCritico,dTipicaCritico, '\n'
         
 
         if (m != 1):
             a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+            print 'a,b: ', a, b, '\n'
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
         self._widgets.get_widget('iAlfa').set_text(str(0.05))
-        if (m != 1):
-            bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
+        if (m != 1): #Mirar porque aqui le estoy pasando la media critico y la des critico lo mismo tengo q pasar mediaEs y sigmaES
+            bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
             self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
             self._widgets.get_widget('iEV').set_text(str(bondadVE))
             self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
             self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
         else:
-            bondadNormal, bondadGamma, bondadVE = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
+            bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
             self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
             self._widgets.get_widget('iEV').set_text(str(bondadVE))
             self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
@@ -3445,36 +3450,58 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
         self._widgets.get_widget('iAlfa').set_text(str(0.05))
         if (m != 1):
-            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont, pvalue, pvalue2, pvalue3 = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
         else:
-            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
+            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont, pvalue, pvalue2 = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
 
         f = open('salidatest.txt',"w")
         if (m != 1):
+            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'\t'+'NormalI'+'\t'+'\t'+'NormalD'+'\t'+'\t'+'Gamma'+'\t'+'\t'+'GammaI'+'\t'+'\t'+'GammaD')
+            f.write('\t'+'\t'+'EV'+'\t'+'\t'+'\t'+'EVI'+'\t'+'\t'+'\t'+'EVD'+'\t'+'\t'+'\n')
             for n in range(cont):
-                f.write('%1.2f'%(intervalos[n]) + '\t')
-                f.write('%1.3f'%(frecuencia[n])+ '\t')
-                f.write('%1.14f'%(normal[n])+ '\t')
-                f.write('%1.14f'%(normalD[0][n])+ '\t')
-                f.write('%1.14f'%(normalD[1][n])+ '\t')
-                f.write('%1.14f'%(gammaV[n])+ '\t')
-                f.write('%1.14f'%(gammaD[0][n])+ '\t')
-                f.write('%1.14f'%(gammaD[1][n])+ '\t')
-                f.write('%1.14f'%(gev[n])+ '\t')
-                f.write('%1.14f'%(gevD[0][n])+ '\t')
-                f.write('%1.14f'%(gevD[1][n])+ '\t')
+                f.write('%1.2f'%(intervalos[n]) + '\t' + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t' + '\t')
+                f.write('%1.9f'%(normal[n])+ ' ')
+                f.write('%1.9f'%(normalD[0][n])+ ' ')
+                f.write('%1.9f'%(normalD[1][n])+ ' ')
+                f.write('%1.9f'%(gammaV[n])+ ' ')
+                f.write('%1.9f'%(gammaD[0][n])+ ' ')
+                f.write('%1.9f'%(gammaD[1][n])+ ' ')
+                f.write('%1.9f'%(gev[n])+ ' ')
+                f.write('%1.9f'%(gevD[0][n])+ ' ')
+                f.write('%1.9f'%(gevD[1][n])+ ' ')
                 f.write('\n')
+
+            f.write('Maxima diferencia de la normal por la izquiedra y por la derecha: ' + str(maxNormal) + '\n')
+            f.write('Maxima diferencia de la gamma por la izquierda y por la derecha: ' + str(maxGamma) + '\n')
+            f.write('Maxima diferencia de valores extremos por la izquierda y por la derecha: ' + str(maxVE) + '\n')
+            f.write('Numero de iteraciones utilizado en la simulacion: ' + str(len(duracionesTotales)) + '\n')
+            f.write('Valores de media critico, desviacion critico, alfa, beta, a y b respectivamente: ' + str(mediaCritico) + ', ' + str(dTipicaCritico)+ ', ' + str(alfa) + ', ' + str(beta) + ', '+ str(a) + ', ' + str(b) + '\n')
+            f.write('Valor de alfa usado para el test = 0.05' + '\n')
+            f.write('El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
+            f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
+            f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
+            f.write('El resultado del test ks de scipy para la de valores extremos es: ' + str(pvalue3) + '\n')
         else:
-            for n in range (cont):
-                f.write('%1.2f'%(intervalos[n]) + '\t')
-                f.write('%1.3f'%(frecuencia[n])+ '\t')
-                f.write('%1.14f'%(normal[n])+ '\t')
-                f.write('%1.14f'%(normalD[0][n])+ '\t')
-                f.write('%1.14f'%(normalD[1][n])+ '\t')
-                f.write('%1.14f'%(gammaV[n])+ '\t')
-                f.write('%1.14f'%(gammaD[0][n])+ '\t')
-                f.write('%1.14f'%(gammaD[1][n])+ '\t')
+            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'\t'+'NormalI'+'\t'+'\t'+'NormalD'+'\t'+'\t'+'Gamma'+'\t'+'\t'+'GammaI'+'\t'+'\t'+'GammaD'+ '\n')
+            for n in range(cont):
+                f.write('%1.2f'%(intervalos[n]) + '\t' + '\t')
+                f.write('%1.3f'%(frecuencia[n])+ '\t' + '\t')
+                f.write('%1.9f'%(normal[n])+ ' ')
+                f.write('%1.9f'%(normalD[0][n])+ ' ')
+                f.write('%1.9f'%(normalD[1][n])+ ' ')
+                f.write('%1.9f'%(gammaV[n])+ ' ')
+                f.write('%1.9f'%(gammaD[0][n])+ ' ')
+                f.write('%1.9f'%(gammaD[1][n])+ ' ')
                 f.write('\n')
+            f.write('Maxima diferencia de la normal por la izquiedra y por la derecha: ' + str(maxNormal) + '\n')
+            f.write('Maxima diferencia de la gamma por la izquierda y por la derecha: ' + str(maxGamma) + '\n')
+            f.write('Numero de iteraciones utilizado en la simulacion: ' + str(len(duracionesTotales)) + '\n')
+            f.write('Valores de media critico, desviacion critico, alfa, beta respectivamente: ' + str(mediaCritico) + ', ' + str(dTipicaCritico)+ ', ' + str(alfa) + ', ' + str(beta) + '\n')
+            f.write('Valor de alfa usado para el test = 0.05' + '\n')
+            f.write(' El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
+            f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
+            f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
 
             
         
@@ -3638,7 +3665,8 @@ def main(filename=None):
     """
     Start PPC project
     """
-    app = PPCproject()
+    program_dir = os.path.dirname( os.path.realpath( __file__ ) )
+    app = PPCproject(program_dir)
     if filename:
         app.openProject(filename)
     gtk.main()   

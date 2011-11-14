@@ -19,6 +19,8 @@
  You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os.path
+
 import pygtk
 pygtk.require('2.0')
 import gobject
@@ -49,11 +51,11 @@ class Interface(object):
                                              gobject.TYPE_NONE,
                                              (gobject.TYPE_INT, ))}
    
-    def __init__(self, parent_application):
+    def __init__(self, parent_application, program_dir):
         """
         Initializes some interface things
         """
-        self._widgets = gtk.glade.XML('ppcproject.glade')
+        self._widgets = gtk.glade.XML(os.path.join(program_dir, 'ppcproject.glade')) 
         self.parent_application = parent_application
 
         # Adding Gantt Diagram
@@ -87,7 +89,7 @@ class Interface(object):
         self.ntbSchedule = self._widgets.get_widget('ntbSchedule')
         self.ntbSchedule.hide()
           
-        gtk.window_set_default_icon_from_file('ppcproject.svg')
+        gtk.window_set_default_icon_from_file(os.path.join(program_dir, 'ppcproject.svg'))
         self._widgets.get_widget('dAyuda').set_logo(self._widgets.get_widget('dAyuda').get_icon())
           
         self.sbPhi.set_range(0.001, 0.999)
@@ -478,7 +480,8 @@ class Interface(object):
         self.modeloF = gtk.ListStore(*columns_type)
         self.vistaFrecuencias.set_model(self.modeloF)
 
-        self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
+        Fa, Fr = self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
+        return interv, Fa, Fr #XXX Felipe antes no estaba
 
     def update_frecuency_values(self, dmax, dmin, n, durations, itTotales):
     
@@ -505,6 +508,7 @@ class Interface(object):
         hBoxSim.add(boxS)
         boxS.pack_start(canvas)
         boxS.show_all()
+        return Fa, Fr
         
 
 
