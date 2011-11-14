@@ -76,7 +76,7 @@ import graph
 class PPCproject(object):
     """ Controler of global events in application """
 
-    def __init__(self):
+    def __init__(self, program_dir):
         # Data globaly used in application
         self.actividad  = []
         self.recurso    = []
@@ -87,7 +87,7 @@ class PPCproject(object):
 
         self.bufer = gtk.TextBuffer()
         self.ganttActLoaded = False
-        self.interface = interface.Interface(self)
+        self.interface = interface.Interface(self, program_dir)
         self._widgets = self.interface._widgets
         self._widgets.signal_autoconnect(self)
         
@@ -3665,7 +3665,8 @@ def main(filename=None):
     """
     Start PPC project
     """
-    app = PPCproject()
+    program_dir = os.path.dirname( os.path.realpath( __file__ ) )
+    app = PPCproject(program_dir)
     if filename:
         app.openProject(filename)
     gtk.main()   
