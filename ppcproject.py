@@ -29,6 +29,7 @@
 import os
 from copy import deepcopy
 import math
+import gettext
 
 # GTK
 import pygtk
@@ -44,15 +45,6 @@ rcParams['font.family'] = 'monospace'
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas
 import numpy
-
-# Internationalization
-import gettext
-APP='PPC-Project' #Program name
-DIR='po' #Directory containing translations, usually /usr/share/locale
-gettext.bindtextdomain(APP, DIR)
-gettext.textdomain(APP)
-gtk.glade.bindtextdomain(APP, DIR)
-gtk.glade.textdomain(APP)
 
 # ppcProject modules
 import simulation
@@ -77,6 +69,15 @@ class PPCproject(object):
     """ Controler of global events in application """
 
     def __init__(self, program_dir):
+        # Internacionalization
+        APP = 'PPC-Project'                   # Program name as domain for gettext translation
+        DIR = os.path.join(program_dir, 'po') # Directory containing translations, usually /usr/share/locale
+                                              # we set it to directory po under program_dir
+        gettext.install(APP, DIR)             # Install function _() to global for all program modules
+        gtk.glade.bindtextdomain(APP, DIR)    # Internacionalize .glade
+        #gtk.glade.textdomain(APP)   # XXX Esto creo que es redundante con lo anterior
+
+
         # Data globaly used in application
         self.actividad  = []
         self.recurso    = []
@@ -235,7 +236,7 @@ class PPCproject(object):
         self._widgets.get_widget('tbCerrar').set_sensitive(value)
         if (not value):
             self._widgets.get_widget('stbStatus').pop(0)
-            self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
+            self._widgets.get_widget('stbStatus').push(0, _("No project file opened"))
 
     def set_modified_state(self, value):
         """
@@ -251,9 +252,9 @@ class PPCproject(object):
         self._widgets.get_widget('tbGuardar').set_sensitive(value)
         self._widgets.get_widget('stbStatus').pop(0)
         if value:
-            self._widgets.get_widget('stbStatus').push(0, gettext.gettext("Project modified"))
+            self._widgets.get_widget('stbStatus').push(0, _("Project modified"))
         else:
-            self._widgets.get_widget('stbStatus').push(0, gettext.gettext("Project without changes"))
+            self._widgets.get_widget('stbStatus').push(0, _("Project without changes"))
        
     
     
@@ -286,7 +287,7 @@ class PPCproject(object):
         self.modeloAR.append()
         #Minimum schedule
         start_times = pert.get_activities_start_time([], [], [], True)
-        self.add_schedule(gettext.gettext("Min"), start_times)
+        self.add_schedule(_("Min"), start_times)
         self.set_schedule(start_times)
         self.set_open_state(True)
         self.set_modified_state(True)
@@ -316,7 +317,7 @@ class PPCproject(object):
                 # añadimos las etiquetas de las actividades al selector de las siguientes
                 if n==1:  # Columna de las actividades
                     if new_text == '':
-                        self.dialogoError(gettext.gettext('The name of activity must not be empty.'))
+                        self.dialogoError(_('The name of activity must not be empty.'))
                         return
                     else:
                         if new_text not in actividades:
@@ -345,7 +346,7 @@ class PPCproject(object):
                                 self.gantt.update()
 
                         else:
-                            self.dialogoError(gettext.gettext('Repeated activity.'))
+                            self.dialogoError(_('Repeated activity.'))
                             return
       
       
@@ -355,14 +356,14 @@ class PPCproject(object):
                     else:
                         modelo[path][n] = new_text
                 else:
-                    self.dialogoError(gettext.gettext('Activity name must be introduced first.'))
+                    self.dialogoError(_('Activity name must be introduced first.'))
                     return
                 
             elif modelo == self.modeloR:  # Resources
                 if n == 0:
                     recursos = self.resources2List()
                     if new_text == '':
-                        self.dialogoError(gettext.gettext('The name of resource must not be empty.'))
+                        self.dialogoError(_('The name of resource must not be empty.'))
                         return
                     else:
                         if new_text not in recursos:
@@ -376,10 +377,10 @@ class PPCproject(object):
                                 self.modeloComboARR.append([new_text])
                             modelo[path][0] = new_text
                         else:
-                            self.dialogoError(gettext.gettext('Repeated activity.'))
+                            self.dialogoError(_('Repeated activity.'))
                             return
                 elif modelo[int(path)][0] == "" or modelo[int(path)][0] == None:
-                    self.dialogoError(gettext.gettext('Resource name must be introduced first.'))
+                    self.dialogoError(_('Resource name must be introduced first.'))
                     return
                 
                 else:
@@ -498,7 +499,7 @@ class PPCproject(object):
                             gantt_modified = True
                             
                         else:  #se emite un mensaje de error
-                            self.dialogoError(gettext.gettext('Wrong durations introduced.'))
+                            self.dialogoError(_('Wrong durations introduced.'))
                             self.modelo[path][n]=self.actividad[int(path)][n] = preVal
  
                             #self.modelo[path][6]=self.actividad[int(path)][6]=''
@@ -553,19 +554,19 @@ class PPCproject(object):
                         self.modeloAR[index][1] = self.modeloR[path][n]
             self.recurso[int(path)][n] = self.modeloR[path][n]
             # Si el recurso es Renovable    
-            if self.modeloR[path][1] == gettext.gettext('Renewable'):
+            if self.modeloR[path][1] == _('Renewable'):
                 if n == 2:
-                    self.dialogoRec(gettext.gettext('Renewable'))
+                    self.dialogoRec(_('Renewable'))
                 self.recurso[int(path)][2] = self.modeloR[path][2] = ''
             # Si el recurso es No Renovable    
-            elif self.modeloR[path][1] == gettext.gettext('Non renewable'):
+            elif self.modeloR[path][1] == _('Non renewable'):
                 if n == 3:
-                    self.dialogoRec(gettext.gettext('Non renewable'))
+                    self.dialogoRec(_('Non renewable'))
                 self.recurso[int(path)][3] = self.modeloR[path][3] = ''
             # Si el recurso es Ilimitado
-            elif self.modeloR[path][1] == gettext.gettext('Unlimited'):
+            elif self.modeloR[path][1] == _('Unlimited'):
                 if n == 2 or n == 3:
-                    self.dialogoRec(gettext.gettext('Unlimited'))
+                    self.dialogoRec(_('Unlimited'))
                 self.recurso[int(path)][3] = self.modeloR[path][3] = ''
                 self.recurso[int(path)][2] = self.modeloR[path][2] = ''
 
@@ -610,7 +611,7 @@ class PPCproject(object):
          Valor de retorno: -
         """
         # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
-        if modelo[path][8] == gettext.gettext('Normal'):
+        if modelo[path][8] == _('Normal'):
             modelo[path][3] = actividad[int(path)][3] = ''
             modelo[path][4] = actividad[int(path)][4] = ''
             modelo[path][5] = actividad[int(path)][5] = ''  
@@ -853,7 +854,7 @@ class PPCproject(object):
 
         # Se imprime un mensaje de error con las actividades erróneas
         if actividadesErroneas != []:
-            self.errorRecNecAct(actividadesErroneas, gettext.gettext('Activity'))  
+            self.errorRecNecAct(actividadesErroneas, _('Activity'))  
   
         return error
 
@@ -881,7 +882,7 @@ class PPCproject(object):
 
         # Se imprime un mensaje de error con las actividades erróneas
         if recursosErroneos != []:
-            self.errorRecNecAct(recursosErroneos, gettext.gettext('Resource'))
+            self.errorRecNecAct(recursosErroneos, _('Resource'))
 
         return error
 
@@ -902,8 +903,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         unidadesRec = []
         for n in range(len(self.recurso)): 
-            if (self.recurso[n][1] == gettext.gettext('Non renewable') or 
-                self.recurso[n][1] == gettext.gettext('Double constrained')):
+            if (self.recurso[n][1] == _('Non renewable') or 
+                self.recurso[n][1] == _('Double constrained')):
                 cont = 0
                 recurso = self.recurso[n][0]
                 for m in range(len(asignacion)):
@@ -1175,14 +1176,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             row.append(str(tlast[node]))
             zad_model.append(row)
         #Early Column
-        column = gtk.TreeViewColumn(gettext.gettext("Early"))
+        column = gtk.TreeViewColumn(_("Early"))
         self.zadViewList.append_column(column)
         cell = gtk.CellRendererText()
         column.pack_start(cell, False)
         column.add_attribute(cell, 'text', 0)
         column.set_min_width(50)
         #Activities Column
-        column = gtk.TreeViewColumn(gettext.gettext("Node"))
+        column = gtk.TreeViewColumn(_("Node"))
         self.zadViewList.append_column(column)
         cell = gtk.CellRendererText()
         column.pack_start(cell, False)
@@ -1196,7 +1197,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             column.add_attribute(cell, 'text', 2 + node)
             column.set_min_width(50)
         #Last Column
-        column = gtk.TreeViewColumn(gettext.gettext("Last"))
+        column = gtk.TreeViewColumn(_("Last"))
         self.zadViewList.append_column(column)
         cell = gtk.CellRendererText()
         column.pack_start(cell, False)
@@ -1598,7 +1599,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     #    valor=self.actividad[m][6]
                 
                 #else:
-                 #   self.dialogoError(gettext.gettext('S Unknown distribution')) 
+                 #   self.dialogoError(_('S Unknown distribution')) 
                   #  return
                         
                 #sim.append(float(valor))
@@ -1714,7 +1715,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         else: # Si se introducen los dos datos
             if float(dato1)>float(dato2):
-                self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
+                self.dialogoError(_('The first number must be bigger than the second one.'))
             else:
                 x1 = (float(dato1)-float(media))/float(dTipica)
                 p1 = float(scipy.stats.distributions.norm.cdf(x1))
@@ -1770,7 +1771,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
  
         else:
             if float(dato1) > float(dato2):
-                self.dialogoError(gettext.gettext('The first number must be bigger than the second one.'))
+                self.dialogoError(_('The first number must be bigger than the second one.'))
             else:
                 for n in range(len(intervalos)):
                     #print intervalos[n][0], dato2, intervalos[n][1], dato1
@@ -1872,7 +1873,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.actividad, schedules, self.recurso, self.asignacion = data
                 for res in self.recurso:
                     self.modeloComboARR.append([res[0]])
-                    res[1] = gettext.gettext(res[1])
+                    res[1] = _(res[1])
                     
                 act_list = []
                 dur_dic = {}
@@ -1885,7 +1886,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.gantt.add_activity(act[1], act[2], act[6])
                     self.gantt.set_activity_comment(act[1], act[1])
                 min_sched = pert.get_activities_start_time(act_list, dur_dic, pre_dic)
-                schedules = [[gettext.gettext('Min'), min_sched]] + schedules
+                schedules = [[_('Min'), min_sched]] + schedules
                 
                 cont = 1
                 for act in self.actividad:
@@ -1918,12 +1919,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.modeloAR.append()
                 return True
             else:
-                self.dialogoError(gettext.gettext('Error reading file:') + filename 
-                      + ' ' + gettext.gettext('Unknown format'))
+                self.dialogoError(_('Error reading file:') + filename 
+                      + ' ' + _('Unknown format'))
                 return False 
 
         except IOError:
-            self.dialogoError(gettext.gettext('Error reading file:') + filename)
+            self.dialogoError(_('Error reading file:') + filename)
             #traceback.print_exc() 
             return False
 
@@ -1942,11 +1943,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         resources = deepcopy(self.recurso)
         for res in resources:
-            if res[1] == gettext.gettext('Renewable'): 
+            if res[1] == _('Renewable'): 
                 res[1] = 'Renewable'
-            elif res[1] == gettext.gettext('Non renewable'):
+            elif res[1] == _('Non renewable'):
                 res[1] = 'Non renewable'
-            elif res[1] == gettext.gettext('Double constrained'):
+            elif res[1] == _('Double constrained'):
                 res[1] = 'Double constrained'
             else:
                 res[1] = 'Unlimited'
@@ -1966,7 +1967,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.updateWindowTitle()
             self.set_modified_state(False)
         except IOError :
-            self.dialogoError(gettext.gettext('Error saving the file'))    
+            self.dialogoError(_('Error saving the file'))    
 
 
 
@@ -1985,15 +1986,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if self.modified == False:  # Project is already saved
             close = True
         else:                       # Project changes need saving
-            dialogo = gtk.Dialog(gettext.gettext("Attention!!"),
+            dialogo = gtk.Dialog(_("Attention!!"),
                                  None,
                                  gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-                                 (gettext.gettext('Discard'), gtk.RESPONSE_CLOSE,
+                                 (_('Discard'), gtk.RESPONSE_CLOSE,
                                   gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
                                   gtk.STOCK_SAVE, gtk.RESPONSE_OK )
                                  )
                                  #xxx el dialogo no debe ser modal? Vamos que hasta que el usuario no responda no debe continuar. Corregir mirando doc.
-            label = gtk.Label(gettext.gettext('Project has been modified. Do you want to save the changes?'))
+            label = gtk.Label(_('Project has been modified. Do you want to save the changes?'))
             dialogo.vbox.pack_start(label, True, True, 10)
             label.show()
             respuesta = dialogo.run()
@@ -2040,13 +2041,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         Parámetros: tipo (tipo de recurso)
         """
-        dialogo = gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo = gtk.Dialog(_("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         # Si el recurso es Renovable, las unidades deben ser 'por periodo'
-        if tipo == gettext.gettext('Renewable'):
-            label = gtk.Label(gettext.gettext('Renember that the resource is "Renewable"'))
+        if tipo == _('Renewable'):
+            label = gtk.Label(_('Renember that the resource is "Renewable"'))
         # Si el recurso es No Renovable, las unidades deben ser 'por proyecto'
         else:
-            label = gtk.Label(gettext.gettext('Renember that the resource is "Non renewable"'))
+            label = gtk.Label(_('Renember that the resource is "Non renewable"'))
         dialogo.vbox.pack_start(label,True,True,10)
         label.show()
         respuesta = dialogo.run()
@@ -2071,9 +2072,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         Parámetros: repetidas (lista con las actividades repetidas)
         """
-        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo=gtk.Dialog(_("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for actividad in repetidas:
-            label=gtk.Label(gettext.gettext('The activity ')+' "'+actividad+'"'+gettext.gettext(' is repeated\n'))
+            label=gtk.Label(_('The activity ')+' "'+actividad+'"'+_(' is repeated\n'))
             dialogo.vbox.pack_start(label,True,True,5)
             label.show()
         respuesta=dialogo.run()
@@ -2088,9 +2089,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         Parámetros: datosErroneos (lista con los datos erróneos) cadena (cadena de texto)
         """
-        dialogo=gtk.Dialog(gettext.gettext("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
+        dialogo=gtk.Dialog(_("Error!!"), None, gtk.MESSAGE_QUESTION, (gtk.STOCK_OK, gtk.RESPONSE_OK ))
         for dato in datosErroneos:
-            label=gtk.Label(cadena+' "'+dato+'"'+ gettext.gettext(' does not exist\n'))
+            label=gtk.Label(cadena+' "'+dato+'"'+ _(' does not exist\n'))
             dialogo.vbox.pack_start(label,True,True,5)
             label.show()
         respuesta=dialogo.run()
@@ -2197,7 +2198,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         
         # Dialog asking for file to open
-        dialogoFicheros = gtk.FileChooserDialog(gettext.gettext("Open File"),
+        dialogoFicheros = gtk.FileChooserDialog(_("Open File"),
                                                 None,
                                                 gtk.FILE_CHOOSER_ACTION_OPEN,
                                                 (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN, gtk.RESPONSE_OK)
@@ -2209,7 +2210,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for pat in f.filenamePatterns():
                 pats.append(pat)
                 ffilter.add_pattern(pat)
-        ffilter.set_name(''.join([gettext.gettext('All project files') + ' (', ', '.join(pats), ')']))
+        ffilter.set_name(''.join([_('All project files') + ' (', ', '.join(pats), ')']))
         dialogoFicheros.add_filter(ffilter)                 
 
         # Creates a filter for each supported file format
@@ -2223,7 +2224,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Creates the filter allowing to see all files            
         ffilter = gtk.FileFilter()
         ffilter.add_pattern('*')
-        ffilter.set_name(gettext.gettext('All files'))
+        ffilter.set_name(_('All files'))
         dialogoFicheros.add_filter(ffilter)                 
 
         opened = False
@@ -2271,7 +2272,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se comprueba que no haya actividades repetidas (xxx esto debe ir aqui?)
         errorActRepetidas, actividadesRepetidas = self.actividadesRepetidas(self.actividad)
         if errorActRepetidas == 0:
-            destination_dialog = gtk.FileChooserDialog(gettext.gettext("Save as"),
+            destination_dialog = gtk.FileChooserDialog(_("Save as"),
                                                    None,
                                                    gtk.FILE_CHOOSER_ACTION_SAVE,
                                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -2399,7 +2400,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             if a[6]=='':
                 s+=1
         if s>0:
-            self.dialogoError(gettext.gettext('There are uncomplete activities'))
+            self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaZaderenko()
    
@@ -2411,7 +2412,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 s += 1
                 
         if s > 0:
-            self.dialogoError(gettext.gettext('There are uncomplete activities'))
+            self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaHolguras()
    
@@ -2434,17 +2435,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     m=+1
 
         if s > 0 and m == 0:
-            self.dialogoError(gettext.gettext('You must introduce the durations: ') + '\n' + '\t' + 
-                              gettext.gettext('- Optimistic') + '\n' + '\t' + gettext.gettext('- Most probable') +
-                              '\n' + '\t' + gettext.gettext('- Pessimistic'))
+            self.dialogoError(_('You must introduce the durations: ') + '\n' + '\t' + 
+                              _('- Optimistic') + '\n' + '\t' + _('- Most probable') +
+                              '\n' + '\t' + _('- Pessimistic'))
         elif s == 0 and m > 0:
-            self.dialogoError(gettext.gettext('You must introduce the durations: ') + '\n' + '\t' + 
-                              gettext.gettext('- Average') + '\n' + '\t' + gettext.gettext('- Typical Dev.'))
+            self.dialogoError(_('You must introduce the durations: ') + '\n' + '\t' + 
+                              _('- Average') + '\n' + '\t' + _('- Typical Dev.'))
         elif s > 0 and m > 0:
-            self.dialogoError(gettext.gettext('You must introduce the durations: ') + '\n' + '\t' + 
-                              gettext.gettext('- Optimistic')+ '\n' + '\t' + gettext.gettext('- Most probable') +
-                              '\n' + '\t' + gettext.gettext('- Pessimistic') + '\n' + '\t' + 
-                              gettext.gettext('- Average') + '\n' + '\t' + gettext.gettext('- Typical Dev.'))
+            self.dialogoError(_('You must introduce the durations: ') + '\n' + '\t' + 
+                              _('- Optimistic')+ '\n' + '\t' + _('- Most probable') +
+                              '\n' + '\t' + _('- Pessimistic') + '\n' + '\t' + 
+                              _('- Average') + '\n' + '\t' + _('- Typical Dev.'))
         else:
             self._widgets.get_widget('btProbSim').set_sensitive(False)
             self._widgets.get_widget('btGuardarSim').set_sensitive(False)
@@ -2461,7 +2462,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """ User ask for paths in project """
         # Se comprueba que exista algún grafo
         if self.actividad == []:
-            self.dialogoError(gettext.gettext('A graph is needed to calculate its paths')) 
+            self.dialogoError(_('A graph is needed to calculate its paths')) 
         else:
             successors = dict(((act[1], act[2]) for act in self.actividad))
             roy = graph.roy(successors)
@@ -2470,7 +2471,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             caminosSinBeginEnd=[c[1:-1]for c in graph.find_all_paths(roy, 'Begin', 'End')]
             # Se preparan los caminos para mostrarlos en el interfaz
             numeroCaminos = len(caminosSinBeginEnd) 
-            camino = gettext.gettext('Number of paths: ') + (str(numeroCaminos)) + '\n' 
+            camino = _('Number of paths: ') + (str(numeroCaminos)) + '\n' 
             for n in range(len(caminosSinBeginEnd)):
                 cadena = ', '.join(caminosSinBeginEnd[n])
                 camino += cadena
@@ -2497,7 +2498,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         optSchDic = {}
         if self.optimumSchedule == []:
-            self.dialogoError(gettext.gettext('There is no schedule.'))
+            self.dialogoError(_('There is no schedule.'))
             return False
         else:
             for act,startTime,endTime in self.optimumSchedule:
@@ -2563,7 +2564,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         rest = {}
         for a in self.actividad:
             if a[6] == '':
-                self.dialogoError(gettext.gettext('You must introduce the average duration.'))
+                self.dialogoError(_('You must introduce the average duration.'))
                 return False
             rest[a[1]] = [float(a[6])]
 
@@ -2574,7 +2575,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             
         resources = resources_availability(self.recurso)        
         if leveling == 1 and resources == {}:
-            self.dialogoError(gettext.gettext('There are not renewable or double constrained resources introduced'))
+            self.dialogoError(_('There are not renewable or double constrained resources introduced'))
             return False
             
         # Create main dictionaries
@@ -2582,7 +2583,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         successors = dict(((act[1], act[2]) for act in self.actividad))
         activities = self.altered_last(rest)
         if activities == {}:
-            self.dialogoError(gettext.gettext('There are no activities'))
+            self.dialogoError(_('There are no activities'))
             return False
         # Get the simulated annealing algorithm's paremeters
         phi = self.sbPhi.get_value()
@@ -2599,7 +2600,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
         
         if optSchDuration == 0:
-            self.dialogoError(gettext.gettext('Project\'s duration = 0'))
+            self.dialogoError(_('Project\'s duration = 0'))
             return False
             
         if self.optimumSchedule != None: # If no error
@@ -2646,7 +2647,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.loadTable.set_duration(optSchDuration)
                 self.loadTable.update()
         else:
-            self.dialogoError(gettext.gettext('Initial temperature not high enough.'))
+            self.dialogoError(_('Initial temperature not high enough.'))
             return False
 
     def altered_last(self,rest):
@@ -2758,11 +2759,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         media, dTipica = self.extraerMediaYDTipica()
 
         if float(dTipica) == 0.00:
-            texto=gettext.gettext('Path duration is ') + '%5.2f' % (float(media)) + gettext.gettext(' t.u. with 100% probability')
+            texto=_('Path duration is ') + '%5.2f' % (float(media)) + _(' t.u. with 100% probability')
             self.dialogoError(texto)
         else:
             # Se asigna tí­tulo y gráfica a la ventana de probabilidad
-            self.vProbabilidades.set_title(gettext.gettext('Probability related to the path'))
+            self.vProbabilidades.set_title(_('Probability related to the path'))
             #imagen = self._widgets.get_widget('graficaProb')
             if len(self.vBoxProb)>1:
                 self.vBoxProb.remove(self.grafica)
@@ -2814,7 +2815,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 s += 1
                 
         if s > 0:
-            self.dialogoError(gettext.gettext('There are uncomplete activities'))
+            self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaHolguras()
     
@@ -2847,7 +2848,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 s += 1
                 
         if s > 0:
-            self.dialogoError(gettext.gettext('There are uncomplete activities'))
+            self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaZaderenko()
 
@@ -2887,7 +2888,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dato2 = str(valor2.get_value())
         if valor2.get_value() > valor1.get_value():
             titulo = self.vProbabilidades.get_title()
-            if titulo == gettext.gettext('Probability related to the path'):
+            if titulo == _('Probability related to the path'):
                 # Se extrae la media y la desviación típica de la interfaz
                 widgetMedia = self._widgets.get_widget('mediaProb')
                 media = widgetMedia.get_text()
@@ -2936,7 +2937,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dato2 = str(valor2.get_value())
 
         titulo = self.vProbabilidades.get_title()
-        if titulo == gettext.gettext('Probability related to the path'):
+        if titulo == _('Probability related to the path'):
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia = self._widgets.get_widget('mediaProb')
             media = widgetMedia.get_text()
@@ -2968,11 +2969,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Se muestra el resultado completo en el textView
         if dato2 == '':
-            mostrarDato = 'P ( '+str(dato1)+gettext.gettext(' < Project ) = ')+str('%3.3f'%(x))+' ('+prob+')'
+            mostrarDato = 'P ( '+str(dato1)+_(' < Project ) = ')+str('%3.3f'%(x))+' ('+prob+')'
         elif dato1 == '':
-            mostrarDato = gettext.gettext('P ( Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+            mostrarDato = _('P ( Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
         else:
-            mostrarDato = 'P ( '+str(dato1)+gettext.gettext(' < Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
+            mostrarDato = 'P ( '+str(dato1)+_(' < Project < ')+str(dato2)+' ) = '+str('%3.3f'%(x))+' ('+prob+')'
         self.escribirProb(mostrarDato)
 
     def on_btnProbabilityReset_clicked(self, button):
@@ -2995,7 +2996,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         x = 0
         titulo = self.vProbabilidades.get_title()
-        if titulo == gettext.gettext('Probability related to the path'):         
+        if titulo == _('Probability related to the path'):         
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia = self._widgets.get_widget('mediaProb')
             media = widgetMedia.get_text()
@@ -3048,7 +3049,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         x = 0
         titulo = self.vProbabilidades.get_title()
-        if titulo == gettext.gettext('Probability related to the path'):         
+        if titulo == _('Probability related to the path'):         
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia = self._widgets.get_widget('mediaProb')
             media = widgetMedia.get_text()
@@ -3088,7 +3089,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         # Se muestra el resultado completo en el textView
         prob='%5.2f'%(float(dato3)*100)
-        mostrarDato = gettext.gettext('P ( Project < ')+tiempo+' ) = '+str(prob)+' %'
+        mostrarDato = _('P ( Project < ')+tiempo+' ) = '+str(prob)+' %'
         
         self.escribirProb(mostrarDato)
                
@@ -3101,7 +3102,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
            Parámetros: boton (botón clickeado)
         """
         titulo = self.vProbabilidades.get_title()
-        if titulo == gettext.gettext('Probability related to the path'):
+        if titulo == _('Probability related to the path'):
             self.limpiarVentanaProb(0)
         else:
             self.limpiarVentanaProb(1)
@@ -3117,7 +3118,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                      evento (evento cerrar)
         """
         titulo = self.vProbabilidades.get_title()
-        if titulo == gettext.gettext('Probability related to the path'):
+        if titulo == _('Probability related to the path'):
             self.limpiarVentanaProb(0)
         else:
             self.limpiarVentanaProb(1)
@@ -3214,7 +3215,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          boton (botón clickeado)
         """
         # Se asigna tí­tulo 
-        self.vProbabilidades.set_title(gettext.gettext('Probability related to the simulation'))
+        self.vProbabilidades.set_title(_('Probability related to the simulation'))
         
         # Extraigo los valores de la media y la desviación típica
         media = self._widgets.get_widget('mediaSim')
@@ -3307,9 +3308,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 m += 1            
 
         if s > 0:
-            self.dialogoError(gettext.gettext('Todas las duraciones medias han de ser introducidas'))
+            self.dialogoError(_('Todas las duraciones medias han de ser introducidas'))
         elif m > 0:
-            self.dialogoError(gettext.gettext('No pueden existir duraciones medias negativas'))        
+            self.dialogoError(_('No pueden existir duraciones medias negativas'))        
         else:
             self._widgets.get_widget('btAsignar').set_sensitive(True)
             self._widgets.get_widget('proporcionalidad').set_text('0.2')
@@ -3520,11 +3521,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
-            self.dialogoError(gettext.gettext('No activities introduced'))
+            self.dialogoError(_('No activities introduced'))
  
         # Se comprueba que se hayan introducido recursos
         elif self.recurso == []:
-            self.dialogoError(gettext.gettext('No resources introduced'))
+            self.dialogoError(_('No resources introduced'))
            
         # Si todo es correcto, se accede a la ventana con normalidad
         else:
@@ -3682,7 +3683,7 @@ if __name__ == '__main__':
     elif len(sys.argv) == 2:
         main(sys.argv[1])
     else:
-        print gettext.gettext('Syntax is:')
+        print _('Syntax is:')
         print sys.argv[0], '[project_file]'
 
 
