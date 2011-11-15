@@ -73,7 +73,7 @@ def saveProject( nombre, activities, schedules, resources, asignacion):
         format.save((activities, schedules, resources, asignacion), nombre)
         
     except IOError :
-        self.dialogoError(gettext.gettext('Error saving the file'))  
+        self.dialogoError(_('Error saving the file'))  
 
 def main():
     """

@@ -125,7 +125,7 @@ class PSPProjectFileFormat(ProjectFileFormat):
         dialogs
 
         """
-        return gettext.gettext('PSPLIB') + " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+        return _('PSPLIB') + " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
 
     def load(self, filename):
         """
@@ -170,9 +170,9 @@ class PSPProjectFileFormat(ProjectFileFormat):
         for prelacion in prelaciones:
             if prelacion != prelaciones[0] and prelacion!=prelaciones[longitud-1]:   
                 if prelacion[1] == [str(longitud)]:  #activities with the last activity as next 
-                    activities.append([cont, prelacion[0], [], '', '', '', '', '', gettext.gettext('Beta')] )
+                    activities.append([cont, prelacion[0], [], '', '', '', '', '', _('Beta')] )
                 else:
-                    activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', gettext.gettext('Beta')])
+                    activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', _('Beta')])
                                     
                 cont += 1  
 
@@ -250,7 +250,7 @@ class PPCProjectOLDFileFormat(ProjectFileFormat):
         dialogs
 
         """
-        return gettext.gettext('PPC-Project old file format')+ " "+ "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+        return _('PPC-Project old file format')+ " "+ "".join(['(', ', '.join(self.filenamePatterns()), ')'])
 
     def load(self, filename):
         """
@@ -304,7 +304,7 @@ class PPCProjectFileFormat(ProjectFileFormat):
         dialogs
 
         """
-        return gettext.gettext('PPC-Project file') + " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+        return _('PPC-Project file') + " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
 
     def load(self, filename):
         """
@@ -347,7 +347,7 @@ class PPCProjectFileFormat(ProjectFileFormat):
 #        dialogs
 
 #        """
-#        return gettext.gettext('Text file')+ " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
+#        return _('Text file')+ " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
 
 #    def load(self, filename):
 #        """
@@ -375,7 +375,7 @@ def guardarCsv(texto, principal):
 
      Valor de retorno: -
     """
-    dialogoGuardar = gtk.FileChooserDialog(gettext.gettext('Save'), None,
+    dialogoGuardar = gtk.FileChooserDialog(_('Save'), None,
                                            gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL,
                                            gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE,
                                            gtk.RESPONSE_OK))
@@ -391,7 +391,7 @@ def guardarCsv(texto, principal):
             fescritura.write(texto)
         except IOError:
 
-            principal.dialogoError(gettext.gettext('Error saving the file'))
+            principal.dialogoError(_('Error saving the file'))
         fescritura.close()
     # elif resultado == gtk.RESPONSE_CANCEL:
         # print "No hay elementos seleccionados"
