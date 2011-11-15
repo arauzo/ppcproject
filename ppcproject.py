@@ -75,8 +75,6 @@ class PPCproject(object):
                                               # we set it to directory po under program_dir
         gettext.install(APP, DIR)             # Install function _() to global for all program modules
         gtk.glade.bindtextdomain(APP, DIR)    # Internacionalize .glade
-        #gtk.glade.textdomain(APP)   # XXX Esto creo que es redundante con lo anterior
-
 
         # Data globaly used in application
         self.actividad  = []
