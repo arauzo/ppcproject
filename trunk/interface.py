@@ -34,13 +34,13 @@ import simulation
 import svgviewer
 
 # Internationalization
-import gettext
-APP = 'PPC-Project' #Program name
-DIR = 'po' #Directory containing translations, usually /usr/share/locale
-gettext.bindtextdomain(APP, DIR)
-gettext.textdomain(APP)
-gtk.glade.bindtextdomain(APP, DIR)
-gtk.glade.textdomain(APP)
+#import gettext
+#APP = 'PPC-Project' #Program name
+#DIR = 'po' #Directory containing translations, usually /usr/share/locale
+#gettext.bindtextdomain(APP, DIR)
+#gettext.textdomain(APP)
+#gtk.glade.bindtextdomain(APP, DIR)
+#gtk.glade.textdomain(APP)
 
 #XXX Felipe para dibujar el gráfico
 from matplotlib.figure import Figure
@@ -135,7 +135,7 @@ class Interface(object):
         self.ganttSA.diagram.connect("gantt-width-changed", self.loadTable.set_width)
 
         # Setting status message
-        self._widgets.get_widget('stbStatus').push(0, gettext.gettext("No project file opened"))
+        self._widgets.get_widget('stbStatus').push(0, _("No project file opened"))
         # Setting unsensitive GTKEntries
         self._widgets.get_widget('dTipicaSim').set_sensitive(False)
         self._widgets.get_widget('mediaSim').set_sensitive(False)
@@ -159,18 +159,18 @@ class Interface(object):
         self.main_table_treeview = self._widgets.get_widget('vistaListaDatos')
         self.main_table_treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 
-        columns = [ gettext.gettext('#'),                   # 0
-                    gettext.gettext('Activity'),            # 1
-                    gettext.gettext('Following Act.'),      # 2
-                    gettext.gettext('Optimistic Dur.'),     # 3
-                    gettext.gettext('Most Probable Dur.'),  # 4
-                    gettext.gettext('Pessimistic Dur.'),    # 5
-                    gettext.gettext('Average Dur.'),        # 6
-                    gettext.gettext('Typical Dev.'),        # 7
-                    gettext.gettext('Resources'),           # 8
-                    gettext.gettext('Distribution'),        # 9
-                    gettext.gettext('Start Time'),          #10
-                    gettext.gettext('End Time'),            #11
+        columns = [ _('#'),                   # 0
+                    _('Activity'),            # 1
+                    _('Following Act.'),      # 2
+                    _('Optimistic Dur.'),     # 3
+                    _('Most Probable Dur.'),  # 4
+                    _('Pessimistic Dur.'),    # 5
+                    _('Average Dur.'),        # 6
+                    _('Typical Dev.'),        # 7
+                    _('Resources'),           # 8
+                    _('Distribution'),        # 9
+                    _('Start Time'),          #10
+                    _('End Time'),            #11
                     ]
 
         self.modelo = gtk.ListStore(int, str, str, str, str, str, str, str, str, str)
@@ -223,10 +223,10 @@ class Interface(object):
 
         # Create column 9-Distribution
         self.modeloComboD = self.columnaCombo(self.main_table_treeview, self.modelo, 9, True)
-        self.modeloComboD.append([gettext.gettext('Normal')])
-        self.modeloComboD.append([gettext.gettext('Triangular')])
-        self.modeloComboD.append([gettext.gettext('Beta')])
-        self.modeloComboD.append([gettext.gettext('Uniform')])
+        self.modeloComboD.append([_('Normal')])
+        self.modeloComboD.append([_('Triangular')])
+        self.modeloComboD.append([_('Beta')])
+        self.modeloComboD.append([_('Uniform')])
 
         self.columnaEditable(self.main_table_treeview, self.modelo, 10, True)
 
@@ -288,9 +288,9 @@ class Interface(object):
         self.ordenZ = gtk.TreeModelSort(self.modeloZ)
         #self.ordenZ.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaZ.columna = [None]*3
-        self.vistaListaZ.columna[0] = gtk.TreeViewColumn(gettext.gettext('Duration'))
-        self.vistaListaZ.columna[1] = gtk.TreeViewColumn(gettext.gettext('Typical Dev.'))
-        self.vistaListaZ.columna[2] = gtk.TreeViewColumn(gettext.gettext('Path'))
+        self.vistaListaZ.columna[0] = gtk.TreeViewColumn(_('Duration'))
+        self.vistaListaZ.columna[1] = gtk.TreeViewColumn(_('Typical Dev.'))
+        self.vistaListaZ.columna[2] = gtk.TreeViewColumn(_('Path'))
         self.vistaListaZ.renderer = [None]*3
 
         self.columnaNoEditable(self.vistaListaZ, 0)
@@ -308,9 +308,9 @@ class Interface(object):
         self.ordenA = gtk.TreeModelSort(self.modeloA)
         #self.ordenA.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaA.columna = [None]*3
-        self.vistaListaA.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
-        self.vistaListaA.columna[1] = gtk.TreeViewColumn(gettext.gettext('First Node'))
-        self.vistaListaA.columna[2] = gtk.TreeViewColumn(gettext.gettext('Last Node'))
+        self.vistaListaA.columna[0] = gtk.TreeViewColumn(_('Activity'))
+        self.vistaListaA.columna[1] = gtk.TreeViewColumn(_('First Node'))
+        self.vistaListaA.columna[2] = gtk.TreeViewColumn(_('Last Node'))
         self.vistaListaA.renderer = [None]*3
 
         self.columnaNoEditable(self.vistaListaA, 0)
@@ -325,10 +325,10 @@ class Interface(object):
         self.ordenH = gtk.TreeModelSort(self.modeloH)
         #self.ordenH.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaH.columna = [None]*4
-        self.vistaListaH.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
-        self.vistaListaH.columna[1] = gtk.TreeViewColumn(gettext.gettext('Total Sl.'))
-        self.vistaListaH.columna[2] = gtk.TreeViewColumn(gettext.gettext('Free Sl.'))
-        self.vistaListaH.columna[3] = gtk.TreeViewColumn(gettext.gettext('Independent Sl.'))
+        self.vistaListaH.columna[0] = gtk.TreeViewColumn(_('Activity'))
+        self.vistaListaH.columna[1] = gtk.TreeViewColumn(_('Total Sl.'))
+        self.vistaListaH.columna[2] = gtk.TreeViewColumn(_('Free Sl.'))
+        self.vistaListaH.columna[3] = gtk.TreeViewColumn(_('Independent Sl.'))
         self.vistaListaH.renderer = [None]*4
 
         self.columnaNoEditable(self.vistaListaH, 0)
@@ -344,10 +344,10 @@ class Interface(object):
         self.ordenR = gtk.TreeModelSort(self.modeloR)
         #self.ordenR.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaR.columna = [None]*4
-        self.vistaListaR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Name'))
-        self.vistaListaR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Kind'))
-        self.vistaListaR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Project Available Units'))
-        self.vistaListaR.columna[3] = gtk.TreeViewColumn(gettext.gettext('Period Available Units'))
+        self.vistaListaR.columna[0] = gtk.TreeViewColumn(_('Name'))
+        self.vistaListaR.columna[1] = gtk.TreeViewColumn(_('Kind'))
+        self.vistaListaR.columna[2] = gtk.TreeViewColumn(_('Project Available Units'))
+        self.vistaListaR.columna[3] = gtk.TreeViewColumn(_('Period Available Units'))
         self.vistaListaR.renderer = [None]*4
 
         self.columnaEditable(self.vistaListaR, self.modeloR, 0)
@@ -356,10 +356,10 @@ class Interface(object):
         self.columnaEditable(self.vistaListaR, self.modeloR, 3)
 
         # Se añaden los tipos de recursos
-        self.modeloComboR.append([gettext.gettext('Renewable')])
-        self.modeloComboR.append([gettext.gettext('Non renewable')])
-        self.modeloComboR.append([gettext.gettext('Double constrained')])
-        self.modeloComboR.append([gettext.gettext('Unlimited')])
+        self.modeloComboR.append([_('Renewable')])
+        self.modeloComboR.append([_('Non renewable')])
+        self.modeloComboR.append([_('Double constrained')])
+        self.modeloComboR.append([_('Unlimited')])
 
         # TREEVIEW para los RECURSOS NECESARIOS POR ACTIVIDAD
         self.vistaListaAR = self._widgets.get_widget('vistaListaAR')
@@ -368,9 +368,9 @@ class Interface(object):
         self.ordenAR = gtk.TreeModelSort(self.modeloAR)
         #self.ordenAR.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vistaListaAR.columna = [None]*3
-        self.vistaListaAR.columna[0] = gtk.TreeViewColumn(gettext.gettext('Activity'))
-        self.vistaListaAR.columna[1] = gtk.TreeViewColumn(gettext.gettext('Resource'))
-        self.vistaListaAR.columna[2] = gtk.TreeViewColumn(gettext.gettext('Needed Units'))
+        self.vistaListaAR.columna[0] = gtk.TreeViewColumn(_('Activity'))
+        self.vistaListaAR.columna[1] = gtk.TreeViewColumn(_('Resource'))
+        self.vistaListaAR.columna[2] = gtk.TreeViewColumn(_('Needed Units'))
         self.vistaListaAR.renderer = [None]*3
 
         self.modeloComboARA = self.columnaCombo(self.vistaListaAR, self.modeloAR, 0)
@@ -413,9 +413,9 @@ class Interface(object):
         self.ordenC = gtk.TreeModelSort(self.modeloC)
         #self.ordenC.set_sort_column_id(0,gtk.SORT_ASCENDING)
         self.vLCriticidad.columna = [None]*3
-        self.vLCriticidad.columna[0] = gtk.TreeViewColumn(gettext.gettext('N'))
-        self.vLCriticidad.columna[1] = gtk.TreeViewColumn(gettext.gettext('Criticality Int.'))
-        self.vLCriticidad.columna[2] = gtk.TreeViewColumn(gettext.gettext('Paths'))
+        self.vLCriticidad.columna[0] = gtk.TreeViewColumn(_('N'))
+        self.vLCriticidad.columna[1] = gtk.TreeViewColumn(_('Criticality Int.'))
+        self.vLCriticidad.columna[2] = gtk.TreeViewColumn(_('Paths'))
         self.vLCriticidad.renderer = [None]*3
           
         self.columnaNoEditable(self.vLCriticidad, 0)
@@ -459,7 +459,7 @@ class Interface(object):
             self.vistaFrecuencias.remove_column(col)
 
         # - First column
-        column = gtk.TreeViewColumn(gettext.gettext("Durations"))
+        column = gtk.TreeViewColumn(_("Durations"))
         cell = gtk.CellRendererText()
         column.pack_start(cell, False)
         column.add_attribute(cell, 'text', 0)
@@ -489,8 +489,8 @@ class Interface(object):
         Fa, Fr = simulation.calcularFrecuencias(durations, dmax, dmin, itTotales, n)
   
         print len(Fa), len(Fr)
-        self.modeloF.append([gettext.gettext("Absolute freq.")] + map(str, Fa))
-        self.modeloF.append([gettext.gettext("Relative freq.")] + map(str, Fr))
+        self.modeloF.append([_("Absolute freq.")] + map(str, Fa))
+        self.modeloF.append([_("Relative freq.")] + map(str, Fr))
         #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
   
         # Dibuja histograma devolviendo los intervalos (bins) y otros datos
@@ -670,7 +670,7 @@ class GraphWindow(object):
         """
         finish = False
         while not finish:
-            destination_dialog = gtk.FileChooserDialog(gettext.gettext("Save Image"),
+            destination_dialog = gtk.FileChooserDialog(_("Save Image"),
                                                    None,
                                                    gtk.FILE_CHOOSER_ACTION_SAVE,
                                                    (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
