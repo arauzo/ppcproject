@@ -24,14 +24,6 @@ import copy
 from math import exp,log
 from graph import successors2precedents
 
-# Internationalization
-import gettext
-APP='PPC-Project' #Program name
-DIR='po' #Directory containing translations, usually /usr/share/locale
-gettext.bindtextdomain(APP, DIR)
-gettext.textdomain(APP)
-
-
 def resources_availability(availableResources, flag = False):
     """
     Create a dictionary with the renewable and the
@@ -47,11 +39,11 @@ def resources_availability(availableResources, flag = False):
    
     #Create a dictionary with the resources' name and number available   
     for a in availableResources:
-        if a[1] == gettext.gettext('Renewable'):
+        if a[1] == _('Renewable'):
             resources[a[0]] = a[3]
-        elif a[1] == gettext.gettext('Double constrained'):
+        elif a[1] == _('Double constrained'):
             resources[a[0]] = a[2]
-        elif flag and a[1] == gettext.gettext('Unlimited'):
+        elif flag and a[1] == _('Unlimited'):
             resources[a[0]] = None
             
     return resources

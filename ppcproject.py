@@ -73,11 +73,9 @@ class PPCproject(object):
         APP = 'PPC-Project'                   # Program name as domain for gettext translation
         DIR = os.path.join(program_dir, 'po') # Directory containing translations, usually /usr/share/locale
                                               # we set it to directory po under program_dir
-#        gettext.bindtextdomain(APP, DIR) # XXX Codigo antiguo creo que no necesario
-#        gettext.textdomain(APP)
-        gettext.install(APP, DIR)
-        gtk.glade.bindtextdomain(APP, DIR)
-        gtk.glade.textdomain(APP)
+        gettext.install(APP, DIR)             # Install function _() to global for all program modules
+        gtk.glade.bindtextdomain(APP, DIR)    # Internacionalize .glade
+        #gtk.glade.textdomain(APP)   # XXX Esto creo que es redundante con lo anterior
 
 
         # Data globaly used in application

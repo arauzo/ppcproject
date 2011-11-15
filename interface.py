@@ -33,15 +33,6 @@ import loadTable
 import simulation
 import svgviewer
 
-# Internationalization
-#import gettext
-#APP = 'PPC-Project' #Program name
-#DIR = 'po' #Directory containing translations, usually /usr/share/locale
-#gettext.bindtextdomain(APP, DIR)
-#gettext.textdomain(APP)
-#gtk.glade.bindtextdomain(APP, DIR)
-#gtk.glade.textdomain(APP)
-
 #XXX Felipe para dibujar el gráfico
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_gtk import FigureCanvasGTK as FigureCanvas

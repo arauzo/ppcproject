@@ -22,13 +22,6 @@
 import random
 import math
 
-# Internationalization
-import gettext
-APP = 'PPC-Project'  # Program name
-DIR = 'po'  # Directory containing translations, usually /usr/share/locale
-gettext.bindtextdomain(APP, DIR)
-gettext.textdomain(APP)
-
 def datosBetaMedia(mean, k):
     """
     Devuelve los paramentros de la beta basándose únicamente en la media
