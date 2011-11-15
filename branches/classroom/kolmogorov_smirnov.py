@@ -22,18 +22,11 @@
 import random
 import math
 
-# Internationalization
-import gettext
 from operator import itemgetter
 from scipy.stats import norm
 from scipy.stats import gamma
 from scipy.stats import gumbel_r
 from scipy.stats import kstest
-
-APP = 'PPC-Project'  # Program name
-DIR = 'po'  # Directory containing translations, usually /usr/share/locale
-gettext.bindtextdomain(APP, DIR)
-gettext.textdomain(APP)
 
 def ordenaCaminos (infoCaminos):
     """
