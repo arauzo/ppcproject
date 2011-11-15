@@ -22,14 +22,6 @@
 import random
 import math
 
-# Internationalization
-import gettext
-APP = 'PPC-Project'  # Program name
-DIR = 'po'  # Directory containing translations, usually /usr/share/locale
-gettext.bindtextdomain(APP, DIR)
-gettext.textdomain(APP)
-
-
 def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
     """
      Cálculo de las F.Absolutas y F.Relativas 
@@ -129,10 +121,10 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
      Valor de retorno: s (texto a mostrar en formato CSV) 
     """
     s = ''
-    s += gettext.gettext('SIMULATION DATA')
+    s += _('SIMULATION DATA')
     s += '\n'
     s += '\n'
-    s += gettext.gettext('N, CRITICALITY INT., PATH')
+    s += _('N, CRITICALITY INT., PATH')
     s += '\n'
     for n in range(len(modeloCriticidad)):
         s += modeloCriticidad[n][0] + ',' + modeloCriticidad[n][1] + ',' + '"'\
@@ -140,17 +132,17 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
         s += '\n'
     s += '\n'
     s += '\n'
-    s += gettext.gettext('AVERAGE, TYPICAL DEV.')
+    s += _('AVERAGE, TYPICAL DEV.')
     s += '\n'
     s += media + ',' + dTipica
     s += '\n'
     s += '\n'
-    s += gettext.gettext('TOTAL SIMULATIONS')
+    s += _('TOTAL SIMULATIONS')
     s += '\n'
     s += iteraciones
     s += '\n'
     s += '\n'
-    s += gettext.gettext('DURATIONS')
+    s += _('DURATIONS')
     s += '\n'
     for d in duraciones:
         s += str(d)
@@ -279,7 +271,7 @@ def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una c
                     valor=actividad[m][6]
             
             else:
-                dialogoError(gettext.gettext('S Unknown distribution')) 
+                dialogoError(_('S Unknown distribution')) 
                 return
                     
             sim.append(float(valor))
