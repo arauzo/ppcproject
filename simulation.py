@@ -277,7 +277,7 @@ def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una c
             sim.append(float(valor))
             #print sim, 'sim'
         simulacion.append(sim)
-
+    
     return simulacion
     
 
