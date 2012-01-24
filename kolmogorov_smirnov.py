@@ -100,6 +100,17 @@ def calculoValoresExtremos (media, sigma, m):
 
     return a, b
 
+def calculoMcriticoDcriticoEV (a, b):
+    """
+    Funcion que devuelve la media y la desviacion tipica
+    de la distribucion de valores extremos
+    """
+
+    media = a + 0.57722/b
+    sigma = math.sqrt((math.pi**2)/(6*(b**2)))
+
+    return media, sigma
+
 def nIntervalos(duraciones, tamanio=0.5):
     
     #Funcion que devuelve el número de intervalos que tendrá

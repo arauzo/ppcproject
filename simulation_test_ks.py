@@ -21,10 +21,12 @@ import zaderenko
 import simulation
 import fileFormats
 import ppcproject
+import numpy
 
 def load (filename):
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
+    print filename
     try:
         # Tries to load file with formats that match its extension in format order
         data = None
@@ -113,15 +115,23 @@ def test (it,activity,alfa_test):
     #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
     #Se asignan los valores a alfa y beta para poder realizar la funcion gamma
     m, m1, alfa, beta, mediaestimada, sigma = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-
+    print 'Media Gamma: ', mediaestimada, '\n'
+    print 'Sigma Gamma: ', sigma, '\n'
 
     mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
+    print 'Media Critico: ', mediaCritico, '\n'
+    print 'Sigma Critico: ', dTipicaCritico, '\n'
 
 
     if (m != 1):
         a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+        mediaVE, sigmaVE = kolmogorov_smirnov.calculoMcriticoDcriticoEV (a, b)
+        print 'Media VE: ', mediaVE, '\n'
+        print 'Sigma VE: ', sigmaVE, '\n'
     #Creamos un vector con las duraciones totales para pasarselo al test
     duracionesTotales = vectorDuraciones(it,activity)
+    print 'Media Simulacion: ', numpy.mean(duracionesTotales), '\n'
+    print 'Sigma Simulacion: ', numpy.std(duracionesTotales), '\n'
     results = []
     print alfa_test
     valorComparacion = kolmogorov_smirnov.valorComparacion(alfa_test, len(duracionesTotales))
@@ -171,7 +181,8 @@ def vectorDuraciones(it,actividad):
             tam = len(tearly)
             duracionProyecto = tearly[tam-1]
             duraciones.append(duracionProyecto)
-
+    
+    
     return duraciones
 
 def main():

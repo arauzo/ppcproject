@@ -170,9 +170,9 @@ class PSPProjectFileFormat(ProjectFileFormat):
         for prelacion in prelaciones:
             if prelacion != prelaciones[0] and prelacion!=prelaciones[longitud-1]:   
                 if prelacion[1] == [str(longitud)]:  #activities with the last activity as next 
-                    activities.append([cont, prelacion[0], [], '', '', '', '', '', _('Beta')] )
+                    activities.append([cont, prelacion[0], [], '', '', '', '', '', ('Beta')] )
                 else:
-                    activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', _('Beta')])
+                    activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', ('Beta')])
                                     
                 cont += 1  
 
