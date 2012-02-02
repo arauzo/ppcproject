@@ -23,7 +23,7 @@ import fileFormats
 def load (filename):
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
-    print filename
+    #print filename
     try:
         # Tries to load file with formats that match its extension in format order
         data = None
@@ -60,7 +60,7 @@ def saveProject( nombre, activities, schedules, resources, asignacion):
     """
     Saves a project in ppcproject format '.ppc'
     """
-    print nombre
+    #print nombre
     
     # Here extension should be checked to choose the save format
     # by now we suppose it is .ppc
@@ -96,10 +96,10 @@ def main():
     act, schedules, recurso, asignacion = load(args.infile)
     activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
     saveProject(args.outfile, activity, schedules, recurso, asignacion)  
-    print 'We have readed from ', args.infile
-    print 'We have saved in ', args.outfile
-    print 'The distribution used have been', args.distribution
-    print 'Constant value for k have been', args.k
+    #print 'We have readed from ', args.infile
+    #print 'We have saved in ', args.outfile
+    #print 'The distribution used have been', args.distribution
+    #print 'Constant value for k have been', args.k
 
     # XXX Use return 1 or any non 0 code to finish with error state
     return 0

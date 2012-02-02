@@ -230,7 +230,7 @@ def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una c
         for m in range(len(actividad)):
             distribucion=actividad[m][8]
             # Si la actividad tiene una distribución 'uniforme'
-            if distribucion=='Uniforme':
+            if distribucion=='Uniform':
                 if actividad[m][3]!=actividad[m][5]:
                     valor = generaAleatoriosUniforme(float(actividad[m][3]), 
                                                                 float(actividad[m][5]))
