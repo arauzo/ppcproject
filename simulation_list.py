@@ -22,7 +22,7 @@ import simulation
 def load (filename):
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
-    print filename
+    #print filename
     try:
         # Tries to load file with formats that match its extension in format order
         data = None
@@ -120,9 +120,9 @@ def main():
     act, schedules, recurso, asignacion = load(args.infile)
     resultados = projectSimulation (args.i,act)
     save(resultados, args.outfile)  
-    print 'We will read from', args.infile
-    print 'We will write to', args.outfile
-    print 'Number of iterations are', args.i
+    #print 'We will read from', args.infile
+    #print 'We will write to', args.outfile
+    #print 'Number of iterations are', args.i
 
     # XXX Use return 1 or any non 0 code to finish with error state
     return 0
