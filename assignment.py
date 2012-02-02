@@ -103,7 +103,7 @@ def actualizarActividadesFichero (k, dist,actividad):
         actividad [m][8] = dist
     
     # Se comprueba el tipo de distribucion y se le asignan los valores
-    if dist == 'Uniforme':
+    if dist == 'Uniform':
         for m in range(len(actividad)):                
             actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
     elif dist == 'Beta':

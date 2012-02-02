@@ -67,11 +67,11 @@ def save (resultados, filename, infile):
             f = open (filename, 'w')
         else:
             f = open(filename + '.csv', 'w')
-        s += 'Archivo'+ ',' + 'm' + ',' + 'm1' + ',' + 'Media Normal' + ',' + 'Sigma Normal' + ',' + 'Pvalue Normal' + ',' + 'Media Gamma' + ',' + 'Sigma Gamma' + ',' + 'Pvalue Gamma' + ',' + 'Media Valores Extremos' + ',' + 'Sigma Valores Extremos' + ',' + 'Pvalue Valores Extremos' + ',' + 'Media Simulacion' + ',' + 'Sigma Simulacion' + '\n'        
+        s += 'Archivo'+ ',' + 'm' + ',' + 'm1' + ',' + 'Media Normal' + ',' + 'Sigma Normal' + ',' + 'Pvalue Normal' + ',' + 'Media Gamma' + ',' + 'Sigma Gamma' + ',' + 'Pvalue Gamma' + ',' + 'Media Valores Extremos' + ',' + 'Sigma Valores Extremos' + ',' + 'Pvalue Valores Extremos' + ',' + 'Media Simulacion' + ',' + 'Sigma Simulacion' + ',' + 'Funcion mas cercana' + '\n'        
     else:
         f = open(filename, 'a')
 
-    s += str(infile) + ',' + str(resultados[0]) + ',' + str(resultados[1]) + ',' + str(resultados[2]) + ',' + str(resultados[3]) + ',' + str(resultados[4]) + ',' + str(resultados[5]) + ',' + str(resultados[6]) + ',' + str(resultados[7]) + ',' + str(resultados[8]) + ',' + str(resultados[9]) + ',' + str(resultados[10]) + ',' + str(resultados[11]) + ',' + str(resultados[12]) + '\n'
+    s += str(infile) + ',' + str(resultados[0]) + ',' + str(resultados[1]) + ',' + str(resultados[2]) + ',' + str(resultados[3]) + ',' + str(resultados[4]) + ',' + str(resultados[5]) + ',' + str(resultados[6]) + ',' + str(resultados[7]) + ',' + str(resultados[8]) + ',' + str(resultados[9]) + ',' + str(resultados[10]) + ',' + str(resultados[11]) + ',' + str(resultados[12]) + ',' + str(resultados[13]) + '\n'
 
     f.write(s)
     f.close()
@@ -83,7 +83,7 @@ def checkfile(archivo):
     if os.path.isfile(archivo):
         return True
     else:
-        print False
+        return False
 
 def test (activity,alfa_test,duracionesTotales):
     
@@ -142,6 +142,7 @@ def test (activity,alfa_test,duracionesTotales):
         results.append(round(pvalueEV[0],6))
         results.append(round(mediaSimulation,6))
         results.append(round(sigmaSimulation,6))
+        results.append(theBest(results))
     else:
         bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
         results.append(round(mediaCritico,6))
@@ -155,13 +156,27 @@ def test (activity,alfa_test,duracionesTotales):
         results.append('Not defined')
         results.append(round(mediaSimulation,6))
         results.append(round(sigmaSimulation,6))
+        results.append(theBest(results))
 
     
 
     return results
 
-# Hacer una funcion que devuelva cual ha sido el mejor resultado :def theBest (results):
-
+def theBest (results):
+    if (results[10] != 'Not defined'):
+        if (min(results[4], results[7], results[10]) == results[4]):
+            return 'Normal'
+        elif (min(results[4], results[7], results[10]) == results[7]):
+            return 'Gamma'
+        else:
+            return 'Extreme Values'
+    else:
+        if (min(results[4], results[7]) == results[4]):
+            return 'Normal'
+        elif (min(results[4], results[7]) == results[7]):
+            return 'Gamma'
+        else:
+            return 'Extreme Values'
 
 def load2 (infile2):
 
