@@ -85,7 +85,7 @@ def checkfile(archivo):
     else:
         return False
 
-def test (activity,alfa_test,duracionesTotales):
+def test (activity, duracionesTotales):
     
 
     informacionCaminos = []
@@ -125,7 +125,7 @@ def test (activity,alfa_test,duracionesTotales):
     #Se crea un vector vacio para guardar los resultados
     results = []
     #Se calcula un valor de comparacion para el p-value
-    valorComparacion = kolmogorov_smirnov.valorComparacion(alfa_test, len(duracionesTotales))
+    #valorComparacion = kolmogorov_smirnov.valorComparacion(alfa_test, len(duracionesTotales))
     
     results.append(m)
     results.append(m1)
@@ -208,8 +208,8 @@ def main():
                         help='Project file to fill (default: stdin)')
     parser.add_argument('outfile', nargs='?', default=sys.stdout,
                         help='Name of file to store new project (default: stdout)')
-    parser.add_argument('-a', default=0.5, type=float, 
-                        help='Value of constant to generate the alfa of the test (default: 0.05)')
+    #parser.add_argument('-a', default=0.5, type=float, 
+     #                   help='Value of constant to generate the alfa of the test (default: 0.05)')
 
 
     args = parser.parse_args()
@@ -217,7 +217,7 @@ def main():
     act, schedules, recurso, asignacion = load(args.infile)
     simulation_results = load2 (args.infile2)
     #XXX Quitar la a
-    resultados = test(act, args.a, simulation_results)
+    resultados = test(act, simulation_results)
     i = len(simulation_results)
     save(resultados, args.outfile, args.infile)  
     #print 'We will read from', args.infile
