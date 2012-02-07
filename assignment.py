@@ -23,6 +23,7 @@ import random
 import math
 
 def datosBetaMedia(mean, k):
+
     """
     Devuelve los paramentros de la beta basándose únicamente en la media
     y en el valor de proporcionalidad de la desviación típica
@@ -70,7 +71,6 @@ def datosNormalMedia(mean,k):
     return stdev
 
 def actualizarInterfaz (modelo, k, dist,actividad):
-
         for m in range(len(actividad)):
             actividad [m][8] = dist
             modelo [m][8] = str(dist)
@@ -82,6 +82,7 @@ def actualizarInterfaz (modelo, k, dist,actividad):
                 modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
         elif dist == 'Beta':
             for m in range(len(actividad)):
+                print actividad [m] [6], '\n'
                 actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
                 modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
         elif dist == 'Triangular':
@@ -98,7 +99,6 @@ def actualizarInterfaz (modelo, k, dist,actividad):
         return modelo, actividad
 
 def actualizarActividadesFichero (k, dist,actividad):
-
     for m in range(len(actividad)):
         actividad [m][8] = dist
     
