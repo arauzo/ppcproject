@@ -181,6 +181,9 @@ class PSPProjectFileFormat(ProjectFileFormat):
             if asig[n][2] != '0':
                 m = n-1
                 activities[m][6] = float(asig[n][2])
+            else: #XXX Añadido por FELIPE para solventar el problema de las ficticias.
+                m = n-1
+                activities[m][6] = float(0)
 
         # Update resources
         i = 1
