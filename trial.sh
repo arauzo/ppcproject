@@ -14,7 +14,7 @@ python /home/felipe/ppcproject/filler.py "$file" "${file%%.*}$a" -d $1 -k $2
 echo -n .
 python /home/felipe/ppcproject/simulation_list.py "${file%%.*}$a$f" "${file%%.*}$b" -i $3
 echo -n .
-python /home/felipe/ppcproject/simulation_test_ks.py "${file%%.*}$a$f" "${file%%.*}$b$g" Tablasalidas2.csv -a 0.05
+python /home/felipe/ppcproject/simulation_test_ks.py "${file%%.*}$a$f" "${file%%.*}$b$g" TablaSalidas.csv
 echo -n .
 done
 echo .
