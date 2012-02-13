@@ -432,11 +432,11 @@ class Interface(object):
         #pruebaInterface.create_simulation_treeviews2(self, int(N))
         #print dMax, 'max', dMin, 'min'
         
-        if opcion == 'Numero de intervalos':
+        if opcion == 'Number of intervals':
             for ni in range(n):
                 valor = '['+str('%5.2f'%(simulation.duracion(ni, dmax, dmin, n)))+', '+str('%5.2f'%(simulation.duracion((ni+1), dmax, dmin, n)))+'['       
                 interv.append(valor)
-        elif opcion == 'Tamanio del intervalo':
+        elif opcion == 'Size range':
             mini = dmin - (dmin % valor_i)
             for ni in range(n):
                 valor = '['+str(mini)+', '+str(mini + valor_i)+'['
@@ -479,26 +479,12 @@ class Interface(object):
         # Se calculan las frecuencias
         Fa, Fr = simulation.calcularFrecuencias(durations, dmax, dmin, itTotales, n)
   
-        print len(Fa), len(Fr)
+        #print len(Fa), len(Fr)
         self.modeloF.append([_("Absolute freq.")] + map(str, Fa))
         self.modeloF.append([_("Relative freq.")] + map(str, Fr))
         #self.mostrarFrecuencias(self.intervalos, self.Fa, Fr)
   
-        # Dibuja histograma devolviendo los intervalos (bins) y otros datos
-        fig = Figure(figsize=(5,4), dpi=100)
-        ax = fig.add_subplot(111)
-        hBoxSim = self._widgets.get_widget('hbSim') #XXX Felipe
-        n, bins, patches = ax.hist(durations, n, normed=1)
-        canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-        boxS = gtk.VBox()
-        print 'Longitud del boxS', len(boxS), '\n'
-        if len(boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-            hBoxSim.remove(boxS)
-            boxS = gtk.VBox()
-
-        hBoxSim.add(boxS)
-        boxS.pack_start(canvas)
-        boxS.show_all()
+        
         return Fa, Fr
         
 
