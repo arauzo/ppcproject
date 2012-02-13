@@ -2944,7 +2944,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          
             # Se calcula la probabilidad
             x = self.calcularProb(dato1, dato2, media, dTipica)
-            print dato1, dato2, media, dTipica, x
+            #print dato1, dato2, media, dTipica, x
 
         else:
                 # Extraigo las iteraciones totales
@@ -3198,6 +3198,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Update frecuency intervals and returns intervals values, absolute frecuency and relative frecuency
         self.intervalos, self.Fa, self.Fr = self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
+        #Draw the histogram
+        fig = Figure(figsize=(5,4), dpi=100)
+        ax = fig.add_subplot(111)
+  
+        n, bins, patches = ax.hist(self.duraciones, n, normed=1)
+        canvas = FigureCanvas(fig)  # a gtk.DrawingArea
+        if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
+            self.hBoxSim.remove(self.boxS)
+            self.boxS=gtk.VBox()
+
+        self.hBoxSim.add(self.boxS)
+        self.boxS.pack_start(canvas)
+        self.boxS.show_all()
+        
+
         # Enable Probability and Save buttons
         self._widgets.get_widget('btProbSim').set_sensitive(True)
         self._widgets.get_widget('btGuardarSim').set_sensitive(True)
@@ -3381,41 +3396,47 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
         m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-        print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
+        #print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 
         mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-        print 'mediaCritico, dtipicaCritico: ',mediaCritico,dTipicaCritico, '\n'
+        #print 'mediaCritico, dtipicaCritico: ',mediaCritico,dTipicaCritico, '\n'
         
 
         if (m != 1):
             a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
-            print 'a,b: ', a, b, '\n'
+            #print 'a,b: ', a, b, '\n'
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
-        self._widgets.get_widget('iAlfa').set_text(str(0.05))
+        #self._widgets.get_widget('iAlfa').set_text(str(0.05))
         if (m != 1): #Mirar porque aqui le estoy pasando la media critico y la des critico lo mismo tengo q pasar mediaEs y sigmaES
             bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
-            self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
-            self._widgets.get_widget('iEV').set_text(str(bondadVE))
-            self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
-            self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
+            self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
+            self._widgets.get_widget('iEV').set_text(str(pvalueEV[0]))
+            self._widgets.get_widget('iGamma').set_text(str(pvalueG[0]))
+            self._widgets.get_widget('i2Normal').set_text(str(pvalueN[1]))
+            self._widgets.get_widget('i2EV').set_text(str(pvalueEV[1]))
+            self._widgets.get_widget('i2Gamma').set_text(str(pvalueG[1]))
+            #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
         else:
             bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
-            self._widgets.get_widget('iNormal').set_text(str(bondadNormal))
-            self._widgets.get_widget('iEV').set_text(str(bondadVE))
-            self._widgets.get_widget('iGamma').set_text(str(bondadGamma))
-            self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
+            self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
+            self._widgets.get_widget('iEV').set_text('Not defined')
+            self._widgets.get_widget('iGamma').set_text(str(pvalueG[0]))
+            self._widgets.get_widget('i2Normal').set_text(str(pvalueN[1]))
+            self._widgets.get_widget('i2EV').set_text('Not defined')
+            self._widgets.get_widget('i2Gamma').set_text(str(pvalueG[1]))
+            #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
-    def on_btAlfa_clicked(self, boton):
+    #def on_btAlfa_clicked(self, boton):
         """
         Accion usuario para cambiar el valor de alfa
         """
-        alfa = float(self._widgets.get_widget('iAlfa').get_text())
-        valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
-        self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
+        #alfa = float(self._widgets.get_widget('iAlfa').get_text())
+        #valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
+        #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
     def on_btGuardarTest_clicked(self,boton):
         """
