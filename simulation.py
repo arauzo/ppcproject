@@ -79,10 +79,10 @@ def nIntervalos (dMax, dMin, N, opcion):
     opción (opción seleccionada)
     """
 
-    print 'Maximo y minimo: ', dMax, dMin, '\n'
-    if opcion == 'Numero de intervalos':
+    #print 'Maximo y minimo: ', dMax, dMin, '\n'
+    if opcion == 'Number of intervals':
         return int(N)
-    elif opcion == 'Tamanio del intervalo':
+    elif opcion == 'Size range':
         mini = dMin - (dMin % N)
         cont = mini
         aux = 0
