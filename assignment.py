@@ -71,34 +71,56 @@ def datosNormalMedia(mean,k):
     return stdev
 
 def actualizarInterfaz (modelo, k, dist,actividad):
-        for m in range(len(actividad)):
-            actividad [m][8] = dist
-            modelo [m][8] = str(dist)
-        
-        # Se comprueba el tipo de distribucion y se le asignan los valores
-        if dist == 'Uniforme':
-            for m in range(len(actividad)):                
-                actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
-                modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
-        elif dist == 'Beta':
-            for m in range(len(actividad)):
-                print actividad [m] [6], '\n'
-                actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
-                modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
-        elif dist == 'Triangular':
-            for m in range(len(actividad)):
-                actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosTriangularMedia(actividad[m][6], k)
-                modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
-        elif dist == 'Normal':
-            for m in range(len(actividad)):
-                actividad[m][7] = datosNormalMedia(actividad[m][6], k)
-                modelo[m][7] = actividad[m][7]
-        else:
-            raise Exception('Distribution not expected')
+    """
+    Funcion que actualiza la interfaz del programa en funcion de la distribucion que queramos utilizar.
 
-        return modelo, actividad
+    modelo ( cuadro de la interfaz grafica donde se muestran los datos de cada actividad)
+    k ( valor de proporcionalidad de la desvicacion tipica)
+    dist ( distribucion utilizada para la asignacion de los parametros que falten)
+    actividad (vector con los datos de las actividades)
+
+    return: modelo (cuadro de la interfaz actualizado)
+            actividad (vector de actividades actualizado)
+    """
+
+    for m in range(len(actividad)):
+        actividad [m][8] = dist
+        modelo [m][8] = str(dist)
+    
+    # Se comprueba el tipo de distribucion y se le asignan los valores
+    if dist == 'Uniforme':
+        for m in range(len(actividad)):                
+            actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
+            modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
+    elif dist == 'Beta':
+        for m in range(len(actividad)):
+            print actividad [m] [6], '\n'
+            actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
+            modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
+    elif dist == 'Triangular':
+        for m in range(len(actividad)):
+            actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosTriangularMedia(actividad[m][6], k)
+            modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
+    elif dist == 'Normal':
+        for m in range(len(actividad)):
+            actividad[m][7] = datosNormalMedia(actividad[m][6], k)
+            modelo[m][7] = actividad[m][7]
+    else:
+        raise Exception('Distribution not expected')
+
+    return modelo, actividad
 
 def actualizarActividadesFichero (k, dist,actividad):
+    """
+    Funcion que actualiza las actividades en funcion de la distribucion que queramos utilizar.
+
+    k ( valor de proporcionalidad de la desvicacion tipica)
+    dist ( distribucion utilizada para la asignacion de los parametros que falten)
+    actividad (vector con los datos de las actividades)
+
+    return: actividad (vector de actividades actualizado)
+    """
+
     for m in range(len(actividad)):
         actividad [m][8] = dist
     
