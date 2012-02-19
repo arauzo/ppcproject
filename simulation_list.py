@@ -17,7 +17,9 @@ import fileFormats
 import simulation_test_ks
 import pert
 import zaderenko
+import graph
 import simulation
+
 
 def load (filename):
 
@@ -56,51 +58,93 @@ def load (filename):
         print 'ERROR: Formato del archivo origen no reconocido', '\n'
         
 def save (resultados, filename):
+    """
+    Funcion que guarda el resultado de la simulacion en formato csv
+
+    resultados (valores resultantes de la simulacion)
+    filename (nombre del fichero en el que se guardaran los valores) 
+    """
     
+    # Comprobamos que el nombre del archivo termine en csv, de lo contrario le daremos esta extension.
     if filename[-4:] == '.csv':
         f = open(filename, 'w')
     else:
         f = open(filename + '.csv', 'w')
 
+    # Se inicializa una cadena
     simulation_csv = ' '
 
+    # Se rellena la cadena con los resultados de la simulacion
     for n in range(len(resultados)):
         simulation_csv += str(resultados[n])
         simulation_csv += '\n'
 
+    # Se escribe en el fichero el resultado y se cierra.
+    f.write(simulation_csv)
+    f.close()
 
+def saveSimulation (simulation, filename):    
+    """
+    Funcion que guarda el resultado de la simulacion de actividades en formato csv
+
+    simulation (valores resultantes de la simulacion de actividades)
+    filename (nombre del fichero en el que se guardaran los valores) 
+    """
+    
+    # Comprobamos que el nombre del archivo termine en csv, de lo contrario le daremos esta extension.
+    if filename[-4:] == '.csv':
+        f = open(filename, 'w')
+    else:
+        f = open(filename + '.csv', 'w')
+
+    # Se inicializa una cadena
+    simulation_csv = ' '
+
+    # Se rellena la cadena con los resultados de la simulacion
+    for n in range(len(simulation)):
+        simulation_csv += str(simulation[n])
+        simulation_csv += '\n'
+
+    # Se escribe en el fichero el resultado y se cierra.
     f.write(simulation_csv)
     f.close()
    
 def vectorDuraciones(it,actividad):
-   
+    """
+    Funcion que realiza la simulacion de las duraciones del proyecto.
+
+    it (numero de iteraciones que se realizaran)
+    actividad (vector con las actividades del proyecto y sus duraciones)
+
+    return: duraciones (vector con todas las duraciones resultado de la simulacion)
+    """
+    
+    # Se simulan las duraciones de las actividades y se genera el grafo del proyecto.    
     simulaciones = simulation.simulacion(it, actividad)
     grafoRenumerado = pert.pertFinal(actividad)
-
     nodosN=[]
+
     for n in range(len(grafoRenumerado.successors)):
         nodosN.append(n+1)
 
+    # Realizamos la simulacion de la duracion del proyecto aplicando la matriz de Zaderenko.
     duraciones = []
     if simulaciones == None:
             return
     else:
         for s in simulaciones: 
             matrizZad = zaderenko.mZad(actividad,grafoRenumerado.arcs, nodosN, 0, s)
-            tearly = zaderenko.early(nodosN, matrizZad)  
-            tlast = zaderenko.last(nodosN, tearly, matrizZad)      
+            tearly = zaderenko.early(nodosN, matrizZad)
+            tlast = zaderenko.last(nodosN, tearly, matrizZad)
             tam = len(tearly)
             duracionProyecto = tearly[tam-1]
             duraciones.append(duracionProyecto)
+            
+            
     
     
-    return duraciones
+    return duraciones, simulaciones
    
-def projectSimulation (it,activity):
-
-    duracionesTotales = vectorDuraciones(it,activity)
-      
-    return duracionesTotales
 
 def main():
     """
@@ -112,19 +156,25 @@ def main():
                         help='Project file to fill (default: stdin)')
     parser.add_argument('outfile', nargs='?', default=sys.stdout,
                         help='Name of file to store new project (default: stdout)')
+    parser.add_argument('outfile2', nargs='?', default=sys.stdout,
+                        help='Name of file to store new project (default: stdout)')
     parser.add_argument('-i', default=1000,type=int,
                         help='Number of iterations (default: 1000)')
 
     args = parser.parse_args()
 
+    # Cargamos el proyecto del ppcproject
     act, schedules, recurso, asignacion = load(args.infile)
-    resultados = projectSimulation (args.i,act)
-    save(resultados, args.outfile)  
-    #print 'We will read from', args.infile
-    #print 'We will write to', args.outfile
-    #print 'Number of iterations are', args.i
 
-    # XXX Use return 1 or any non 0 code to finish with error state
+    # Generamos el vector de resultados
+    resultados, simulaciones = vectorDuraciones (args.i, act) #projectSimulation (args.i,act)
+    
+    # Salvamos un vector con las duraciones simuladas de cada actividad en cada iteracion
+    saveSimulation(simulaciones, args.outfile2)
+
+    # Salvamos en formato csv
+    save(resultados, args.outfile)  
+
     return 0
 
 # If the program is run directly

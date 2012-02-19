@@ -81,10 +81,10 @@ def main():
     """
     # Parse arguments and options
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile')#, """nargs=1,"""
-                        #help='Project file to fill (default: stdin)')
-    parser.add_argument('outfile')#, nargs=1,
-                        #help='Name of file to store new project (default: stdout)')
+    parser.add_argument('infile') 
+                        
+    parser.add_argument('outfile')
+                        
     parser.add_argument('-d', '--distribution', default='Beta', 
                         choices=['Beta', 'Normal', 'Uniform', 'Triangular'],
                         help='Statistical distribution (default: Beta)')
@@ -93,15 +93,15 @@ def main():
    
     args = parser.parse_args()
 
+    # Abrimos el archivo de entrada recogiendo la informacion necesaria.
     act, schedules, recurso, asignacion = load(args.infile)
-    activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
-    saveProject(args.outfile, activity, schedules, recurso, asignacion)  
-    #print 'We have readed from ', args.infile
-    #print 'We have saved in ', args.outfile
-    #print 'The distribution used have been', args.distribution
-    #print 'Constant value for k have been', args.k
 
-    # XXX Use return 1 or any non 0 code to finish with error state
+    # Asignamos a cada actividad los valores necesarios en funcion de la distribucion y la constante de proporcinalidad de la desviacion tipica
+    activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
+
+    # Salvamos el proyecto con formato del ppcproject con los valores ya asignados.
+    saveProject(args.outfile, activity, schedules, recurso, asignacion)
+
     return 0
 
 # If the program is run directly

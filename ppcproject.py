@@ -3132,7 +3132,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Clicked on simulate the project a number of iterations
         """
-        
+        #Se asignan el numero de iteraciones que se van a realizar        
         iteracion = self._widgets.get_widget('iteracion')
         it = iteracion.get_value_as_int()
         #print it, 'iteraciones'
@@ -3412,7 +3412,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
         #self._widgets.get_widget('iAlfa').set_text(str(0.05))
         if (m != 1): #Mirar porque aqui le estoy pasando la media critico y la des critico lo mismo tengo q pasar mediaEs y sigmaES
-            bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
+            pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
             self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
             self._widgets.get_widget('iEV').set_text(str(pvalueEV[0]))
             self._widgets.get_widget('iGamma').set_text(str(pvalueG[0]))
@@ -3421,7 +3421,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('i2Gamma').set_text(str(pvalueG[1]))
             #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
         else:
-            bondadNormal, bondadGamma, bondadVE, pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
+            pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
             self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
             self._widgets.get_widget('iEV').set_text('Not defined')
             self._widgets.get_widget('iGamma').set_text(str(pvalueG[0]))

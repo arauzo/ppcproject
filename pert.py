@@ -505,6 +505,9 @@ def mediaYvarianza(camino, actividad):
     Return: (average string, stddev string)
     """
     # Path duration (sum of all activities duration in path)
+    #print len(camino), '\n'
+    #print len(actividad)
+
     d = 0
     for a in camino:
         for n in range(len(actividad)):
