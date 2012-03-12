@@ -1366,31 +1366,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Valor de retorno: d (duración media)
                            t (desviación tí­pica)
         """
-        # Se calcula la duración de cada camino. Se suman las duraciones de
-        # todas las actividades que forman dicho camino.
-
-        d=0
+        # Se calcula la duración de cada camino.
+        d = 0
         for a in camino:
             for n in range(len(self.actividad)):
-                if a==self.actividad[n][1] and self.actividad[n][6]!='':
-                    d+=float(self.actividad[n][6])
+                if a == self.actividad[n][1] and self.actividad[n][6] != '':
+                    d += float(self.actividad[n][6])
                 else:  #controlamos las ficticias
-                    d+=0
-        #print d
+                    d += 0
 
-        # Se calcula la desviación típica de cada camino. Se suman las desviaciones
-        # tí­picas de todas las actividades que forman dicho camino.
-
-        t=0
+        # Se calcula la desviación típica de cada camino.
+        t = 0
         for a in camino:
             for n in range(len(self.actividad)):
-                if a==self.actividad[n][1] and self.actividad[n][7]!='':
-                    t+=float(self.actividad[n][7])
+                if a == self.actividad[n][1] and self.actividad[n][7] != '':
+                    t += float(self.actividad[n][7])**2
                 else:  #controlamos las ficticias
-                    t+=0
-        #print t
+                    t += 0
+        t = math.sqrt(t)
 
-        return '%5.2f'%(d), '%5.2f'%(t)
+        return '%5.2f' % (d), '%5.2f' % (t)
 
     
 
