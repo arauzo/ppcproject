@@ -2839,7 +2839,7 @@ Uniforme</property>
                           <widget class="GtkScrolledWindow" id="scrolledwindow21">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="hadjustment">0 0 160 16 144 160</property>
+                            <property name="hadjustment">0 0 158 15.800000000000001 142.20000000000002 158</property>
                             <property name="hscrollbar_policy">never</property>
                             <property name="vscrollbar_policy">never</property>
                             <child>
@@ -2874,12 +2874,13 @@ Uniforme</property>
                           <widget class="GtkLabel" id="lblDesvSim">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
                             <property name="yalign">0</property>
-                            <property name="label" translatable="yes">Typical Deviation</property>
-                            <property name="justify">center</property>
+                            <property name="label" translatable="yes">Standard deviation</property>
+                            <property name="justify">right</property>
                           </widget>
                           <packing>
-                            <property name="x_options"></property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -2887,14 +2888,15 @@ Uniforme</property>
                           <widget class="GtkLabel" id="lblIterTotalesSim">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
                             <property name="yalign">0</property>
-                            <property name="label" translatable="yes">Total Iterations</property>
+                            <property name="label" translatable="yes">Iterations</property>
                             <property name="justify">center</property>
                           </widget>
                           <packing>
                             <property name="top_attach">2</property>
                             <property name="bottom_attach">3</property>
-                            <property name="x_options"></property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -2902,14 +2904,15 @@ Uniforme</property>
                           <widget class="GtkLabel" id="lblMediaSim">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
                             <property name="yalign">0</property>
                             <property name="label" translatable="yes">Average</property>
-                            <property name="justify">center</property>
+                            <property name="justify">right</property>
                           </widget>
                           <packing>
                             <property name="top_attach">1</property>
                             <property name="bottom_attach">2</property>
-                            <property name="x_options"></property>
+                            <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
@@ -3326,9 +3329,6 @@ Size range</property>
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
                   <widget class="GtkLabel" id="label1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -3404,6 +3404,9 @@ Size range</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
                   </packing>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </widget>
               <packing>
