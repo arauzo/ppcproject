@@ -1,17 +1,23 @@
 #!/usr/bin/env python
-"""
-Template for main programs and modules with test code
+# -*- coding: utf-8 -*-
 
-This template must be used for all programs written in Python and for almost all 
-modules (as modules should have test code). 
-
-The comments, specially those marked with XXX, are supposed to be deleted or replaced with your own comments.
-
-It is inspired in the comments from Guido's article[1]. I have not included Usage exception as OptionParser
-has the method .error to return when something is wrong on arguments (note that getopt is deprecated).
-
-[1] http://www.artima.com/weblogs/viewpost.jsp?thread=4829
-"""
+# Functions for simulation of project duration
+# -----------------------------------------------------------------------
+# PPC-PROJECT
+#   Multiplatform software tool for education and research in
+#   project management
+#
+# Copyright 2007-9 Universidad de Córdoba
+# This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation, either version 3 of the License,
+#   or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import fileFormats
 import simulation_test_ks
@@ -22,6 +28,13 @@ import simulation
 
 
 def load (filename):
+    """
+    Function in charge of uploading ppcproject-compatible files; that is to say .ppc files & .sm files
+
+    filename (name of the file to be uploaded)
+
+    return: data (file info)
+    """
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
     #print filename
@@ -59,10 +72,10 @@ def load (filename):
         
 def save (resultados, filename):
     """
-    Funcion que guarda el resultado de la simulacion en formato csv
+    Function that saves the results of the simulation in csv format
 
-    resultados (valores resultantes de la simulacion)
-    filename (nombre del fichero en el que se guardaran los valores) 
+    resultados (values resulting from the simulation)
+    filename (name of the file in which the values will be saved) 
     """
     
     # Comprobamos que el nombre del archivo termine en csv, de lo contrario le daremos esta extension.
@@ -85,10 +98,10 @@ def save (resultados, filename):
 
 def saveSimulation (simulation, filename):    
     """
-    Funcion que guarda el resultado de la simulacion de actividades en formato csv
+    Function that saves the results of the simulation of activities in csv format
 
-    simulation (valores resultantes de la simulacion de actividades)
-    filename (nombre del fichero en el que se guardaran los valores) 
+    simulation (values resulting from the simulation of activities)
+    filename (name of the file in which the values will be saved) 
     """
     
     # Comprobamos que el nombre del archivo termine en csv, de lo contrario le daremos esta extension.
@@ -111,12 +124,12 @@ def saveSimulation (simulation, filename):
    
 def vectorDuraciones(it,actividad):
     """
-    Funcion que realiza la simulacion de las duraciones del proyecto.
+    Function performing the simulation of the project durations.
 
-    it (numero de iteraciones que se realizaran)
-    actividad (vector con las actividades del proyecto y sus duraciones)
+    it (number of iterations to be performed)
+    actividad (vector with activities of the project and their durations)
 
-    return: duraciones (vector con todas las duraciones resultado de la simulacion)
+    return: duraciones (vector with all durations resulting from the simulation)
     """
     
     # Se simulan las duraciones de las actividades y se genera el grafo del proyecto.    
@@ -148,32 +161,44 @@ def vectorDuraciones(it,actividad):
 
 def main():
     """
-    XXX Main program or test code
+    The following program of simulation batch is in charge of uploading a .ppc format file and generating two files 
+    from the first one. On the one hand, it generates a file with the result of simulating n times, on the other hand,
+    it generates a file resulting from simulating the duration of the activities n times.
+
+    The program shall receive the following parameters for each console:
+        infile (name of the file from which data will be uploaded)
+        outfile (name of the file in which the resulting list with the n simulations of the duration of the project will be saved)
+        outfile2 (name of the file in charge of saving the n simulations of the durations of the activities,
+                  the distribution to generate them will be that uploaded from outfile)
+        -i (number of iterations to be performed)
     """
     # Parse arguments and options
-    parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?', default=sys.stdin,
+    parser = argparse.ArgumentParser(description = 'Generates activities and project simulations')
+    parser.add_argument('infile', default=sys.stdin,
                         help='Project file to fill (default: stdin)')
-    parser.add_argument('outfile', nargs='?', default=sys.stdout,
+    parser.add_argument('outfile', default=sys.stdout,
                         help='Name of file to store new project (default: stdout)')
-    parser.add_argument('outfile2', nargs='?', default=sys.stdout,
+    parser.add_argument('outfile2', default=sys.stdout,
                         help='Name of file to store new project (default: stdout)')
     parser.add_argument('-i', default=1000,type=int,
                         help='Number of iterations (default: 1000)')
 
     args = parser.parse_args()
 
-    # Cargamos el proyecto del ppcproject
+    # We upload the project of the ppcproject
     act, schedules, recurso, asignacion = load(args.infile)
 
-    # Generamos el vector de resultados
-    resultados, simulaciones = vectorDuraciones (args.i, act) #projectSimulation (args.i,act)
+    # We generate the vector of results
+    if (args.i < 1):
+        raise Exception ('At least one simulation must be done & the number of iterations can not be negative')
+    else:
+        resultados, simulaciones = vectorDuraciones (args.i, act) #projectSimulation (args.i,act)
     
-    # Salvamos un vector con las duraciones simuladas de cada actividad en cada iteracion
-    saveSimulation(simulaciones, args.outfile2)
+        # We save a vector with the simulated duration of each activity in each iteration
+        saveSimulation(simulaciones, args.outfile2)
 
-    # Salvamos en formato csv
-    save(resultados, args.outfile)  
+        # We save it in csv format
+        save(resultados, args.outfile)  
 
     return 0
 

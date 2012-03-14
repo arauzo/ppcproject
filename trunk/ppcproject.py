@@ -2418,9 +2418,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         m = 0
 
         for a in self.actividad:            
-            #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]  
-            if (a[9] == 'Uniform' or a[9] == 'Beta' or #XXX Sera a[8]???   #Avanzado, mirar: NamedTuple
-                a[9] == 'Triangular'):
+            #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]
+  
+            if (a[8] == 'Uniform' or a[8] == 'Beta' or #XXX ... es a[8] ponia a[9] ???   #Avanzado, mirar: NamedTuple
+                a[8] == 'Triangular'):
                 if a[3]=='' or a[4]=='' or a[5]=='':
                     s+=1
             else: #Si no es ninguna de las tres anteriores es la Normal
@@ -3183,37 +3184,42 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         dTipica = self._widgets.get_widget('dTipicaSim')
         dTipica.set_text(str(desviacionTipica))
     
-        #XXX Para refrescar los intervalos lo que si necesitamos es el numero de intervalos y la opcion
-        iOpcion = self._widgets.get_widget('iOpcion')
-        opcion = iOpcion.get_active_text()
-        iValor = self._widgets.get_widget('iValor') # Número de intervalos
-        valor = float(iValor.get_text())
-        n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion))
+        try:
+            iOpcion = self._widgets.get_widget('iOpcion')
+            opcion = iOpcion.get_active_text()
+            iValor = self._widgets.get_widget('iValor') # Número de intervalos
+            valor = float(iValor.get_text())
+            if (valor > 0):
+                n = simulation.nIntervalos(float(max(self.duraciones)+0.000001), float(min(self.duraciones)), valor, str(opcion))
 
-        #Update frecuency intervals and returns intervals values, absolute frecuency and relative frecuency
-        self.intervalos, self.Fa, self.Fr = self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
+                #Update frecuency intervals and returns intervals values, absolute frecuency and relative frecuency
+                self.intervalos, self.Fa, self.Fr = self.interface.update_frecuency_intervals_treeview (n, self.duraciones, itTotales)
 
-        #Draw the histogram
-        fig = Figure(figsize=(5,4), dpi=100)
-        ax = fig.add_subplot(111)
-  
-        n, bins, patches = ax.hist(self.duraciones, n, normed=1)
-        canvas = FigureCanvas(fig)  # a gtk.DrawingArea
-        if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
-            self.hBoxSim.remove(self.boxS)
-            self.boxS=gtk.VBox()
+                #Draw the histogram
+                fig = Figure(figsize=(5,4), dpi=100)
+                ax = fig.add_subplot(111)
+          
+                n, bins, patches = ax.hist(self.duraciones, n, normed=1)
+                canvas = FigureCanvas(fig)  # a gtk.DrawingArea
+                if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
+                    self.hBoxSim.remove(self.boxS)
+                    self.boxS=gtk.VBox()
 
-        self.hBoxSim.add(self.boxS)
-        self.boxS.pack_start(canvas)
-        self.boxS.show_all()
-        
+                self.hBoxSim.add(self.boxS)
+                self.boxS.pack_start(canvas)
+                self.boxS.show_all()
+                
 
-        # Enable Probability and Save buttons
-        self._widgets.get_widget('btProbSim').set_sensitive(True)
-        self._widgets.get_widget('btGuardarSim').set_sensitive(True)
+                # Enable Probability and Save buttons
+                self._widgets.get_widget('btProbSim').set_sensitive(True)
+                self._widgets.get_widget('btGuardarSim').set_sensitive(True)
 
-        # Enable K-S Test
-        self._widgets.get_widget('btKS').set_sensitive(True)
+                # Enable K-S Test
+                self._widgets.get_widget('btKS').set_sensitive(True)
+            else:
+                self.dialogoError('El valor del intervalo ha de ser mayor que 0')
+        except ValueError:
+            self.dialogoError('El valor del intervalo ha de ser numérico')
   
     def on_btProbSim_clicked(self, boton):
         """
@@ -3324,26 +3330,33 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('proporcionalidad').set_text('0.2')
             self._widgets.get_widget('distribucion').set_active(1)
             self._widgets.get_widget('btCancel').set_sensitive(True)
-            self._widgets.get_widget('btProcedimiento').set_sensitive(True)
+            #self._widgets.get_widget('btProcedimiento').set_sensitive(True)
             self.vAsignacion.show()
 
     def on_btAsignar_clicked(self,boton):
-        """ Accion usuario que rellena la tabla
-            con los valores calculados a partir
-            de la constante de proporcinalidad k
-            y la media de cada actividad
+        """ 
+        Accion usuario que rellena la tabla
+        con los valores calculados a partir
+        de la constante de proporcinalidad k
+        y la media de cada actividad
         """
 
         # Se extrae el valor de proporcionalidad
         proporcionalidad = self._widgets.get_widget('proporcionalidad')
-        k = float(proporcionalidad.get_text())
+        try:
+            k = float(proporcionalidad.get_text())
         
-        # Se extrae el tipo de distribución
-        distribucion = self._widgets.get_widget('distribucion')
-        dist = distribucion.get_active_text()        
-        assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
-        self.set_modified_state(True)
-        self.vAsignacion.hide()
+            # Se extrae el tipo de distribución
+            distribucion = self._widgets.get_widget('distribucion')
+            dist = distribucion.get_active_text()
+            if (k < 0):
+                self.dialogoError(_('La constante de proporcionalidad no puede ser negativa'))
+            else:        
+                assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
+                self.set_modified_state(True)
+                self.vAsignacion.hide()
+        except ValueError:
+            self.dialogoError('La constante de proporcionalidad ha de ser un numero')
         
             
                             
@@ -3404,9 +3417,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
-        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
+        #valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
         #self._widgets.get_widget('iAlfa').set_text(str(0.05))
-        if (m != 1): #Mirar porque aqui le estoy pasando la media critico y la des critico lo mismo tengo q pasar mediaEs y sigmaES
+        if (m != 1):
             pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
             self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
             self._widgets.get_widget('iEV').set_text(str(pvalueEV[0]))
@@ -3425,6 +3438,22 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('i2Gamma').set_text(str(pvalueG[1]))
             #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
+
+    def on_btAceptarTest_clicked(self,boton):
+        """ Accion usuario para cancelar
+            la opcion de asignacion automática
+        """
+
+        self.vTestKS.hide()
+
+    def on_wndTestKS_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana de calcular
+                 caminos
+        """
+        ventana.hide()
+        return True
+
     #def on_btAlfa_clicked(self, boton):
         """
         Accion usuario para cambiar el valor de alfa
@@ -3433,10 +3462,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
         #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
+# --- Funcion disenada en una fase temprana del proyecto para guardar los resultados del test desde el programa
+# --- mas tarde se decidio que no seria necesario, ya que lo hacemos en la simulacion por lotes.
+# --- Se queda comentada por si en un futuro fuese de utilidad
+    """
     def on_btGuardarTest_clicked(self,boton):
-        """
+       
         Accion usuario para guardar los resultados del test
-        """
+       
 
         informacionCaminos = []
         # Get all paths removing 'begin' y 'end' from each path
@@ -3519,7 +3552,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             f.write(' El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
             f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
             f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
-
+    """
             
         
         
