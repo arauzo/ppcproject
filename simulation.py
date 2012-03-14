@@ -217,15 +217,14 @@ def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una c
               su tipo de distribución
 
      Parámetros: n (número de iteraciones)
-                 XXX Desacoplar pasandole todos los datos necesarios: actividades, duraciones, tipo de distribucion, caminos...
+
 
      Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
-     XXX que son simulaciones, necesitamos: lista de la duracion efectiva y lista de los caminos criticos
+
     """
     simulacion = []
 
     for i in range(n):
-        #print i+1, 'nº iteracion'
         sim = []
         for m in range(len(actividad)):
             distribucion=actividad[m][8]
@@ -244,8 +243,6 @@ def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una c
                     mean, stdev, shape_a, shape_b = datosBeta(float(actividad[m][3]), 
                                                                          float(actividad[m][4]), 
                                                                          float(actividad[m][5]))
-                #print "Mean=", mean, "Stdev=", stdev
-                #print "shape_a=", shape_a, "shape_b=", shape_b
                     valor = generaAleatoriosBeta(float(actividad[m][3]), 
                                                             float(actividad[m][5]), 
                                                             float(shape_a), float(shape_b))

@@ -1,26 +1,32 @@
 #!/usr/bin/env python
-"""
-Template for main programs and modules with test code
-
-This template must be used for all programs written in Python and for almost all 
-modules (as modules should have test code). 
-
-The comments, specially those marked with XXX, are supposed to be deleted or replaced with your own comments.
-
-It is inspired in the comments from Guido's article[1]. I have not included Usage exception as OptionParser
-has the method .error to return when something is wrong on arguments (note that getopt is deprecated).
-
-[1] http://www.artima.com/weblogs/viewpost.jsp?thread=4829
-"""
-# Imports from Python standard library
-
-# Imports from other external libraries
-
-# Imports from our libraries
+# -*- coding: utf-8 -*-
+# -----------------------------------------------------------------------
+# PPC-PROJECT
+#   Multiplatform software tool for education and research in
+#   project management
+#
+# Copyright 2007-9 Universidad de Córdoba
+# This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation, either version 3 of the License,
+#   or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import assignment
 import fileFormats
 
 def load (filename):
+    """
+    Function in charge of uploading ppcproject-compatible files; that is to say .ppc files & .sm files
+
+    filename (names of the files to be uploaded)
+
+    return: data (file info)
+    """
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
     #print filename
@@ -60,7 +66,7 @@ def saveProject( nombre, activities, schedules, resources, asignacion):
     """
     Saves a project in ppcproject format '.ppc'
     """
-    #print nombre
+
     
     # Here extension should be checked to choose the save format
     # by now we suppose it is .ppc
@@ -77,7 +83,15 @@ def saveProject( nombre, activities, schedules, resources, asignacion):
 
 def main():
     """
-    XXX Main program or test code
+    The following program of simulation batch generates a ppc format file from a library file.
+    This new file will be filled with the information of the fields required to perform the
+    simulation of the activity duration.
+
+    The program shall receive four arguments for each console:
+        infile (.sm file whose data will be read)
+        outfile (.ppc file in which the info required for the simulation will be saved)
+        -d (type of statistical distribution to be used)
+        -k (proportionality constant of the typical deviation)
     """
     # Parse arguments and options
     parser = argparse.ArgumentParser()
@@ -93,14 +107,17 @@ def main():
    
     args = parser.parse_args()
 
-    # Abrimos el archivo de entrada recogiendo la informacion necesaria.
+    # We open the input file collecting the required information.
     act, schedules, recurso, asignacion = load(args.infile)
 
-    # Asignamos a cada actividad los valores necesarios en funcion de la distribucion y la constante de proporcinalidad de la desviacion tipica
-    activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
+    # We attatch the required values to each activity according to the distribution and the proportionality constant of the typical deviation
+    if (args.k < 0):
+        raise Exception ('ERROR: The parameter value k must be greater  than 0')
+    else:
+        activity = assignment.actualizarActividadesFichero(args.k,args.distribution,act)
 
-    # Salvamos el proyecto con formato del ppcproject con los valores ya asignados.
-    saveProject(args.outfile, activity, schedules, recurso, asignacion)
+        # We save the project with ppcproject format with the values already assigned.
+        saveProject(args.outfile, activity, schedules, recurso, asignacion)
 
     return 0
 

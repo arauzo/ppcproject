@@ -419,6 +419,11 @@ class Interface(object):
         
 
     def update_frecuency_intervals_treeview (self, n, durations, itTotales):
+
+        """
+        Upgrade Treeview for frecuency intervals
+        """
+
         # Se calculan los intervalos
         interv = [] # Column interval titles
         iOpcion = self._widgets.get_widget('iOpcion')
@@ -427,10 +432,6 @@ class Interface(object):
         dmax = float(max(durations)+0.00001)  # duración máxima
         dmin = float(min(durations))   # duración mí­nima
         valor_i = float(iValor.get_text())
-
-        #n = simulation.nIntervalos(dmax, dmin, valor, str(opcion)) # XXX Felipe habia 20
-        #pruebaInterface.create_simulation_treeviews2(self, int(N))
-        #print dMax, 'max', dMin, 'min'
         
         if opcion == 'Number of intervals':
             for ni in range(n):
@@ -472,7 +473,7 @@ class Interface(object):
         self.vistaFrecuencias.set_model(self.modeloF)
 
         Fa, Fr = self.update_frecuency_values(dmax, dmin, n, durations, itTotales)
-        return interv, Fa, Fr #XXX Felipe antes no estaba
+        return interv, Fa, Fr 
 
     def update_frecuency_values(self, dmax, dmin, n, durations, itTotales):
     

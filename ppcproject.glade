@@ -309,7 +309,7 @@ Alejandro Villagrán Marín
   </widget>
   <widget class="GtkWindow" id="wndAsignacion">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Menu de Asignacion</property>
+    <property name="title" translatable="yes">Filler menu</property>
     <signal name="delete_event" handler="on_wndAsignacion_delete_event" swapped="no"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
@@ -382,7 +382,7 @@ la desviación típica</property>
                 <property name="items" translatable="yes">Normal
 Beta
 Triangular
-Uniforme</property>
+Uniform</property>
               </widget>
               <packing>
                 <property name="expand">True</property>
@@ -439,22 +439,7 @@ Uniforme</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="btProcedimiento">
-                <property name="label" translatable="yes">Ver procedimiento</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
-                <property name="xalign">1</property>
-                <signal name="clicked" handler="on_btProcedimiento_clicked" swapped="no"/>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="padding">3</property>
-                <property name="pack_type">end</property>
-                <property name="position">2</property>
-              </packing>
+              <placeholder/>
             </child>
           </widget>
           <packing>
@@ -914,7 +899,7 @@ Uniforme</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="label" translatable="yes">Menu de Asignacion</property>
+                        <property name="label" translatable="yes">Filler menu</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_mnAsignacion_activate" swapped="no"/>
                       </widget>
@@ -3213,7 +3198,9 @@ Size range</property>
   </widget>
   <widget class="GtkWindow" id="wndTestKS">
     <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Test Results</property>
     <property name="window_position">center-always</property>
+    <signal name="delete_event" handler="on_wndTestKS_delete_event" swapped="no"/>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -3226,7 +3213,6 @@ Size range</property>
               <widget class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Test Results</property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -3423,7 +3409,15 @@ Size range</property>
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <widget class="GtkLabel" id="label7">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+          </widget>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
         </child>
         <child>
           <widget class="GtkHBox" id="hbox1">

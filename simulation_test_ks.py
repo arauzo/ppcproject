@@ -1,17 +1,24 @@
 #!/usr/bin/env python
-"""
-Template for main programs and modules with test code
+# -*- coding: utf-8 -*-
 
-This template must be used for all programs written in Python and for almost all 
-modules (as modules should have test code). 
+# Functions for simulation of project duration
+# -----------------------------------------------------------------------
+# PPC-PROJECT
+#   Multiplatform software tool for education and research in
+#   project management
+#
+# Copyright 2007-9 Universidad de Córdoba
+# This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation, either version 3 of the License,
+#   or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-The comments, specially those marked with XXX, are supposed to be deleted or replaced with your own comments.
-
-It is inspired in the comments from Guido's article[1]. I have not included Usage exception as OptionParser
-has the method .error to return when something is wrong on arguments (note that getopt is deprecated).
-
-[1] http://www.artima.com/weblogs/viewpost.jsp?thread=4829
-"""
 import assignment
 import graph
 import kolmogorov_smirnov
@@ -23,6 +30,14 @@ import pert
 import csv
 
 def load (filename):
+
+    """
+    Function in charge of uploading ppcproject-compatible files; that is to say .ppc files & .sm files
+
+    filename (name of the file to be uploaded)
+
+    return: data (file info)
+    """
 
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
     #print filename
@@ -62,14 +77,14 @@ def load (filename):
 def save (resultados, filename, infile):
 
     """
-    Funcion que guarda los resultados del test y la simulacion en una tabla.
+    Function that saves the test results and the simulation in a table.
 
-    resultados (valores resultado de la simulacion y aplicacion del test de kolmogorov_smirnov)
-    filename (nombre del archivo en el que vamos a guardar los resultados)
-    infile (nombre del archivo del que hemos leido los datos)
+    resultados (values resulting from the simulation and application of the kolmogorov_smirnov test)
+    filename (name of the file in which the results will be saved)
+    infile (name of the file whose data has been read)
     """
     
-    # Comprobamos si existe el fichero, si no existe creamos la cabecera y lo abrimos en modo escritura; si existe lo abrimos en modo relleno
+    # We check if the file already exists, or else we create the header and open it in writing mode; if it exists, we open it in filler mode
     s = ''
     if (not checkfile(filename)):
         if filename[-4:] == '.csv':
@@ -88,11 +103,11 @@ def save (resultados, filename, infile):
 
 def checkfile(archivo):
     """
-    Funcion que comprueba la existencia de un archivo.
+    Function that checks the existence of a file.
 
-    archivo (nombre del archivo que queremos comprobar si existe)
+    archivo (name of the file whose existence is to be checked)
 
-    return: bool (devuelve un booleano en funcion de si el archivo existe o no)
+    return: bool (it returns a boolean based on the existence or non-existence of the file)
     """
 
     import os.path
@@ -103,15 +118,15 @@ def checkfile(archivo):
 
 def test (activity, duracionesTotales, simulaciones, porcentaje):
     """
-    Funcion que realiza el test de kolmogorov_smirnov y calcula los parametros necesarios para comprobar que parametros
-    estimados se han acercado mas a los obtenidos en la simulacion.
+    Function that performs the kolmogorov_smirnov test and calculates the parameters required to check which
+    estimated parameters most approximates to those obtained during the simulation.
 
-    activity (actividades del proyecto)
-    duracionesTotales (vector con las duraciones resultado de la simulacion)
-    simulaciones (vector con las simulaciones de cada actividad en cada iteracion)
-    porcentaje (cota que queremos poner para saber cuantos caminos han salido criticos)
+    activity (project activities)
+    duracionesTotales (vector with the duration resulting from the simulation)
+    simulaciones (vector with the simulations of each activity in each iteration)
+    porcentaje (the mark we want to establish to determine how many paths have turned out critical)
 
-    return: results( vector con los resultados que nos interesa guardar en la tabla de salidas)
+    return: results( vector with the results we should save in the output table)
     """
 
     informacionCaminos = []
@@ -121,72 +136,47 @@ def test (activity, duracionesTotales, simulaciones, porcentaje):
     caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
 
 
-    # Se crea una lista con los caminos, sus duraciones y sus varianzas    
+    # A list is created with the paths, their duration and variances    
     for camino in caminos:   
         media, varianza = pert.mediaYvarianza(camino,activity) 
         info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
         informacionCaminos.append(info)
 
-    #Se ordena la lista en orden creciente por duracion media de los caminos
+    #The list is arranged in order of increasing according to the average duration of the paths
     informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
 
-    # Creamos un vector aparicion que contara el numero de veces que un camino ha salido critico
-    aparicion = []
-
-    # Se inicializa
-    for n in range(len(informacionCaminos)):
-        aparicion.append(0)
+    # We create an apparition vector that will count all the times a path has turned out critical
+    aparicion = numeroCriticos (informacionCaminos, duracionesTotales, simulaciones, caminos)
     
-    # Bucle encargado de contar las vaces que ha salido critico cada camino
-    for i in range(len(duracionesTotales)):
-        longitud = len(informacionCaminos)
-        
-        for j in caminos: 
-            critico = informacionCaminos [longitud-1][0]
-            
-            for n in range(len(critico)):
-                critico[n] = int(critico[n])
-
-            duracion = 0 
-            
-            for x in critico:                
-                duracion += simulaciones[i][x - 2]
-                
-            if ((duracion - 0.015 <= duracionesTotales[i]) and (duracionesTotales[i] <= duracion + 0.015)):
-                aparicion [longitud - 1] += 1 
-                break 
-            else: 
-                longitud -= 1
-
-    # Asignamos el valor de m2 en funcion del porcentaje elegido
+    # We ascribe the value m2 according to the selected percentage
     m2 = caminosCriticosCalculados (aparicion, porcentaje, len(simulaciones))
 
-    #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
-    #Se asignan los valores a alfa y beta para poder realizar la funcion gamma
-    #Se asignan la media y la sigma estimadas para la gamma
+    #The number of predominant paths is calculated (according to Dodin and to our method),
+    #Values are assign to alpha and beta in order to perform the gamma function
+    #The average and sigma estimated for the gamma are assigned
     m, m1, alfa, beta, mediaestimada, sigma = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
 
-    #Se asignan la media y la sigma de la normal
+    #The average and the sigma of the normal are assigned
     mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
 
-    #Se asignan la media y la sigma de la simulacion
+    #The average and the sigma of the simulation are assigned
     mediaSimulation = numpy.mean(duracionesTotales)
     sigmaSimulation = numpy.std(duracionesTotales)
 
-    #Si hay mas de un camino candidato a ser critico, se calculan los valores para la funcion de valores extremos
-    #Se asignan la media y la sigma de la funcion de valores extremos
+    #If there were more than one path candidate to be critical, the values for the function of extreme values are calculated
+    #The average and the sigma of the extreme values function are calculated
     if (m != 1):
         a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
         mediaVE, sigmaVE = kolmogorov_smirnov.calculoMcriticoDcriticoEV (a, b)
 
-    #Se crea un vector vacio para guardar los resultados
+    #An empty vector is created to save the results
     results = []
 
-    # Se agrega al vector de resultados el numero de caminos estimados candidatos a ser criticos, segun Dodin y segun nuestro metodo.    
+    # The number of estimated paths candidate to be critical, according to Dodin and to our method is added to the vector of results.   
     results.append(m)
     results.append(m1)
 
-    # En funcion de si se aplica la distribucion de valores extremos se agregan los resultados que se mostraran en el archivo de salida.
+    # Depending on whether the distribution of extreme values is applied, the results displaying in the output file will be added.
     if (m != 1):
         pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
         results.append(round(mediaCritico,6))
@@ -224,13 +214,52 @@ def test (activity, duracionesTotales, simulaciones, porcentaje):
 
     return results
 
+def numeroCriticos (informacionCaminos, duracionesTotales, simulaciones, caminos):
+    """
+    Funcion que genera un vector con las veces que ha salido critico cada camino.
+
+    infoCaminos (informacion referente a los caminos)
+    duracionesTotales (vector de la simulacion de duraciones del proyecto)
+    simulaciones (vector con la simulacion de las duraciones de las actividades)
+    caminos (caminos posibles del proyecto)
+    """
+    # We create an apparition vector that will count all the times a path has turned out critical
+    aparicion = []
+
+    # It is initialized
+    for n in range(len(informacionCaminos)):
+        aparicion.append(0)
+    
+    # Loop in charge of counting the times each path has turned out critical
+    for i in range(len(duracionesTotales)):
+        longitud = len(informacionCaminos)
+        
+        for j in caminos: 
+            critico = informacionCaminos [longitud-1][0]
+            
+            for n in range(len(critico)):
+                critico[n] = int(critico[n])
+
+            duracion = 0 
+            
+            for x in critico:                
+                duracion += simulaciones[i][x - 2]
+                
+            if ((duracion - 0.015 <= duracionesTotales[i]) and (duracionesTotales[i] <= duracion + 0.015)):
+                aparicion [longitud - 1] += 1 
+                break 
+            else: 
+                longitud -= 1
+
+    return aparicion
+
 def theBest (results):
     """
-    Funcion que comprueba cual de las tres distribuciones ha obtenido el mejor resultado comparandolo con la simulacion
+    Function that checks which one of the three distributions has obtained the best result comparing it with the simulation
 
-    results (resultados obtenidos tras realizar el test)
+    results (results obtained after the performance of the test)
 
-    return: devuelve cual ha sido la mejor distribucion en formato string.
+    return: it returns which one has been the best distribution in string format.
     """
     if (results[10] != 'Not defined'):
         if (min(results[4], results[7], results[10]) == results[4]):
@@ -249,11 +278,11 @@ def theBest (results):
 
 def caminosCriticosCalculados (aparicion , porcentaje, it):
     """
-    Funcion que devuelve el numero total de caminos que han sido criticos mas veces, en funcion de un porcentaje dado
+    Function that returns the final count of those paths which turned out critical more times according to a given percentage
 
-    aparicion(vector con el numero de veces que ha sido critico cada camino)
-    porcentaje(porcentaje en el que pondremos el limite, ej:90 , nos dara el numero de caminos que han sido criticos el 90% de las veces)
-    it (numero de iteraciones totales)
+    aparicion(vector with the number os times each path has turned out critical)
+    porcentaje(percentage in which the limit will be established, e.g.:90 will come to the number of paths which turned out critical 90% of the times)
+    it (final count of the iterations)
 
     return: total (numero de caminos criticos)
     """
@@ -275,12 +304,12 @@ def caminosCriticosCalculados (aparicion , porcentaje, it):
 
 def theBestm (m,m1,m2):
     """
-    Calcula cual ha sido la aproximacion mas cercana
-    a la real en cuanto a caminos se refiere
+    Calculate which one was the closest approximation
+    to the real one as far as paths is concerned
 
-    m (caminos estimados candidatos a ser criticos segun Dodin)
-    m1 (caminos estimados candidatos a ser criticos segun Lorenzo Salas)
-    m2 (caminos calculados que han salido criticos mas del un % de las veces)
+    m (estimated paths candidate to be critical according to Dodin)
+    m1 (estimated paths candidate to be critical according to Lorenzo Salas)
+    m2 (calculated paths which turned out critical more than a % times)
 
     return: Un strin con la mejor opcion
     """
@@ -289,7 +318,7 @@ def theBestm (m,m1,m2):
     if (aux1<aux2):
         return 'Dodin'
     elif (aux1>aux2):
-        return 'Lorenzo'
+        return 'Salas'
     else:
         return 'Iguales'
         
@@ -297,50 +326,59 @@ def theBestm (m,m1,m2):
 
 def load2 (infile2):
     """
-    Funcion que carga el archivo con la lista de los resultados de la simulacion.
+    Function that uploads the file with the list of the results of the simulation.
 
-    infile2 (nombre del archivo en el que esta guardada la lista de la simulacion)
+    infile2 (name of the file in which the list of the simulation is saved)
 
-    return: real_simulation_list (vector de float con los resultados de la simulacion)
+    return: real_simulation_list (float vector with the results of the simulation)
     """
-    activity_simulation_list= []
+    real_simulation_list = []
     with open(infile2, 'rb') as f:
         reader = csv.reader(f)
         for row in reader:
-            activity_simulation_list.append(float(row[0]))
+            real_simulation_list.append(float(row[0]))
 
-    return activity_simulation_list
+    return real_simulation_list
 
 def load3 (infile3):
     """
-    Funcion que carga el archivo con la lista de los resultados de la simulacion
-    de actividades.
+    Function that uploads the file with the list of the results of the simulation
+    of activities.
 
-    infile3 (nombre del archivo en el que esta guardada la lista de la simulacion)
+    infile3 (name of the file in which the list of the simulation is saved)
 
     return 
     """
-    real_simulation_list= []
+    activity_simulation_list= []
     f = open(infile3)
     for s in f:
-        real_simulation_list.append(eval(s))
+        activity_simulation_list.append(eval(s))
 
-    #eval(real_simulation_list)
-    return real_simulation_list
+
+    return activity_simulation_list
 
 def main():
     """
-    XXX Main program or test code
+    The following program is in charge of generating a table with the results of the Kolmogorov-smirnov test,
+    as well as a series of data required to carry out our research project.
+
+    It is necessary to give it the arguments below:
+        infile (ppc file from which we will take the information needed to perform the required calculations
+                for our research)
+        infile2 (file with the data of the simulation of the duration of the project)
+        infile3 (file with the data of the simulation of the activities)
+        outfile (.csv file in which the output data will be saved)
+        p (mark percentage for the numebr of critical paths)
     """
     # Parse arguments and options
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?', default=sys.stdin,
+    parser.add_argument('infile', default=sys.stdin,
                         help='Project file to fill (default: stdin)')
-    parser.add_argument('infile2', nargs='?', default=sys.stdin,
+    parser.add_argument('infile2', default=sys.stdin,
                         help='Project file to fill (default: stdin)')
-    parser.add_argument('infile3', nargs='?', default=sys.stdin,
+    parser.add_argument('infile3', default=sys.stdin,
                         help='Project file to fill (default: stdin)')
-    parser.add_argument('outfile', nargs='?', default=sys.stdout,
+    parser.add_argument('outfile', default=sys.stdout,
                         help='Name of file to store new project (default: stdout)')
     parser.add_argument('-p', default=90, type=int, 
                         help='Porcentaje por que pondra el limite de caminos criticos de la simulacion')
@@ -348,19 +386,21 @@ def main():
 
     args = parser.parse_args()
     
-    # Cargamos el archivo con las actividades rellenas
+    # We upload the file with the activities filled in
     act, schedules, recurso, asignacion = load(args.infile)
 
-    # Cargamos el archivo con los resultados de la simulacion
+    # We upload the file with the results of the simulation
     simulation_results = load2 (args.infile2)
 
     simulation_activities_results = load3 (args.infile3)
-    
-    # Creamos el vector resultados que queremos guardar en el fichero
-    resultados = test(act, simulation_results, simulation_activities_results, args.p)
+    if (args.p <= 0):
+        raise Exception ('The argument p must be greater than 0')
+    else:
+        # We create the result vector to be saved in the file
+        resultados = test(act, simulation_results, simulation_activities_results, args.p)
 
-    # Salvamos los resultados en el fichero
-    save(resultados, args.outfile, args.infile)  
+        # We save the results in the file
+        save(resultados, args.outfile, args.infile)  
     return 0
 
 # If the program is run directly
