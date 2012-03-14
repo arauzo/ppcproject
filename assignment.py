@@ -1,7 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-# Functions for simulation of project duration
 # -----------------------------------------------------------------------
 # PPC-PROJECT
 #   Multiplatform software tool for education and research in
@@ -25,10 +23,13 @@ import math
 def datosBetaMedia(mean, k):
 
     """
-    Devuelve los paramentros de la beta basándose únicamente en la media
-    y en el valor de proporcionalidad de la desviación típica
+    It returns the parameters of the beta basing only on the average
+    and proportionality value of the typical deviation
 
-    Valores que devuelve: (media, desviación típica, shape factor a, shape factor b)
+    mean (average duration of activity)
+    k (proportionality constant of the typical deviation)
+
+    return: (average, typical deviation, shape factor a, shape factor b)
     """
 
     stdev = (k*mean) 
@@ -72,29 +73,29 @@ def datosNormalMedia(mean,k):
 
 def actualizarInterfaz (modelo, k, dist,actividad):
     """
-    Funcion que actualiza la interfaz del programa en funcion de la distribucion que queramos utilizar.
+    A function that updates the interface of the program according to the distribution we want to be used.
 
-    modelo ( cuadro de la interfaz grafica donde se muestran los datos de cada actividad)
-    k ( valor de proporcionalidad de la desvicacion tipica)
-    dist ( distribucion utilizada para la asignacion de los parametros que falten)
-    actividad (vector con los datos de las actividades)
+    modelo ( chart of the graphical interface in which each activity data is shown)
+    k ( proportionality value of the typical deviation)
+    dist ( distribution used to ascribe missing parameters)
+    actividad (vector with activity data)
 
-    return: modelo (cuadro de la interfaz actualizado)
-            actividad (vector de actividades actualizado)
+    return: modelo (updated chart of the interface)
+            actividad (updated vector of activities)
     """
+
 
     for m in range(len(actividad)):
         actividad [m][8] = dist
         modelo [m][8] = str(dist)
     
-    # Se comprueba el tipo de distribucion y se le asignan los valores
-    if dist == 'Uniforme':
+    # The type of distribution is checked and values are ascribed
+    if dist == 'Uniform':
         for m in range(len(actividad)):                
             actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
             modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
     elif dist == 'Beta':
         for m in range(len(actividad)):
-            print actividad [m] [6], '\n'
             actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
             modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
     elif dist == 'Triangular':
@@ -105,6 +106,10 @@ def actualizarInterfaz (modelo, k, dist,actividad):
         for m in range(len(actividad)):
             actividad[m][7] = datosNormalMedia(actividad[m][6], k)
             modelo[m][7] = actividad[m][7]
+        if (actividad[m][3] != '' or actividad[m][4] != '' or actividad[m][5] !=''):
+            for m in range(len(actividad)):
+                actividad[m][3] = actividad[m][4] = actividad[m][5] = ''
+                modelo[m][3] = modelo[m][4] = modelo[m][5] = ''
     else:
         raise Exception('Distribution not expected')
 
@@ -112,19 +117,19 @@ def actualizarInterfaz (modelo, k, dist,actividad):
 
 def actualizarActividadesFichero (k, dist,actividad):
     """
-    Funcion que actualiza las actividades en funcion de la distribucion que queramos utilizar.
+    A function that updates the activities according to the distribution we want to be used.
 
-    k ( valor de proporcionalidad de la desvicacion tipica)
-    dist ( distribucion utilizada para la asignacion de los parametros que falten)
-    actividad (vector con los datos de las actividades)
+    k ( proportionality value of the typical deviation)
+    dist ( distribution used to ascribe missing parameters)
+    actividad (vector with activity data)
 
-    return: actividad (vector de actividades actualizado)
+    return: actividad (updated vector of activities)
     """
 
     for m in range(len(actividad)):
         actividad [m][8] = dist
     
-    # Se comprueba el tipo de distribucion y se le asignan los valores
+    # The type of distribution is checked and values are ascribed
     if dist == 'Uniform':
         for m in range(len(actividad)):                
             actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
