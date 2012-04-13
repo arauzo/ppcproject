@@ -31,35 +31,33 @@ def mZad(mActividad, actividadesGrafo, nodos, control, duracionSim):
                  duracionSim (duración de la simulación)
 
      Valor de retorno: mZad (matriz de Zaderenko)
+     XXX Supone que el grafo esta numerado empezando en 1
     """
-
     # Se inicializa la matriz
     fila = [''] * len(nodos)
     mZad = [list(fila) for i in range(len(nodos))]
 
-    actividad = mActividad
-
     actividades = []
-    for n in range(len(actividad)):
-        actividades.append(actividad[n][1])
+    for n in range(len(mActividad)):
+        actividades.append(mActividad[n][1])
 
     # Se añaden las duraciones en la posición correspondiente
-    for g in actividadesGrafo:
-        i = g[0] - 1
-        j = g[1] - 1
-        if actividadesGrafo[i + 1, j + 1][0] in actividades:
+#    print 'actividadesGrafo', actividadesGrafo
+#    print 'actividades', actividades
+    for nodes, activity in actividadesGrafo.items():
+        i, j = nodes
+        if activity[1]: # Dummy?
+            mZad[j-1][i-1] = 0
+        else:
             if control == 1:  # Si es llamada desde Zaderenko
-                for m in range(len(actividad)):
-                    if actividadesGrafo[i + 1, j + 1][0] == actividad[m][1]:
-                        mZad[j][i] = actividad[m][6]
+                for m in range(len(mActividad)):
+                    if activity[0] == mActividad[m][1]:
+                        mZad[j-1][i-1] = mActividad[m][6]
             else:
                 # Si es llamada desde Simulación
-                for m in range(len(actividad)):
-                    if actividadesGrafo[i + 1, j + 1][0] == actividad[m][1]:
-                        mZad[j][i] = duracionSim[m]
-        else:
-            # Las actividades ficticias tienen duración 0
-            mZad[j][i] = 0
+                for m in range(len(mActividad)):
+                    if activity[0] == mActividad[m][1]:
+                        mZad[j-1][i-1] = duracionSim[m]
 
     # print mZad
     return mZad
@@ -74,16 +72,11 @@ def early(nodos, mZad):
 
      Valor de retorno: early (lista con los tiempos early)
     """
-
-    # Se crea una la lista de tiempos early y se inicializa a 0
-    early = []
-    for n in range(len(nodos)):
-        a = 0
-        early.append(a)
+    early = [0.0] * len(nodos)
 
     # Se calculan los tiempos early y se van introduciendo a la lista
     for n in range(len(nodos)):
-        mayor = 0
+        mayor = 0.0
         for m in range(len(nodos)):
             if m < n and mZad[n][m] != '':
                 aux = float(mZad[n][m]) + early[m]
@@ -91,8 +84,6 @@ def early(nodos, mZad):
                     mayor = aux
                 aux = 0
         early[n] = mayor
-    for e in range(len(early)):
-        early[e] = float('%5.2f' % float(early[e]))
 
     return early
 
@@ -107,7 +98,6 @@ def last(nodos, early, mZad):
 
      Valor de retorno: last (lista con los tiempos last)
     """
-
     # Se cambian filas por columnas en mZad para usarla en el calculo de los tiempos last
     for n in range(len(nodos)):
         for m in range(len(nodos)):
@@ -132,8 +122,6 @@ def last(nodos, early, mZad):
                     menor = aux
                 aux = 0
         last[l - m] = menor
-    for l in range(len(last)):
-        last[l] = float('%5.2f' % float(last[l]))
 
     return last
 

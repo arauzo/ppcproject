@@ -1019,31 +1019,30 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
      
     def calcularMediaYDTipica(self, distribucion, a, b, m):
         """
-         Cálculo de la media y la desviación típica a partir de la distribución, 
+         Calculo de la media y la desviación típica a partir de la distribución, 
                   del tiempo optimista, pesimista y más probable 
 
-         Parámetros: distribucion (tipo de distribución)
-                     a (d.optimista)
-                     b (d.pesimista)
-                     m (d.más probable)
+          distribucion (tipo de distribución)
+          a (d.optimista)
+          b (d.pesimista)
+          m (d.más probable)
 
-         Valor de retorno: media (media calculada)
-                           dTipica (desviación típica calculada)
+         return: (media, dTipica)
         """
         # Si el tipo de distribución es Beta
-        if distribucion=='Beta':
-            media=(a+b+4.0*m)/6.0
-            dTipica=(b-a)/6.0
+        if distribucion == 'Beta':
+            media = (a+b+4.0*m) / 6.0
+            dTipica = (b-a) / 6.0
 
         # Si el tipo de distribución es Triangular
-        elif distribucion=='Triangular':
-            media=(a+b+m)/3.0
-            dTipica=math.sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m)/18.0)
+        elif distribucion == 'Triangular':
+            media = (a+b+m) / 3.0
+            dTipica = math.sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m) / 18.0)
 
         # Si el tipo de distribución es Uniforme
-        elif distribucion=='Uniforme':   
-            media=(a+b)/2.0
-            dTipica=math.sqrt(((b-a)**2.0)/12.0)
+        elif distribucion == 'Uniform':   
+            media = (a+b) / 2.0
+            dTipica = math.sqrt(((b-a)**2.0) / 12.0)
         else:
             raise Exception('Not expected distribution:' + distribucion)
 
@@ -1114,7 +1113,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             nodosN.append(n+1)
  
         # Se calcula la matriz de Zaderenko
-        matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, []) 
 
         # Se calculan los tiempos early y last
         tearly = early(nodosN, matrizZad)      
@@ -1128,7 +1127,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se buscan las actividades que son crí­ticas, que serán aquellas cuya holgura total sea 0
         holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
         #print holguras, 'holguras'
-        actCriticas = self.actCriticas(holguras, grafoRenumerado.arcs)
+        actCriticas = self.actCriticas(holguras)
         #print 'actividades criticas: ', actCriticas
        
         # Se crea un grafo sólo con las actividades crí­ticas y se extraen los caminos del grafo (todos serán crí­ticos)
@@ -1247,28 +1246,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         
            
    
-    def actCriticas(self, holguras, actividadesGrafo):  
+    def actCriticas(self, holguras):  
         """
-         Cálculo de las actividades criticas 
+        Identify critical activities 
 
-         Parámetros: holguras (lista con las hoguras de cada actividad)
-                     actividadesGrafo (etiqueta actividades, nodo inicio y fí­n)
+          holguras: [ (nombre_act, total, libre, independiente), ... ]
 
-         Valor de retorno: criticas (lista de actividades criticas)
-        LAS ACTIVIDADES CRITICAS SON AQUELLAS CUYA HOLG. TOTAL ES 0
+         return: lista de nombres de las actividades criticas
         """
-        actividades=actividadesGrafo.values()         
-        nuevas=[]
-        for n in range(len(actividadesGrafo)):
-            nuevas.append(round(float(holguras[n][1])))
-        #print nuevas
-        criticas=[]
-        for n in range(len(actividadesGrafo)):
-            #if holguras[n][1]=='%5.2f'%(0):
-            if nuevas[n] == 0.0:
-            #print actividades[n]
-                a=actividades[n]
-                criticas.append(a)
+        TOLERANCE = 0.001
+        criticas = []
+        for act, total, libre, indep in holguras:
+            if -TOLERANCE < total < TOLERANCE:
+                criticas.append(act)
         return criticas
 
   
@@ -1277,16 +1267,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Creación de un grafo sólo con actividades crí­ticas y extracción de
                   los caminos de dicho grafo, que serán todos crí­ticos 
 
-         Parámetros: actCriticas (lista de actividades crí­ticas)
+          actCriticas: (lista de actividades crí­ticas)
 
          Valor de retorno: caminosCriticos (lista de caminos crí­ticos)
         """
         # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
-        sucesorasCriticas=self.tablaSucesorasCriticas(actCriticas)
-        gCritico=graph.roy(sucesorasCriticas)
+        sucesorasCriticas = self.tablaSucesorasCriticas(actCriticas)
+        gCritico = graph.roy(sucesorasCriticas)
         #print gCritico
-        caminosCriticos=[]
-        caminos=graph.find_all_paths(gCritico, 'Begin', 'End')
+        caminosCriticos = []
+        caminos = graph.find_all_paths(gCritico, 'Begin', 'End')
 
         # Se eliminan 'begin' y 'end' de todos los caminos
         caminosCriticos=[c[1:-1]for c in caminos]
@@ -1454,11 +1444,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, []) 
 
         # Se calculan los tiempos early y last
-        tearly=early(nodosN, matrizZad) 
-        tlast=last(nodosN, tearly, matrizZad)
+        tearly = early(nodosN, matrizZad) 
+        tlast = last(nodosN, tearly, matrizZad)
 
         # Se calculan los tres tipos de holgura y se muestran en la interfaz
-        holguras=self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
+        holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
         self.mostrarHolguras(self.modeloH, holguras) 
 
 
@@ -1470,46 +1460,45 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
          Parámetros: grafo (grafo Pert)
                      early (lista con los tiempos early)
                      last (lista con los tiempos last)
-                 duraciones (duraciones simuladas)
+                     duraciones (duraciones simuladas)
 
          Valor de retorno: holguras (lista que contiene cada actividad y sus tres
                                       tipos de holguras)
         """
         # XXX Pasar a pert.py??
-        holguras=[]
-        #print grafo
-        for g in grafo:
-            inicio=g[0]-1
-            fin=g[1]-1
+        holguras = []
+        for inicio, fin in grafo:
+            inicio -= 1
+            fin -= 1
 
-            actividades=[]
+            actividades = []
             for n in range(len(self.actividad)):
                 actividades.append(self.actividad[n][1])
             #print actividades, 'actividades'
 
             #print grafo[inicio+1, fin+1] 
-            if grafo[inicio+1, fin+1][0] in actividades and self.actividad[n][6]!='':
+            if not grafo[inicio+1, fin+1][1]: #XXX quitar [0] in actividades and self.actividad[n][6]!='':
                 for n in range(len(self.actividad)):
                     if grafo[inicio+1, fin+1][0]==self.actividad[n][1]:
                         if duraciones==[]: # Es llamada desde cualquier sitio excepto desde simulación
-                            t=last[fin] - early[inicio] - float(self.actividad[n][6])
-                            l=early[fin] - early[inicio] - float(self.actividad[n][6])
-                            i=early[fin] - last[inicio] - float(self.actividad[n][6])
+                            t = last[fin] - early[inicio] - float(self.actividad[n][6])
+                            l = early[fin] - early[inicio] - float(self.actividad[n][6])
+                            i = early[fin] - last[inicio] - float(self.actividad[n][6])
                         else:   # Es llamada desde simulación
-                            t=last[fin] - early[inicio] - float('%5.2f'%(duraciones[n]))
-                            l=early[fin] - early[inicio] - float('%5.2f'%(duraciones[n]))
-                            i=early[fin] - last[inicio] - float('%5.2f'%(duraciones[n]))
+                            t = last[fin] - early[inicio] - duraciones[n]
+                            l = early[fin] - early[inicio] - duraciones[n]
+                            i = early[fin] - last[inicio] - duraciones[n]
  
             else:  # Si son actividades ficticias (duración 0)
-                        #print 'ficticias'
-                t=last[fin] - early[inicio]   
-                l=early[fin] - early[inicio] 
-                i=early[fin] - last[inicio] 
+                t = last[fin] - early[inicio]   
+                l = early[fin] - early[inicio] 
+                i = early[fin] - last[inicio] 
          
        
-            holgura=[grafo[inicio+1, fin+1][0], '%5.2f'%(t), '%5.2f'%(l), '%5.2f'%(i)] 
+            #holgura = [grafo[inicio+1, fin+1][0], '%5.2f'%(t), '%5.2f'%(l), '%5.2f'%(i)] 
+            holgura = [grafo[inicio+1, fin+1][0], t, l, i] 
             holguras.append(holgura)
- 
+
         return holguras
       
 
@@ -1531,75 +1520,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
 
 
-#              SIMULACIÓN                      
-
-#    def simulacion(self, n): # XXX Pasar a simulation.py convitiendolo en una clase
- #       """
-  #       Simulación de duraciones de cada actividad según  
-   #               su tipo de distribución
-#
- #        Parámetros: n (número de iteraciones)
-  #                   XXX Desacoplar pasandole todos los datos necesarios: actividades, duraciones, tipo de distribucion, caminos...
-#
- #        Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
-  #       XXX que son simulaciones, necesitamos: lista de la duracion efectiva y lista de los caminos criticos
-   #     """
-    #    simulacion = []
-     #   for i in range(n):
-      #      #print i+1, 'nº iteracion'
-       #     sim = []
-        #    for m in range(len(self.actividad)):
-         #       distribucion=self.actividad[m][8]
-                # Si la actividad tiene una distribución 'uniforme'
-#                if distribucion=='Uniforme':
- #                   if self.actividad[m][3]!=self.actividad[m][5]:
-  #                      valor = simulation.generaAleatoriosUniforme(float(self.actividad[m][3]), 
-   #                                                                 float(self.actividad[m][5]))
-    #                else: # Si d.optimista=d.pesimista
-     #                   valor=self.actividad[m][3]
-  #
-   #             # Si la actividad tiene una distribución 'beta'
-    #            elif distribucion=='Beta':
-     #               if self.actividad[m][3]!=self.actividad[m][5]!=self.actividad[m][4]:                            
-#
- #                       mean, stdev, shape_a, shape_b = simulation.datosBeta(float(self.actividad[m][3]), 
-  #                                                                           float(self.actividad[m][4]), 
-   #                                                                          float(self.actividad[m][5]))
-    #                #print "Mean=", mean, "Stdev=", stdev
-     #               #print "shape_a=", shape_a, "shape_b=", shape_b
-      #                  valor = simulation.generaAleatoriosBeta(float(self.actividad[m][3]), 
-       #                                                         float(self.actividad[m][5]), 
-        #                                                        float(shape_a), float(shape_b))
-         #           else:  # Si d.optimista=d.pesimista=d.mas probable
-          #              valor = self.actividad[m][3]
- 
-                # Si la actividad tiene una distribución 'triangular'
-           #     elif distribucion == 'Triangular':
-                
-            #        if self.actividad[m][3] != self.actividad[m][5] != self.actividad[m][4]:
-             #           valor=simulation.generaAleatoriosTriangular(float(self.actividad[m][3]), 
-              #                                                      float(self.actividad[m][4]), 
-               #                                                     float(self.actividad[m][5]))
-                #    else:   # Si d.optimista=d.pesimista=d.mas probable
-                 #       valor=self.actividad[m][3]
-                                        
-                # Si la actividad tiene una distribución 'normal'
-                #elif distribucion == 'Normal':
-                
-                 #   if float(self.actividad[m][7])!=0.00:
-                  #      valor=simulation.generaAleatoriosNormal(float(self.actividad[m][6]), float(self.actividad[m][7]))
-                   # else:   # Si d.tipica=0
-                    #    valor=self.actividad[m][6]
-                
-                #else:
-                 #   self.dialogoError(_('S Unknown distribution')) 
-                  #  return
-                        
-                #sim.append(float(valor))
-                #print sim, 'sim'
-            #simulacion.append(sim)
-
-        #return simulacion
 
 
     def indiceCriticidad(self, grafo, duraciones, early, last, itTotales):
@@ -1617,7 +1537,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         #Se extraen los caminos crí­ticos
         holguras = self.holguras(grafo.arcs, early, last, duraciones)  # Holguras de cada actividad
-        actCriticas = self.actCriticas(holguras, grafo.arcs)  # Se extraen las act. crí­ticas
+        actCriticas = self.actCriticas(holguras)  # Se extraen las act. crí­ticas
         criticos = self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
 
         # Get all paths removing 'begin' y 'end' from each path
@@ -3154,7 +3074,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         grafoRenumerado = pert.pertFinal(self.actividad)
   
         # Nuevos nodos
-        nodosN=[]
+        nodosN = []
         for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
          
@@ -3163,8 +3083,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             return
         else:
             for s in simulacion: 
-                matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 0, s)
-                tearly = early(nodosN, matrizZad)  
+                matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 0, s)
+                tearly = early(nodosN, matrizZad)
                 tlast = last(nodosN, tearly, matrizZad)      
                 tam = len(tearly)
                 # Se calcula la duración del proyecto para cada simulación
@@ -3176,11 +3096,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
     
         # Se añaden la media y la desviación típica a la interfaz
-        duracionMedia = numpy.mean(self.duraciones) #XXX Felipe antes con scipy.stats.mean()
+        duracionMedia = numpy.mean(self.duraciones) 
         media = self._widgets.get_widget('mediaSim')
         media.set_text(str(duracionMedia))
 
-        desviacionTipica = numpy.std(self.duraciones) #XXX Felipe antes con scipy.stats.mean()
+        desviacionTipica = numpy.std(self.duraciones)
         dTipica = self._widgets.get_widget('dTipicaSim')
         dTipica.set_text(str(desviacionTipica))
     
