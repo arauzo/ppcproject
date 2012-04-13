@@ -164,36 +164,24 @@ def datosBeta(op, mode, pes):
     """
     mean = (op + 4 * mode + pes) / 6.0
     stdev = (pes - op) / 6.0
-    shape_a = ((mean - op) / (pes - op)) * (((mean - op) * (pes - mean)) / stdev ** 2 - 1)
-    shape_b = ((pes - mean) / (mean - op)) * shape_a
+#    shape_a = (float(mean - op) / (pes - op)) * (((mean - op) * (pes - mean)) / stdev ** 2 - 1)
+#    shape_b = (float(pes - mean) / (mean - op)) * shape_a
+    shape_a = 1 + 4.0 * (mode - op) / (pes - op)
+    shape_b = 1 + 4.0 * (pes - mode) / (pes - op)
 
     return (mean, stdev, shape_a, shape_b)
-
-
-def generaAleatoriosUniforme(op, pes):
-    """
-    Generates a random number in a Uniform distribution in [op, pes]
-    """
-    unif = random.uniform(op, pes)
-    return unif
-
-
-def generaAleatoriosBeta(op, pes, shape_a, shape_b):
-    """
-    Generates a random number in a Beta distribution in [op, pes]
-    """
-    beta = random.betavariate(shape_a, shape_b) * (pes - op) + op
-    return beta
 
 
 def generaAleatoriosTriangular(op, mode, pes):
     """
     Generates a random number in a triangular distribution in [op, pes]
     with mode
+
+    Preconditions: pes != op
     """
     unif = random.random()  # [0,1]
 
-    if unif <= (mode - op) / (pes - op):
+    if unif <= float(mode - op) / (pes - op):
         aux = (unif * (pes - op)) * (mode - op)
         triang = op + math.sqrt(aux)
     else:
@@ -203,69 +191,53 @@ def generaAleatoriosTriangular(op, mode, pes):
     return triang
 
 
-def generaAleatoriosNormal(mean, stdev):
+def simulacion(n, activities):
     """
-    Generates a number from a Normal random variate with mean and stdev
+    Simulate duration of every activity according to its distribution type
+
+     n: number of simulation rows to generate
+     activities: list of activities each of them with activity structure
+                
+     return: [ [simulated_duration_a, simulated_duration_b, ... ], ... ] (list with n rows)
     """
-    norm = random.gauss(mean, stdev)
-    return norm
-
-
-def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una clase
-    """
-     Simulación de duraciones de cada actividad según  
-              su tipo de distribución
-
-     Parámetros: n (número de iteraciones)
-
-
-     Valor de retorno: simulacion (lista con 'n' simulaciones del proyecto)
-
-    """
+    TOLERANCE = 0.001
     simulacion = []
+
+    for act in activities:
+        print act
 
     for i in range(n):
         sim = []
-        for m in range(len(actividad)):
-            distribucion=actividad[m][8]
-            # Si la actividad tiene una distribución 'uniforme'
-            if distribucion=='Uniform':
-                if actividad[m][3]!=actividad[m][5]:
-                    valor = generaAleatoriosUniforme(float(actividad[m][3]), 
-                                                                float(actividad[m][5]))
-                else: # Si d.optimista=d.pesimista
-                    valor=actividad[m][3]
+        for pos, name, follow, opt, mode, pes, mean, std_dev, distribution, start in activities:
 
-            # Si la actividad tiene una distribución 'beta'
-            elif distribucion=='Beta':
-                if actividad[m][3]!=actividad[m][5]!=actividad[m][4]:                            
+            if distribution == 'Uniform':
+                if opt == pes:
+                    valor = opt
+                else:
+                    valor = random.uniform(opt, pes)
 
-                    mean, stdev, shape_a, shape_b = datosBeta(float(actividad[m][3]), 
-                                                                         float(actividad[m][4]), 
-                                                                         float(actividad[m][5]))
-                    valor = generaAleatoriosBeta(float(actividad[m][3]), 
-                                                            float(actividad[m][5]), 
-                                                            float(shape_a), float(shape_b))
-                else:  # Si d.optimista=d.pesimista=d.mas probable
-                    valor = actividad[m][3]
+            elif distribution == 'Beta':
+                if opt == pes:
+                    valor = opt
+#                elif opt == mode:
+#                    valor = 10000 # XXX Arreglar con algo coherente
+#                elif mode == pes:
+#                    valor = 10000 # XXX Arreglar con algo coherente
+                else:
+                    mean, stdev, shape_a, shape_b = datosBeta(opt, mode, pes)
+                    valor = random.betavariate(shape_a, shape_b) * (pes - opt) + opt
 
-            # Si la actividad tiene una distribución 'triangular'
-            elif distribucion == 'Triangular':
-            
-                if actividad[m][3] != actividad[m][5] != actividad[m][4]:
-                    valor = generaAleatoriosTriangular(float(actividad[m][3]), 
-                                                                float(actividad[m][4]), 
-                                                                float(actividad[m][5]))
-                else:   # Si d.optimista=d.pesimista=d.mas probable
-                    valor=actividad[m][3]
+            elif distribution == 'Triangular':
+                if opt == pes:
+                    valor = opt
+                else:
+                    valor = generaAleatoriosTriangular(float(opt), float(mode), float(pes))
                                     
-            # Si la actividad tiene una distribución 'normal'
-            elif distribucion == 'Normal':
-            
-                if float(actividad[m][7])!=0.00:
-                    valor = generaAleatoriosNormal(float(actividad[m][6]), float(actividad[m][7]))
-                else:   # Si d.tipica=0
-                    valor=actividad[m][6]
+            elif distribution == 'Normal':
+                if std_dev < TOLERANCE: 
+                    valor = mean
+                else:
+                    valor = random.gauss(mean, std_dev)
             
             else:
                 dialogoError(_('S Unknown distribution')) 
@@ -274,7 +246,7 @@ def simulacion(n, actividad): # XXX Pasar a simulation.py convitiendolo en una c
             sim.append(float(valor))
             
         simulacion.append(sim)
-
+        print sim
     
     return simulacion
     
