@@ -1017,7 +1017,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         return [n[0] for n in self.recurso]
 
      
-    def calcularMediaYDTipica(self, distribucion, opt, pes, mode): #a, b, m):
+    def calcularMediaYDTipica(self, distribucion, opt, pes, most): #a, b, m):
         """
          Calculo de la media y la desviación típica a partir de la distribución, 
                   del tiempo optimista, pesimista y más probable 
@@ -1025,27 +1025,27 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
           distribucion (tipo de distribución)
           opt (d.optimista)
           pes (d.pesimista)
-          mode (d.más probable)
+          most (d.más probable)
 
          return: (media, dTipica)
         """
         TOLERANCE = 0.0001
 
         if distribucion == 'Beta':
-            media = (opt + 4.0*mode + pes) / 6.0
+            media = (opt + 4.0*most + pes) / 6.0
             #dTipica = (pes - opt) / 6.0
-            #dTipica = math.sqrt(( 5.0 * (pes - opt)**2 + 8 * ((mode-opt)*(pes-mode)) ) / (36*7))
-            #dTipica = (pes - opt) * math.sqrt(( 5.0 + 8 * (mode-opt) * (pes-mode) / (pes-opt)**2 ) / (36*7))
+            #dTipica = math.sqrt(( 5.0 * (pes - opt)**2 + 8 * ((most-opt)*(pes-most)) ) / (36*7))
+            #dTipica = (pes - opt) * math.sqrt(( 5.0 + 8 * (most-opt) * (pes-most) / (pes-opt)**2 ) / (36*7))
             if pes - opt > TOLERANCE:
-                shape_a = 1 + 4.0 * (mode - opt) / (pes - opt)
-                shape_b = 1 + 4.0 * (pes - mode) / (pes - opt)
+                shape_a = 1 + 4.0 * (most - opt) / (pes - opt)
+                shape_b = 1 + 4.0 * (pes - most) / (pes - opt)
                 dTipica = math.sqrt( scipy.stats.beta.var(shape_a, shape_b, loc=opt, scale=(pes-opt)) )
             else:
                 dTipica = 0.0
 
         elif distribucion == 'Triangular':
-            media = (opt + mode + pes) / 3.0
-            dTipica = math.sqrt((opt**2.0 + pes**2.0 + mode**2.0 - opt*pes - opt*mode - pes*mode) / 18.0)
+            media = (opt + most + pes) / 3.0
+            dTipica = math.sqrt((opt**2.0 + pes**2.0 + most**2.0 - opt*pes - opt*most - pes*most) / 18.0)
 
         elif distribucion == 'Uniform':   
             media = (opt + pes) / 2.0
