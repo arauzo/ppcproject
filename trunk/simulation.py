@@ -22,6 +22,8 @@
 import random
 import math
 
+#import scipy.stats
+
 def calcularFrecuencias(duraciones, dMax, dMin, itTotales, N):
     """
      Cálculo de las F.Absolutas y F.Relativas 
@@ -151,27 +153,6 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
     return s
 
 
-def datosBeta(op, mode, pes):
-    """
-    Returns the parameters of a general Beta random variate from those of
-    PERT method
-
-    op (optimistic)
-    mode (most likely)
-    pes (pesimist)
-
-    Returned value: (mean, std deviation, shape factor a, shape factor b)
-    """
-    mean = (op + 4 * mode + pes) / 6.0
-    stdev = (pes - op) / 6.0
-#    shape_a = (float(mean - op) / (pes - op)) * (((mean - op) * (pes - mean)) / stdev ** 2 - 1)
-#    shape_b = (float(pes - mean) / (mean - op)) * shape_a
-    shape_a = 1 + 4.0 * (mode - op) / (pes - op)
-    shape_b = 1 + 4.0 * (pes - mode) / (pes - op)
-
-    return (mean, stdev, shape_a, shape_b)
-
-
 def generaAleatoriosTriangular(op, mode, pes):
     """
     Generates a random number in a triangular distribution in [op, pes]
@@ -203,9 +184,6 @@ def simulacion(n, activities):
     TOLERANCE = 0.001
     simulacion = []
 
-    for act in activities:
-        print act
-
     for i in range(n):
         sim = []
         for pos, name, follow, opt, mode, pes, mean, std_dev, distribution, start in activities:
@@ -220,12 +198,25 @@ def simulacion(n, activities):
                 if opt == pes:
                     valor = opt
 #                elif opt == mode:
-#                    valor = 10000 # XXX Arreglar con algo coherente
+#                    valor = 10000 # XXX Es necesario poner algo coherente aqui si se cambia a la Beta tradicional
 #                elif mode == pes:
-#                    valor = 10000 # XXX Arreglar con algo coherente
+#                    valor = 10000 # Idem
                 else:
-                    mean, stdev, shape_a, shape_b = datosBeta(opt, mode, pes)
+                    mean = (opt + 4 * mode + pes) / 6.0
+
+# incorrecto: stdev = (pes - opt) * math.sqrt(( 5.0 + 8 * (mode-opt) * (pes-mode) / (pes-opt)**2 ) / (36*7))
+# stdev innecesaria
+
+#                    stdev = (pes - opt) / 6.0 # Varianza tradicional no valida en extremos
+#                    shape_a = (float(mean - opt) / (pes - opt)) * (((mean - opt) * (pes - mean)) / stdev ** 2 - 1)
+#                    shape_b = (float(pes - mean) / (mean - opt)) * shape_a
+                    shape_a = 1 + 4.0 * (mode - opt) / (pes - opt)
+                    shape_b = 1 + 4.0 * (pes - mode) / (pes - opt)
                     valor = random.betavariate(shape_a, shape_b) * (pes - opt) + opt
+                    #valor = scipy.stats.beta.rvs(shape_a, shape_b) * (pes - opt) + opt
+                    #print "stdev", stdev
+                    #print "Scipy VAR:", math.sqrt(scipy.stats.beta.var(shape_a, shape_b, loc=opt, scale=(pes-opt)))
+
 
             elif distribution == 'Triangular':
                 if opt == pes:
@@ -246,7 +237,6 @@ def simulacion(n, activities):
             sim.append(float(valor))
             
         simulacion.append(sim)
-        print sim
     
     return simulacion
     

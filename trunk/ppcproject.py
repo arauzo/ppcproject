@@ -1017,38 +1017,46 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         return [n[0] for n in self.recurso]
 
      
-    def calcularMediaYDTipica(self, distribucion, a, b, m):
+    def calcularMediaYDTipica(self, distribucion, opt, pes, mode): #a, b, m):
         """
          Calculo de la media y la desviación típica a partir de la distribución, 
                   del tiempo optimista, pesimista y más probable 
 
           distribucion (tipo de distribución)
-          a (d.optimista)
-          b (d.pesimista)
-          m (d.más probable)
+          opt (d.optimista)
+          pes (d.pesimista)
+          mode (d.más probable)
 
          return: (media, dTipica)
         """
-        # Si el tipo de distribución es Beta
+        TOLERANCE = 0.0001
+
         if distribucion == 'Beta':
-            media = (a+b+4.0*m) / 6.0
-            dTipica = (b-a) / 6.0
+            media = (opt + 4.0*mode + pes) / 6.0
+            #dTipica = (pes - opt) / 6.0
+            #dTipica = math.sqrt(( 5.0 * (pes - opt)**2 + 8 * ((mode-opt)*(pes-mode)) ) / (36*7))
+            #dTipica = (pes - opt) * math.sqrt(( 5.0 + 8 * (mode-opt) * (pes-mode) / (pes-opt)**2 ) / (36*7))
+            if pes - opt > TOLERANCE:
+                shape_a = 1 + 4.0 * (mode - opt) / (pes - opt)
+                shape_b = 1 + 4.0 * (pes - mode) / (pes - opt)
+                dTipica = math.sqrt( scipy.stats.beta.var(shape_a, shape_b, loc=opt, scale=(pes-opt)) )
+            else:
+                dTipica = 0.0
 
-        # Si el tipo de distribución es Triangular
         elif distribucion == 'Triangular':
-            media = (a+b+m) / 3.0
-            dTipica = math.sqrt((a**2.0+b**2.0+m**2.0-a*b-a*m-b*m) / 18.0)
+            media = (opt + mode + pes) / 3.0
+            dTipica = math.sqrt((opt**2.0 + pes**2.0 + mode**2.0 - opt*pes - opt*mode - pes*mode) / 18.0)
 
-        # Si el tipo de distribución es Uniforme
         elif distribucion == 'Uniform':   
-            media = (a+b) / 2.0
-            dTipica = math.sqrt(((b-a)**2.0) / 12.0)
+            media = (opt + pes) / 2.0
+            dTipica = math.sqrt(((pes - opt)**2.0) / 12.0)
         else:
             raise Exception('Not expected distribution:' + distribucion)
 
         # NOTA: La media y la desviación típica de la distribución Normal
         #       no se calculan, se deben introducir manualmente
-
+        # XXX Ver en que casos interesa calcularla y en que casos se recalculan otras casillas.
+        
         return media, dTipica
 
 
@@ -1082,19 +1090,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.vPrincipal.set_title('PPC-Project')
                
 ### FUNCIONES VENTANAS DE ACCIÓN
-
-# GRAFO PERT                     
-    #def pertFinal(self, actividad):
-    #    """
-    #    Creación del grafo Pert numerado en orden
-    #    Valor de retorno: grafoRenumerado (grafo final)
-    #    """
-    #    successors = dict(((act[1], act[2]) for act in actividad))
-    #    grafo = pert.Pert()
-    #    grafo.construct(successors)
-    #    grafoRenumerado = grafo.renumerar()
-    #    return grafoRenumerado                 
-
     
 #          ZADERENKO                     
     def ventanaZaderenko(self):
