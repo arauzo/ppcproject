@@ -153,20 +153,20 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
     return s
 
 
-def generaAleatoriosTriangular(op, mode, pes):
+def generaAleatoriosTriangular(op, most, pes):
     """
     Generates a random number in a triangular distribution in [op, pes]
-    with mode
+    with most
 
     Preconditions: pes != op
     """
     unif = random.random()  # [0,1]
 
-    if unif <= float(mode - op) / (pes - op):
-        aux = (unif * (pes - op)) * (mode - op)
+    if unif <= float(most - op) / (pes - op):
+        aux = (unif * (pes - op)) * (most - op)
         triang = op + math.sqrt(aux)
     else:
-        aux = ((pes - op) * (pes - mode)) * (1 - unif)
+        aux = ((pes - op) * (pes - most)) * (1 - unif)
         triang = pes - math.sqrt(aux)
 
     return triang
@@ -186,7 +186,7 @@ def simulacion(n, activities):
 
     for i in range(n):
         sim = []
-        for pos, name, follow, opt, mode, pes, mean, std_dev, distribution, start in activities:
+        for pos, name, follow, opt, most, pes, mean, std_dev, distribution, start in activities:
 
             if distribution == 'Uniform':
                 if opt == pes:
@@ -197,21 +197,21 @@ def simulacion(n, activities):
             elif distribution == 'Beta':
                 if opt == pes:
                     valor = opt
-#                elif opt == mode:
+#                elif opt == most:
 #                    valor = 10000 # XXX Es necesario poner algo coherente aqui si se cambia a la Beta tradicional
-#                elif mode == pes:
+#                elif most == pes:
 #                    valor = 10000 # Idem
                 else:
-                    mean = (opt + 4 * mode + pes) / 6.0
+                    mean = (opt + 4 * most + pes) / 6.0
 
-# incorrecto: stdev = (pes - opt) * math.sqrt(( 5.0 + 8 * (mode-opt) * (pes-mode) / (pes-opt)**2 ) / (36*7))
+# incorrecto: stdev = (pes - opt) * math.sqrt(( 5.0 + 8 * (most-opt) * (pes-most) / (pes-opt)**2 ) / (36*7))
 # stdev innecesaria
 
 #                    stdev = (pes - opt) / 6.0 # Varianza tradicional no valida en extremos
 #                    shape_a = (float(mean - opt) / (pes - opt)) * (((mean - opt) * (pes - mean)) / stdev ** 2 - 1)
 #                    shape_b = (float(pes - mean) / (mean - opt)) * shape_a
-                    shape_a = 1 + 4.0 * (mode - opt) / (pes - opt)
-                    shape_b = 1 + 4.0 * (pes - mode) / (pes - opt)
+                    shape_a = 1 + 4.0 * (most - opt) / (pes - opt)
+                    shape_b = 1 + 4.0 * (pes - most) / (pes - opt)
                     valor = random.betavariate(shape_a, shape_b) * (pes - opt) + opt
                     #valor = scipy.stats.beta.rvs(shape_a, shape_b) * (pes - opt) + opt
                     #print "stdev", stdev
@@ -222,7 +222,7 @@ def simulacion(n, activities):
                 if opt == pes:
                     valor = opt
                 else:
-                    valor = generaAleatoriosTriangular(float(opt), float(mode), float(pes))
+                    valor = generaAleatoriosTriangular(float(opt), float(most), float(pes))
                                     
             elif distribution == 'Normal':
                 if std_dev < TOLERANCE: 
@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
     # Para Uniforme, Triangular y Beta:
     op = 2.0
-    mode = 5.0
+    most = 5.0
     pes = 10.0
 
     # Para la Normal
@@ -263,8 +263,8 @@ if __name__ == '__main__':
     for i in range(n):
         print random.uniform(op, pes)
 
-    print '\n *** Beta(', op, mode, pes, ')'
-    mean = (op + 4 * mode + pes) / 6.0
+    print '\n *** Beta(', op, most, pes, ')'
+    mean = (op + 4 * most + pes) / 6.0
     stdev = (pes - op) / 6.0
     shape_a = ((mean - op) / (pes - op)) * (((mean - op) * (pes - mean))
              / stdev ** 2 - 1)
@@ -279,8 +279,8 @@ if __name__ == '__main__':
     for i in range(n):
         print random.gauss(mean, stdev)
 
-    print '\n *** Triangle(', op, mode, pes, ')'
+    print '\n *** Triangle(', op, most, pes, ')'
     for i in range(n):
-        print generaAleatoriosTriangular(op, mode, pes)
+        print generaAleatoriosTriangular(op, most, pes)
 
 
