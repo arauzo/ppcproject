@@ -138,11 +138,13 @@ class PSPProjectFileFormat(ProjectFileFormat):
         rec = []
         l = f.readline()
         while l:
-        # Activities and following activities
-            if l[0] == 'j' and l[10] == '#':
+            # Activities and following activities
+            if l[0:21] == 'PRECEDENCE RELATIONS:':
+                f.readline()
                 l = f.readline()
                 while l[0] != '*':
-                    prel = (l.split()[0], l.split()[3:])
+                    data = l.split()
+                    prel = (data[0], data[3:])
                     prelaciones.append(prel)
                     l = f.readline()
 
@@ -162,28 +164,16 @@ class PSPProjectFileFormat(ProjectFileFormat):
 
             l = f.readline()
         
-        # Modify data structure
+        # Create data structure
         cont = 1
-        longitud = len(prelaciones)
         activities = []
-
         for prelacion in prelaciones:
-            if prelacion != prelaciones[0] and prelacion!=prelaciones[longitud-1]:   
-                if prelacion[1] == [str(longitud)]:  #activities with the last activity as next 
-                    activities.append([cont, prelacion[0], [], '', '', '', '', '', ('Beta')] )
-                else:
-                    activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', ('Beta')])
-                                    
-                cont += 1  
+            activities.append([cont, prelacion[0], prelacion[1], '', '', '', '', '', ('Beta')])
+            cont += 1  
 
         # Update activities duration
-        for n in range(len(asig)-1):   
-            if asig[n][2] != '0':
-                m = n-1
-                activities[m][6] = float(asig[n][2])
-            #else: #XXX Añadido por FELIPE para solventar el problema de las ficticias.
-                #m = n-1
-                #activities[m][6] = float(0)
+        for n in range(len(asig)):   
+            activities[n][6] = float(asig[n][2])
 
         # Update resources
         i = 1
@@ -220,7 +210,6 @@ class PSPProjectFileFormat(ProjectFileFormat):
                 
             resources.append(row)
             i += 2
-            
             # Note: Unlimited resources are not present on PSPLIB projects and so 
             #       not taken into account here
 
@@ -234,64 +223,6 @@ class PSPProjectFileFormat(ProjectFileFormat):
                     asignation.append(row)
         
         return (activities, [], resources, asignation)
-
-
-class PPCProjectOLDFileFormat(ProjectFileFormat):
-    """
-    Permite cargar los fichero .prj generados con la versión anterior
-
-    - DEPRECATED -
-    (está a drede en español ya que esta clase debe ser eliminada cuando 
-    se consolide el formato nuevo (convirtamos los ficheros útiles))
-    """
-    def __init__(self):
-        self.filenameExtensions = ['prj']
-
-    def __str__(self):
-        """
-        Returns a string with the name or description of this format to show on 
-        dialogs
-
-        """
-        return _('PPC-Project old file format')+ " "+ "".join(['(', ', '.join(self.filenamePatterns()), ')'])
-
-    def load(self, filename):
-        """
-        Load project data (see base class)
-        """
-        f = open(filename, 'rb')
-        try:
-            table = pickle.load(f)
-        except (pickle.UnpicklingError, AttributeError, EOFError, ImportError, IndexError, ValueError):
-            raise InvalidFileFormatException('Unpickle failed')
-
-        f.close()
-        # Se actualiza la interfaz de las actividades
-        activities = []
-        assignations = []
-        resources = []
-        for row in table[0]:      
-            prepared_row = row[0:6] + [float(row[6])] + [row[7]] + row[9:]
-            activities.append(prepared_row)
-            
-        # Check activities, schedules, resources, resourceAsignaments have the right data structure
-        for row in activities:
-            if len(row) != 9:
-                raise InvalidFileFormatException('Incorrect data on file')
-                
-        for res in table[1]:
-            if res[1] == 'Renovable': 
-                res[1] = 'Renewable'
-            elif res[1] == 'No renovable':
-                res[1] = 'Non renewable'
-            elif res[1] == 'Doblemente restringido':
-                res[1] = 'Double constrained'
-            else:
-                res[1] = 'Unlimited'
-            resources.append(res)
-        assignations = table[2]
-        
-        return (activities, [], resources, assignations)
 
 
 class PPCProjectFileFormat(ProjectFileFormat):
@@ -337,38 +268,6 @@ class PPCProjectFileFormat(ProjectFileFormat):
         f.close()
 
 
-#class TxtProjectFileFormat(ProjectFileFormat):
-#    """
-#    New project file format (xxx to define)
-#    """
-#    def __init__(self):
-#        self.filenameExtensions = ['txt']
-
-#    def __str__(self):
-#        """
-#        Returns a string with the name or description of this format to show on 
-#        dialogs
-
-#        """
-#        return _('Text file')+ " " + "".join(['(', ', '.join(self.filenamePatterns()), ')'])
-
-#    def load(self, filename):
-#        """
-#        Lectura de un fichero con extensión '.txt' ¿qué formato era este y para que??
-#        xxx Funcion incorrecta hay que adaptarla para que devuelva lo que debe (load)
-#        """
-#        f = open(filename)
-#        tabla = []
-#        l = f.readline()
-#        while l:
-#            linea = l.split('\t')
-#            linea[1] = linea[1].split(',')
-#            tabla.append(linea)
-#            l = f.readline()
-
-#        l = f.readline()
-
-#        return tabla
 
 def guardarCsv(texto, principal):
     """
@@ -393,11 +292,8 @@ def guardarCsv(texto, principal):
                 fescritura = open(nombre + '.csv', 'w')
             fescritura.write(texto)
         except IOError:
-
             principal.dialogoError(_('Error saving the file'))
         fescritura.close()
-    # elif resultado == gtk.RESPONSE_CANCEL:
-        # print "No hay elementos seleccionados"
 
     dialogoGuardar.destroy()
 
