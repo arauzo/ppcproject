@@ -17,17 +17,19 @@ def cohenSadeh(prelaciones):
   
     ###dadas las relaciones averiguo la lista de actividades predecesoras
     ###para cada actividad e imprimo la tabla
+    #Step 1. Construct Immediate Predecessors Table
+    #Prepare a table with the immediate predecessors of each activity.
     
-    LIPA = [] 
-    for label in prelaciones:
+    LIPA = [] #List Immediate Predecessors Activities
+    for activity in prelaciones:
         relation = []
-        activity = []
-        prececent = []
-        activity.append(label)
-        precedent = prelaciones[label]
+        #activity = []
+        #prececent = []
+        #activity.append(label)
+        #precedent = prelaciones[label]
         relation.append(activity)
-        relation.append(precedent)
-        LIPA.append(relation)
+        relation.append(prelaciones[activity])
+        LIPA.append(relation) #Add activity, prelations to LIPA
 
     ###unica combinacion de actividades inmediatas predecesoras e
     ###imprimo la tabla
@@ -38,10 +40,10 @@ def cohenSadeh(prelaciones):
         if a != ['-']:
             for j in UCIP:
                 if a == j[1] and i != j:
-                    j[1] = ['-']    
+                    j[1] = ['-']
 
     ###Numero de nodo de comienzo de cada actividad(starting Node)
-    ###e imprimo la tabla                
+    ###imprimo la tabla
     
     SN = copy.deepcopy(LIPA)
     cont = 0
@@ -81,7 +83,7 @@ def cohenSadeh(prelaciones):
     for i in UCIP:
         for j in b:
             if j in i[1] and len(i[1]) > 1 and i[1] not in c:
-                c.append(i[1])    
+                c.append(i[1])
 
     #nombra las actividades dummy(paso3) y rellena las nuevas filas(paso4)
 
