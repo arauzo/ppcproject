@@ -4,17 +4,14 @@
 Program to simulate and test distributions
 """
 import operator
-import csv
 import math
 import os.path
 
 import numpy
 
-import assignment
 import graph
 import kolmogorov_smirnov
 import fileFormats
-import ppcproject
 import pert
 import zaderenko
 import simulation
@@ -36,7 +33,7 @@ def save(resultados, filename):
     f.write(simulation_csv)
     f.close()
    
-def vectorDuraciones(it,actividad):
+def vectorDuraciones(it, actividad):
     """
     Function performing the simulation of the project durations.
 
@@ -49,7 +46,7 @@ def vectorDuraciones(it,actividad):
     # Se simulan las duraciones de las actividades y se genera el grafo del proyecto.    
     simulaciones = simulation.simulacion(it, actividad)
     grafoRenumerado = pert.pertFinal(actividad)
-    nodosN=[]
+    nodosN = []
 
     for n in range(len(grafoRenumerado.successors)):
         nodosN.append(n+1)
@@ -57,14 +54,12 @@ def vectorDuraciones(it,actividad):
     # Realizamos la simulacion de la duracion del proyecto aplicando la matriz de Zaderenko.
     duraciones = []
     if simulaciones == None:
-            return
+        return
     else:
         for s in simulaciones: 
-            matrizZad = zaderenko.mZad(actividad,grafoRenumerado.arcs, nodosN, 0, s)
+            matrizZad = zaderenko.mZad(actividad, grafoRenumerado.arcs, nodosN, 0, s)
             tearly = zaderenko.early(nodosN, matrizZad)
-            tlast = zaderenko.last(nodosN, tearly, matrizZad)
-            tam = len(tearly)
-            duracionProyecto = tearly[tam-1]
+            duracionProyecto = tearly[-1]
             duraciones.append(duracionProyecto)
             
     return duraciones, simulaciones
@@ -108,7 +103,8 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
     #The number of predominant paths is calculated (according to Dodin and to our method),
     #Values are assign to alpha and beta in order to perform the gamma function
     #The average and sigma estimated for the gamma are assigned
-    m, m1, alfa, beta, mediaestimada, sigma, sigma_longest_path, sigma_max, sigma_min = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+    m, m1, alfa, beta, mediaestimada, sigma, sigma_longest_path, sigma_max, sigma_min \
+        = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
 
     #The average and the sigma of the normal are assigned
     mediaCritico = float(informacionCaminos[-1][1])
@@ -118,7 +114,7 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
     mediaSimulation = numpy.mean(duracionesTotales)
     sigmaSimulation = numpy.std(duracionesTotales)
 
-    #If there were more than one path candidate to be critical, the values for the function of extreme values are calculated
+    #If there were more than one path candidate to be critical
     #The average and the sigma of the extreme values function are calculated
     mediaVE = sigmaVE = a = b = None
     if (m != 1):
@@ -128,15 +124,19 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
     #An empty vector is created to save the results
     results = []
 
-    # The number of estimated paths candidate to be critical, according to Dodin and to our method is added to the vector of results.   
+    # The number of estimated paths candidate to be critical, 
+    # according to Dodin and to our method is added to the vector of results.   
     results.append(m)
     results.append(m1)
 
-    # Depending on whether the distribution of extreme values is applied, the results displaying in the output file will be added.
+    # Depending on whether the distribution of extreme values is applied
     if (m != 1):
-        pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
+        pvalueN, pvalueG, pvalueEV \
+            = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, 
+                                        dTipicaCritico, alfa, beta, a, b)
     else:
-        pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
+        pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico,
+                                                     dTipicaCritico, alfa, beta)
         pvalueEV = [None]
         
     results.append(mediaCritico)
@@ -152,7 +152,7 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
     results.append(sigmaSimulation)
     results.append(theBest(results))
     results.append(m2)
-    results.append(theBestm(m,m1,m2))
+    results.append(theBestm(m, m1, m2))
     results.append(sigma_longest_path)
     results.append(sigma_max)
     results.append(sigma_min)
@@ -189,7 +189,8 @@ def numeroCriticos (informacionCaminos, duracionesTotales, simulaciones, caminos
             for x in critico:                
                 duracion += simulaciones[i][x - 2]
                 
-            if ((duracion - 0.015 <= duracionesTotales[i]) and (duracionesTotales[i] <= duracion + 0.015)):
+            if ((duracion - 0.015 <= duracionesTotales[i]) and 
+                (duracionesTotales[i] <= duracion + 0.015)):
                 aparicion [longitud - 1] += 1 
                 break 
             else: 
@@ -247,7 +248,7 @@ def caminosCriticosCalculados (aparicion , porcentaje, it):
             ncaminos -= 1
     return total
 
-def theBestm (m,m1,m2):
+def theBestm(m, m1, m2):
     """
     Calculate which one was the closest approximation
     to the real one as far as paths is concerned
