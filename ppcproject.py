@@ -30,6 +30,7 @@ import os
 from copy import deepcopy
 import math
 import gettext
+import operator
 
 # GTK
 import pygtk
@@ -1749,34 +1750,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.box = gtk.VBox()
  
 
-
     def openProject(self, filename):
         """
         Open a project file given by filename
         """
         try:
-            # Tries to load file with formats that match its extension in format order
-            data = None
-            extension = filename[filename.rfind('.')+1:]
+            data = fileFormats.load_with_some_format(filename, self.fileFormats)
 
-            for format in self.fileFormats:
-                if extension in format.filenameExtensions:
-                    try:
-                        data = format.load(filename)
-                        break
-                    except fileFormats.InvalidFileFormatException:
-                        pass
-
-            # If load by extension failed, try to load files in any format independently of their extension
-            if not data:
-                for format in self.fileFormats:
-                    try:
-                        data = format.load(filename)
-                        break
-                    except fileFormats.InvalidFileFormatException:
-                        pass
-            
-            #Data successfully loaded
+            # If data successfully loaded
             if data:
                 self.actividad, schedules, self.recurso, self.asignacion = data
                 for res in self.recurso:
@@ -3314,7 +3295,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             informacionCaminos.append(info)
 
         #Se ordena la lista en orden creciente por duracion media de los caminos
-        informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
+        informacionCaminos.sort(key=operator.itemgetter(1))
 
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
@@ -3322,7 +3303,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 
-        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
+        mediaCritico = float(informacionCaminos[-1][1])
+        dTipicaCritico = float(informacionCaminos[-1][3]) 
         #print 'mediaCritico, dtipicaCritico: ',mediaCritico,dTipicaCritico, '\n'
         
 
@@ -3369,105 +3351,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         ventana.hide()
         return True
 
-    #def on_btAlfa_clicked(self, boton):
-        """
-        Accion usuario para cambiar el valor de alfa
-        """
-        #alfa = float(self._widgets.get_widget('iAlfa').get_text())
-        #valorComparacion = kolmogorov_smirnov.valorComparacion(alfa, len(self.duraciones))
-        #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
-
-# --- Funcion disenada en una fase temprana del proyecto para guardar los resultados del test desde el programa
-# --- mas tarde se decidio que no seria necesario, ya que lo hacemos en la simulacion por lotes.
-# --- Se queda comentada por si en un futuro fuese de utilidad
-    """
-    def on_btGuardarTest_clicked(self,boton):
-       
-        Accion usuario para guardar los resultados del test
-       
-
-        informacionCaminos = []
-        # Get all paths removing 'begin' y 'end' from each path
-        successors = dict(((act[1], act[2]) for act in self.actividad))
-        g = graph.roy(successors)
-        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
-
-        # Se crea una lista con los caminos, sus duraciones y sus varianzas
-        for camino in caminos:   
-            media, varianza = pert.mediaYvarianza(camino, self.actividad) 
-            info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
-            informacionCaminos.append(info)
-
-        #Se ordena la lista en orden creciente por duracion media de los caminos
-        informacionCaminos = kolmogorov_smirnov.ordenaCaminos(informacionCaminos)
-
-        #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
-        #Se asignan los valores a alfa y beta para poder realizar la función gamma
-        m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
-        
-        mediaCritico, dTipicaCritico = kolmogorov_smirnov.calculoMcriticoDcriticoNormal(informacionCaminos)
-     
-        if (m != 1):
-            a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
-        #Creamos un vector con las duraciones totales para pasarselo al test
-        duracionesTotales = self.duraciones
-
-        valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
-        self._widgets.get_widget('iAlfa').set_text(str(0.05))
-        if (m != 1):
-            intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont, pvalue, pvalue2, pvalue3 = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b, 0.5, 1)
-        else:
-            intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont, pvalue, pvalue2 = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, 0, 0, 0.5, 1)
-
-        f = open('salidatest.txt',"w")
-        if (m != 1):
-            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'\t'+'NormalI'+'\t'+'\t'+'NormalD'+'\t'+'\t'+'Gamma'+'\t'+'\t'+'GammaI'+'\t'+'\t'+'GammaD')
-            f.write('\t'+'\t'+'EV'+'\t'+'\t'+'\t'+'EVI'+'\t'+'\t'+'\t'+'EVD'+'\t'+'\t'+'\n')
-            for n in range(cont):
-                f.write('%1.2f'%(intervalos[n]) + '\t' + '\t')
-                f.write('%1.3f'%(frecuencia[n])+ '\t' + '\t')
-                f.write('%1.9f'%(normal[n])+ ' ')
-                f.write('%1.9f'%(normalD[0][n])+ ' ')
-                f.write('%1.9f'%(normalD[1][n])+ ' ')
-                f.write('%1.9f'%(gammaV[n])+ ' ')
-                f.write('%1.9f'%(gammaD[0][n])+ ' ')
-                f.write('%1.9f'%(gammaD[1][n])+ ' ')
-                f.write('%1.9f'%(gev[n])+ ' ')
-                f.write('%1.9f'%(gevD[0][n])+ ' ')
-                f.write('%1.9f'%(gevD[1][n])+ ' ')
-                f.write('\n')
-
-            f.write('Maxima diferencia de la normal por la izquiedra y por la derecha: ' + str(maxNormal) + '\n')
-            f.write('Maxima diferencia de la gamma por la izquierda y por la derecha: ' + str(maxGamma) + '\n')
-            f.write('Maxima diferencia de valores extremos por la izquierda y por la derecha: ' + str(maxVE) + '\n')
-            f.write('Numero de iteraciones utilizado en la simulacion: ' + str(len(duracionesTotales)) + '\n')
-            f.write('Valores de media critico, desviacion critico, alfa, beta, a y b respectivamente: ' + str(mediaCritico) + ', ' + str(dTipicaCritico)+ ', ' + str(alfa) + ', ' + str(beta) + ', '+ str(a) + ', ' + str(b) + '\n')
-            f.write('Valor de alfa usado para el test = 0.05' + '\n')
-            f.write('El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
-            f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
-            f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
-            f.write('El resultado del test ks de scipy para la de valores extremos es: ' + str(pvalue3) + '\n')
-        else:
-            f.write('Intervalos'+'\t'+'Frecuencia'+'\t'+'Normal'+'\t'+'\t'+'NormalI'+'\t'+'\t'+'NormalD'+'\t'+'\t'+'Gamma'+'\t'+'\t'+'GammaI'+'\t'+'\t'+'GammaD'+ '\n')
-            for n in range(cont):
-                f.write('%1.2f'%(intervalos[n]) + '\t' + '\t')
-                f.write('%1.3f'%(frecuencia[n])+ '\t' + '\t')
-                f.write('%1.9f'%(normal[n])+ ' ')
-                f.write('%1.9f'%(normalD[0][n])+ ' ')
-                f.write('%1.9f'%(normalD[1][n])+ ' ')
-                f.write('%1.9f'%(gammaV[n])+ ' ')
-                f.write('%1.9f'%(gammaD[0][n])+ ' ')
-                f.write('%1.9f'%(gammaD[1][n])+ ' ')
-                f.write('\n')
-            f.write('Maxima diferencia de la normal por la izquiedra y por la derecha: ' + str(maxNormal) + '\n')
-            f.write('Maxima diferencia de la gamma por la izquierda y por la derecha: ' + str(maxGamma) + '\n')
-            f.write('Numero de iteraciones utilizado en la simulacion: ' + str(len(duracionesTotales)) + '\n')
-            f.write('Valores de media critico, desviacion critico, alfa, beta respectivamente: ' + str(mediaCritico) + ', ' + str(dTipicaCritico)+ ', ' + str(alfa) + ', ' + str(beta) + '\n')
-            f.write('Valor de alfa usado para el test = 0.05' + '\n')
-            f.write(' El valor de comparacion con alfa 0.05 es: ' + str(valorComparacion) + '\n')
-            f.write('El resultado del test ks de scipy para la normal es: ' + str(pvalue) + '\n')
-            f.write('El resultado del test ks de scipy para la gamma es: ' + str(pvalue2) + '\n')
-    """
             
         
         

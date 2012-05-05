@@ -19,26 +19,12 @@
 
 import random
 import math
-from operator import itemgetter
 from scipy.stats import norm
 from scipy.stats import gamma
 from scipy.stats import gumbel_r
 from scipy.stats import kstest
 
-def ordenaCaminos (infoCaminos):
-    """
-    Funcion de ordenacion de los caminos por el campo
-    de tiempo medio de cada camino
-
-    infoCaminos (vector con la informacion relevante de cada camino)
-
-    return: infoCaminos (vector ordenado)
-    """
-    infoCaminos.sort(key=itemgetter(1))
-
-    return infoCaminos
-
-def calculoValoresGamma (infoCaminos):
+def calculoValoresGamma(infoCaminos):
     """
     Funcion que asigna los valores a las datos necesarios para
     la realizacion del test de Kolmogorov-Smirnof con la funcion gamma.
@@ -55,18 +41,31 @@ def calculoValoresGamma (infoCaminos):
             media (media estimada con la distribucion gamma)
             sigma (desviacion tipica estimada con la distribucion gamma)
     """
-
     m = 0
     m1 = 0
     sigma = 0
 
     # Calculo de la media y la desviacion tipica del camino critico
-    mCritico, dCritico = calculoMcriticoDcriticoNormal (infoCaminos)
+    mCritico = infoCaminos[-1][1]
+    dCritico = infoCaminos[-1][3]
+
+    # Dentro de los criticos de dodin (desviaciones tipicas)
+    sigma_longest_path = dCritico
+    sigma_max = None
+    sigma_min = None
     
-    #Caluculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
+    #Calculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
     for n in range(len(infoCaminos)):
-        if ((mCritico - float(infoCaminos[n][1])) < max(0.05*mCritico, 0.02* dCritico)):
+        # Considerado critico por Dodin
+        if ((mCritico - infoCaminos[n][1]) < max(0.05*mCritico, 0.02* dCritico)):
             m += 1
+            path_stddev = infoCaminos[n][3]
+            if sigma_max == None or sigma_max < path_stddev:
+                sigma_max = path_stddev
+            if sigma_min == None or sigma_min > path_stddev:
+                sigma_min = path_stddev
+
+        # Considerado critico por Salas
         if ((float(infoCaminos[n][1]) + 0.5*float(infoCaminos[n][3])) >= (mCritico - 0.25* dCritico)):
             m1 +=1
             aux = float(infoCaminos[n][3])
@@ -80,19 +79,7 @@ def calculoValoresGamma (infoCaminos):
     beta = (sigma*sigma)/media
     alfa = media/beta
 
-    return m, m1, alfa, beta, media, sigma
-
-def calculoMcriticoDcriticoNormal (infoCaminos):
-    """
-    Funcion que devuelve la media del camino critico
-    y la desviacion tipica del mismo
-
-    infoCaminos (vector con la informacion de cada camino)
-
-    return: media y desviacion tipica del camino critico
-    """
-
-    return float(infoCaminos[len(infoCaminos)-1][1]), float(infoCaminos[len(infoCaminos)-1][3])
+    return m, m1, alfa, beta, media, sigma, sigma_longest_path, sigma_max, sigma_min
 
 def calculoValoresExtremos (media, sigma, m):
     """
