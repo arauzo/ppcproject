@@ -1,29 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------
-# PPC-PROJECT
-#   Multiplatform software tool for education and research in
-#   project management
-#
-# Copyright 2007-9 Universidad de Córdoba
-# This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published
-#   by the Free Software Foundation, either version 3 of the License,
-#   or (at your option) any later version.
-# This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+"""
+Filling data for simulation
+"""
 import random
 import math
 
 def datosBetaMedia(mean, k):
-
     """
-    It returns the parameters of the beta basing only on the average
+    Returns the parameters of the beta basing only on the average
     and proportionality value of the typical deviation
 
     mean (average duration of activity)
@@ -31,7 +16,6 @@ def datosBetaMedia(mean, k):
 
     return: (average, typical deviation, shape factor a, shape factor b)
     """
-
     stdev = (k*mean) 
     mode = random.uniform(mean*(1-k),mean*(1+k))
     op = ((3*mean*(1-k))-(2*mode))
@@ -53,7 +37,7 @@ def datosTriangularMedia(mean,k):
 
 def datosUniformeMedia(mean,k):
     """
-    Generates a random number in a Uniform distribution having only the mean.
+    Data for a Uniform distribution having only the mean.
     """
     stdev = (k*mean)
     op = mean * (1-(k* math.sqrt(3)))
@@ -61,15 +45,6 @@ def datosUniformeMedia(mean,k):
     mode = (op + pes) / 2
 
     return (op, pes, stdev, mode)
-
-def datosNormalMedia(mean,k):
-    """
-    Generates a number from a Normal random variate with mean and stdev
-    """
-
-    stdev = k*mean
-
-    return stdev
 
 def actualizarInterfaz (modelo, k, dist,actividad):
     """
@@ -83,8 +58,6 @@ def actualizarInterfaz (modelo, k, dist,actividad):
     return: modelo (updated chart of the interface)
             actividad (updated vector of activities)
     """
-
-
     for m in range(len(actividad)):
         actividad [m][8] = dist
         modelo [m][8] = str(dist)
@@ -104,7 +77,7 @@ def actualizarInterfaz (modelo, k, dist,actividad):
             modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
     elif dist == 'Normal':
         for m in range(len(actividad)):
-            actividad[m][7] = datosNormalMedia(actividad[m][6], k)
+            actividad[m][7] = actividad[m][6] * k # Mean * k
             modelo[m][7] = actividad[m][7]
         if (actividad[m][3] != '' or actividad[m][4] != '' or actividad[m][5] !=''):
             for m in range(len(actividad)):
@@ -115,9 +88,9 @@ def actualizarInterfaz (modelo, k, dist,actividad):
 
     return modelo, actividad
 
-def actualizarActividadesFichero (k, dist,actividad):
+def actualizarActividadesFichero(k, dist, actividad):
     """
-    A function that updates the activities according to the distribution we want to be used.
+    Updates the activities according to the distribution to be used.
 
     k ( proportionality value of the typical deviation)
     dist ( distribution used to ascribe missing parameters)
@@ -125,7 +98,6 @@ def actualizarActividadesFichero (k, dist,actividad):
 
     return: actividad (updated vector of activities)
     """
-
     for m in range(len(actividad)):
         actividad [m][8] = dist
     
@@ -141,13 +113,10 @@ def actualizarActividadesFichero (k, dist,actividad):
             actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosTriangularMedia(actividad[m][6], k)
     elif dist == 'Normal':
         for m in range(len(actividad)):
-            actividad[m][7] = datosNormalMedia(actividad[m][6], k)
+            actividad[m][7] = actividad[m][6] * k # Mean * k
     else:
         raise Exception('Distribution not expected')
 
     return actividad
         
         
-
-
-

@@ -8,7 +8,7 @@
   and options should be received by parameter).
 
 
- Copyright 2007-11 Universidad de Córdoba
+ Copyright 2007-12 Universidad de Córdoba
  This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
    by the Free Software Foundation, either version 3 of the License,
@@ -24,6 +24,41 @@ import gtk
 import gettext
 import pickle
 import random
+import os.path
+
+def load_with_some_format(filename, formats):
+    """
+    Try to load a project file with any of the formats
+
+    filename: the name of the file to read
+    formats: a list of fileformats.ProjectFileFormat objects with formats to use
+
+    raise: IOError if there are problems reading the file
+    return: (activities, schedules, resources, resource_allocations) - if ok
+            None - if unknown format
+    """
+    # Try to load file with formats that match its extension in format order
+    data = None
+    extension = os.path.splitext(filename)[1][1:]
+
+    for format in formats:
+        if extension in format.filenameExtensions:
+            try:
+                data = format.load(filename)
+                break
+            except InvalidFileFormatException:
+                pass
+
+    # If load by extension failed, try to load files in any format independently of their extension
+    if not data:
+        for format in formats:
+            try:
+                data = format.load(filename)
+                break
+            except InvalidFileFormatException:
+                pass
+    return data
+
 
 class InvalidFileFormatException(Exception):
     """
