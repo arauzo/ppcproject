@@ -2256,7 +2256,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             title = 'PERT-Conjuntos graph'
 
         elif menu_item == self._widgets.get_widget('algoritmoCohenSadeh'):
-            grafo = algoritmoCohenSadeh.cohenSadeh( graph.successors2precedents(successors) )
+            grafo = Cohen_sadeh_Alberto.cohen_sadeh( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
             title = 'PERT-CohenSadeh graph'
 
