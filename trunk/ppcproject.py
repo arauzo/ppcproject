@@ -60,7 +60,7 @@ from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
-import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
+import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas, Cohen_sadeh_Alberto
 import graph
 #import pruebaInterface
 #import assignment
