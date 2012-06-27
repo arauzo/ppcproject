@@ -1,26 +1,33 @@
+"""
+Algorithm to draw Graph PERT based on Algorithm Yuval Cohen and Arick Sadeh
+"""
 import graph
 import copy
 import pert
 
 def cohen_sadeh(prelations):
     """
+    Build graph PERT with prelations
+    
+    prelations = {'activity': ['prelations1', 'prelations2'...}
+    
+    return graph pert.Pert()
     """
     #Step 1. Construct Immediate Predecessors Table
     #Prepare a table with the immediate predecessors of each activity
-#    prelations = graph.successors2precedents(successors) #Pass successors to predecessors
     immediate_predecessors = prelations.values() #Obtain only the predecessors
-    print "immediate_predecessors:", immediate_predecessors
+
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     #Duplicate the Immediate Predecessors
     work_column = copy.deepcopy(immediate_predecessors)
-    print "work_column:", work_column
+
     #Find similar precedence constraint and block them
     visited = [] #List of visited activities
     for i in range(len(work_column)):
         if work_column[i] in visited and work_column[i] != ['-']: #If similar precedence
             work_column[i] = ['-'] #Block similar precedence
         visited.append(work_column[i]) #Add activity to list of visited
-    print "work_column1:", work_column
+
     #Step 3. Identify Necessary Dummy Arcs
     #Scan work_column and list digit that appear more than once in that column
     visited = [] #List of visited activities
@@ -33,7 +40,6 @@ def cohen_sadeh(prelations):
                 visited.append(activity) #Add activity to list of visited
 
     #Each of the repetitions not found before,requires a dummy arc(paralel dummy)
-
     same_predecessor = [] #List of list of activities with same_predecessors
     visited = [] #List of visited activities
     for activity, predecessor in prelations.iteritems():
@@ -194,8 +200,7 @@ def cohen_sadeh(prelations):
 
     #Step 8. Update the table with the new activity names
     visited = [] #List of visited activities
-#    activity_start_end = [] #List Activity, start, end
-    grafo = pert.Pert()
+    graph = pert.Pert() #Graph to draw
     for activity, start in starting_node:
         relation = [] #Relation between start and end
         relation.append(start)
@@ -203,138 +208,14 @@ def cohen_sadeh(prelations):
             if activity == act and activity not in visited:
                 visited.append(act)
                 relation.append(end)
-#                activity_start_end.append(activity)
-#                activity_start_end.append(relation)
                 if activity in dummy_activities:
                     dummy = activity, True
                 else:
                     dummy = activity, False
-                grafo.add_arc(relation, dummy)
-                
-    print "Grafo:", grafo
-    return grafo
-#    f = open('grafico.png', "w")
-#    png_text = graph.pert2image(grafo, file_format='png')
-#    f.write(png_text)
+                graph.add_arc(relation, dummy)
+    return graph
 
-# --- Start running as a program
-#if __name__ == '__main__':
-#    prelations = {
-#        'B' : ['E', 'F'],
-#        'C' : ['G'],
-#        'D' : ['H'],
-#        'E' : ['G'],
-#        'F' : ['H'],
-#        'G' : ['H'],
-#        'H' : []
-#    }
-#    
-##        'B' : [],
-##        'C' : [],
-##        'D' : [],
-##        'E' : ['B'],
-##        'F' : ['B'],
-##        'G' : ['C', 'E']
-##    }
-
-#    prelations1 = {
-#        'A' : ['B', 'E'],
-#        'B' : ['F', 'G'],
-#        'C' : ['D', 'E'],
-#        'D' : ['F'],
-#        'E' : ['J'],
-#        'F' : ['I'],
-#        'G' : ['H'],
-#        'H' : ['I', 'J'],
-#        'I' : ['K'],
-#        'J' : ['K'],
-#        'K' : [],
-#    }
-#    
-##    e101Predecessors = {
-##        'A' : [],
-##        'B' : ['A'],
-##        'C' : ['A'],
-##        'D' : ['A'],
-##        'E' : ['B'],
-##        'F' : ['B'],
-##        'G' : ['C', 'E'],
-##        'H' : ['D', 'F', 'G']
-##    }
-##    
-#    e101 = {
-#        'A' : ['B', 'C', 'D'],
-#        'B' : ['E', 'F'],
-#        'C' : ['G'],
-#        'D' : ['H'],
-#        'E' : ['G'],
-#        'F' : ['H'],
-#        'G' : ['H'],
-#        'H' : []
-#    }
-#    
-#    e102 = {
-#        'A' : ['B', 'C', 'D'],
-#        'B' : ['E'],
-#        'C' : ['F', 'G', 'H'],
-#        'D' : ['J'],
-#        'E' : ['F', 'G', 'H'],
-#        'F' : ['I'],
-#        'G' : ['J'],
-#        'H' : ['K'],
-#        'I' : ['J'],
-#        'J' : ['K'],
-#        'K' : []
-#    }
-#    no_conexo = {
-#        'A' : ['B', 'C', 'D'],
-#        'B' : ['E'],
-#        'C' : ['F', 'G', 'H'],
-#        'D' : ['J'],
-#        'E' : ['F', 'G', 'H'],
-#        'F' : ['I'],
-#        'G' : ['J'],
-#        'H' : ['K'],
-#        'I' : ['J'],
-#        'J' : ['K'],
-#        'K' : [],
-#        'L' : ['M', 'N'],
-#        'M' : [],
-#        'N' : []
-#    }
-#    act_paralelas = {
-#        'A' : [],
-#        'B' : [],
-#        'C' : ['A'],
-#        'D' : ['B'],
-#        'E' : ['B'],
-#        'F' : ['A'],
-#        'G' : ['A'],
-#        'H' : ['B'],
-#        'I' : ['A'],
-#    }
-#    e103 = {
-#        '1' : ['2', '3', '4'],
-#        '2' : ['5'],
-#        '3' : ['6'],
-#        '4' : ['11', '12'],
-#        '5' : ['7', '8', '9'],
-#        '6' : ['7', '8', '9'],
-#        '7' : [10],
-#        '8' : ['11', '12'],
-#        '9' : ['14'],
-#        '10' : ['11', '12'],
-#        '11' : ['13'],
-#        '12' : ['14'],
-#        '13' : ['14'],
-#        '14' : []
-#    }
-    #cohen_sadeh(pert.Pert(), prelations)
-#    cohen_sadeh(pert.Pert(), prelations1)
-#    cohen_sadeh(pert.Pert(), e101)
-#    cohen_sadeh(act_paralelas)
-
-### ejecucion del algoritmo por defecto
+### Default implementation of the algorithm
 window = None
 
 if __name__ == "__main__":
