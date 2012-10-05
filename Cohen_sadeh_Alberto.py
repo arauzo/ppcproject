@@ -15,16 +15,17 @@ def cohen_sadeh(prelations):
     """
     #Step 1. Construct Immediate Predecessors Table
     #Prepare a table with the immediate predecessors of each activity
-    immediate_predecessors = prelations.values() #Obtain only the predecessors
+    immediate_pred = prelations.values() #Obtain only the predecessors
 
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     #Duplicate the Immediate Predecessors
-    work_column = copy.deepcopy(immediate_predecessors)
+    work_column = copy.deepcopy(immediate_pred)
 
     #Find similar precedence constraint and block them
     visited = [] #List of visited activities
     for i in range(len(work_column)):
-        if work_column[i] in visited and work_column[i] != ['-']: #If similar precedence
+        #If similar precedence
+        if work_column[i] in visited and work_column[i] != ['-']: 
             work_column[i] = ['-'] #Block similar precedence
         visited.append(work_column[i]) #Add activity to list of visited
 
@@ -39,27 +40,30 @@ def cohen_sadeh(prelations):
                     more_than_once.append(activity) #Add activity duplicate
                 visited.append(activity) #Add activity to list of visited
 
-    #Each of the repetitions not found before,requires a dummy arc(paralel dummy)
+    #Repetitions not found before,requires a dummy arc(paralel dummy)
     same_predecessor = [] #List of list of activities with same_predecessors
     visited = [] #List of visited activities
     for activity, predecessor in prelations.iteritems():
-        if activity not in more_than_once: #Avoid repeated comparison
+        if activity not in more_than_once: #No repeated comparison
             for act, pre in prelations.iteritems():
                 if activity != act and predecessor == pre: #Same predecessors
                     visited.append(activity)
-                    if act not in visited: #Avoid repeated comparison
-                        activities_same_predecessor = [] #List for activity and act
+                    if act not in visited: #No repeated comparison
+                        #List for activity and act
+                        activities_same_predecessor = [] 
                         activities_same_predecessor.append(activity)
                         activities_same_predecessor.append(act)
                         same_predecessor.append(activities_same_predecessor)
 
-    set_predecessors = () #Set of predecessors
+    set_pred = () #Set of predecessors
     paralel_dummy = [] #List of paralel dummies
     for activity, predecessor in prelations.iteritems():
-        set_predecessors = set(predecessor)
-        for set_same_predecessor in same_predecessor:
-            intermediate_set = set_predecessors.intersection(set(set_same_predecessor)) #Activities with same predecessors and successors
-            while len(intermediate_set) > 1: #While more than one activity have some predecessors
+        set_pred = set(predecessor)
+        for set_same_pred in same_predecessor:
+            #Activities with same predecessors and successors
+            intermediate_set = set_pred.intersection(set(set_same_pred))
+            #While more than one activity have some predecessors
+            while len(intermediate_set) > 1: 
                 paralel_dummy.append(intermediate_set.pop())
 
     #If constraint of more_than_once not is a single activity dummy needed
@@ -67,17 +71,21 @@ def cohen_sadeh(prelations):
     visited = [] #List of visited activities
     dummy_activities = [] #List of dummy activities
     activity_dummy = [] #List of activity and dummy
-    for i in range(len(immediate_predecessors)):
-        if len(immediate_predecessors[i]) > 1: #If predecessors are not single
-            for j in range(len(immediate_predecessors[i])):
+    for i in range(len(immediate_pred)):
+        #If predecessors are not single
+        if len(immediate_pred[i]) > 1:
+            for j in range(len(immediate_pred[i])):
                 relation = [] #Relation between activity and dummy
-                #If activity have more than one constraint or activity is paralel dummy
-                if immediate_predecessors[i][j] in more_than_once or immediate_predecessors[i][j] in paralel_dummy:
-                    visited.append(immediate_predecessors[i][j])
-                    number = visited.count(immediate_predecessors[i][j]) #Count number of dummy ocurrence
-                    dummy = immediate_predecessors[i][j] #Dummy = activity 
-                    immediate_predecessors[i][j] = immediate_predecessors[i][j] + str(number) #Rename dummy
-                    activity = immediate_predecessors[i][j] #Activity = dummy
+                #If activity have more than one constraint 
+                #Or activity is paralel dummy
+                if immediate_pred[i][j] in more_than_once or immediate_pred[i][j] in paralel_dummy:
+                    visited.append(immediate_pred[i][j])
+                    #Count number of dummy ocurrence
+                    number = visited.count(immediate_pred[i][j]) 
+                    dummy = immediate_pred[i][j] #Dummy = activity 
+                    #Rename dummy
+                    immediate_pred[i][j] = immediate_pred[i][j] + str(number)
+                    activity = immediate_pred[i][j] #Activity = dummy
                     dummy_activities.append(activity)
                     relation.append(activity)
                     relation.append(dummy)
@@ -89,9 +97,9 @@ def cohen_sadeh(prelations):
     for i in range(len(activities)):
         relation = [] #Relation between activity(int) and predecessor
         relation.append(activities[i])
-        for j in range(len(immediate_predecessors)):
+        for j in range(len(immediate_pred)):
             if i == j:
-                relation.append(immediate_predecessors[j])
+                relation.append(immediate_pred[j])
                 activity_predecessor.append(relation)
 
     #Step 4. Add Rows and Information for Dummy Arcs
@@ -115,7 +123,8 @@ def cohen_sadeh(prelations):
                 starting_node.append(relation)
             elif predecessor in constraint: #Constraint repeated
                 for i in range(len(constraint)): #Search constraint
-                    if constraint[i] == predecessor: #Relative position is the count
+                    #Relative position is the count
+                    if constraint[i] == predecessor:
                         relation.append(i)
                 starting_node.append(relation)
             else: #At lest one constraint, constraints not repeated
@@ -213,7 +222,7 @@ def cohen_sadeh(prelations):
                 else:
                     dummy = activity, False
                 graph.add_arc(relation, dummy)
-    return graph
+    return graph.renumerar()
 
 ### Default implementation of the algorithm
 window = None
