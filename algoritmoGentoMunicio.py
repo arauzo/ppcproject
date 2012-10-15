@@ -52,14 +52,18 @@ def gento_municio(successors):
     repeated_predecessor = []
     d = {}
     l = list(successors.items())
+    print "L:", l
     for i in range(len(l)):
+        set_i = set(l[i][1]) 
         for j in range(i+1, len(l)):
-            if set(l[i][1]) in d:
-                print "Ok"
-                d[frozenset(l[i][1])] = l[i][0]
-            else:
-                d[frozenset(l[i][1])].append[i][0]
-    print "D:", d
+            set_j = set(l[j][1])
+            if set_i == set_j:
+                if set_j in d.keys():
+                    d[frozenset(set_j)].update(set(l[j][0]))
+                else:
+                    d[frozenset(set_j)] = set([l[i][0], l[j][0]])
+    standard_II = d.values()
+    print "Standard II:", standard_II 
     
     #Search standard type II Incomplete
     set_successors = set()
@@ -81,6 +85,7 @@ if __name__ == '__main__':
         'H' : ['G'],
         'I' : ['H'],
         'J' : ['H'],
+        'K' : ['G'],
     }
 
     successors1 = {
