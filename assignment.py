@@ -12,12 +12,17 @@ def datosBetaMedia(mean, k):
     and proportionality value of the typical deviation
 
     mean (average duration of activity)
-    k (proportionality constant of the typical deviation)
+    k (proportionality constant of the typical deviation) 
+    Precondition: 0 <= k <= 1/5
 
     return: (average, typical deviation, shape factor a, shape factor b)
     """
-    stdev = (k*mean) 
-    mode = random.uniform(mean*(1-k),mean*(1+k))
+    stdev = (k*mean)
+    # Limits to warrant op <= mode <= pes and op > 0
+    low_mode_limit = mean * (1-k)
+    high_mode_limit = min(mean * (1+k), (3*mean/2.0) * (1-k))
+    # Note: low_mode_limit must be <= high_mode_limit, then k <= 1/5 
+    mode = random.uniform(low_mode_limit, high_mode_limit)
     op = ((3*mean*(1-k))-(2*mode))
     pes = (op+(6*k*mean))
 
@@ -29,7 +34,7 @@ def datosTriangularMedia(mean,k):
     with mean
     """
     stdev = (k*mean)
-    mode = random.uniform(mean*(1-(k*math.sqrt(2))),mean*(1+(k*math.sqrt(2))))
+    mode = random.uniform(mean*(1-(k*math.sqrt(2))), mean*(1+(k*math.sqrt(2))))
     op = ((3*mean-mode)-math.sqrt(pow((3*mean-mode),2)-4*(-3*mean*mode+pow(mode,2)+6*pow(mean,2)*(0.5-pow(0.2,2)))))/2
     pes = 3*mean-op-mode
 

@@ -156,7 +156,7 @@ def datosSimulacion2csv(duraciones, iteraciones, media, dTipica, modeloCriticida
 def generaAleatoriosTriangular(op, most, pes):
     """
     Generates a random number in a triangular distribution in [op, pes]
-    with most
+    with most as mode
 
     Preconditions: pes != op
     """
