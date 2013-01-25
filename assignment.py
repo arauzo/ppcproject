@@ -13,15 +13,15 @@ def datosBetaMedia(mean, k):
 
     mean (average duration of activity)
     k (proportionality constant of the typical deviation) 
-    Precondition: 0 <= k <= 1/5
+    Precondition: 0 <= k <= 1
 
     return: (average, typical deviation, shape factor a, shape factor b)
     """
     stdev = (k*mean)
-    # Limits to warrant op <= mode <= pes and op > 0
+    # Limits to warrant op <= mode <= pes and op >= 0
     low_mode_limit = mean * (1-k)
     high_mode_limit = min(mean * (1+k), (3*mean/2.0) * (1-k))
-    # Note: low_mode_limit must be <= high_mode_limit, then k <= 1/5 
+    # Note: low_mode_limit must be <= high_mode_limit, then k <= 1
     mode = random.uniform(low_mode_limit, high_mode_limit)
     op = ((3*mean*(1-k))-(2*mode))
     pes = (op+(6*k*mean))
