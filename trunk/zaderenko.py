@@ -24,15 +24,17 @@ def mZad(mActividad, actividadesGrafo, nodos, control, duracionSim):
     """
      Creación de la matriz de Zaderenko 
 
-     Parámetros: actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
+     Parámetros: mActividad
+                 actividadesGrafo (etiquetas actividades, nodo inicio y fí­n)
                  nodos (lista de nodos)
                  control (0: llamada desde Simulación
                           1: llamada desde Zaderenko u Holguras)
                  duracionSim (duración de la simulación)
 
      Valor de retorno: mZad (matriz de Zaderenko)
-     XXX Supone que el grafo esta numerado empezando en 1
     """
+    # XXX Supone que el grafo esta numerado empezando en 1
+
     # Se inicializa la matriz
     fila = [''] * len(nodos)
     mZad = [list(fila) for i in range(len(nodos))]
