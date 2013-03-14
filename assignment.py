@@ -6,6 +6,9 @@ Filling data for simulation
 import random
 import math
 
+class InvalidK(Exception):
+    pass
+
 def datosBetaMedia(mean, k):
     """
     Returns the parameters of the beta basing only on the average
@@ -33,9 +36,30 @@ def datosTriangularMedia(mean,k):
     Generates a random number in a triangular distribution in [op,pes]
     with mean
     """
+    
+    A = mean*(1-(k*math.sqrt(2)))
+    B = mean*(1+(k*math.sqrt(2)))
+    C = (3*mean + math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2 
+    D = (3*mean - math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2
+    
     stdev = (k*mean)
-    mode = random.uniform(mean*(1-(k*math.sqrt(2))), mean*(1+(k*math.sqrt(2))))
-    op = ((3*mean-mode)-math.sqrt(pow((3*mean-mode),2)-4*(-3*mean*mode+pow(mode,2)+6*pow(mean,2)*(0.5-pow(0.2,2)))))/2
+    print 'AA', A , D , C , B
+    
+    #if A < D < C < B: 
+      
+    if D < A < C < B:
+	mode = random.uniform(C, B)
+    elif A < D < B < C:
+	mode = random.uniform(A, D)
+    elif D < A < B < C:
+	raise InvalidK()
+    else:
+	mode = 0
+       
+       
+    #mode = random.uniform(mean*(1-(k*math.sqrt(2))), (3*mean - math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2) 
+    #mode = random.uniform(mean*(1-(k*math.sqrt(2))),mean*(1+(k*math.sqrt(2))))
+    op = ((3*mean-mode)-math.sqrt(pow((3*mean-mode),2)-4*(-3*mean*mode+pow(mode,2)+6*pow(mean,2)*(0.5-pow(k,2)))))/2
     pes = 3*mean-op-mode
 
     return (op, mode, pes, stdev)
