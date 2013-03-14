@@ -37,24 +37,31 @@ def datosTriangularMedia(mean,k):
     with mean
     """
     
-    A = mean*(1-(k*math.sqrt(2)))
-    B = mean*(1+(k*math.sqrt(2)))
-    C = (3*mean + math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2 
-    D = (3*mean - math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2
+    a = mean*(1-(k*math.sqrt(2)))
+    b = mean*(1+(k*math.sqrt(2)))
+    c = (3*mean + math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2 
+    d = (3*mean - math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2
+    
+    
+    dif1 = d - a
+    dif2 = b - c
     
     stdev = (k*mean)
-    print 'AA', A , D , C , B
     
-    #if A < D < C < B: 
-      
-    if D < A < C < B:
-	mode = random.uniform(C, B)
-    elif A < D < B < C:
-	mode = random.uniform(A, D)
-    elif D < A < B < C:
-	raise InvalidK()
+    if a < d < c < b:
+        r = random.uniform(0, dif1 + dif2)
+        if r < dif1:
+            mode = a + r 
+        else:
+            mode = c + r - dif1
+    elif d < a < c < b:
+        mode = random.uniform(c, b)
+    elif a < d < b < c:
+        mode = random.uniform(a, d)
+    elif d < a < b < c:
+        raise InvalidK()
     else:
-	mode = 0
+        mode = 0
        
        
     #mode = random.uniform(mean*(1-(k*math.sqrt(2))), (3*mean - math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2) 

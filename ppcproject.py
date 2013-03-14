@@ -1774,7 +1774,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     pre_dic[act[1]] = act[2]
                     self.gantt.add_activity(act[1], act[2], act[6])
                     self.gantt.set_activity_comment(act[1], act[1])
-               # print 'D ', act_list, dur_dic, pre_dic
                 min_sched = pert.get_activities_start_time(act_list, dur_dic, pre_dic)
                 schedules = [[_('Min'), min_sched]] + schedules
                 
@@ -3246,8 +3245,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Se extrae el tipo de distribución
             distribucion = self._widgets.get_widget('distribucion')
             dist = distribucion.get_active_text()
-            if (k < 0):
-                self.dialogoError(_('La constante de proporcionalidad no puede ser negativa'))
+            print 'distribucion ', dist
+            if (k < 0 or k >= 1):
+                self.dialogoError(_('La constante de proporcionalidad no puede ser negativa, ni mayor que 1'))
             else:        
                 assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
                 self.set_modified_state(True)
