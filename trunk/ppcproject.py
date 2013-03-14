@@ -1774,6 +1774,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     pre_dic[act[1]] = act[2]
                     self.gantt.add_activity(act[1], act[2], act[6])
                     self.gantt.set_activity_comment(act[1], act[1])
+               # print 'D ', act_list, dur_dic, pre_dic
                 min_sched = pert.get_activities_start_time(act_list, dur_dic, pre_dic)
                 schedules = [[_('Min'), min_sched]] + schedules
                 
@@ -3253,6 +3254,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.vAsignacion.hide()
         except ValueError:
             self.dialogoError('La constante de proporcionalidad ha de ser un numero')
+        except assignment.InvalidK:
+	    self.dialogoError('El valor de k no es valido')
         
             
                             
