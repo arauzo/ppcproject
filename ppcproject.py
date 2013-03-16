@@ -62,6 +62,7 @@ from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
 import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas, Cohen_sadeh_Alberto
 import graph
+import math
 #import pruebaInterface
 #import assignment
 
@@ -3246,16 +3247,28 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             distribucion = self._widgets.get_widget('distribucion')
             dist = distribucion.get_active_text()
             print 'distribucion ', dist
-            if (k < 0 or k >= 1):
-                self.dialogoError(_('La constante de proporcionalidad no puede ser negativa, ni mayor que 1'))
-            else:        
-                assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
-                self.set_modified_state(True)
-                self.vAsignacion.hide()
-        except ValueError:
-            self.dialogoError('La constante de proporcionalidad ha de ser un numero')
+            if dist == 'Beta':
+                if (k < 0 or k >= 1):
+                    self.dialogoError(_('La constante de proporcionalidad no puede ser negativa, ni mayor que 1'))
+                else:        
+                    assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
+                    self.set_modified_state(True)
+                    self.vAsignacion.hide()
+            if dist == 'Triangular':
+                print 'la k vale', k
+                num = 1/8
+                print 'la raiz vale', math.sqrt(num)
+                if (k<math.sqrt(1/8)):
+                    self.dialogoError(_('La constate de proporcionalidad debe de ser mayor'))
+                else:
+                    assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
+                    self.set_modified_state(True)
+                    self.vAsignacion.hide()
+        #Es lo mismo que el if de arriba, pero el if esta mejorado
+        #except ValueError:
+            #self.dialogoError('La constante de proporcionalidad ha de ser un numero')
         except assignment.InvalidK:
-	    self.dialogoError('El valor de k no es valido')
+	        self.dialogoError('El valor de k no es valido')
         
             
                             
