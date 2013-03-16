@@ -3255,10 +3255,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.set_modified_state(True)
                     self.vAsignacion.hide()
             if dist == 'Triangular':
-                print 'la k vale', k
-                num = 1/8
-                print 'la raiz vale', math.sqrt(num)
-                if (k<math.sqrt(1/8)):
+                if (k<math.sqrt(1.0/8)):
                     self.dialogoError(_('La constate de proporcionalidad debe de ser mayor'))
                 else:
                     assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
