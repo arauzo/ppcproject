@@ -111,6 +111,8 @@ class PPCproject(object):
         self.vAsignacion = self._widgets.get_widget('wndAsignacion')
         self.vTestKS = self._widgets.get_widget('wndTestKS')
         self.vKSResults = self._widgets.get_widget('wndKSTestResults')
+        
+        self.vDuracionMedia = self._widgets.get_widget('wndDurMed')
 
         self.dAyuda = self._widgets.get_widget('dAyuda')
         self.bHerramientas = self._widgets.get_widget('bHerramientas1')
@@ -2349,6 +2351,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.criticidad={} # Diccionario con los caminos y su í­ndice de criticidad
             self.intervalos=[] # Lista con los intervalos de las duraciones
 
+
+
     def on_mnCalcularCaminos_activate(self, menu_item):
         """ User ask for paths in project """
         # Se comprueba que exista algún grafo
@@ -3202,6 +3206,45 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         ventana.hide()
         return True
+        
+
+# --- Set Average Duration        
+    def on_setAvgDuration_activate (self, menu_item):
+        """ Accion usuario para poner el mismo valor
+            de la media a todos
+        """
+        
+        self._widgets.get_widget('btAsignarDurMed').set_sensitive(True)
+        self._widgets.get_widget('durmed').set_text('')
+        self._widgets.get_widget('btCancelDurMed').set_sensitive(True)
+        self.vDuracionMedia.show()
+        
+        
+    def on_btAsignarDurMed_clicked(self,boton):
+        """ 
+        Accion usuario que rellena la tabla
+        con el valor de la duraccion media introducido.
+        """
+        #Se extrae el valor de la duracion media
+        durmed = float(self._widgets.get_widget('durmed').get_text())
+        
+        if durmed <= 0:
+            self.dialogoError(_('La duración media debe ser mayor de 0.'))
+        else:
+            for a in self.actividad:
+                a[6] = durmed       
+
+            assignment.actualizarDuracionesMedia(self.modelo, durmed, self.actividad)
+            self.set_modified_state(True)
+            self.vDuracionMedia.hide()
+
+    def on_btCancelDurMed_clicked(self,boton):
+        """ Accion usuario para cancelar
+            la opcion de asignacion automática
+        """
+
+        self.vDuracionMedia.hide()
+
 
 # --- Assignment window
     def on_mnAsignacion_activate (self, menu_item):
@@ -3254,13 +3297,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
                     self.set_modified_state(True)
                     self.vAsignacion.hide()
-            if dist == 'Triangular':
+            elif dist == 'Triangular':
                 if (k<math.sqrt(1.0/8)):
                     self.dialogoError(_('La constate de proporcionalidad debe de ser mayor'))
                 else:
                     assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
                     self.set_modified_state(True)
                     self.vAsignacion.hide()
+            else:
+                assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
+                self.set_modified_state(True)
+                self.vAsignacion.hide()
         #Es lo mismo que el if de arriba, pero el if esta mejorado
         #except ValueError:
             #self.dialogoError('La constante de proporcionalidad ha de ser un numero')

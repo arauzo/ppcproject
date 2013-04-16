@@ -103,6 +103,9 @@ def actualizarInterfaz (modelo, k, dist,actividad):
         for m in range(len(actividad)):                
             actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
             modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
+            #Dejar la duracción mas probable sin valores
+            actividad [m][4] = ''
+            modelo [m][4] = str('')         
     elif dist == 'Beta':
         for m in range(len(actividad)):
             actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
@@ -154,5 +157,23 @@ def actualizarActividadesFichero(k, dist, actividad):
         raise Exception('Distribution not expected')
 
     return actividad
-        
+
+
+def actualizarDuracionesMedia(modelo, media, actividad):
+    """
+    A function that updates the interface of the program according to the average duration we want to be used.
+
+    modelo ( chart of the graphical interface in which each activity data is shown)
+    media ( value of the average duration used)
+    actividad (vector with activity data)
+
+    return: 
+            actividad (updated vector of activities)
+    """
+    for m in range(len(actividad)):
+        actividad [m][6] = media
+        modelo [m][6] = str(media)
+    
+
+    return actividad        
         
