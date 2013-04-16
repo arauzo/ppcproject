@@ -174,6 +174,5 @@ def actualizarDuracionesMedia(modelo, media, actividad):
         actividad [m][6] = media
         modelo [m][6] = str(media)
     
-
     return actividad        
         
