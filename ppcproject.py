@@ -313,11 +313,11 @@ class PPCproject(object):
             self.set_modified_state(True) # Project data has changed
             #print "cambio '%s' por '%s'" % (modelo[path][n], new_text)
             # Controlamos la introduccion de las siguientes
-            if modelo==self.modelo:  # Interfaz de actividades
+            if modelo == self.modelo:  # Interfaz de actividades
                 actividades=self.actividades2Lista()
                 preVal = modelo[path][n]  # Previous Value
                 # añadimos las etiquetas de las actividades al selector de las siguientes
-                if n==1:  # Columna de las actividades
+                if n == 1:  # Columna de las actividades
                     if new_text == '':
                         self.dialogoError(_('The name of activity must not be empty.'))
                         return
@@ -353,8 +353,8 @@ class PPCproject(object):
       
       
                 elif modelo[int(path)][1] != "":
-                    if n==2:  # Columna de las siguientes
-                        modelo=self.comprobarSig(modelo, path, new_text)
+                    if n == 2:  # Columna de las siguientes
+                        modelo = self.comprobarSig(modelo, path, new_text)
                     else:
                         modelo[path][n] = new_text
                 else:
@@ -3231,12 +3231,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if durmed <= 0:
             self.dialogoError(_('La duración media debe ser mayor de 0.'))
         else:
-            for a in self.actividad:
-                a[6] = durmed       
-
-            assignment.actualizarDuracionesMedia(self.modelo, durmed, self.actividad)
+            for m in range(len(self.actividad)):
+                previous = self.modelo[m][6]
+                self.actividad[m][6] = durmed
+                self.modelo[m][6] = str(durmed)
+                self.actualizacion(self.modelo, m, 6, previous)
+                
+            self.gantt.update()
             self.set_modified_state(True)
             self.vDuracionMedia.hide()
+            print 'up gant'
 
     def on_btCancelDurMed_clicked(self,boton):
         """ Accion usuario para cancelar
@@ -3359,7 +3363,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
-        m, m1, alfa, beta, mediaES, sigmaES = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        #m, m1, alfa, beta, mediaES, sigmaES 
+        m, m1, alfa, beta, mediaES, sigmaES, _, _, _ = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
         #print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 

@@ -31,7 +31,7 @@ def datosBetaMedia(mean, k):
 
     return (op, mode, pes, stdev)
 
-def datosTriangularMedia(mean,k):
+def datosTriangularMedia(mean, k):
     """
     Generates a random number in a triangular distribution in [op,pes]
     with mean
@@ -41,7 +41,6 @@ def datosTriangularMedia(mean,k):
     b = mean*(1+(k*math.sqrt(2)))
     c = (3*mean + math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2 
     d = (3*mean - math.sqrt(pow((3*mean),2)-24*(pow(mean,2))*(0.5-pow(k,2))))/2
-    
     
     dif1 = d - a
     dif2 = b - c
@@ -82,7 +81,7 @@ def datosUniformeMedia(mean,k):
 
     return (op, pes, stdev, mode)
 
-def actualizarInterfaz (modelo, k, dist,actividad):
+def actualizarInterfaz (modelo, k, dist, actividad):
     """
     A function that updates the interface of the program according to the distribution we want to be used.
 
@@ -95,25 +94,25 @@ def actualizarInterfaz (modelo, k, dist,actividad):
             actividad (updated vector of activities)
     """
     for m in range(len(actividad)):
-        actividad [m][8] = dist
-        modelo [m][8] = str(dist)
+        actividad[m][8] = dist
+        modelo[m][8] = str(dist)
     
     # The type of distribution is checked and values are ascribed
     if dist == 'Uniform':
         for m in range(len(actividad)):                
-            actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
-            modelo [m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
+            actividad[m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
+            modelo[m][3], modelo[m][5],modelo[m][7], modelo[m][4] = actividad [m][3], actividad[m][5], actividad[m][7], actividad[m][4]
             #Dejar la duracción mas probable sin valores
             actividad [m][4] = ''
             modelo [m][4] = str('')         
     elif dist == 'Beta':
         for m in range(len(actividad)):
-            actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
-            modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
+            actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m][6], k)
+            modelo[m][3], modelo[m][4], modelo[m][5], modelo[m][7] = actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7]
     elif dist == 'Triangular':
         for m in range(len(actividad)):
             actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosTriangularMedia(actividad[m][6], k)
-            modelo [m][3], modelo[m][4],modelo[m][5],modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
+            modelo[m][3], modelo[m][4], modelo[m][5], modelo[m][7] = actividad [m][3], actividad[m][4], actividad[m][5], actividad[m][7]
     elif dist == 'Normal':
         for m in range(len(actividad)):
             actividad[m][7] = actividad[m][6] * k # Mean * k
@@ -158,21 +157,3 @@ def actualizarActividadesFichero(k, dist, actividad):
 
     return actividad
 
-
-def actualizarDuracionesMedia(modelo, media, actividad):
-    """
-    A function that updates the interface of the program according to the average duration we want to be used.
-
-    modelo ( chart of the graphical interface in which each activity data is shown)
-    media ( value of the average duration used)
-    actividad (vector with activity data)
-
-    return: 
-            actividad (updated vector of activities)
-    """
-    for m in range(len(actividad)):
-        actividad [m][6] = media
-        modelo [m][6] = str(media)
-    
-    return actividad        
-        
