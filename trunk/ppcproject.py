@@ -85,6 +85,9 @@ class PPCproject(object):
         self.optimumSchedule = []
         self.schedules = []
         self.schedule_tab_labels = []
+        
+        self.distributionType = None
+        
 
         self.bufer = gtk.TextBuffer()
         self.ganttActLoaded = False
@@ -113,6 +116,9 @@ class PPCproject(object):
         self.vKSResults = self._widgets.get_widget('wndKSTestResults')
         
         self.vDuracionMedia = self._widgets.get_widget('wndDurMed')
+        self.vDistTriBeta = self._widgets.get_widget('wndDistTriBeta')
+        self.vDistUnif = self._widgets.get_widget('wndDistUnif')
+        
 
         self.dAyuda = self._widgets.get_widget('dAyuda')
         self.bHerramientas = self._widgets.get_widget('bHerramientas1')
@@ -3208,17 +3214,27 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         return True
         
 
-# --- Set Average Duration        
+# --- Choose of distribution    
+# --- Distribution Normal
     def on_setAvgDuration_activate (self, menu_item):
-        """ Accion usuario para poner el mismo valor
-            de la media a todos
+        """ Accion usuario para la eleccion de la
+            distribucion normal y poner el mismo valor
+            de la media y desviacion tipica a todos
         """
-        
+        self.distributionType = 'Normal'        
         self._widgets.get_widget('btAsignarDurMed').set_sensitive(True)
         self._widgets.get_widget('durmed').set_text('')
+        self._widgets.get_widget('desTipica').set_text('')
         self._widgets.get_widget('btCancelDurMed').set_sensitive(True)
-        self.vDuracionMedia.show()
+        self.vDuracionMedia.show()        
         
+    def on_CloseDurMed_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana 
+        sin introducir valores
+        """
+        ventana.hide()
+        return True
         
     def on_btAsignarDurMed_clicked(self,boton):
         """ 
@@ -3227,9 +3243,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         #Se extrae el valor de la duracion media
         durmed = float(self._widgets.get_widget('durmed').get_text())
+        desTipica = float(self._widgets.get_widget('desTipica').get_text())
+       
+        dist = self.distributionType
         
-        if durmed <= 0:
-            self.dialogoError(_('La duración media debe ser mayor de 0.'))
+        if durmed <= 0 or desTipica <= 0:
+            self.dialogoError(_('los valores deben ser mayor de 0.'))
         else:
             for m in range(len(self.actividad)):
                 previous = self.modelo[m][6]
@@ -3237,11 +3256,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.modelo[m][6] = str(durmed)
                 self.actualizacion(self.modelo, m, 6, previous)
                 
+                self.actividad[m][7] = desTipica
+                self.modelo[m][7] = str(desTipica) 
+                
+                self.actividad[m][8] = dist
+                self.modelo[m][8] = str(dist)
+                
             self.gantt.update()
             self.set_modified_state(True)
             self.vDuracionMedia.hide()
             print 'up gant'
-
+            
     def on_btCancelDurMed_clicked(self,boton):
         """ Accion usuario para cancelar
             la opcion de asignacion automática
@@ -3249,7 +3274,143 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         self.vDuracionMedia.hide()
 
+# --- Distribution Triangular and Beta        
+    def on_selectDistTriangular_activate(self, boton):
+        """ Accion usuario para la eleccion de la
+            distribucion triangular y poner el mismo valor
+            de la optimista, pesimista y mas probable a todos
+        """                
+        self.distributionType = 'Triangular'
+        self._widgets.get_widget('btAsignarTriBeta').set_sensitive(True)
+        self._widgets.get_widget('optimista').set_text('')
+        self._widgets.get_widget('pesimista').set_text('')
+        self._widgets.get_widget('probable').set_text('')
+        self._widgets.get_widget('btCancelTriBeta').set_sensitive(True)
+        self.vDistTriBeta.show()
+       
+    
+    def on_selectDistBeta_activate(self, boton):
+        """ Accion usuario para la eleccion de la
+            distribucion beta y poner el mismo valor
+            de la optimista, pesimista y mas probable a todos
+        """          
+        self.distributionType = 'Beta'
+        self._widgets.get_widget('btAsignarTriBeta').set_sensitive(True)
+        self._widgets.get_widget('optimista').set_text('')
+        self._widgets.get_widget('pesimista').set_text('')
+        self._widgets.get_widget('probable').set_text('')
+        self._widgets.get_widget('btCancelTriBeta').set_sensitive(True)
+        self.vDistTriBeta.show()
+    
+    
+    def on_CloseTriBeta_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana 
+        sin introducir valores
+        """        
+        ventana.hide()
+        return True
 
+       
+    def on_btAsignarTriBeta_clicked(self,boton):
+        """ 
+        Accion usuario que rellena la tabla
+        con los valores optimista, pesimista
+        y mas probable introducidos.
+        """
+        #Se extrae los valores de la optimista, pesimista y mas probable
+        optimista = float(self._widgets.get_widget('optimista').get_text())
+        pesimista = float(self._widgets.get_widget('pesimista').get_text())
+        probable = float(self._widgets.get_widget('probable').get_text())
+        
+        if self.distributionType == 'Triangular':
+            dist = 'Triangular'
+        else:
+            dist = 'Beta'
+            
+        print 'distribucion ', dist
+        
+        if optimista <= 0 or pesimista <= 0 or probable <= 0:
+            self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
+        else:
+            for m in range(len(self.actividad)):
+                self.actividad[m][3] = optimista
+                self.modelo[m][3] = str(optimista)
+                
+                self.actividad[m][4] = probable
+                self.modelo[m][4] = str(probable)
+                
+                self.actividad[m][5] = pesimista
+                self.modelo[m][5] = str(pesimista)
+                
+                self.actividad[m][8] = dist
+                self.modelo[m][8] = str(dist)
+
+            self.set_modified_state(True)
+            self.vDistTriBeta.hide()
+        
+ 
+    def on_btCancelTriBeta_clicked(self,boton):
+        """ Accion usuario para cancelar
+            la opcion de asignacion automática
+        """
+        self.vDistTriBeta.hide()
+           
+       
+# --- Distribution Uniforme       
+    def on_selectDistUniforme_activate(self, boton):
+        
+       self.distributionType = 'Uniforme'
+       self._widgets.get_widget('btAsignarUniforme').set_sensitive(True)
+       self._widgets.get_widget('optimista').set_text('')
+       self._widgets.get_widget('pesimista').set_text('')
+       self._widgets.get_widget('btCancelUniforme').set_sensitive(True)
+       self.vDistUnif.show()
+       
+    def on_btAsignarUniforme_clicked(self, boton):
+        """ 
+        Accion usuario que rellena la tabla
+        con el valor de la optimista y pesimista
+        introducido.
+        """
+        optimista = float(self._widgets.get_widget('optimista').get_text())
+        pesimista = float(self._widgets.get_widget('pesimista').get_text())
+        
+        dist = self.distributionType
+            
+        print 'distribucion ', dist
+        
+        if optimista <= 0 or pesimista <= 0:
+            self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
+        else:
+            for m in range(len(self.actividad)):
+                self.actividad[m][3] = optimista
+                self.modelo[m][3] = str(optimista)
+
+                self.actividad[m][5] = pesimista
+                self.modelo[m][5] = str(pesimista)
+                
+                self.actividad[m][8] = dist
+                self.modelo[m][8] = str(dist)
+
+            self.set_modified_state(True)
+            self.vDistUnif.hide()
+        
+    
+    def on_btCancelUniforme_clicked(self,boton):
+        """ Accion usuario para cancelar
+            la opcion de asignacion automática
+        """
+        self.vDistUnif.hide()       
+    
+    def on_CloseUnif_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana 
+        sin introducir valores
+        """         
+        ventana.hide()
+        return True    
+       
 # --- Assignment window
     def on_mnAsignacion_activate (self, menu_item):
         """ Accion usuario para activar
@@ -3317,9 +3478,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             #self.dialogoError('La constante de proporcionalidad ha de ser un numero')
         except assignment.InvalidK:
 	        self.dialogoError('El valor de k no es valido')
-        
-            
-                            
 
     def on_btCancel_clicked(self,boton):
         """ Accion usuario para cancelar
@@ -3416,10 +3574,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         ventana.hide()
         return True
 
-            
-        
-        
-    
+  
 
 # --- Resources
   
