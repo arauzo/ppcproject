@@ -115,7 +115,8 @@ class PPCproject(object):
         self.vTestKS = self._widgets.get_widget('wndTestKS')
         self.vKSResults = self._widgets.get_widget('wndKSTestResults')
         
-        self.vDuracionMedia = self._widgets.get_widget('wndDurMed')
+        self.vAvgDuration = self._widgets.get_widget('wndAvgDuration')        
+        self.vDistNormal = self._widgets.get_widget('wndDistNormal')
         self.vDistTriBeta = self._widgets.get_widget('wndDistTriBeta')
         self.vDistUnif = self._widgets.get_widget('wndDistUnif')
         
@@ -3213,22 +3214,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         ventana.hide()
         return True
         
-
-# --- Choose of distribution    
-# --- Distribution Normal
+# ---Set Average Duration
     def on_setAvgDuration_activate (self, menu_item):
         """ Accion usuario para la eleccion de la
             distribucion normal y poner el mismo valor
             de la media y desviacion tipica a todos
-        """
-        self.distributionType = 'Normal'        
-        self._widgets.get_widget('btAsignarDurMed').set_sensitive(True)
-        self._widgets.get_widget('durmed').set_text('')
-        self._widgets.get_widget('desTipica').set_text('')
-        self._widgets.get_widget('btCancelDurMed').set_sensitive(True)
-        self.vDuracionMedia.show()        
+        """      
+        self._widgets.get_widget('btAsignarAvgDuration').set_sensitive(True)
+        self._widgets.get_widget('avgDuration').set_text('')
+        self._widgets.get_widget('btCancelAvgDuration').set_sensitive(True)
+        self.vAvgDuration.show()        
         
-    def on_CloseDurMed_delete_event(self, ventana, evento):
+    def on_CloseAvgDuration_delete_event(self, ventana, evento):
         """
         Acción usuario para cerrar la ventana 
         sin introducir valores
@@ -3236,7 +3233,58 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         ventana.hide()
         return True
         
-    def on_btAsignarDurMed_clicked(self,boton):
+    def on_btAsignarAvgDuration_clicked(self,boton):
+        """ 
+        Accion usuario que rellena la tabla
+        con el valor de la duraccion media introducido.
+        """
+        #Se extrae el valor de la duracion media
+        avgDuration = float(self._widgets.get_widget('avgDuration').get_text())
+     
+        if avgDuration <= 0:
+            self.dialogoError(_('los valores deben ser mayor de 0.'))
+        else:
+            for m in range(len(self.actividad)):
+                previous = self.modelo[m][6]
+                self.actividad[m][6] = avgDuration
+                self.modelo[m][6] = str(avgDuration)
+                self.actualizacion(self.modelo, m, 6, previous)
+                
+            self.gantt.update()
+            self.set_modified_state(True)
+            self.vAvgDuration.hide()
+            print 'up gant'
+            
+    def on_btCancelAvgDuration_clicked(self,boton):
+        """ Accion usuario para cancelar
+            la opcion de asignacion automática
+        """
+
+        self.vAvgDuration.hide()
+        
+# --- Choose of distribution    
+# --- Distribution Normal
+    def on_setDistNormal_activate (self, menu_item):
+        """ Accion usuario para la eleccion de la
+            distribucion normal y poner el mismo valor
+            de la media y desviacion tipica a todos
+        """
+        self.distributionType = 'Normal'        
+        self._widgets.get_widget('btAsignarDistNormal').set_sensitive(True)
+        self._widgets.get_widget('durmed').set_text('')
+        self._widgets.get_widget('desTipica').set_text('')
+        self._widgets.get_widget('btCancelDistNormal').set_sensitive(True)
+        self.vDistNormal.show()        
+        
+    def on_CloseDistNormal_delete_event(self, ventana, evento):
+        """
+        Acción usuario para cerrar la ventana 
+        sin introducir valores
+        """
+        ventana.hide()
+        return True
+        
+    def on_btAsignarDistNormal_clicked(self,boton):
         """ 
         Accion usuario que rellena la tabla
         con el valor de la duraccion media introducido.
@@ -3264,15 +3312,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 
             self.gantt.update()
             self.set_modified_state(True)
-            self.vDuracionMedia.hide()
+            self.vDistNormal.hide()
             print 'up gant'
             
-    def on_btCancelDurMed_clicked(self,boton):
+    def on_btCancelDistNormal_clicked(self,boton):
         """ Accion usuario para cancelar
             la opcion de asignacion automática
         """
 
-        self.vDuracionMedia.hide()
+        self.vDistNormal.hide()
 
 # --- Distribution Triangular and Beta        
     def on_selectDistTriangular_activate(self, boton):
