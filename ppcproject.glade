@@ -1011,7 +1011,7 @@ Uniform</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="optimista">
+              <widget class="GtkEntry" id="optimistaUnif">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
@@ -1053,7 +1053,7 @@ Uniform</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="pesimista">
+              <widget class="GtkEntry" id="pesimistaUnif">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">●</property>
