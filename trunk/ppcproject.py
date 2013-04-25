@@ -3421,22 +3421,22 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         con el valor de la optimista y pesimista
         introducido.
         """
-        optimista = float(self._widgets.get_widget('optimista').get_text())
-        pesimista = float(self._widgets.get_widget('pesimista').get_text())
+        optimistaUnif = float(self._widgets.get_widget('optimistaUnif').get_text())
+        pesimistaUnif = float(self._widgets.get_widget('pesimistaUnif').get_text())
         
         dist = self.distributionType
             
         print 'distribucion ', dist
         
-        if optimista <= 0 or pesimista <= 0:
+        if optimistaUnif <= 0 or pesimistaUnif <= 0:
             self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
         else:
             for m in range(len(self.actividad)):
-                self.actividad[m][3] = optimista
-                self.modelo[m][3] = str(optimista)
+                self.actividad[m][3] = optimistaUnif
+                self.modelo[m][3] = str(optimistaUnif)
 
-                self.actividad[m][5] = pesimista
-                self.modelo[m][5] = str(pesimista)
+                self.actividad[m][5] = pesimistaUnif
+                self.modelo[m][5] = str(pesimistaUnif)
                 
                 self.actividad[m][8] = dist
                 self.modelo[m][8] = str(dist)
