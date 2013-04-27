@@ -62,7 +62,7 @@ class DirectedGraph(object):
     """
     Directed graph class using dictionaries (hash tables) to connect nodes and arc labels
 
-    Both lists of incoming and outgoing arcs are ketp (though redundant) to speedup access
+    Both lists, incoming and outgoing arcs, are ketp (though redundant) to speedup access
 
         successors, outgoing connected nodes, example  {'a' : ['b','c']}
         predecessors, incoming connected, example {'b' : ['a']}
@@ -74,9 +74,10 @@ class DirectedGraph(object):
     def __init__(self):
         """
         Creates an empty graph
-        """
-        self.successors = {}   #XXX previous? in? 
-        self.predecessors = {} #XXX next? followers? out?
+        """                    #XXX Hacer el cambio con @property
+                               # http://docs.python.org/2/library/functions.html#property
+        self.successors = {}   #XXX next? followers? out?
+        self.predecessors = {} #XXX previous? in? (no: reserved word) in_nodes?
         self.arcs = {}
         
     def suc(self, node):
@@ -149,7 +150,6 @@ class DirectedGraph(object):
         Remove an Arc from the graph
          arc = (origin, destination)
         """
-
         i, j = arc
         self.successors[i].remove(j)
         self.predecessors[j].remove(i)
