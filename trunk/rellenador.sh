@@ -23,7 +23,7 @@ else
     for file in "${FOLDER}/"*; do
         if [ -f "$file" ]; then
             base=${file##*/} # Get basename without extension
-            base=${base%%.*}
+            base=${base%%.*} # (see: http://linuxgazette.net/18/bash.html)
             echo "Creando ${DEST}/${base}.ppc"
             python filler.py $@ "${file}" "${DEST}/${base}.ppc"
         fi
