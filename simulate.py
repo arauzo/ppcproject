@@ -92,7 +92,7 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
         informacionCaminos.append(info)
 
     #The list is arranged in order of increasing according to the average duration of the paths
-    informacionCaminos.sort(key=operator.itemgetter(1))
+    informacionCaminos.sort(key=operator.itemgetter(1,3))
 
     # We create an apparition vector that will count all the times a path has turned out critical
     aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
