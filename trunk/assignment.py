@@ -145,7 +145,7 @@ def actualizarActividadesFichero(k, dist, actividad):
             actividad [m][3], actividad[m][5],actividad[m][7], actividad [m][4] = datosUniformeMedia(actividad[m][6], k)
     elif dist == 'Beta':
         for m in range(len(actividad)):
-            actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m] [6], k)
+            actividad [m][3], actividad [m][4], actividad[m][5], actividad[m][7] = datosBetaMedia(actividad[m][6], k)
     elif dist == 'Triangular':
         for m in range(len(actividad)):
             actividad[m][3], actividad[m][4], actividad[m][5], actividad[m][7] = datosTriangularMedia(actividad[m][6], k)

@@ -1058,7 +1058,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             media = (opt + most + pes) / 3.0
             dTipica = math.sqrt((opt**2.0 + pes**2.0 + most**2.0 - opt*pes - opt*most - pes*most) / 18.0)
 
-        elif distribucion == 'Uniform':   
+        elif distribucion == 'Uniforme':   
             media = (opt + pes) / 2.0
             dTipica = math.sqrt(((pes - opt)**2.0) / 12.0)
         else:
@@ -2322,27 +2322,35 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         s = 0
         m = 0
+        u = 0
 
         for a in self.actividad:            
             #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]
   
-            if (a[8] == 'Uniform' or a[8] == 'Beta' or #XXX ... es a[8] ponia a[9] ???   #Avanzado, mirar: NamedTuple
-                a[8] == 'Triangular'):
+            #if (a[8] == 'Uniform' or a[8] == 'Beta' or #XXX ... es a[8] ponia a[9] ???   #Avanzado, mirar: NamedTuple
+                #a[8] == 'Triangular'):
+            if a[8] == 'Beta' or a[8] == 'Triangular':
                 if a[3]=='' or a[4]=='' or a[5]=='':
                     s+=1
+            elif a[8] == 'Uniform':
+                if a[3]=='' or a[5]=='':
+                    u+=1                
             else: #Si no es ninguna de las tres anteriores es la Normal
                 if a[6]=='' or a[7]=='':
                     m=+1
 
         if s > 0 and m == 0:
-            self.dialogoError(_('You must introduce the durations: ') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: 1') + '\n' + '\t' + 
                               _('- Optimistic') + '\n' + '\t' + _('- Most probable') +
                               '\n' + '\t' + _('- Pessimistic'))
+        elif u > 0 and m == 0:
+            self.dialogoError(_('You must introduce the durations: unifome') + '\n' + '\t' + 
+                              _('- Optimistic') + '\n' + '\t' + _('- Pessimistic'))
         elif s == 0 and m > 0:
-            self.dialogoError(_('You must introduce the durations: ') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: 2') + '\n' + '\t' + 
                               _('- Average') + '\n' + '\t' + _('- Typical Dev.'))
         elif s > 0 and m > 0:
-            self.dialogoError(_('You must introduce the durations: ') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: 3') + '\n' + '\t' + 
                               _('- Optimistic')+ '\n' + '\t' + _('- Most probable') +
                               '\n' + '\t' + _('- Pessimistic') + '\n' + '\t' + 
                               _('- Average') + '\n' + '\t' + _('- Typical Dev.'))
@@ -3217,8 +3225,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # ---Set Average Duration
     def on_setAvgDuration_activate (self, menu_item):
         """ Accion usuario para la eleccion de la
-            distribucion normal y poner el mismo valor
-            de la media y desviacion tipica a todos
+            media
         """      
         self._widgets.get_widget('btAsignarAvgDuration').set_sensitive(True)
         self._widgets.get_widget('avgDuration').set_text('')
@@ -3244,11 +3251,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if avgDuration <= 0:
             self.dialogoError(_('los valores deben ser mayor de 0.'))
         else:
-            for m in range(len(self.actividad)):
+            """for m in range(len(self.actividad)):
                 previous = self.modelo[m][6]
                 self.actividad[m][6] = avgDuration
-                self.modelo[m][6] = str(avgDuration)
-                self.actualizacion(self.modelo, m, 6, previous)
+                self.modelo[m][6] = self.actividad[m][6]
+                self.actualizacion(self.modelo, m, 6, previous)"""
+                
+            for m in range(len(self.actividad)):
+                self.col_edited_cb('edited', m, avgDuration, self.modelo, 6)
                 
             self.gantt.update()
             self.set_modified_state(True)
@@ -3287,7 +3297,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_btAsignarDistNormal_clicked(self,boton):
         """ 
         Accion usuario que rellena la tabla
-        con el valor de la duraccion media introducido.
+        con el valor de la duraccion media y
+        desviacion tipica introducido.
         """
         #Se extrae el valor de la duracion media
         durmed = float(self._widgets.get_widget('durmed').get_text())
@@ -3301,15 +3312,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for m in range(len(self.actividad)):
                 previous = self.modelo[m][6]
                 self.actividad[m][6] = durmed
-                self.modelo[m][6] = str(durmed)
+                self.modelo[m][6] = self.actividad[m][6]
                 self.actualizacion(self.modelo, m, 6, previous)
                 
                 self.actividad[m][7] = desTipica
-                self.modelo[m][7] = str(desTipica) 
+                self.modelo[m][7] = self.actividad[m][7] 
                 
                 self.actividad[m][8] = dist
-                self.modelo[m][8] = str(dist)
-                
+                self.modelo[m][8] = self.actividad[m][8]
+        
             self.gantt.update()
             self.set_modified_state(True)
             self.vDistNormal.hide()
@@ -3376,26 +3387,41 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         else:
             dist = 'Beta'
             
-        print 'distribucion ', dist
-        
+        a = optimista
+        b = pesimista
+        m = probable
+                        
+        # Se comprueba que las duraciones sean correctas
+        ok = ((a < b and m <= b and m >= a) or (a == b and b == m))
+  
         if optimista <= 0 or pesimista <= 0 or probable <= 0:
             self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
         else:
-            for m in range(len(self.actividad)):
-                self.actividad[m][3] = optimista
-                self.modelo[m][3] = str(optimista)
+            if ok:            
+                for m in range(len(self.actividad)):
+                    self.col_edited_cb('edited', m, dist, self.modelo, 8)
+                    self.col_edited_cb('edited', m, optimista, self.modelo, 3)
+                    self.col_edited_cb('edited', m, probable, self.modelo, 4)
+                    self.col_edited_cb('edited', m, pesimista, self.modelo, 5)
                 
-                self.actividad[m][4] = probable
-                self.modelo[m][4] = str(probable)
+                """for m in range(len(self.actividad)):
+                    self.actividad[m][3] = optimista
+                    self.modelo[m][3] = self.actividad[m][3]
+                    
+                    self.actividad[m][4] = probable
+                    self.modelo[m][4] = self.actividad[m][4]
+                    
+                    self.actividad[m][5] = pesimista
+                    self.modelo[m][5] = self.actividad[m][5]
+                    
+                    self.actividad[m][8] = dist
+                    self.modelo[m][8] = self.actividad[m][8]"""
+             
                 
-                self.actividad[m][5] = pesimista
-                self.modelo[m][5] = str(pesimista)
-                
-                self.actividad[m][8] = dist
-                self.modelo[m][8] = str(dist)
-
-            self.set_modified_state(True)
-            self.vDistTriBeta.hide()
+                self.set_modified_state(True)
+                self.vDistTriBeta.hide()
+            else:  #se emite un mensaje de error
+                self.dialogoError(_('Error al introducir los valores.'))
         
  
     def on_btCancelTriBeta_clicked(self,boton):
@@ -3424,26 +3450,43 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         optimistaUnif = float(self._widgets.get_widget('optimistaUnif').get_text())
         pesimistaUnif = float(self._widgets.get_widget('pesimistaUnif').get_text())
         
+        ok = optimistaUnif < pesimistaUnif
+        
         dist = self.distributionType
             
         print 'distribucion ', dist
         
         if optimistaUnif <= 0 or pesimistaUnif <= 0:
-            self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
+            self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))          
         else:
-            for m in range(len(self.actividad)):
-                self.actividad[m][3] = optimistaUnif
-                self.modelo[m][3] = str(optimistaUnif)
+            if ok:
+                for m in range(len(self.actividad)):
+                    self.col_edited_cb('edited', m, dist, self.modelo, 8)
+                    self.col_edited_cb('edited', m, optimistaUnif, self.modelo, 3)
+                    self.col_edited_cb('edited', m, pesimistaUnif, self.modelo, 5)
+                """for m in range(len(self.actividad)):
+                    self.actividad[m][6] = (optimistaUnif + pesimistaUnif) / 2
+                    self.modelo[m][6] = self.actividad[m][6]
+                    self.actualizacion(self.modelo, m, 6, self.modelo[m][6])
+                    
+                    self.actividad[m][7] = ( pesimistaUnif - optimistaUnif) / math.sqrt(12)
+                    self.modelo[m][7] = self.actividad[m][7]
+                    
+                    self.actividad[m][3] = optimistaUnif
+                    self.modelo[m][3] = self.actividad[m][3]
 
-                self.actividad[m][5] = pesimistaUnif
-                self.modelo[m][5] = str(pesimistaUnif)
-                
-                self.actividad[m][8] = dist
-                self.modelo[m][8] = str(dist)
+                    self.actividad[m][5] = pesimistaUnif
+                    self.modelo[m][5] = self.actividad[m][5]
+                                                
+                    self.actividad[m][8] = dist
+                    self.modelo[m][8] = self.actividad[m][8]"""
 
-            self.set_modified_state(True)
-            self.vDistUnif.hide()
-        
+                self.gantt.update()
+                self.set_modified_state(True)
+                self.vDistUnif.hide()
+            else:  #se emite un mensaje de error
+                self.dialogoError(_('Error al introducir los valores para la Uniforme.'))
+                    
     
     def on_btCancelUniforme_clicked(self,boton):
         """ Accion usuario para cancelar
