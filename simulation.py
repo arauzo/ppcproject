@@ -190,7 +190,7 @@ def simulacion(n, activities):
             #print activity XXX Por alguna razon aqui llega un campo mas de lo necesario: 'start'
             # filtro los 9 primeros que son los que se almacenan en fichero
             pos, name, follow, opt, most, pes, mean, std_dev, distribution = activity[0:9]
-            if distribution == 'Uniform':
+            if distribution == 'Uniforme':
                 if opt == pes:
                     valor = opt
                 else:
