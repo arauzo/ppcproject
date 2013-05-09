@@ -1279,8 +1279,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Se crea un grafo con las activididades crí­ticas y se extraen los caminos de dicho grafo, que serán crí­ticos
         sucesorasCriticas = self.tablaSucesorasCriticas(actCriticas)
+        #print sucesorasCriticas, 'sucesorasCriticas'
         gCritico = graph.roy(sucesorasCriticas)
-        #print gCritico
+        #print gCritico, 'grafo critico'
         caminosCriticos = []
         caminos = graph.find_all_paths(gCritico, 'Begin', 'End')
 
@@ -1302,8 +1303,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         cr = []
         for n in criticas:
-            cr.append(n[0])
-        #print cr, 'cr'
+            cr.append(n)
+        print cr, 'criticas tabla'
 
         sucesorasCriticas = {}
         for n in cr:
@@ -1503,6 +1504,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
        
             #holgura = [grafo[inicio+1, fin+1][0], '%5.2f'%(t), '%5.2f'%(l), '%5.2f'%(i)] 
             holgura = [grafo[inicio+1, fin+1][0], t, l, i] 
+            #if grafo[inicio+1, fin+1][0] != 'dummy':
+                #print holgura, 'holgura'
             holguras.append(holgura)
 
         return holguras
@@ -1545,12 +1548,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         holguras = self.holguras(grafo.arcs, early, last, duraciones)  # Holguras de cada actividad
         actCriticas = self.actCriticas(holguras)  # Se extraen las act. crí­ticas
         criticos = self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
-
+        
+        #print actCriticas, ' actCriticas'
+        
         # Get all paths removing 'begin' y 'end' from each path
         successors = dict(((act[1], act[2]) for act in self.actividad))
         g = graph.roy(successors)
         caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
-  
+        #print caminos, ' caminos'
+        
         # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
         caminosCriticos = []
         for c in criticos:
@@ -3047,7 +3053,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se asignan el numero de iteraciones que se van a realizar        
         iteracion = self._widgets.get_widget('iteracion')
         it = iteracion.get_value_as_int()
-        #print it, 'iteraciones'
+        print it, 'iteraciones'
         
         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
         totales = self._widgets.get_widget('iteracionesTotales')
@@ -3460,11 +3466,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))          
         else:
             if ok:
-                for m in range(len(self.actividad)):
+                """for m in range(len(self.actividad)):
                     self.col_edited_cb('edited', m, dist, self.modelo, 8)
                     self.col_edited_cb('edited', m, optimistaUnif, self.modelo, 3)
-                    self.col_edited_cb('edited', m, pesimistaUnif, self.modelo, 5)
-                """for m in range(len(self.actividad)):
+                    self.col_edited_cb('edited', m, pesimistaUnif, self.modelo, 5)"""
+                for m in range(len(self.actividad)):
                     self.actividad[m][6] = (optimistaUnif + pesimistaUnif) / 2
                     self.modelo[m][6] = self.actividad[m][6]
                     self.actualizacion(self.modelo, m, 6, self.modelo[m][6])
@@ -3479,7 +3485,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.modelo[m][5] = self.actividad[m][5]
                                                 
                     self.actividad[m][8] = dist
-                    self.modelo[m][8] = self.actividad[m][8]"""
+                    self.modelo[m][8] = self.actividad[m][8]
 
                 self.gantt.update()
                 self.set_modified_state(True)
