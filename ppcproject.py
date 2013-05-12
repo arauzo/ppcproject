@@ -1058,7 +1058,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             media = (opt + most + pes) / 3.0
             dTipica = math.sqrt((opt**2.0 + pes**2.0 + most**2.0 - opt*pes - opt*most - pes*most) / 18.0)
 
-        elif distribucion == 'Uniforme':   
+        elif distribucion == 'Uniform':   
             media = (opt + pes) / 2.0
             dTipica = math.sqrt(((pes - opt)**2.0) / 12.0)
         else:
@@ -3440,7 +3440,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 # --- Distribution Uniforme       
     def on_selectDistUniforme_activate(self, boton):
         
-       self.distributionType = 'Uniforme'
+       self.distributionType = 'Uniform'
        self._widgets.get_widget('btAsignarUniforme').set_sensitive(True)
        self._widgets.get_widget('optimista').set_text('')
        self._widgets.get_widget('pesimista').set_text('')
