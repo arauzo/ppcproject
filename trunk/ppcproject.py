@@ -3551,7 +3551,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             # Se extrae el tipo de distribución
             distribucion = self._widgets.get_widget('distribucion')
             dist = distribucion.get_active_text()
-            print 'distribucion ', dist
+            #print 'distribucion ', dist
             if dist == 'Beta':
                 if (k < 0 or k >= 1):
                     self.dialogoError(_('La constante de proporcionalidad no puede ser negativa, ni mayor que 1'))
@@ -3600,7 +3600,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Mostrar la ventana de resultados del test        
         self.vTestKS.show()
 
-
+        #Miramos con que distribucion estamos trabajando
+        distribucion = self.actividad[1][8]
+        print distribucion, 'distribucion que estamos utilizando para el test'
+        
         informacionCaminos = []
         # Get all paths removing 'begin' y 'end' from each path
         successors = dict(((act[1], act[2]) for act in self.actividad))
@@ -3619,7 +3622,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
         #m, m1, alfa, beta, mediaES, sigmaES 
-        m, m1, alfa, beta, mediaES, sigmaES, _, _, _ = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        m, m1, alfa, beta, mediaES, sigmaES, _, _, _ = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos, distribucion)
         #print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 
