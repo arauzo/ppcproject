@@ -24,7 +24,7 @@ from scipy.stats import gamma
 from scipy.stats import gumbel_r
 from scipy.stats import kstest
 
-def calculoValoresGamma(infoCaminos):
+def calculoValoresGamma(infoCaminos, dist):
     """
     Funcion que asigna los valores a las datos necesarios para
     la realizacion del test de Kolmogorov-Smirnof con la funcion gamma.
@@ -44,6 +44,7 @@ def calculoValoresGamma(infoCaminos):
     m = 0
     m1 = 0
     sigma = 0
+
 
     # Calculo de la media y la desviacion tipica del camino critico
     mCritico = infoCaminos[-1][1]
@@ -74,11 +75,27 @@ def calculoValoresGamma(infoCaminos):
             elif aux < sigma:
                 sigma = aux
 
-    #Calculo de la media de la poblacion estimada, de alfa y de beta
-    media = mCritico + ((math.pi* math.log(m1))/sigma)
+    #Calculo de la media de la poblacion estimada, de alfa y de beta 
+    #media = mCritico + ((math.pi* math.log(m1))/sigma)
+    """media = mCritico + ((math.pi* math.log(m))/sigma)
     beta = (sigma*sigma)/media
-    alfa = media/beta
-
+    alfa = media/beta"""
+    
+    #para cada distribucion usamos unas regresiones diferentes
+    logaritmoN = 1.0927284342627
+    sigmaMinN = -0.9153232086309
+    logaritmo = 2.96581038327203
+    sigmaMin = 0.755017047823797
+    
+    if dist == 'Normal':
+        media = mCritico + ((math.pi* logaritmoN)/sigmaMinN)
+        beta = (sigmaMinN*sigmaMinN)/media
+        alfa = media/beta
+    else :
+        media = mCritico + ((math.pi* logaritmo)/sigmaMin)
+        beta = (sigmaMin*sigmaMin)/media
+        alfa = media/beta
+        
     return m, m1, alfa, beta, media, sigma, sigma_longest_path, sigma_max, sigma_min
 
 def calculoValoresExtremos (media, sigma, m):
