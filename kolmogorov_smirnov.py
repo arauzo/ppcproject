@@ -82,17 +82,19 @@ def calculoValoresGamma(infoCaminos, dist):
     alfa = media/beta"""
     
     #para cada distribucion usamos unas regresiones diferentes
-    logaritmoN = 1.0927284342627
+    #logaritmoN = 1.0927284342627
     sigmaMinN = -0.9153232086309
-    logaritmo = 2.96581038327203
+    mediaN = 1.1336004782864
+    #logaritmo = 2.96581038327203
     sigmaMin = 0.755017047823797
+    media = 0.91263355372917
     
     if dist == 'Normal':
-        media = mCritico + ((math.pi* logaritmoN)/sigmaMinN)
+        #media = mCritico + ((math.pi* logaritmoN)/sigmaMinN)
         beta = (sigmaMinN*sigmaMinN)/media
         alfa = media/beta
     else :
-        media = mCritico + ((math.pi* logaritmo)/sigmaMin)
+        #media = mCritico + ((math.pi* logaritmo)/sigmaMin)
         beta = (sigmaMin*sigmaMin)/media
         alfa = media/beta
         
