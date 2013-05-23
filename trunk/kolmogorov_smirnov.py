@@ -19,10 +19,7 @@
 
 import random
 import math
-from scipy.stats import norm
-from scipy.stats import gamma
-from scipy.stats import gumbel_r
-from scipy.stats import kstest
+import scipy.stats
 
 def calculoValoresGamma(infoCaminos, dist):
     """
@@ -91,8 +88,9 @@ def calculoValoresGamma(infoCaminos, dist):
     
     if dist == 'Normal':
         #media = mCritico + ((math.pi* logaritmoN)/sigmaMinN)
-        beta = (sigmaMinN*sigmaMinN)/media
-        alfa = media/beta
+        beta = (sigmaMinN*sigmaMinN)/mediaN
+        alfa = mediaN/beta
+        media = mediaN
     else :
         #media = mCritico + ((math.pi* logaritmo)/sigmaMin)
         beta = (sigmaMin*sigmaMin)/media
@@ -132,7 +130,7 @@ def calculoMcriticoDcriticoEV (a, b):
     return media, sigma
 
 
-def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0):
+def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
     """
     Funcion que realiza el test de kolmogorv_smirnoff y
     devuelve el p-value para cada distribucion
@@ -145,7 +143,6 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
     a (parametro de la funcion de valores extremos)
     b (parametro de la funcion de valores extremos)
     tamanio (tamanio del intervalo en el que queremos realizar el test)
-    save (opcion por si queremos guardar el resultado del test)
     
     return: p-values (en el caso de que la opcion de guardar no se active)
             intervalos, frecuencias, distribuciones y p-values (en el caso de que se active la opcion de guardado)
@@ -155,152 +152,36 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5, save=0)
           Todo el codigo que se hizo en un principio se ha dejado comentado para que no consuma recursos para el programa,
           pero puede ser de utilidad para futuras actualizaciones.
     """
-
-    #Obtenemos el primer valor del intervalo
-    #x = min(duraciones) - (min(duraciones) % tamanio)
-    #inicio = x + tamanio
-
-    #Obtenemos el numero de intervalos
-    #cont = nIntervalos(duraciones,tamanio)
-
-    #Creacion de una lista con los intervalos en funcion del tamanio
-    #intervalos = [inicio]
-    #for n in range(cont-1):
-        #intervalos.append(intervalos[n] + tamanio)
     
-    #Se ordenan las duraciones
-    #duraciones.sort()
+    dNormal = scipy.stats.norm(loc=mCrit, scale=dCrit)
+    pvalue = scipy.stats.kstest(duraciones, dNormal.cdf )
+    print pvalue, 'Normal'
 
-    #Calculo de las frecuencias
-    #frecuencia = []
-    #for n in range(len(intervalos)):
-        #cont2 = 0
-        #for x in range(len(duraciones)):
-            #if float(duraciones[x]) <= float(intervalos[n]):
-                #cont2 = cont2 + 1
-            #else:
-                #continue
-        #frecuencia.append(float(cont2)/len(duraciones))
-
-    #Calculo de la funcion normal acumulativa para cada intervalo
-    #normal = []
-    dNormal = norm (loc = mCrit, scale = dCrit)
+    dGamma = scipy.stats.gamma(alfa, scale=beta)
+    pvalue2 = scipy.stats.kstest(duraciones, dGamma.cdf)
+    #print dGamma.cdf(39.55024722), 'valor de gammma'
     
-    #for n in range(len(intervalos)):
-        #normal.append(dNormal.cdf(intervalos[n]))
-    
-    pvalue = kstest (duraciones, dNormal.cdf )
-    
-
-    #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
-    #normalD = diferencias (normal, intervalos, frecuencia)
-
-    #Calculo de la funcion gamma acumulativa para cada intervalo
-    #gammaV = []
-    dGamma = gamma(alfa, scale=beta)
-    #for n in range(len(intervalos)):
-        #gammaV.append(dGamma.cdf(intervalos[n]))
-
-    pvalue2 = kstest (duraciones,dGamma.cdf)
-    
-
-    #Calculo de la diferencia por la izquierda y por la derecha de la funcion normal con respecto a los datos obtenidos de simular
-    #gammaD = diferencias (gammaV, intervalos, frecuencia)
-
     #Calculo de la funcion de valores extremos acumulativa para cada intervalo
     if (a != 0 and b !=0):
-        #gev = []
-        dGev = gumbel_r (loc = a, scale = 1/b)
-        #for n in range(len(intervalos)):
-            #gev.append(dGev.cdf(intervalos[n]))
-
-        pvalue3 = kstest (duraciones, dGev.cdf)
-        
-        
-        #gevD = diferencias (gev, intervalos, frecuencia)
-
-
-    #Maximos de las columnas de diferencias y maximo de los máximos
-    #maxNormal = max(max(normalD[0]), max(normalD[1]))
-    #maxGamma = max(max(gammaD[0]), max(gammaD[1]))
-    #if (a != 0 and b != 0):
-        #maxVE = max(max(gevD[0]), max(gevD[1]))
+        dGev = scipy.stats.gumbel_r(loc=a, scale=1 / b)
+        pvalue3 = scipy.stats.kstest(duraciones, dGev.cdf)
+        #print dGev.cdf(), 'valor de gumbel'
 
     #Devuelve el máximo de los máximos de cada columna de diferencias, en el caso de que la de valores
     #extremos no se pueda realizar devuelve no definido
-    if (a != 0 and b != 0 and save == 0):
+    if (a != 0 and b != 0):
         return pvalue, pvalue2, pvalue3
-    elif (a == 0 and b == 0 and save == 0):
+    elif (a == 0 and b == 0):
         return pvalue, pvalue2
-    #elif (a != 0 and b != 0 and save == 1):
-        #return intervalos, frecuencia, normal, normalD, gammaV, gammaD, gev, gevD, maxNormal, maxGamma, maxVE, cont, pvalue, pvalue2, pvalue3
-    #elif (a == 0 and b == 0 and save == 1):
-        #return intervalos, frecuencia, normal, normalD, gammaV, gammaD, maxNormal, maxGamma, cont, pvalue, pvalue2
-  
 
-"""
-Las siguientes dos funciones tambien se decidio prescindir de ellas en un estado ya avanzado del proyecto,
-no obstante, al igual que las anteriores se dejaran comentadas para posibles actualizaciones futuras
 
-def valorComparacion(precision, totalIteraciones):
+# If the program is run directly
+#if __name__ == '__main__': 
 
-    Funcion que un p-value con la precision definida por el usuario
+    #testKS (duraciones=[1,2,3], mCrit=36, dCrit=2.45, alfa=0, beta=0, a=0, b=0, tamanio=0.5)
+    #testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=0, beta=0, a=39.58100088, b=0.247050635, tamanio=0.5)
+    #testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=44.66385299, beta=0.89778668, a=0, b=0, tamanio=0.5)
 
-    precision (valor de ajuste para la comparacion)
-    totalIteraciones (numero total de iteraciones que se han realizado)
-
-    return: valor (p-value)
-
-    valor = ((-math.log(precision/2)/(2*totalIteraciones))**0.5)
-    return valor
-
-def diferencias (distribucion, intervalos, frecuencia):
-
-    Devuelve un vector con las diferencias por la
-    izquierda y por la derecha con respecto a la funcion de
-    distribucion seleccionada y a las frecuencias obtenidas
-    de la similuacion
-
-    distribucion (tipo de distribucion utilizada)
-    intervalos (vector con los intervalos en los que vamos a aplicar las diferecias)
-    frecuencia (frecuencia de la simulacion en el intervalo)
-
-    return: distribucionD (vector de diferencias)
-
-    for n in range(len(intervalos)):
-        if (n == 0):
-            distribucionD = [[distribucion[0]],[abs(distribucion[0] - frecuencia[0])]]
-        else:
-            distribucionD[0].append(abs(distribucion[n] - frecuencia [n-1]))
-            distribucionD[1].append(abs(distribucion[n] - frecuencia [n]))
-
-    return distribucionD
-
-def nIntervalos(duraciones, tamanio=0.5):
-    
-    Funcion que devuelve el número de intervalos que tendrá
-    el test de Kolmogorov-Smirnov
-
-    duraciones (vector de duraciones del proyecto)
-    tamanio (tamanio del intervalo deseado)
-
-    return: cont (numero de intervalos que tendra el el test)
-   
-    #Asigna el maximo y el minimo de las duraciones simuladas del proyecto
-
-    mini,maxi = min(duraciones), max(duraciones)
-    #Asignamos el valor de inico de los intervalos y contamos el numero de intervalos necesarios para el test
-    x = mini - (mini % tamanio)
-    inicio = x + tamanio
-    cont = 0
-    aux = inicio
-    while aux < maxi + tamanio:
-        aux = aux + tamanio
-        cont += 1
-
-    return cont
-
-"""    
-    
+ 
     
 
