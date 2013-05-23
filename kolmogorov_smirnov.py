@@ -41,6 +41,9 @@ def calculoValoresGamma(infoCaminos, dist):
     m = 0
     m1 = 0
     sigma = 0
+    
+    mediaReturn = 0
+    sigmaReturn = 0
 
 
     # Calculo de la media y la desviacion tipica del camino critico
@@ -64,6 +67,7 @@ def calculoValoresGamma(infoCaminos, dist):
                 sigma_min = path_stddev
 
         # Considerado critico por Salas
+        
         if ((float(infoCaminos[n][1]) + 0.5*float(infoCaminos[n][3])) >= (mCritico - 0.25* dCritico)):
             m1 +=1
             aux = float(infoCaminos[n][3])
@@ -71,30 +75,36 @@ def calculoValoresGamma(infoCaminos, dist):
                 sigma = aux
             elif aux < sigma:
                 sigma = aux
+        
 
     #Calculo de la media de la poblacion estimada, de alfa y de beta 
-    #media = mCritico + ((math.pi* math.log(m1))/sigma)
+    media = mCritico + ((math.pi* math.log(m))/sigma)
     """media = mCritico + ((math.pi* math.log(m))/sigma)
     beta = (sigma*sigma)/media
     alfa = media/beta"""
     
+    
+    
     #para cada distribucion usamos unas regresiones diferentes
-    #logaritmoN = 1.0927284342627
+    logaritmoN = 1.0927284342627
     sigmaMinN = -0.9153232086309
     mediaN = 1.1336004782864
-    #logaritmo = 2.96581038327203
+    
+    logaritmo = 2.96581038327203
     sigmaMin = 0.755017047823797
-    media = 0.91263355372917
+    mediaB = 0.91263355372917
+    
+    sigmaReturn = 0.91154134766017  * sigma
     
     if dist == 'Normal':
-        #media = mCritico + ((math.pi* logaritmoN)/sigmaMinN)
-        beta = (sigmaMinN*sigmaMinN)/mediaN
-        alfa = mediaN/beta
-        media = mediaN
+        mediaReturn = (mediaN * media) + (sigmaMinN * sigma) + (logaritmoN * (math.pi* math.log(m))) 
+        beta = (sigmaReturn*sigmaReturn)/mediaReturn
+        alfa = mediaReturn/beta
+        
     else :
-        #media = mCritico + ((math.pi* logaritmo)/sigmaMin)
-        beta = (sigmaMin*sigmaMin)/media
-        alfa = media/beta
+        mediaReturn = (mediaB * media) + (sigmaMin * sigma) + (logaritmo * (math.pi* math.log(m)))
+        beta = (sigmaReturn*sigmaReturn)/mediaReturn
+        alfa = mediaReturn/beta
         
     return m, m1, alfa, beta, media, sigma, sigma_longest_path, sigma_max, sigma_min
 
