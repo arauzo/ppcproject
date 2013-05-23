@@ -1304,7 +1304,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         cr = []
         for n in criticas:
             cr.append(n)
-        print cr, 'criticas tabla'
+        #print cr, 'criticas tabla'
 
         sucesorasCriticas = {}
         for n in cr:
@@ -3623,7 +3623,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se asignan los valores a alfa y beta para poder realizar la función gamma
         #m, m1, alfa, beta, mediaES, sigmaES 
         m, m1, alfa, beta, mediaES, sigmaES, _, _, _ = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos, distribucion)
-        #print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
+        print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
         
 
         mediaCritico = float(informacionCaminos[-1][1])
@@ -3633,7 +3633,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         if (m != 1):
             a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
-            #print 'a,b: ', a, b, '\n'
+            print 'valores extremos a,b: ', a, b, '\n'
         #Creamos un vector con las duraciones totales para pasarselo al test
         duracionesTotales = self.duraciones
 
