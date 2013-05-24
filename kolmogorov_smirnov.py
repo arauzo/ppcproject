@@ -140,7 +140,7 @@ def calculoMcriticoDcriticoEV (a, b):
     return media, sigma
 
 
-def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
+def testKS(duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
     """
     Funcion que realiza el test de kolmogorv_smirnoff y
     devuelve el p-value para cada distribucion
@@ -185,12 +185,11 @@ def testKS (duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
         return pvalue, pvalue2
 
 
-# If the program is run directly
-#if __name__ == '__main__': 
-
-    #testKS (duraciones=[1,2,3], mCrit=36, dCrit=2.45, alfa=0, beta=0, a=0, b=0, tamanio=0.5)
-    #testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=0, beta=0, a=39.58100088, b=0.247050635, tamanio=0.5)
-    #testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=44.66385299, beta=0.89778668, a=0, b=0, tamanio=0.5)
+# If the program is run directly, test cases
+if __name__ == '__main__': 
+    testKS (duraciones=[1,2,3], mCrit=36, dCrit=2.45, alfa=0, beta=0, a=0, b=0, tamanio=0.5)
+    testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=0, beta=0, a=39.58100088, b=0.247050635, tamanio=0.5)
+    testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=44.66385299, beta=0.89778668, a=0, b=0, tamanio=0.5)
 
  
     
