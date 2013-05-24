@@ -15,24 +15,7 @@ import fileFormats
 import pert
 import zaderenko
 import simulation
-        
-def save(resultados, filename):
-    """
-    Save a csv file with just the duration of the project in each simulation iteration in each line
-    
-    resultados: list with project durations
-    filename: name of the file in which the values will be saved
-    """
-    f = open(filename, 'w')
-    simulation_csv = ''
-
-    # Se rellena la cadena con los resultados de la simulacion
-    for n in range(len(resultados)):
-        simulation_csv += str(resultados[n]) + '\n'
-
-    f.write(simulation_csv)
-    f.close()
-   
+           
 def vectorDuraciones(it, actividad):
     """
     Function performing the simulation of the project durations.
@@ -77,15 +60,13 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
 
     return: results( vector with the results we should save in the output table)
     """
-
-    informacionCaminos = []
     # Get all paths removing 'begin' y 'end' from each path
     successors = dict(((act[1], act[2]) for act in activity))
     g = graph.roy(successors)
-    caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
-
+    caminos = [c[1:-1] for c in graph.find_all_paths(g, 'Begin', 'End')]
 
     # A list is created with the paths, their duration and variances    
+    informacionCaminos = []
     for camino in caminos:   
         media, varianza = pert.mediaYvarianza(camino, activity) 
         info = [camino, float(media), float(varianza), math.sqrt(float(varianza))]      
@@ -94,17 +75,17 @@ def test(activity, duracionesTotales, simulaciones, porcentaje):
     # Paths in order of increasing duration and stdev
     informacionCaminos.sort(key=operator.itemgetter(1,3))
 
-    # We create an apparition vector that will count all the times a path has turned out critical
+    # Create an apparition vector that will count all the times a path has turned out critical
     aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
     
-    # We ascribe the value m2 according to the selected percentage
+    # Value m2 according to the selected percentage
     m2 = caminosCriticosCalculados(aparicion, porcentaje, len(simulaciones))
 
     #The number of predominant paths is calculated (according to Dodin and to our method),
     #Values are assign to alpha and beta in order to perform the gamma function
     #The average and sigma estimated for the gamma are assigned
     m, m1, alfa, beta, mediaestimada, sigma, sigma_longest_path, sigma_max, sigma_min \
-        = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos)
+        = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos, 'Normal')
 
     #The average and the sigma of the normal are assigned
     mediaCritico = float(informacionCaminos[-1][1])
@@ -331,7 +312,10 @@ def main():
     durations, simulation_act = vectorDuraciones(args.i, act) #projectSimulation (args.i,act)
 
     # Save durations in csv format
-    save(durations, durations_file)  
+    with open(durations_file, 'w') as f:
+        simulation_csv = ''
+        for dur in durations:
+            f.write(str(dur) + '\n')
 
     # Create the result vector to be saved in the file
     resultados = test(act, durations, simulation_act, args.p)
