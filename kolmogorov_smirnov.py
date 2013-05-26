@@ -1,25 +1,238 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# -----------------------------------------------------------------------
-# PPC-PROJECT
-#   Multiplatform software tool for education and research in
-#   project management
-#
-# Copyright 2007-9 Universidad de Córdoba
-# This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published
-#   by the Free Software Foundation, either version 3 of the License,
-#   or (at your option) any later version.
-# This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+ Models to estimate project duration and test the distribution estimated
 
+ PPC-PROJECT
+   Multiplatform software tool for education and research in
+   project management
+
+ Copyright 2007-13 Universidad de Córdoba
+ This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+ This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import random
 import math
+import operator
+import collections
+
 import scipy.stats
+import numpy
+
+import graph
+import pert
+
+
+def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
+    """
+    Using the data from a simulation compare the results with those achieved by the several models 
+    defined. The comparison is done by testing the fitting of the distribution with the 
+    kolmogorov_smirnov test 
+
+    activity (project activities)
+    duracionesTotales (vector with the duration resulting from the simulation)
+    simulaciones (vector with the simulations of each activity in each iteration)
+    porcentaje (the mark we want to establish to determine how many paths have turned out critical)
+
+    return: results( vector with the results we should save in the output table)
+    """
+    # Get all paths removing 'begin' y 'end' from each path
+    successors = dict(((act[1], act[2]) for act in activity))
+    g = graph.roy(successors)
+    caminos = [c[1:-1] for c in graph.find_all_paths(g, 'Begin', 'End')]
+
+    # List with the paths, their duration and variance (ordered by increasing duration and variance)
+    informacionCaminos = []
+    for camino in caminos:   
+        media, varianza = pert.mediaYvarianza(camino, activity) 
+        informacionCaminos.append([camino, float(media), float(varianza)])
+    informacionCaminos.sort(key=operator.itemgetter(1,2))
+
+    # Vector with the times a path has turned out critical
+    aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
+    
+    # Value m2 according to the selected percentage
+    m2 = caminosCriticosCalculados(aparicion, porcentaje, len(simulaciones))
+
+    #Miramos con que distribucion estamos trabajando
+    distribucion = activity[1][8]
+    print distribucion, 'distribucion que estamos utilizando para el test'
+
+    #The number of predominant paths is calculated (according to Dodin and to our method),
+    #Values are assign to alpha and beta in order to perform the gamma function
+    #The average and sigma estimated for the gamma are assigned
+    m, m1, alfa, beta, mediaestimada, sigma, sigma_longest_path, sigma_max, sigma_min \
+        = calculoValoresGamma(informacionCaminos, distribucion)
+
+    #The average and the sigma of the normal are assigned
+    mediaCritico = float(informacionCaminos[-1][1])
+    dTipicaCritico = math.sqrt(informacionCaminos[-1][2]) 
+
+    #The average and the sigma of the simulation are assigned
+    mediaSimulation = numpy.mean(duracionesTotales)
+    sigmaSimulation = numpy.std(duracionesTotales)
+
+    #If there were more than one path candidate to be critical
+    #The average and the sigma of the extreme values function are calculated
+    mediaVE = sigmaVE = a = b = None
+    if (m != 1):
+        a, b = calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+        mediaVE, sigmaVE = calculoMcriticoDcriticoEV (a, b)
+
+    #An empty vector is created to save the results
+    results = collections.OrderedDict()
+
+    # The number of estimated paths candidate to be critical, 
+    # according to Dodin and to our method is added to the vector of results.   
+    results['m'] = m
+    results['m1'] = m1
+
+    # Depending on whether the distribution of extreme values is applied
+    if (m != 1):
+        ks_testN, ks_testG, ks_testEV \
+            = testKS(duracionesTotales, mediaCritico, 
+                                        dTipicaCritico, alfa, beta, a, b)
+    else:
+        ks_testN, ks_testG = testKS(duracionesTotales, mediaCritico,
+                                                     dTipicaCritico, alfa, beta)
+        ks_testEV = [None, None]
+        
+    results['mediaCritico'] = mediaCritico
+    results['dTipicaCritico'] = dTipicaCritico
+    results['statisticN'] = ks_testN[0]
+    results['pvalueN'] = ks_testN[1]
+    results['mediaestimada'] = mediaestimada
+    results['sigma'] = sigma
+    results['statisticG'] = ks_testG[0]
+    results['pvalueG'] = ks_testG[1]
+    results['mediaVE'] = mediaVE
+    results['sigmaVE'] = sigmaVE
+    results['statisticEV'] = ks_testEV[0]
+    results['pvalueEV'] = ks_testEV[1]
+    results['mediaSimulation'] = mediaSimulation
+    results['sigmaSimulation'] = sigmaSimulation
+#    results['theBest'] = theBest(results)
+    results['m2'] = m2
+#    results['theBestm'] = theBestm(m, m1, m2)
+    results['sigma_longest_path'] = sigma_longest_path
+    results['sigma_max'] = sigma_max
+    results['sigma_min'] = sigma_min
+    return results
+
+def numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos):
+    """
+    Create an apparition vector that will count all the times a path has turned out critical
+
+    infoCaminos (informacion referente a los caminos)
+    duracionesTotales (vector de la simulacion de duraciones del proyecto)
+    simulaciones (vector con la simulacion de las duraciones de las actividades)
+    caminos (caminos posibles del proyecto)
+    """
+    aparicion = [0] * len(informacionCaminos)
+    
+    # Count the times each path has turned out critical
+    for i in range(len(duracionesTotales)):
+        longitud = len(informacionCaminos)
+        
+        for j in caminos: 
+            critico = informacionCaminos [longitud-1][0]
+            
+            for n in range(len(critico)):
+                critico[n] = int(critico[n])
+
+            duracion = 0 
+            for x in critico:      
+                duracion += simulaciones[i][x - 2]
+                
+            if ((duracion - 0.015 <= duracionesTotales[i]) and 
+                (duracionesTotales[i] <= duracion + 0.015)):
+                aparicion [longitud - 1] += 1 
+                break 
+            else: 
+                longitud -= 1
+
+    return aparicion
+
+#def theBest (results):
+#    """
+#    Checks which one of the three distributions has obtained the best result comparing it with the simulation
+
+#    results (results obtained after the performance of the test)
+
+#    return: it returns which one has been the best distribution in string format.
+#    """
+#    if (results[10] != 'Not defined'):
+#        if (min(results[4], results[7], results[10]) == results[4]):
+#            return 'Normal'
+#        elif (min(results[4], results[7], results[10]) == results[7]):
+#            return 'Gamma'
+#        else:
+#            return 'Extreme Values'
+#    else:
+#        if (min(results[4], results[7]) == results[4]):
+#            return 'Normal'
+#        elif (min(results[4], results[7]) == results[7]):
+#            return 'Gamma'
+#        else:
+#            return 'Extreme Values'
+
+def caminosCriticosCalculados (aparicion , porcentaje, it):
+    """
+    Returns the final count of those paths which turned out critical more times than a given percentage
+
+    aparicion(vector with the number of times each path has turned out critical)
+    porcentaje(percentage in which the limit will be established, e.g.:90 will come to the number of paths which turned out critical 90% of the times)
+    it (final count of the iterations)
+
+    return: total (numero de caminos criticos)
+    """
+    aux = int(round((porcentaje * it)/100))
+    ncaminos = len(aparicion) - 1
+    total = 0
+    aux2 = 0
+
+    for i in range(len(aparicion)):
+        if (aparicion[ncaminos] != 0):
+            aux2 += aparicion[ncaminos]
+            if (aux2 >= aux):
+                return total + 1
+            else:
+                total += 1
+                ncaminos -= 1
+        else:
+            ncaminos -= 1
+    return total
+
+#def theBestm(m, m1, m2):
+#    """
+#    Calculate which one was the closest approximation
+#    to the real one as far as paths is concerned
+
+#    m (estimated paths candidate to be critical according to Dodin)
+#    m1 (estimated paths candidate to be critical according to Lorenzo Salas)
+#    m2 (calculated paths which turned out critical more than a % times)
+
+#    return: Un strin con la mejor opcion
+#    """
+#    #print m, m1, m2
+#    aux1 = abs(m2-m)
+#    aux2 = abs(m2-m1)
+#    if (aux1<aux2):
+#        return 'Dodin'
+#    elif (aux1>aux2):
+#        return 'Salas'
+#    else:
+#        return 'Iguales'
+
+
 
 def calculoValoresGamma(infoCaminos, dist):
     """
@@ -38,17 +251,13 @@ def calculoValoresGamma(infoCaminos, dist):
             media (media estimada con la distribucion gamma)
             sigma (desviacion tipica estimada con la distribucion gamma)
     """
-    m = 0
-    m1 = 0
-    sigma = 0
-    
     mediaReturn = 0
     sigmaReturn = 0
 
 
     # Calculo de la media y la desviacion tipica del camino critico
     mCritico = infoCaminos[-1][1]
-    dCritico = infoCaminos[-1][3]
+    dCritico = math.sqrt(infoCaminos[-1][2])
 
     # Dentro de los criticos de dodin (desviaciones tipicas)
     sigma_longest_path = dCritico
@@ -56,21 +265,23 @@ def calculoValoresGamma(infoCaminos, dist):
     sigma_min = None
     
     #Calculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
+    m = 0
+    m1 = 0
+    sigma = 0
     for n in range(len(infoCaminos)):
         # Considerado critico por Dodin
         if ((mCritico - infoCaminos[n][1]) < max(0.05*mCritico, 0.02* dCritico)):
             m += 1
-            path_stddev = infoCaminos[n][3]
+            path_stddev = math.sqrt(infoCaminos[n][2])
             if sigma_max == None or sigma_max < path_stddev:
                 sigma_max = path_stddev
             if sigma_min == None or sigma_min > path_stddev:
                 sigma_min = path_stddev
 
         # Considerado critico por Salas
-        
-        if ((float(infoCaminos[n][1]) + 0.5*float(infoCaminos[n][3])) >= (mCritico - 0.25* dCritico)):
+        if ((float(infoCaminos[n][1]) + 0.5*math.sqrt(infoCaminos[n][2])) >= (mCritico - 0.25* dCritico)):
             m1 +=1
-            aux = float(infoCaminos[n][3])
+            aux = math.sqrt(infoCaminos[n][2])
             if sigma == 0:
                 sigma = aux
             elif aux < sigma:
@@ -83,8 +294,7 @@ def calculoValoresGamma(infoCaminos, dist):
     beta = (sigma*sigma)/media
     alfa = media/beta"""
     
-    
-    
+
     #para cada distribucion usamos unas regresiones diferentes
     logaritmoN = 1.0927284342627
     sigmaMinN = -0.9153232086309
@@ -134,8 +344,8 @@ def calculoMcriticoDcriticoEV (a, b):
             sigma (desviacion tipica estimada de la funcion de valores extremos)
     """
 
-    media = a + 0.57722/b
-    sigma = math.sqrt((math.pi**2)/(6*(b**2)))
+    media = a + 0.57722 / b
+    sigma = math.sqrt((math.pi**2) / (6*(b**2)))
 
     return media, sigma
 
@@ -164,25 +374,25 @@ def testKS(duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
     """
     
     dNormal = scipy.stats.norm(loc=mCrit, scale=dCrit)
-    pvalue = scipy.stats.kstest(duraciones, dNormal.cdf )
-    print pvalue, 'Normal'
+    ks_test = scipy.stats.kstest(duraciones, dNormal.cdf )
+    print ks_test, 'Normal'
 
     dGamma = scipy.stats.gamma(alfa, scale=beta)
-    pvalue2 = scipy.stats.kstest(duraciones, dGamma.cdf)
+    ks_test2 = scipy.stats.kstest(duraciones, dGamma.cdf)
     #print dGamma.cdf(39.55024722), 'valor de gammma'
     
     #Calculo de la funcion de valores extremos acumulativa para cada intervalo
     if (a != 0 and b !=0):
         dGev = scipy.stats.gumbel_r(loc=a, scale=1 / b)
-        pvalue3 = scipy.stats.kstest(duraciones, dGev.cdf)
+        ks_test3 = scipy.stats.kstest(duraciones, dGev.cdf)
         #print dGev.cdf(), 'valor de gumbel'
 
     #Devuelve el máximo de los máximos de cada columna de diferencias, en el caso de que la de valores
     #extremos no se pueda realizar devuelve no definido
     if (a != 0 and b != 0):
-        return pvalue, pvalue2, pvalue3
+        return ks_test, ks_test2, ks_test3
     elif (a == 0 and b == 0):
-        return pvalue, pvalue2
+        return ks_test, ks_test2
 
 
 # If the program is run directly, test cases
