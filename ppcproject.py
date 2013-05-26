@@ -2367,10 +2367,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('iOpcion').set_active(0)
             self._widgets.get_widget('iValor').set_text('100')
             self.vSimulacion.show()
-            self.simTotales=[] # Lista con las simulaciones totales
-            self.duraciones=[] # Lista con las duraciones de las simulaciones
-            self.criticidad={} # Diccionario con los caminos y su í­ndice de criticidad
-            self.intervalos=[] # Lista con los intervalos de las duraciones
+            self.simTotales = [] # Lista con las simulaciones totales
+            self.duraciones = [] # Lista con las duraciones de las simulaciones
+            self.criticidad = {} # Diccionario con los caminos y su í­ndice de criticidad
+            self.intervalos = [] # Lista con los intervalos de las duraciones
 
 
 
@@ -3053,7 +3053,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se asignan el numero de iteraciones que se van a realizar        
         iteracion = self._widgets.get_widget('iteracion')
         it = iteracion.get_value_as_int()
-        print it, 'iteraciones'
         
         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
         totales = self._widgets.get_widget('iteracionesTotales')
@@ -3067,10 +3066,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
   
         # Se realiza la simulación
         simulacion = simulation.simulacion(it, self.actividad)
-        self.simTotales.append(simulacion)
-        #print len(self.simTotales), 'simulaciones'
-        #for s in self.simTotales:
-            #print s
+        self.simTotales += simulacion
    
         # Se crea el grafo Pert y se renumera
         grafoRenumerado = pert.pertFinal(self.actividad)
@@ -3574,7 +3570,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #except ValueError:
             #self.dialogoError('La constante de proporcionalidad ha de ser un numero')
         except assignment.InvalidK:
-	        self.dialogoError('El valor de k no es valido')
+            self.dialogoError('El valor de k no es valido')
 
     def on_btCancel_clicked(self,boton):
         """ Accion usuario para cancelar
@@ -3597,66 +3593,22 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Accion usuario para acceder al test de kolmogorv smirnoff
         """
+        results = kolmogorov_smirnov.evaluate_models(self.actividad, self.duraciones, self.simTotales)
+                
+        self._widgets.get_widget('iNormal' ).set_text(str( results['pvalueN']))
+        self._widgets.get_widget('i2Normal').set_text(str( results['statisticN']))
+        self._widgets.get_widget('iGamma'  ).set_text(str( results['pvalueG']))
+        self._widgets.get_widget('i2Gamma' ).set_text(str( results['statisticG']))
+
+        if (results['m'] != 1):
+            self._widgets.get_widget('iEV'     ).set_text(str( results['pvalueEV']))
+            self._widgets.get_widget('i2EV'    ).set_text(str( results['statisticEV']))
+        else:
+            self._widgets.get_widget('iEV').set_text('Not defined')
+            self._widgets.get_widget('i2EV').set_text('Not defined')
+
         #Mostrar la ventana de resultados del test        
         self.vTestKS.show()
-
-        #Miramos con que distribucion estamos trabajando
-        distribucion = self.actividad[1][8]
-        print distribucion, 'distribucion que estamos utilizando para el test'
-        
-        informacionCaminos = []
-        # Get all paths removing 'begin' y 'end' from each path
-        successors = dict(((act[1], act[2]) for act in self.actividad))
-        g = graph.roy(successors)
-        caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
-
-        # Se crea una lista con los caminos, sus duraciones y sus varianzas
-        for camino in caminos:   
-            media, varianza = pert.mediaYvarianza(camino, self.actividad) 
-            info = [camino, float(media), varianza, math.sqrt(float(varianza))]      
-            informacionCaminos.append(info)
-
-        #Se ordena la lista en orden creciente por duracion media de los caminos
-        informacionCaminos.sort(key=operator.itemgetter(1))
-
-        #Se calcula el numero de caminos dominantes (segun Dodin y segun nuestro metodo),
-        #Se asignan los valores a alfa y beta para poder realizar la función gamma
-        #m, m1, alfa, beta, mediaES, sigmaES 
-        m, m1, alfa, beta, mediaES, sigmaES, _, _, _ = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos, distribucion)
-        print 'm,m1,alfa,beta,mediaES,sigmaES:', m, m1, alfa, beta, mediaES, sigmaES, '\n'
-        
-
-        mediaCritico = float(informacionCaminos[-1][1])
-        dTipicaCritico = float(informacionCaminos[-1][3]) 
-        #print 'mediaCritico, dtipicaCritico: ',mediaCritico,dTipicaCritico, '\n'
-        
-
-        if (m != 1):
-            a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
-            print 'valores extremos a,b: ', a, b, '\n'
-        #Creamos un vector con las duraciones totales para pasarselo al test
-        duracionesTotales = self.duraciones
-
-        #valorComparacion = kolmogorov_smirnov.valorComparacion(0.05, len(duracionesTotales))
-        #self._widgets.get_widget('iAlfa').set_text(str(0.05))
-        if (m != 1):
-            pvalueN, pvalueG, pvalueEV = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta, a, b)
-            self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
-            self._widgets.get_widget('iEV').set_text(str(pvalueEV[0]))
-            self._widgets.get_widget('iGamma').set_text(str(pvalueG[0]))
-            self._widgets.get_widget('i2Normal').set_text(str(pvalueN[1]))
-            self._widgets.get_widget('i2EV').set_text(str(pvalueEV[1]))
-            self._widgets.get_widget('i2Gamma').set_text(str(pvalueG[1]))
-            #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
-        else:
-            pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, dTipicaCritico, alfa, beta)
-            self._widgets.get_widget('iNormal').set_text(str(pvalueN[0]))
-            self._widgets.get_widget('iEV').set_text('Not defined')
-            self._widgets.get_widget('iGamma').set_text(str(pvalueG[0]))
-            self._widgets.get_widget('i2Normal').set_text(str(pvalueN[1]))
-            self._widgets.get_widget('i2EV').set_text('Not defined')
-            self._widgets.get_widget('i2Gamma').set_text(str(pvalueG[1]))
-            #self._widgets.get_widget('iValorComparacion').set_text(str(valorComparacion))
 
 
     def on_btAceptarTest_clicked(self,boton):
