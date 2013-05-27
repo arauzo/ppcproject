@@ -3594,13 +3594,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Accion usuario para acceder al test de kolmogorv smirnoff
         """
         results = kolmogorov_smirnov.evaluate_models(self.actividad, self.duraciones, self.simTotales)
-                
         self._widgets.get_widget('pvalueN' ).set_text(str( results['pvalueN']))
         self._widgets.get_widget('statisticN').set_text(str( results['statisticN']))
         self._widgets.get_widget('pvalueG'  ).set_text(str( results['pvalueG']))
         self._widgets.get_widget('statisticG' ).set_text(str( results['statisticG']))
 
-        if (results['m'] != 1):
+        if (results['m_dodin'] != 1):
             self._widgets.get_widget('pvalueEV'     ).set_text(str( results['pvalueEV']))
             self._widgets.get_widget('statisticEV'    ).set_text(str( results['statisticEV']))
         else:
@@ -3615,7 +3614,6 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """ Accion usuario para cancelar
             la opcion de asignacion automática
         """
-
         self.vTestKS.hide()
 
     def on_wndTestKS_delete_event(self, ventana, evento):
