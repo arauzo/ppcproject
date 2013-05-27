@@ -57,24 +57,49 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     informacionCaminos.sort(key=operator.itemgetter(1,2))
 
     # Vector with the times a path has turned out critical
-    aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
+    #aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
     
     # Value m2 according to the selected percentage
-    m2 = caminosCriticosCalculados(aparicion, porcentaje, len(simulaciones))
+    #m2 = caminosCriticosCalculados(aparicion, porcentaje, len(simulaciones))
 
-    #Miramos con que distribucion estamos trabajando
-    distribucion = activity[1][8]
-    print distribucion, 'distribucion que estamos utilizando para el test'
+    # Critical path average and std deviation (according to PERT Normal estimate)
+    crit_path_avg = float(informacionCaminos[-1][1])
+    crit_path_stdev = math.sqrt(informacionCaminos[-1][2]) 
 
     #The number of predominant paths is calculated (according to Dodin and to our method),
-    #Values are assign to alpha and beta in order to perform the gamma function
-    #The average and sigma estimated for the gamma are assigned
-    m, m1, alfa, beta, mediaestimada, sigma, sigma_longest_path, sigma_max, sigma_min \
-        = calculoValoresGamma(informacionCaminos, distribucion)
+    # Dentro de los criticos de dodin (desviaciones tipicas)
+    sigma_longest_path = crit_path_stdev
+    sigma_max = None
+    sigma_min = None
+    
+    #Calculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
+    m_dodin = 0
+    m1 = 0
+    sigma = 0
+    for n in range(len(informacionCaminos)):
+        # Considerado critico por Dodin
+        if ((crit_path_avg - informacionCaminos[n][1]) < max(0.05*crit_path_avg, 0.02* crit_path_stdev)):
+            m_dodin += 1
+            path_stddev = math.sqrt(informacionCaminos[n][2])
+            if sigma_max == None or sigma_max < path_stddev:
+                sigma_max = path_stddev
+            if sigma_min == None or sigma_min > path_stddev:
+                sigma_min = path_stddev
 
-    #The average and the sigma of the normal are assigned
-    mediaCritico = float(informacionCaminos[-1][1])
-    dTipicaCritico = math.sqrt(informacionCaminos[-1][2]) 
+        # Considerado critico por Salas
+        if ((float(informacionCaminos[n][1]) + 0.5*math.sqrt(informacionCaminos[n][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
+            m1 +=1
+            aux = math.sqrt(informacionCaminos[n][2])
+            if sigma == 0:
+                sigma = aux
+            elif aux < sigma:
+                sigma = aux
+
+    # Gamma estimated distribution
+    distribucion = activity[1][8]
+    print distribucion, 'distribucion que estamos utilizando para el test'
+    alfa, beta, mediaestimada, sigmaestimada = calculoValoresGamma(crit_path_avg, crit_path_stdev,
+                                                                   m_dodin, distribucion)
 
     #The average and the sigma of the simulation are assigned
     mediaSimulation = numpy.mean(duracionesTotales)
@@ -83,30 +108,25 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     #If there were more than one path candidate to be critical
     #The average and the sigma of the extreme values function are calculated
     mediaVE = sigmaVE = a = b = None
-    if (m != 1):
-        a, b = calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
+    if (m_dodin != 1):
+        a, b = calculoValoresExtremos (crit_path_avg, crit_path_stdev, m_dodin)
         mediaVE, sigmaVE = calculoMcriticoDcriticoEV (a, b)
 
-    #An empty vector is created to save the results
-    results = collections.OrderedDict()
-
-    # The number of estimated paths candidate to be critical, 
-    # according to Dodin and to our method is added to the vector of results.   
-    results['m'] = m
-    results['m1'] = m1
-
     # Depending on whether the distribution of extreme values is applied
-    if (m != 1):
-        ks_testN, ks_testG, ks_testEV \
-            = testKS(duracionesTotales, mediaCritico, 
-                                        dTipicaCritico, alfa, beta, a, b)
+    if (m_dodin != 1):
+        ks_testN, ks_testG, ks_testEV = testKS(duracionesTotales, crit_path_avg, 
+                                               crit_path_stdev, alfa, beta, a, b)
     else:
-        ks_testN, ks_testG = testKS(duracionesTotales, mediaCritico,
-                                                     dTipicaCritico, alfa, beta)
+        ks_testN, ks_testG = testKS(duracionesTotales, crit_path_avg,
+                                    crit_path_stdev, alfa, beta)
         ks_testEV = [None, None]
         
-    results['mediaCritico'] = mediaCritico
-    results['dTipicaCritico'] = dTipicaCritico
+    # Results
+    results = collections.OrderedDict()
+    results['m_dodin'] = m_dodin
+    results['m1'] = m1
+    results['mediaCritico'] = crit_path_avg
+    results['dTipicaCritico'] = crit_path_stdev
     results['statisticN'] = ks_testN[0]
     results['pvalueN'] = ks_testN[1]
     results['mediaestimada'] = mediaestimada
@@ -120,46 +140,46 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     results['mediaSimulation'] = mediaSimulation
     results['sigmaSimulation'] = sigmaSimulation
 #    results['theBest'] = theBest(results)
-    results['m2'] = m2
+#    results['m2'] = m2
 #    results['theBestm'] = theBestm(m, m1, m2)
     results['sigma_longest_path'] = sigma_longest_path
     results['sigma_max'] = sigma_max
     results['sigma_min'] = sigma_min
     return results
 
-def numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos):
-    """
-    Create an apparition vector that will count all the times a path has turned out critical
+#def numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos):
+#    """
+#    Create an apparition vector that will count all the times a path has turned out critical
 
-    infoCaminos (informacion referente a los caminos)
-    duracionesTotales (vector de la simulacion de duraciones del proyecto)
-    simulaciones (vector con la simulacion de las duraciones de las actividades)
-    caminos (caminos posibles del proyecto)
-    """
-    aparicion = [0] * len(informacionCaminos)
-    
-    # Count the times each path has turned out critical
-    for i in range(len(duracionesTotales)):
-        longitud = len(informacionCaminos)
-        
-        for j in caminos: 
-            critico = informacionCaminos [longitud-1][0]
-            
-            for n in range(len(critico)):
-                critico[n] = int(critico[n])
+#    informacionCaminos (informacion referente a los caminos)
+#    duracionesTotales (vector de la simulacion de duraciones del proyecto)
+#    simulaciones (vector con la simulacion de las duraciones de las actividades)
+#    caminos (caminos posibles del proyecto)
+#    """
+#    aparicion = [0] * len(informacionCaminos)
+#    
+#    # Count the times each path has turned out critical
+#    for i in range(len(duracionesTotales)):
+#        longitud = len(informacionCaminos)
+#        
+#        for j in caminos: 
+#            critico = informacionCaminos[longitud-1][0]
+#            
+#            for n in range(len(critico)):
+#                critico[n] = int(critico[n])
 
-            duracion = 0 
-            for x in critico:      
-                duracion += simulaciones[i][x - 2]
-                
-            if ((duracion - 0.015 <= duracionesTotales[i]) and 
-                (duracionesTotales[i] <= duracion + 0.015)):
-                aparicion [longitud - 1] += 1 
-                break 
-            else: 
-                longitud -= 1
+#            duracion = 0 
+#            for x in critico:      
+#                duracion += simulaciones[i][x - 2]
+#                
+#            if ((duracion - 0.015 <= duracionesTotales[i]) and 
+#                (duracionesTotales[i] <= duracion + 0.015)):
+#                aparicion[longitud - 1] += 1 
+#                break 
+#            else: 
+#                longitud -= 1
 
-    return aparicion
+#    return aparicion
 
 #def theBest (results):
 #    """
@@ -184,32 +204,32 @@ def numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
 #        else:
 #            return 'Extreme Values'
 
-def caminosCriticosCalculados (aparicion , porcentaje, it):
-    """
-    Returns the final count of those paths which turned out critical more times than a given percentage
+#def caminosCriticosCalculados (aparicion , porcentaje, it):
+#    """
+#    Returns the final count of those paths which turned out critical more times than a given percentage
 
-    aparicion(vector with the number of times each path has turned out critical)
-    porcentaje(percentage in which the limit will be established, e.g.:90 will come to the number of paths which turned out critical 90% of the times)
-    it (final count of the iterations)
+#    aparicion(vector with the number of times each path has turned out critical)
+#    porcentaje(percentage in which the limit will be established, e.g.:90 will come to the number of paths which turned out critical 90% of the times)
+#    it (final count of the iterations)
 
-    return: total (numero de caminos criticos)
-    """
-    aux = int(round((porcentaje * it)/100))
-    ncaminos = len(aparicion) - 1
-    total = 0
-    aux2 = 0
+#    return: total (numero de caminos criticos)
+#    """
+#    aux = int(round((porcentaje * it)/100))
+#    ncaminos = len(aparicion) - 1
+#    total = 0
+#    aux2 = 0
 
-    for i in range(len(aparicion)):
-        if (aparicion[ncaminos] != 0):
-            aux2 += aparicion[ncaminos]
-            if (aux2 >= aux):
-                return total + 1
-            else:
-                total += 1
-                ncaminos -= 1
-        else:
-            ncaminos -= 1
-    return total
+#    for i in range(len(aparicion)):
+#        if (aparicion[ncaminos] != 0):
+#            aux2 += aparicion[ncaminos]
+#            if (aux2 >= aux):
+#                return total + 1
+#            else:
+#                total += 1
+#                ncaminos -= 1
+#        else:
+#            ncaminos -= 1
+#    return total
 
 #def theBestm(m, m1, m2):
 #    """
@@ -234,91 +254,33 @@ def caminosCriticosCalculados (aparicion , porcentaje, it):
 
 
 
-def calculoValoresGamma(infoCaminos, dist):
+def calculoValoresGamma(crit_path_avg, crit_path_stdev, m_dodin, dist):
     """
-    Funcion que asigna los valores a las datos necesarios para
-    la realizacion del test de Kolmogorov-Smirnof con la funcion gamma.
-    Asignara el numero de caminos dominantes segun Dodin y segun nosotros,
-    la media de la poblacion estimada, la sigma de la poblacion estimada
-    y los valores de alfa y beta necesarios para la funcion de distribucion gamma.
+    Estimate the duration random variable of a project with a Gamma distribution using a model 
+    created by Salas et al.
     
-    infoCaminos (vector con la informacion de cada camino)
-
-    return: m (numero de caminos estimados candidatos de ser criticos segun Dodin)
-            m1 (numero de caminos estimados candidatos de ser criticos segun el metodo de Lorenzo Salas)
-            alfa (valor de alfa para la gamma)
+    return: alfa (valor de alfa para la gamma)
             beta (valor de beta para la gamma)
             media (media estimada con la distribucion gamma)
             sigma (desviacion tipica estimada con la distribucion gamma)
     """
-    mediaReturn = 0
-    sigmaReturn = 0
-
-
-    # Calculo de la media y la desviacion tipica del camino critico
-    mCritico = infoCaminos[-1][1]
-    dCritico = math.sqrt(infoCaminos[-1][2])
-
-    # Dentro de los criticos de dodin (desviaciones tipicas)
-    sigma_longest_path = dCritico
-    sigma_max = None
-    sigma_min = None
-    
-    #Calculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
-    m = 0
-    m1 = 0
-    sigma = 0
-    for n in range(len(infoCaminos)):
-        # Considerado critico por Dodin
-        if ((mCritico - infoCaminos[n][1]) < max(0.05*mCritico, 0.02* dCritico)):
-            m += 1
-            path_stddev = math.sqrt(infoCaminos[n][2])
-            if sigma_max == None or sigma_max < path_stddev:
-                sigma_max = path_stddev
-            if sigma_min == None or sigma_min > path_stddev:
-                sigma_min = path_stddev
-
-        # Considerado critico por Salas
-        if ((float(infoCaminos[n][1]) + 0.5*math.sqrt(infoCaminos[n][2])) >= (mCritico - 0.25* dCritico)):
-            m1 +=1
-            aux = math.sqrt(infoCaminos[n][2])
-            if sigma == 0:
-                sigma = aux
-            elif aux < sigma:
-                sigma = aux
-        
-
-    #Calculo de la media de la poblacion estimada, de alfa y de beta 
-    media = mCritico + ((math.pi* math.log(m))/sigma)
-    """media = mCritico + ((math.pi* math.log(m))/sigma)
-    beta = (sigma*sigma)/media
-    alfa = media/beta"""
-    
-
-    #para cada distribucion usamos unas regresiones diferentes
-    logaritmoN = 1.0927284342627
-    sigmaMinN = -0.9153232086309
-    mediaN = 1.1336004782864
-    
-    logaritmo = 2.96581038327203
-    sigmaMin = 0.755017047823797
-    mediaB = 0.91263355372917
-    
-    sigmaReturn = 0.91154134766017  * sigma
+    sigma = 0.91154134766017  * crit_path_stdev
     
     if dist == 'Normal':
-        mediaReturn = (mediaN * media) + (sigmaMinN * sigma) + (logaritmoN * (math.pi* math.log(m))) 
-        beta = (sigmaReturn*sigmaReturn)/mediaReturn
-        alfa = mediaReturn/beta
-        
+        media = (  1.1336004782864 * crit_path_avg 
+                 - 0.9153232086309 * crit_path_stdev 
+                 + 1.0927284342627 * math.log(m_dodin) )
     else :
-        mediaReturn = (mediaB * media) + (sigmaMin * sigma) + (logaritmo * (math.pi* math.log(m)))
-        beta = (sigmaReturn*sigmaReturn)/mediaReturn
-        alfa = mediaReturn/beta
-        
-    return m, m1, alfa, beta, media, sigma, sigma_longest_path, sigma_max, sigma_min
+        media = (  0.91263355372917 * crit_path_avg 
+                 + 0.75501704782379 * crit_path_stdev 
+                 + 2.96581038327203 * math.log(m_dodin) )
 
-def calculoValoresExtremos (media, sigma, m):
+    beta = sigma**2 / media
+    alfa = media / beta
+        
+    return alfa, beta, media, sigma
+
+def calculoValoresExtremos(media, sigma, m):
     """
     Funcion que nos devuelve los valores necesarios para
     realizar la distribucion de valores extremos
@@ -333,7 +295,7 @@ def calculoValoresExtremos (media, sigma, m):
 
     return a, b
 
-def calculoMcriticoDcriticoEV (a, b):
+def calculoMcriticoDcriticoEV(a, b):
     """
     Funcion que devuelve la media y la desviacion tipica
     de la distribucion de valores extremos
@@ -343,7 +305,6 @@ def calculoMcriticoDcriticoEV (a, b):
     return: media (media estimada de la funcion de valores extremos)
             sigma (desviacion tipica estimada de la funcion de valores extremos)
     """
-
     media = a + 0.57722 / b
     sigma = math.sqrt((math.pi**2) / (6*(b**2)))
 
@@ -372,7 +333,6 @@ def testKS(duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
           Todo el codigo que se hizo en un principio se ha dejado comentado para que no consuma recursos para el programa,
           pero puede ser de utilidad para futuras actualizaciones.
     """
-    
     dNormal = scipy.stats.norm(loc=mCrit, scale=dCrit)
     ks_test = scipy.stats.kstest(duraciones, dNormal.cdf )
     print ks_test, 'Normal'
