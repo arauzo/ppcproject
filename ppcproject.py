@@ -3595,17 +3595,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         results = kolmogorov_smirnov.evaluate_models(self.actividad, self.duraciones, self.simTotales)
                 
-        self._widgets.get_widget('iNormal' ).set_text(str( results['pvalueN']))
-        self._widgets.get_widget('i2Normal').set_text(str( results['statisticN']))
-        self._widgets.get_widget('iGamma'  ).set_text(str( results['pvalueG']))
-        self._widgets.get_widget('i2Gamma' ).set_text(str( results['statisticG']))
+        self._widgets.get_widget('pvalueN' ).set_text(str( results['pvalueN']))
+        self._widgets.get_widget('statisticN').set_text(str( results['statisticN']))
+        self._widgets.get_widget('pvalueG'  ).set_text(str( results['pvalueG']))
+        self._widgets.get_widget('statisticG' ).set_text(str( results['statisticG']))
 
         if (results['m'] != 1):
-            self._widgets.get_widget('iEV'     ).set_text(str( results['pvalueEV']))
-            self._widgets.get_widget('i2EV'    ).set_text(str( results['statisticEV']))
+            self._widgets.get_widget('pvalueEV'     ).set_text(str( results['pvalueEV']))
+            self._widgets.get_widget('statisticEV'    ).set_text(str( results['statisticEV']))
         else:
-            self._widgets.get_widget('iEV').set_text('Not defined')
-            self._widgets.get_widget('i2EV').set_text('Not defined')
+            self._widgets.get_widget('pvalueEV').set_text('Not defined')
+            self._widgets.get_widget('statisticEV').set_text('Not defined')
 
         #Mostrar la ventana de resultados del test        
         self.vTestKS.show()
