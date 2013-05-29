@@ -86,19 +86,19 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
             if sigma_min == None or sigma_min > path_stddev:
                 sigma_min = path_stddev
 
-        # Considerado critico por Salas
-        if ((float(informacionCaminos[n][1]) + 0.5*math.sqrt(informacionCaminos[n][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
-            m1 +=1
-            aux = math.sqrt(informacionCaminos[n][2])
-            if sigma == 0:
-                sigma = aux
-            elif aux < sigma:
-                sigma = aux
+#        # Considerado critico por Salas
+#        if ((float(informacionCaminos[n][1]) + 0.5*math.sqrt(informacionCaminos[n][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
+#            m1 +=1
+#            aux = math.sqrt(informacionCaminos[n][2])
+#            if sigma == 0:
+#                sigma = aux
+#            elif aux < sigma:
+#                sigma = aux
 
     # Gamma estimated distribution
     distribucion = activity[1][8]
     print distribucion, 'distribucion que estamos utilizando para el test'
-    alfa, beta, mediaestimada, sigmaestimada = calculoValoresGamma(crit_path_avg, sigma_min,
+    alfa, beta, mediaGamma, sigmaGamma = calculoValoresGamma(crit_path_avg, sigma_min,
                                                                    m_dodin, distribucion)
 
     #The average and the sigma of the simulation are assigned
@@ -124,13 +124,13 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     # Results
     results = collections.OrderedDict()
     results['m_dodin'] = m_dodin
-    results['m1'] = m1
+#    results['m1'] = m1
     results['mediaCritico'] = crit_path_avg
     results['dTipicaCritico'] = crit_path_stdev
     results['statisticN'] = ks_testN[0]
     results['pvalueN'] = ks_testN[1]
-    results['mediaestimada'] = mediaestimada
-    results['sigma'] = sigma
+    results['mediaGamma'] = mediaGamma
+    results['sigmaGamma'] = mediaGamma
     results['statisticG'] = ks_testG[0]
     results['pvalueG'] = ks_testG[1]
     results['mediaVE'] = mediaVE
@@ -139,6 +139,7 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     results['pvalueEV'] = ks_testEV[1]
     results['mediaSimulation'] = mediaSimulation
     results['sigmaSimulation'] = sigmaSimulation
+#    results['sigma'] = sigma
 #    results['theBest'] = theBest(results)
 #    results['m2'] = m2
 #    results['theBestm'] = theBestm(m, m1, m2)
@@ -259,10 +260,11 @@ def calculoValoresGamma(crit_path_avg, sigma_min, m_dodin, dist):
     Estimate the duration random variable of a project with a Gamma distribution using a model 
     created by Salas et al.
     
-    return: alfa (valor de alfa para la gamma)
-            beta (valor de beta para la gamma)
-            media (media estimada con la distribucion gamma)
-            sigma (desviacion tipica estimada con la distribucion gamma)
+    return: Gamma distribution parameters:
+        alfa
+        beta
+        media
+        sigma
     """
     sigma = 0.91154134766017  * sigma_min
     
