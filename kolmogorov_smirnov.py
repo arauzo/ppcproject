@@ -98,7 +98,7 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     # Gamma estimated distribution
     distribucion = activity[1][8]
     print distribucion, 'distribucion que estamos utilizando para el test'
-    alfa, beta, mediaestimada, sigmaestimada = calculoValoresGamma(crit_path_avg, crit_path_stdev,
+    alfa, beta, mediaestimada, sigmaestimada = calculoValoresGamma(crit_path_avg, sigma_min,
                                                                    m_dodin, distribucion)
 
     #The average and the sigma of the simulation are assigned
@@ -254,7 +254,7 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
 
 
 
-def calculoValoresGamma(crit_path_avg, crit_path_stdev, m_dodin, dist):
+def calculoValoresGamma(crit_path_avg, sigma_min, m_dodin, dist):
     """
     Estimate the duration random variable of a project with a Gamma distribution using a model 
     created by Salas et al.
@@ -264,15 +264,15 @@ def calculoValoresGamma(crit_path_avg, crit_path_stdev, m_dodin, dist):
             media (media estimada con la distribucion gamma)
             sigma (desviacion tipica estimada con la distribucion gamma)
     """
-    sigma = 0.91154134766017  * crit_path_stdev
+    sigma = 0.91154134766017  * sigma_min
     
     if dist == 'Normal':
         media = (  1.1336004782864 * crit_path_avg 
-                 - 0.9153232086309 * crit_path_stdev 
+                 - 0.9153232086309 * sigma_min 
                  + 1.0927284342627 * math.log(m_dodin) )
     else :
         media = (  0.91263355372917 * crit_path_avg 
-                 + 0.75501704782379 * crit_path_stdev 
+                 + 0.75501704782379 * sigma_min 
                  + 2.96581038327203 * math.log(m_dodin) )
 
     beta = sigma**2 / media
