@@ -124,21 +124,24 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     # Results
     results = collections.OrderedDict()
     results['m_dodin'] = m_dodin
-#    results['m1'] = m1
     results['mediaCritico'] = crit_path_avg
     results['dTipicaCritico'] = crit_path_stdev
     results['statisticN'] = ks_testN[0]
     results['pvalueN'] = ks_testN[1]
+
     results['mediaGamma'] = mediaGamma
-    results['sigmaGamma'] = mediaGamma
+    results['sigmaGamma'] = sigmaGamma
     results['statisticG'] = ks_testG[0]
     results['pvalueG'] = ks_testG[1]
+
     results['mediaVE'] = mediaVE
     results['sigmaVE'] = sigmaVE
     results['statisticEV'] = ks_testEV[0]
     results['pvalueEV'] = ks_testEV[1]
+
     results['mediaSimulation'] = mediaSimulation
     results['sigmaSimulation'] = sigmaSimulation
+#    results['m1'] = m1
 #    results['sigma'] = sigma
 #    results['theBest'] = theBest(results)
 #    results['m2'] = m2
@@ -182,29 +185,6 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
 
 #    return aparicion
 
-#def theBest (results):
-#    """
-#    Checks which one of the three distributions has obtained the best result comparing it with the simulation
-
-#    results (results obtained after the performance of the test)
-
-#    return: it returns which one has been the best distribution in string format.
-#    """
-#    if (results[10] != 'Not defined'):
-#        if (min(results[4], results[7], results[10]) == results[4]):
-#            return 'Normal'
-#        elif (min(results[4], results[7], results[10]) == results[7]):
-#            return 'Gamma'
-#        else:
-#            return 'Extreme Values'
-#    else:
-#        if (min(results[4], results[7]) == results[4]):
-#            return 'Normal'
-#        elif (min(results[4], results[7]) == results[7]):
-#            return 'Gamma'
-#        else:
-#            return 'Extreme Values'
-
 #def caminosCriticosCalculados (aparicion , porcentaje, it):
 #    """
 #    Returns the final count of those paths which turned out critical more times than a given percentage
@@ -231,27 +211,6 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
 #        else:
 #            ncaminos -= 1
 #    return total
-
-#def theBestm(m, m1, m2):
-#    """
-#    Calculate which one was the closest approximation
-#    to the real one as far as paths is concerned
-
-#    m (estimated paths candidate to be critical according to Dodin)
-#    m1 (estimated paths candidate to be critical according to Lorenzo Salas)
-#    m2 (calculated paths which turned out critical more than a % times)
-
-#    return: Un strin con la mejor opcion
-#    """
-#    #print m, m1, m2
-#    aux1 = abs(m2-m)
-#    aux2 = abs(m2-m1)
-#    if (aux1<aux2):
-#        return 'Dodin'
-#    elif (aux1>aux2):
-#        return 'Salas'
-#    else:
-#        return 'Iguales'
 
 
 
