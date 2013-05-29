@@ -86,20 +86,27 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
             if sigma_min == None or sigma_min > path_stddev:
                 sigma_min = path_stddev
 
-#        # Considerado critico por Salas
-#        if ((float(informacionCaminos[n][1]) + 0.5*math.sqrt(informacionCaminos[n][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
-#            m1 +=1
-#            aux = math.sqrt(informacionCaminos[n][2])
-#            if sigma == 0:
-#                sigma = aux
-#            elif aux < sigma:
-#                sigma = aux
+        # Considerado critico por Salas
+        if ((float(informacionCaminos[n][1]) + 0.5*math.sqrt(informacionCaminos[n][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
+            m1 +=1
+            aux = math.sqrt(informacionCaminos[n][2])
+            if sigma == 0:
+                sigma = aux
+            elif aux < sigma:
+                sigma = aux
 
     # Gamma estimated distribution
-    distribucion = activity[1][8]
-    print distribucion, 'distribucion que estamos utilizando para el test'
     alfa, beta, mediaGamma, sigmaGamma = calculoValoresGamma(crit_path_avg, sigma_min,
-                                                                   m_dodin, distribucion)
+                                                                   m_dodin, dist=activity[1][8])
+
+    # Gamma previous model
+    mediaAnt = crit_path_avg +  math.pi * math.log(m1) / sigma
+    sigmaAnt = sigma
+    betaAnt = sigmaAnt**2 / mediaAnt
+    alfaAnt = mediaAnt / betaAnt
+
+    dGammaAnt = scipy.stats.gamma(alfaAnt, scale=betaAnt)
+    ks_testAnt = scipy.stats.kstest(duracionesTotales, dGammaAnt.cdf)
 
     #The average and the sigma of the simulation are assigned
     mediaSimulation = numpy.mean(duracionesTotales)
@@ -123,6 +130,7 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
         
     # Results
     results = collections.OrderedDict()
+    results['n_caminos'] = len(informacionCaminos)
     results['m_dodin'] = m_dodin
     results['mediaCritico'] = crit_path_avg
     results['dTipicaCritico'] = crit_path_stdev
@@ -133,6 +141,11 @@ def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
     results['sigmaGamma'] = sigmaGamma
     results['statisticG'] = ks_testG[0]
     results['pvalueG'] = ks_testG[1]
+
+    results['mediaAnt'] = mediaAnt
+    results['sigmaAnt'] = sigmaAnt
+    results['statisticAnt'] = ks_testAnt[0]
+    results['pvalueAnt'] = ks_testAnt[1]
 
     results['mediaVE'] = mediaVE
     results['sigmaVE'] = sigmaVE
@@ -296,7 +309,7 @@ def testKS(duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
     """
     dNormal = scipy.stats.norm(loc=mCrit, scale=dCrit)
     ks_test = scipy.stats.kstest(duraciones, dNormal.cdf )
-    print ks_test, 'Normal'
+    #print ks_test, 'Normal'
 
     dGamma = scipy.stats.gamma(alfa, scale=beta)
     ks_test2 = scipy.stats.kstest(duraciones, dGamma.cdf)
