@@ -19,7 +19,6 @@
  You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import random
 import math
 import operator
 import collections
@@ -31,310 +30,203 @@ import graph
 import pert
 
 
-def evaluate_models(activity, duracionesTotales, simulaciones, porcentaje=90):
+def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
     """
     Using the data from a simulation compare the results with those achieved by the several models 
     defined. The comparison is done by testing the fitting of the distribution with the 
     kolmogorov_smirnov test 
 
-    activity (project activities)
-    duracionesTotales (vector with the duration resulting from the simulation)
+    activities (project activities)
+    sim_durations (vector with the duration resulting from the simulation)
     simulaciones (vector with the simulations of each activity in each iteration)
     porcentaje (the mark we want to establish to determine how many paths have turned out critical)
 
-    return: results( vector with the results we should save in the output table)
+    return: results (vector with the results we should save in the output table)
     """
     # Get all paths removing 'begin' y 'end' from each path
-    successors = dict(((act[1], act[2]) for act in activity))
-    g = graph.roy(successors)
-    caminos = [c[1:-1] for c in graph.find_all_paths(g, 'Begin', 'End')]
+    successors = dict(((act[1], act[2]) for act in activities))
+    aon = graph.roy(successors)
+    caminos = [c[1:-1] for c in graph.find_all_paths(aon, 'Begin', 'End')]
 
-    # List with the paths, their duration and variance (ordered by increasing duration and variance)
-    informacionCaminos = []
+    # List with all paths, their duration and variance (ordered by increasing duration and variance)
+    path_data = []
     for camino in caminos:   
-        media, varianza = pert.mediaYvarianza(camino, activity) 
-        informacionCaminos.append([camino, float(media), float(varianza)])
-    informacionCaminos.sort(key=operator.itemgetter(1,2))
-
-    # Vector with the times a path has turned out critical
-    #aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
-    
-    # Value m2 according to the selected percentage
-    #m2 = caminosCriticosCalculados(aparicion, porcentaje, len(simulaciones))
+        media, varianza = pert.mediaYvarianza(camino, activities) 
+        path_data.append([camino, float(media), float(varianza)])
+    path_data.sort(key=operator.itemgetter(1, 2))
 
     # Critical path average and std deviation (according to PERT Normal estimate)
-    crit_path_avg = float(informacionCaminos[-1][1])
-    crit_path_stdev = math.sqrt(informacionCaminos[-1][2]) 
+    crit_path_avg = float(path_data[-1][1])
+    crit_path_stdev = math.sqrt(path_data[-1][2]) 
 
-    #The number of predominant paths is calculated (according to Dodin and to our method),
-    # Dentro de los criticos de dodin (desviaciones tipicas)
-    sigma_longest_path = crit_path_stdev
+    # Number of predominant paths is calculated according to Dodin (m_dodin) and to ours (m_salas),
+    m_dodin = 0
+    m_salas = 0
+    # Std. dev for selected paths
     sigma_max = None
     sigma_min = None
-    
-    #Calculo de los caminos dominantes segun Dodin (m) y segun nosotros (m1). Asi como de Sigma.
-    m_dodin = 0
-    m1 = 0
-    sigma = 0
-    for n in range(len(informacionCaminos)):
-        # Considerado critico por Dodin
-        if ((crit_path_avg - informacionCaminos[n][1]) < max(0.05*crit_path_avg, 0.02* crit_path_stdev)):
+    sigma_ant = None    
+
+    for i in range(len(path_data)):
+        # Considered critical by Dodin
+        if ((crit_path_avg - path_data[i][1]) < max(0.05*crit_path_avg, 0.02* crit_path_stdev)):
             m_dodin += 1
-            path_stddev = math.sqrt(informacionCaminos[n][2])
+            path_stddev = math.sqrt(path_data[i][2])
             if sigma_max == None or sigma_max < path_stddev:
                 sigma_max = path_stddev
             if sigma_min == None or sigma_min > path_stddev:
                 sigma_min = path_stddev
 
-        # Considerado critico por Salas
-        if ((float(informacionCaminos[n][1]) + 0.5*math.sqrt(informacionCaminos[n][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
-            m1 +=1
-            aux = math.sqrt(informacionCaminos[n][2])
-            if sigma == 0:
-                sigma = aux
-            elif aux < sigma:
-                sigma = aux
+        # Considered critical by Salas
+        if ((float(path_data[i][1]) + 0.5*math.sqrt(path_data[i][2])) >= (crit_path_avg - 0.25* crit_path_stdev)):
+            m_salas += 1
+            path_stdev = math.sqrt(path_data[i][2])
+            if sigma_ant == None or sigma_ant > path_stdev:
+                sigma_ant = path_stdev
 
-    # Gamma estimated distribution
-    alfa, beta, mediaGamma, sigmaGamma = calculoValoresGamma(crit_path_avg, sigma_min,
-                                                                   m_dodin, dist=activity[1][8])
+    # Store variables to be used to create models
+    attributes = collections.OrderedDict()
+    attributes['crit_path_avg'] = crit_path_avg
+    attributes['crit_path_stdev'] = crit_path_stdev
 
-    # Gamma previous model
-    mediaAnt = crit_path_avg +  math.pi * math.log(m1) / sigma
-    sigmaAnt = sigma
-    betaAnt = sigmaAnt**2 / mediaAnt
-    alfaAnt = mediaAnt / betaAnt
+    attributes['n_paths'] = len(path_data)
+    attributes['n_nodes'] = None
+    attributes['n_activ'] = None
 
-    dGammaAnt = scipy.stats.gamma(alfaAnt, scale=betaAnt)
-    ks_testAnt = scipy.stats.kstest(duracionesTotales, dGammaAnt.cdf)
+    attributes['m_dodin'] = m_dodin
+    attributes['m_salas'] = m_salas
 
-    #The average and the sigma of the simulation are assigned
-    mediaSimulation = numpy.mean(duracionesTotales)
-    sigmaSimulation = numpy.std(duracionesTotales)
+    attributes['sigma_max'] = sigma_max
+    attributes['sigma_min'] = sigma_min
+    attributes['sigma_ant'] = sigma_min
 
-    #If there were more than one path candidate to be critical
-    #The average and the sigma of the extreme values function are calculated
-    mediaVE = sigmaVE = a = b = None
-    if (m_dodin != 1):
-        a, b = calculoValoresExtremos (crit_path_avg, crit_path_stdev, m_dodin)
-        mediaVE, sigmaVE = calculoMcriticoDcriticoEV (a, b)
+    attributes['dist'] = activities[1][8] # for Gamma (which is a 'mutant', a dual model)
 
-    # Depending on whether the distribution of extreme values is applied
-    if (m_dodin != 1):
-        ks_testN, ks_testG, ks_testEV = testKS(duracionesTotales, crit_path_avg, 
-                                               crit_path_stdev, alfa, beta, a, b)
-    else:
-        ks_testN, ks_testG = testKS(duracionesTotales, crit_path_avg,
-                                    crit_path_stdev, alfa, beta)
-        ks_testEV = [None, None]
-        
-    # Results
-    results = collections.OrderedDict()
-    results['n_caminos'] = len(informacionCaminos)
-    results['m_dodin'] = m_dodin
-    results['mediaCritico'] = crit_path_avg
-    results['dTipicaCritico'] = crit_path_stdev
-    results['statisticN'] = ks_testN[0]
-    results['pvalueN'] = ks_testN[1]
+    # Create and test the models
+    results = collections.OrderedDict(attributes)
+    for model in MODELS:
+        name, dist, debug_vars = model(attributes)
+        if dist != None:
+            ks_statistic, p_value = scipy.stats.kstest(sim_durations, dist.cdf)        
+            results['ks' + name] = ks_statistic
+            results['p_' + name] = p_value
+            results['mean' + name] = dist.mean()
+            results['sigma' + name] = dist.std()
+            for var in debug_vars:
+                results[var + name] = debug_vars[var] 
+        else:
+            results['ks' + name] = None
+            results['p_' + name] = None
+            results['mean' + name] = None
+            results['sigma' + name] = None
 
-    results['mediaGamma'] = mediaGamma
-    results['sigmaGamma'] = sigmaGamma
-    results['statisticG'] = ks_testG[0]
-    results['pvalueG'] = ks_testG[1]
+    #The average and the sigma of the simulation are included too
+    results['mediaSimulation'] = numpy.mean(sim_durations)
+    results['sigmaSimulation'] = numpy.std(sim_durations)
 
-    results['mediaAnt'] = mediaAnt
-    results['sigmaAnt'] = sigmaAnt
-    results['statisticAnt'] = ks_testAnt[0]
-    results['pvalueAnt'] = ks_testAnt[1]
-
-    results['mediaVE'] = mediaVE
-    results['sigmaVE'] = sigmaVE
-    results['statisticEV'] = ks_testEV[0]
-    results['pvalueEV'] = ks_testEV[1]
-
-    results['mediaSimulation'] = mediaSimulation
-    results['sigmaSimulation'] = sigmaSimulation
-#    results['m1'] = m1
-#    results['sigma'] = sigma
-#    results['theBest'] = theBest(results)
-#    results['m2'] = m2
-#    results['theBestm'] = theBestm(m, m1, m2)
-    results['sigma_longest_path'] = sigma_longest_path
-    results['sigma_max'] = sigma_max
-    results['sigma_min'] = sigma_min
     return results
 
-#def numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos):
-#    """
-#    Create an apparition vector that will count all the times a path has turned out critical
-
-#    informacionCaminos (informacion referente a los caminos)
-#    duracionesTotales (vector de la simulacion de duraciones del proyecto)
-#    simulaciones (vector con la simulacion de las duraciones de las actividades)
-#    caminos (caminos posibles del proyecto)
-#    """
-#    aparicion = [0] * len(informacionCaminos)
-#    
-#    # Count the times each path has turned out critical
-#    for i in range(len(duracionesTotales)):
-#        longitud = len(informacionCaminos)
-#        
-#        for j in caminos: 
-#            critico = informacionCaminos[longitud-1][0]
-#            
-#            for n in range(len(critico)):
-#                critico[n] = int(critico[n])
-
-#            duracion = 0 
-#            for x in critico:      
-#                duracion += simulaciones[i][x - 2]
-#                
-#            if ((duracion - 0.015 <= duracionesTotales[i]) and 
-#                (duracionesTotales[i] <= duracion + 0.015)):
-#                aparicion[longitud - 1] += 1 
-#                break 
-#            else: 
-#                longitud -= 1
-
-#    return aparicion
-
-#def caminosCriticosCalculados (aparicion , porcentaje, it):
-#    """
-#    Returns the final count of those paths which turned out critical more times than a given percentage
-
-#    aparicion(vector with the number of times each path has turned out critical)
-#    porcentaje(percentage in which the limit will be established, e.g.:90 will come to the number of paths which turned out critical 90% of the times)
-#    it (final count of the iterations)
-
-#    return: total (numero de caminos criticos)
-#    """
-#    aux = int(round((porcentaje * it)/100))
-#    ncaminos = len(aparicion) - 1
-#    total = 0
-#    aux2 = 0
-
-#    for i in range(len(aparicion)):
-#        if (aparicion[ncaminos] != 0):
-#            aux2 += aparicion[ncaminos]
-#            if (aux2 >= aux):
-#                return total + 1
-#            else:
-#                total += 1
-#                ncaminos -= 1
-#        else:
-#            ncaminos -= 1
-#    return total
-
-
-
-def calculoValoresGamma(crit_path_avg, sigma_min, m_dodin, dist):
+# --- Definition of the models to predict duration random variable
+def model_gamma(attributes):
     """
     Estimate the duration random variable of a project with a Gamma distribution using a model 
     created by Salas et al.
     
-    return: Gamma distribution parameters:
-        alfa
-        beta
-        media
-        sigma
+    return: ('Gamma' (the name), 
+             the scipy.stat.distribution, 
+             alfa and beta (as debug variables in a dictionary)
     """
-    sigma = 0.91154134766017  * sigma_min
+    sigma = 0.91154134766017  * attributes['sigma_min']
     
-    if dist == 'Normal':
-        media = (  1.1336004782864 * crit_path_avg 
-                 - 0.9153232086309 * sigma_min 
-                 + 1.0927284342627 * math.log(m_dodin) )
+    if attributes['dist'] == 'Normal':
+        media = (  1.1336004782864 * attributes['crit_path_avg'] 
+                 - 0.9153232086309 * attributes['sigma_min']
+                 + 1.0927284342627 * math.log(attributes['m_dodin']) )
     else :
-        media = (  0.91263355372917 * crit_path_avg 
-                 + 0.75501704782379 * sigma_min 
-                 + 2.96581038327203 * math.log(m_dodin) )
+        media = (  0.91263355372917 * attributes['crit_path_avg'] 
+                 + 0.75501704782379 * attributes['sigma_min']
+                 + 2.96581038327203 * math.log(attributes['m_dodin']) )
 
     beta = sigma**2 / media
     alfa = media / beta
-        
-    return alfa, beta, media, sigma
 
-def calculoValoresExtremos(media, sigma, m):
+    d_gamma = scipy.stats.gamma(alfa, scale=beta)
+
+    return ('Gamma', d_gamma, {'alfa' : alfa, 'beta' : beta}) 
+
+def model_gamma_ant(attributes):
     """
-    Funcion que nos devuelve los valores necesarios para
-    realizar la distribucion de valores extremos
-
-    media (duracion media del camino critico)
-    sigma (desviacion tipica del camino critico)
-
-    return: a, b (parametros necesarios para realizar la funcion de valores extremos)
-    """
-    a = media + sigma * ((2*math.log(m))**0.5 - 0.5 * (math.log(math.log(m)) + math.log(4*math.pi)) / (2* math.log(m))**0.5)
-    b = ((2 * math.log(m))**0.5) / sigma
-
-    return a, b
-
-def calculoMcriticoDcriticoEV(a, b):
-    """
-    Funcion que devuelve la media y la desviacion tipica
-    de la distribucion de valores extremos
-
-    a, b (parametros necesarios para el calculo de la media y la desviacion tipica de la funcion de VE)
-
-    return: media (media estimada de la funcion de valores extremos)
-            sigma (desviacion tipica estimada de la funcion de valores extremos)
-    """
-    media = a + 0.57722 / b
-    sigma = math.sqrt((math.pi**2) / (6*(b**2)))
-
-    return media, sigma
-
-
-def testKS(duraciones, mCrit, dCrit, alfa, beta, a=0, b=0, tamanio=0.5):
-    """
-    Funcion que realiza el test de kolmogorv_smirnoff y
-    devuelve el p-value para cada distribucion
-
-    duraciones (vector con las duraciones simuladas del proyecto)
-    mCrit (media del camino critico)
-    dCrit (desviacion tipica del camino critico)
-    alfa (alfa de la funcion gamma)
-    beta (beta de la funcion gamma)
-    a (parametro de la funcion de valores extremos)
-    b (parametro de la funcion de valores extremos)
-    tamanio (tamanio del intervalo en el que queremos realizar el test)
+    Estimate the duration random variable of a project with a Gamma distribution using an ad hoc 
+    previous model created by Salas et al. 
     
-    return: p-values (en el caso de que la opcion de guardar no se active)
-            intervalos, frecuencias, distribuciones y p-values (en el caso de que se active la opcion de guardado)
-
-    Nota: La funcionalidad de este modulo se decidio cambiar al encontrar unas librerias capaces de realizar la
-          parte que necesitabamos del test, no obstante puede servir en un futuro.
-          Todo el codigo que se hizo en un principio se ha dejado comentado para que no consuma recursos para el programa,
-          pero puede ser de utilidad para futuras actualizaciones.
+    return: ('GammaAnt' (the name), 
+             the scipy.stat.distribution, 
+             alfa and beta (as debug variables in a dictionary)
     """
-    dNormal = scipy.stats.norm(loc=mCrit, scale=dCrit)
-    ks_test = scipy.stats.kstest(duraciones, dNormal.cdf )
-    #print ks_test, 'Normal'
+    # Gamma previous model
+    sigma_ant = attributes['sigma_ant']
+    media_ant = attributes['crit_path_avg'] +  math.pi * math.log(attributes['m_salas']) / sigma_ant
+    beta_ant = sigma_ant**2 / media_ant
+    alfa_ant = media_ant / beta_ant
 
-    dGamma = scipy.stats.gamma(alfa, scale=beta)
-    ks_test2 = scipy.stats.kstest(duraciones, dGamma.cdf)
-    #print dGamma.cdf(39.55024722), 'valor de gammma'
+    d_gamma_ant = scipy.stats.gamma(alfa_ant, scale=beta_ant)
+    return ('GammaAnt', d_gamma_ant, {'alfa' : alfa_ant, 'beta' : beta_ant}) 
+
+
+def model_pert(attributes):
+    """
+    PERT method to estimate the duration random variable of a project with a Normal distribution
     
-    #Calculo de la funcion de valores extremos acumulativa para cada intervalo
-    if (a != 0 and b !=0):
-        dGev = scipy.stats.gumbel_r(loc=a, scale=1 / b)
-        ks_test3 = scipy.stats.kstest(duraciones, dGev.cdf)
-        #print dGev.cdf(), 'valor de gumbel'
+    return: ('PERT' (the name), 
+             the scipy.stat.distribution, 
+             no debug variables in a dictionary
+    """
+    d_normal = scipy.stats.norm(loc=attributes['crit_path_avg'], scale=attributes['crit_path_stdev'])
+    return ('PERT', d_normal, {}) 
 
-    #Devuelve el máximo de los máximos de cada columna de diferencias, en el caso de que la de valores
-    #extremos no se pueda realizar devuelve no definido
-    if (a != 0 and b != 0):
-        return ks_test, ks_test2, ks_test3
-    elif (a == 0 and b == 0):
-        return ks_test, ks_test2
+def model_ev(attributes):
+    """
+    Dodin estimate of the duration random variable of a project with Extreme Values distribution
+    
+    return: ('EV' (the name), 
+             the scipy.stat.distribution, 
+             media and std (as debug variables in a dictionary)
+    """
+    if attributes['m_dodin'] > 1:
+    #a, b = calculoValoresExtremos (crit_path_avg, crit_path_stdev, m_dodin)
+        a = (attributes['crit_path_avg'] + attributes['crit_path_stdev'] 
+             * ( (2 * math.log(attributes['m_dodin']))**0.5 
+                 - 0.5 * (math.log(math.log(attributes['m_dodin'])) 
+                          + math.log(4 * math.pi)) / (2 * math.log(attributes['m_dodin']))**0.5 
+               )
+            )
+               
+        b = ((2 * math.log(attributes['m_dodin']))**0.5) / attributes['crit_path_stdev']
 
+        media_ve = a + 0.57722 / b # XXX Sirven para algo?
+        sigma_ve = math.sqrt((math.pi**2) / (6*(b**2))) 
+
+        if (a != 0 and b !=0):
+            d_ev = scipy.stats.gumbel_r(loc=a, scale=1 / b)
+        else:
+            d_ev = None
+    else:
+        d_ev = None
+        media_ve = None
+        sigma_ve = None
+
+    return ('EV', d_ev, {'mediaVE' : media_ve, 'sigmaVE' : sigma_ve}) 
+
+MODELS = [  model_pert, 
+            model_gamma, 
+            model_gamma_ant, 
+            model_ev,
+         ]
 
 # If the program is run directly, test cases
-if __name__ == '__main__': 
-    testKS (duraciones=[1,2,3], mCrit=36, dCrit=2.45, alfa=0, beta=0, a=0, b=0, tamanio=0.5)
-    testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=0, beta=0, a=39.58100088, b=0.247050635, tamanio=0.5)
-    testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=44.66385299, beta=0.89778668, a=0, b=0, tamanio=0.5)
-
- 
-    
+if __name__ == '__main__':
+    pass 
+#    testKS (duraciones=[1,2,3], mCrit=36, dCrit=2.45, alfa=0, beta=0, a=0, b=0, tamanio=0.5)
+#    testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=0, beta=0, a=39.58100088, b=0.247050635, tamanio=0.5)
+#    testKS (duraciones=[1,2,3], mCrit=0, dCrit=0, alfa=44.66385299, beta=0.89778668, a=0, b=0, tamanio=0.5)
 
