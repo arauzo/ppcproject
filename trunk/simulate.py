@@ -214,9 +214,7 @@ def main():
             # Create and write header
             results_table_file = open(args.table_file, 'w')
             header = "'Archivo', " + str( resultados.keys() )[1:-1] + '\n'
-#            header = 'Archivo,m,m1,M.Norm,S.Norm,P.Norm,M.Gamm,S.Gamm,P.Gamm,M.VE,' + \
-#                'S.VE,P.VE,M.Simu,S.Simu,"Mas cercana",mS,mCercana,sigma_longest_path,' + \
-#                'sigma_max,sigma_min\n'        
+            header = header.replace("'", '"')
             results_table_file.write(header)
         else:
             # Append data to the end
