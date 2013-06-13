@@ -41,7 +41,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
     simulaciones (vector with the simulations of each activity in each iteration)
     porcentaje (the mark we want to establish to determine how many paths have turned out critical)
 
-    return: results (vector with the results we should save in the output table)
+    return: results (dictionary with all attributes and test results)
     """
     # Get all paths removing 'begin' y 'end' from each path
     successors = dict(((act[1], act[2]) for act in activities))
@@ -91,7 +91,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
 
     attributes['n_paths'] = len(path_data)
     attributes['n_nodes'] = None
-    attributes['n_activ'] = None
+    attributes['n_activ'] = len(activities)
 
     attributes['m_dodin'] = m_dodin
     attributes['m_salas'] = m_salas
@@ -110,6 +110,8 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             ks_statistic, p_value = scipy.stats.kstest(sim_durations, dist.cdf)        
             results['ks' + name] = ks_statistic
             results['p_' + name] = p_value
+            results['MAE_' + name] = mae(sim_durations, dist.cdf)
+            results['RMSE_' + name] = rmse(sim_durations, dist.cdf)
             results['mean' + name] = dist.mean()
             results['sigma' + name] = dist.std()
             for var in debug_vars:
@@ -117,6 +119,8 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
         else:
             results['ks' + name] = None
             results['p_' + name] = None
+            restlts['MAE_' + name] = None
+            restlts['RMSE_' + name] = None
             results['mean' + name] = None
             results['sigma' + name] = None
 
@@ -125,6 +129,34 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
     results['sigmaSimulation'] = numpy.std(sim_durations)
 
     return results
+
+def mae(rvs, cdf):
+    """
+    Mean Average Error 
+    
+    rvs, data
+    cdf, estimated distribution
+    """
+    vals = numpy.sort(rvs)
+    N = len(vals)
+    cdfvals = cdf(vals) # Predicted for each value
+    return abs( (numpy.arange(1.0, N+1) / N - cdfvals) ).mean()
+    
+def rmse(rvs, cdf):
+    """
+    Root Mean Squared Error
+    
+    rvs, data
+    cdf, estimated distribution
+    """
+    vals = numpy.sort(rvs)
+    N = len(vals)
+    cdfvals = cdf(vals) # Predicted for each value
+    error_sqr = ( (numpy.arange(1.0, N+1) / N - cdfvals) )**2
+    return math.sqrt( error_sqr.mean() )
+    
+
+
 
 # --- Definition of the models to predict duration random variable
 def model_gamma(attributes):
@@ -193,7 +225,6 @@ def model_ev(attributes):
              media and std (as debug variables in a dictionary)
     """
     if attributes['m_dodin'] > 1:
-    #a, b = calculoValoresExtremos (crit_path_avg, crit_path_stdev, m_dodin)
         a = (attributes['crit_path_avg'] + attributes['crit_path_stdev'] 
              * ( (2 * math.log(attributes['m_dodin']))**0.5 
                  - 0.5 * (math.log(math.log(attributes['m_dodin'])) 
@@ -203,19 +234,14 @@ def model_ev(attributes):
                
         b = ((2 * math.log(attributes['m_dodin']))**0.5) / attributes['crit_path_stdev']
 
-        media_ve = a + 0.57722 / b # XXX Sirven para algo?
-        sigma_ve = math.sqrt((math.pi**2) / (6*(b**2))) 
-
         if (a != 0 and b !=0):
             d_ev = scipy.stats.gumbel_r(loc=a, scale=1 / b)
         else:
             d_ev = None
     else:
         d_ev = None
-        media_ve = None
-        sigma_ve = None
 
-    return ('EV', d_ev, {'mediaVE' : media_ve, 'sigmaVE' : sigma_ve}) 
+    return ('EV', d_ev, {}) 
 
 MODELS = [  model_pert, 
             model_gamma, 
