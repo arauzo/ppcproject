@@ -112,6 +112,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['p_' + name] = p_value
             results['MAE_' + name] = mae(sim_durations, dist.cdf)
             results['RMSE_' + name] = rmse(sim_durations, dist.cdf)
+            results['R2_' + name] = rsquared(sim_durations, dist.cdf)
             results['mean' + name] = dist.mean()
             results['sigma' + name] = dist.std()
             for var in debug_vars:
@@ -124,8 +125,8 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['mean' + name] = None
             results['sigma' + name] = None
 
-    #The average and the sigma of the simulation are included too
-    results['mediaSimulation'] = numpy.mean(sim_durations)
+    # Include average and std of the simulation
+    results['meanSimulation'] = numpy.mean(sim_durations)
     results['sigmaSimulation'] = numpy.std(sim_durations)
 
     return results
@@ -155,7 +156,20 @@ def rmse(rvs, cdf):
     error_sqr = ( (numpy.arange(1.0, N+1) / N - cdfvals) )**2
     return math.sqrt( error_sqr.mean() )
     
+def rsquared(rvs, cdf):
+    """
+    R^2
+    
+    rvs, data
+    cdf, estimated distribution
+    """
+    vals = numpy.sort(rvs)
+    N = len(vals)
+    cdfvals = cdf(vals) # Predicted for each value
 
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(numpy.arange(1.0, N+1) / N,
+                                                                         cdfvals)
+    return r_value**2
 
 
 # --- Definition of the models to predict duration random variable
