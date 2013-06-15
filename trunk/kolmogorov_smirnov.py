@@ -113,6 +113,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['p_' + name] = p_value
             results['MAE_' + name] = mae(observed, predicted)
             results['RMSE_' + name] = rmse(observed, predicted)
+            results['RRMSE_' + name] = rrmse(observed, predicted)
             results['R2_' + name] = rsquared(observed, predicted)
             results['NSE_' + name] = nse(observed, predicted)
             results['Wilmott_' + name] = wilmott(observed, predicted)
@@ -126,6 +127,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['p_' + name] = None
             restlts['MAE_' + name] = None
             restlts['RMSE_' + name] = None
+            results['RRMSE_' + name] = None
             results['R2_' + name] = None
             results['NSE_' + name] = None
             results['Wilmott_' + name] = None
@@ -200,6 +202,12 @@ def pbias(observed, predicted):
     Deviation of prediction expressed as a percentage
     """
     return 100 * sum(observed - predicted) / sum(observed)
+
+def rrmse(observed, predicted):
+    """
+    Relative RMSE
+    """
+    return rmse(observed, predicted) / observed.mean()
     
 #MEASURES = [ ('MAE', mae), 
 #             rmse]
