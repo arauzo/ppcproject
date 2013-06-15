@@ -116,6 +116,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['R2_' + name] = rsquared(observed, predicted)
             results['NSE_' + name] = nse(observed, predicted)
             results['Wilmott_' + name] = wilmott(observed, predicted)
+            results['PBIAS_' + name] = pbias(observed, predicted)
             results['mean' + name] = dist.mean()
             results['sigma' + name] = dist.std()
             for var in debug_vars:
@@ -128,6 +129,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['R2_' + name] = None
             results['NSE_' + name] = None
             results['Wilmott_' + name] = None
+            results['PBIAS_' + name] = None
             results['mean' + name] = None
             results['sigma' + name] = None
 
@@ -176,6 +178,8 @@ def rsquared(observed, predicted):
 def nse(observed, predicted):
     """
     Efficiency coeficient of Nash and Sutcliffe (1970), ver Pushpalatha2012a_review.
+    
+    [-inf, 1.0] (<0 the mean is better estimator, 1.0 perfect fit)
     """
     errors_sqr = (observed - predicted)**2
     obs_mean = observed.mean()
@@ -188,6 +192,14 @@ def wilmott(observed, predicted):
     errors_sqr = (observed - predicted)**2
     obs_mean = observed.mean()
     return 1 - sum(errors_sqr) / sum( (abs(predicted - obs_mean) + abs(observed - obs_mean))**2 )
+    
+def pbias(observed, predicted):
+    """
+    PBIAS, ver Moriasi2007model.
+
+    Deviation of prediction expressed as a percentage
+    """
+    return 100 * sum(observed - predicted) / sum(observed)
     
 #MEASURES = [ ('MAE', mae), 
 #             rmse]
