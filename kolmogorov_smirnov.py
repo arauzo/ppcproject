@@ -108,11 +108,14 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
         name, dist, debug_vars = model(attributes)
         if dist != None:
             ks_statistic, p_value = scipy.stats.kstest(sim_durations, dist.cdf)        
+            observed, predicted = observed_predicted(sim_durations, dist.cdf)
             results['ks' + name] = ks_statistic
             results['p_' + name] = p_value
-            results['MAE_' + name] = mae(sim_durations, dist.cdf)
-            results['RMSE_' + name] = rmse(sim_durations, dist.cdf)
-            results['R2_' + name] = rsquared(sim_durations, dist.cdf)
+            results['MAE_' + name] = mae(observed, predicted)
+            results['RMSE_' + name] = rmse(observed, predicted)
+            results['R2_' + name] = rsquared(observed, predicted)
+            results['NSE_' + name] = nse(observed, predicted)
+            results['Wilmott_' + name] = wilmott(observed, predicted)
             results['mean' + name] = dist.mean()
             results['sigma' + name] = dist.std()
             for var in debug_vars:
@@ -122,6 +125,9 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
             results['p_' + name] = None
             restlts['MAE_' + name] = None
             restlts['RMSE_' + name] = None
+            results['R2_' + name] = None
+            results['NSE_' + name] = None
+            results['Wilmott_' + name] = None
             results['mean' + name] = None
             results['sigma' + name] = None
 
@@ -131,46 +137,60 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
 
     return results
 
-def mae(rvs, cdf):
+
+# --- Measures of goodness of fit
+def observed_predicted(rvs, cdf):
+    """
+    Transform simulation measures into probability observed and predicted
+
+    rvs, data
+    cdf, estimated distribution
+    """
+    # (taken from Dmin of scipy.stats.kstest)
+    vals = numpy.sort(rvs)
+    observed = cdf(vals)
+    n = len(vals)
+    predicted = numpy.arange(1.0, n+1) / n   
+    return observed, predicted
+
+def mae(observed, predicted):
     """
     Mean Average Error 
-    
-    rvs, data
-    cdf, estimated distribution
     """
-    vals = numpy.sort(rvs)
-    N = len(vals)
-    cdfvals = cdf(vals) # Predicted for each value
-    return abs( (numpy.arange(1.0, N+1) / N - cdfvals) ).mean()
+    return abs(observed - predicted).mean()
     
-def rmse(rvs, cdf):
+def rmse(observed, predicted):
     """
     Root Mean Squared Error
-    
-    rvs, data
-    cdf, estimated distribution
     """
-    vals = numpy.sort(rvs)
-    N = len(vals)
-    cdfvals = cdf(vals) # Predicted for each value
-    error_sqr = ( (numpy.arange(1.0, N+1) / N - cdfvals) )**2
-    return math.sqrt( error_sqr.mean() )
+    errors_sqr = (observed - predicted)**2
+    return math.sqrt( errors_sqr.mean() )
     
-def rsquared(rvs, cdf):
+def rsquared(observed, predicted):
     """
     R^2
-    
-    rvs, data
-    cdf, estimated distribution
     """
-    vals = numpy.sort(rvs)
-    N = len(vals)
-    cdfvals = cdf(vals) # Predicted for each value
-
-    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(numpy.arange(1.0, N+1) / N,
-                                                                         cdfvals)
+    slope, intercept, r_value, p_value, std_err = scipy.stats.linregress(observed, predicted)
     return r_value**2
 
+def nse(observed, predicted):
+    """
+    Efficiency coeficient of Nash and Sutcliffe (1970), ver Pushpalatha2012a_review.
+    """
+    errors_sqr = (observed - predicted)**2
+    obs_mean = observed.mean()
+    return 1 - sum(errors_sqr) / sum((observed - obs_mean)**2)
+
+def wilmott(observed, predicted):
+    """
+    Concordance coeficient of Wilmott (1984), ver Krause2005Efficiency.
+    """
+    errors_sqr = (observed - predicted)**2
+    obs_mean = observed.mean()
+    return 1 - sum(errors_sqr) / sum( (abs(predicted - obs_mean) + abs(observed - obs_mean))**2 )
+    
+#MEASURES = [ ('MAE', mae), 
+#             rmse]
 
 # --- Definition of the models to predict duration random variable
 def model_gamma(attributes):
