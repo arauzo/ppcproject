@@ -30,7 +30,7 @@ import graph
 import pert
 
 
-def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
+def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90, pert_graph=None):
     """
     Using the data from a simulation compare the results with those achieved by the several models 
     defined. The comparison is done by testing the fitting of the distribution with the 
@@ -90,7 +90,10 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
     attributes['crit_path_stdev'] = crit_path_stdev
 
     attributes['n_paths'] = len(path_data)
-    attributes['n_nodes'] = None
+    if pert_graph:
+        attributes['n_nodes'] = len(pert_graph.successors)
+    else:
+        attributes['n_nodes'] = None
     attributes['n_activ'] = len(activities)
 
     attributes['m_dodin'] = m_dodin
@@ -125,8 +128,8 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90):
         else:
             results['ks' + name] = None
             results['p_' + name] = None
-            restlts['MAE_' + name] = None
-            restlts['RMSE_' + name] = None
+            results['MAE_' + name] = None
+            results['RMSE_' + name] = None
             results['RRMSE_' + name] = None
             results['R2_' + name] = None
             results['NSE_' + name] = None

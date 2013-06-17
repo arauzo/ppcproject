@@ -45,99 +45,7 @@ def vectorDuraciones(it, actividad):
             duracionProyecto = tearly[-1]
             duraciones.append(duracionProyecto)
             
-    return duraciones, simulaciones
-   
-   
-#def test(activity, duracionesTotales, simulaciones, porcentaje):
-#    """
-#    Performs the kolmogorov_smirnov test and calculates the parameters required to check which
-#    estimated parameters most approximates to those obtained during the simulation.
-
-#    activity (project activities)
-#    duracionesTotales (vector with the duration resulting from the simulation)
-#    simulaciones (vector with the simulations of each activity in each iteration)
-#    porcentaje (the mark we want to establish to determine how many paths have turned out critical)
-
-#    return: results( vector with the results we should save in the output table)
-#    """
-#    # Get all paths removing 'begin' y 'end' from each path
-#    successors = dict(((act[1], act[2]) for act in activity))
-#    g = graph.roy(successors)
-#    caminos = [c[1:-1] for c in graph.find_all_paths(g, 'Begin', 'End')]
-
-#    # A list is created with the paths, their duration and variances    
-#    informacionCaminos = []
-#    for camino in caminos:   
-#        media, varianza = pert.mediaYvarianza(camino, activity) 
-#        info = [camino, float(media), float(varianza), math.sqrt(float(varianza))]      
-#        informacionCaminos.append(info)
-
-#    # Paths in order of increasing duration and stdev
-#    informacionCaminos.sort(key=operator.itemgetter(1,3))
-
-#    # Create an apparition vector that will count all the times a path has turned out critical
-#    aparicion = numeroCriticos(informacionCaminos, duracionesTotales, simulaciones, caminos)
-#    
-#    # Value m2 according to the selected percentage
-#    m2 = caminosCriticosCalculados(aparicion, porcentaje, len(simulaciones))
-
-#    #The number of predominant paths is calculated (according to Dodin and to our method),
-#    #Values are assign to alpha and beta in order to perform the gamma function
-#    #The average and sigma estimated for the gamma are assigned
-#    m, m1, alfa, beta, mediaestimada, sigma, sigma_longest_path, sigma_max, sigma_min \
-#        = kolmogorov_smirnov.calculoValoresGamma(informacionCaminos, 'Normal')
-
-#    #The average and the sigma of the normal are assigned
-#    mediaCritico = float(informacionCaminos[-1][1])
-#    dTipicaCritico = float(informacionCaminos[-1][3]) 
-
-#    #The average and the sigma of the simulation are assigned
-#    mediaSimulation = numpy.mean(duracionesTotales)
-#    sigmaSimulation = numpy.std(duracionesTotales)
-
-#    #If there were more than one path candidate to be critical
-#    #The average and the sigma of the extreme values function are calculated
-#    mediaVE = sigmaVE = a = b = None
-#    if (m != 1):
-#        a, b = kolmogorov_smirnov.calculoValoresExtremos (mediaCritico, dTipicaCritico, m)
-#        mediaVE, sigmaVE = kolmogorov_smirnov.calculoMcriticoDcriticoEV (a, b)
-
-#    #An empty vector is created to save the results
-#    results = []
-
-#    # The number of estimated paths candidate to be critical, 
-#    # according to Dodin and to our method is added to the vector of results.   
-#    results.append(m)
-#    results.append(m1)
-
-#    # Depending on whether the distribution of extreme values is applied
-#    if (m != 1):
-#        pvalueN, pvalueG, pvalueEV \
-#            = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico, 
-#                                        dTipicaCritico, alfa, beta, a, b)
-#    else:
-#        pvalueN, pvalueG = kolmogorov_smirnov.testKS(duracionesTotales, mediaCritico,
-#                                                     dTipicaCritico, alfa, beta)
-#        pvalueEV = [None]
-#        
-#    results.append(mediaCritico)
-#    results.append(dTipicaCritico)
-#    results.append(pvalueN[0])
-#    results.append(mediaestimada)
-#    results.append(sigma)
-#    results.append(pvalueG[0])
-#    results.append(mediaVE)
-#    results.append(sigmaVE)
-#    results.append(pvalueEV[0])
-#    results.append(mediaSimulation)
-#    results.append(sigmaSimulation)
-#    results.append(theBest(results))
-#    results.append(m2)
-#    results.append(theBestm(m, m1, m2))
-#    results.append(sigma_longest_path)
-#    results.append(sigma_max)
-#    results.append(sigma_min)
-#    return results
+    return duraciones, simulaciones, grafoRenumerado
 
         
 def main():
@@ -197,7 +105,7 @@ def main():
     act, schedules, recurso, asignacion = data
 
     # Simulate project
-    durations, simulation_act = vectorDuraciones(args.i, act)
+    durations, simulation_act, graph = vectorDuraciones(args.i, act)
 
     # Save durations in csv format
     with open(durations_file, 'w') as f:
@@ -206,7 +114,8 @@ def main():
             f.write(str(dur) + '\n')
 
     # Create the result vector to be saved in the file
-    resultados = kolmogorov_smirnov.evaluate_models(act, durations, simulation_act, args.p)
+    resultados = kolmogorov_smirnov.evaluate_models(act, durations, simulation_act, 
+                                                    args.p, pert_graph=graph)
 
     # Save the results
     if args.table_file:
