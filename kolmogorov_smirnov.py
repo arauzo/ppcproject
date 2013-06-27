@@ -109,6 +109,7 @@ def evaluate_models(activities, sim_durations, simulaciones, porcentaje=90, pert
     results = collections.OrderedDict(attributes)
     for model in MODELS:
         name, dist, debug_vars = model(attributes)
+        print "*** MODEL:", name, "***"
         if dist != None:
             ks_statistic, p_value = scipy.stats.kstest(sim_durations, dist.cdf)        
             observed, predicted = observed_predicted(sim_durations, dist.cdf)
@@ -155,9 +156,13 @@ def observed_predicted(rvs, cdf):
     """
     # (taken from Dmin of scipy.stats.kstest)
     vals = numpy.sort(rvs)
+    print "Vals:", vals.mean()
+    print "CDF", cdf.im_self.mean(), cdf.im_self.std()
     observed = cdf(vals)
     n = len(vals)
     predicted = numpy.arange(1.0, n+1) / n   
+#    print "Obs:", observed.mean(), observed
+#    print "Pred:", predicted.mean(), predicted
     return observed, predicted
 
 def mae(observed, predicted):

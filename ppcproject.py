@@ -3594,14 +3594,14 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         Accion usuario para acceder al test de kolmogorv smirnoff
         """
         results = kolmogorov_smirnov.evaluate_models(self.actividad, self.duraciones, self.simTotales)
-        self._widgets.get_widget('pvalueN' ).set_text(str( results['pvalueN']))
-        self._widgets.get_widget('statisticN').set_text(str( results['statisticN']))
-        self._widgets.get_widget('pvalueG'  ).set_text(str( results['pvalueG']))
-        self._widgets.get_widget('statisticG' ).set_text(str( results['statisticG']))
+        self._widgets.get_widget('pvalueN' ).set_text(str( results['p_PERT']))
+        self._widgets.get_widget('statisticN').set_text(str( results['ksPERT']))
+        self._widgets.get_widget('pvalueG'  ).set_text(str( results['p_Gamma']))
+        self._widgets.get_widget('statisticG' ).set_text(str( results['ksGamma']))
 
         if (results['m_dodin'] != 1):
-            self._widgets.get_widget('pvalueEV'     ).set_text(str( results['pvalueEV']))
-            self._widgets.get_widget('statisticEV'    ).set_text(str( results['statisticEV']))
+            self._widgets.get_widget('pvalueEV'     ).set_text(str( results['p_EV']))
+            self._widgets.get_widget('statisticEV'    ).set_text(str( results['ksEV']))
         else:
             self._widgets.get_widget('pvalueEV').set_text('Not defined')
             self._widgets.get_widget('statisticEV').set_text('Not defined')
