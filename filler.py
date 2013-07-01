@@ -14,6 +14,7 @@ def load(filename):
 
     return: data (file info)
     """
+    #XXX NO USAR ESTA FUNCION (ver la generica en fileFormats)
     formatos = [fileFormats.PPCProjectFileFormat(),fileFormats.PSPProjectFileFormat()]
     try:
         # Tries to load file with formats that match its extension in format order
