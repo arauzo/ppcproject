@@ -456,6 +456,10 @@ class Test(object):
         """ Close window """
         return False
 
+    def add_image(self, image):
+        self.images.append(image)
+        self.svg_viewer.update_svg( self.images[self.image_index] )
+
     def change_image(self, widget, data=None):
         """
         Toggles to previous or next image

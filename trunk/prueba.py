@@ -13,8 +13,10 @@ import sys
 import algoritmoConjuntos
 import algoritmoSalas
 import algoritmoCohenSadeh
+import Cohen_sadeh_Alberto
 import graph
 import fileFormats
+import pert
 
 #REPETICIONES = 1
 #REPETICIONES = int(sys.argv[2])
@@ -29,7 +31,7 @@ def openProject(filename):
         schedules  = []
         fileFormat = [
             fileFormats.PPCProjectFileFormat(),
-            fileFormats.PPCProjectOLDFileFormat(),
+#            fileFormats.PPCProjectOLDFileFormat(),
             fileFormats.PSPProjectFileFormat(),
         ]
 
@@ -69,6 +71,7 @@ if len(sys.argv)==3:
         successors[i[1]]=i[2]
     ###obtengo prelaciones revertiendo sucesores
     prelaciones1 = graph.reversed_prelation_table(successors)
+    
 
     """
     ejemplos de prelaciones
@@ -141,57 +144,32 @@ if len(sys.argv)==3:
         'H' : ['D'],
         }
     """
+    # List of name and file of each algorithm to test 
+    algorithms = [('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), ('Algoritmo Salas', algoritmoSalas.salas), ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)]
+    
+    for name, alg in algorithms:
+        itime=os.times()
+        for i in range(repeticiones):
+            g = alg(prelaciones1)
+        ftime=os.times()
+        utime = ftime[0] - itime[0]
+        print name
+        print "utime %.4f"% (utime)
+        print "numero de nodos: ",g.number_of_nodes()
+        print "numero de arcos: ",g.number_of_arcs()
+        print "numero de arcos reales: ",g.numArcsReales()
+        print "numero de arcos ficticios: ",g.numArcsFicticios()
+#        print "Prelaciones1: ", prelaciones1
+        gg1 = Cohen_sadeh_Alberto.cohen_sadeh(prelaciones1)
+#        print "gg1: ", gg1.pertSuccessors()
+#        print "Successors: ", successors
+        print "Validation: ", Cohen_sadeh_Alberto.validation(successors, gg1)
+        print
+#        image_text = graph.pert2image(g) # Draw graph and save in a file (*.svg)
+#        fsalida = open(name + ' ' + os.path.split(filename)[1] + '.svg', 'w')
+#        fsalida.write(image_text)
+#        fsalida.close()
 
-    itime=os.times()
-    for i in range(repeticiones):
-        g = algoritmoCohenSadeh.cohenSadeh(prelaciones1)
-    ftime=os.times()
-    utime = ftime[0] - itime[0]
-    print "CohenSadeh"
-    print "utime %.4f"% (utime)
-    print "numero de nodos: ",g.number_of_nodes()
-    print "numero de arcos: ",g.number_of_arcs()
-    print "numero de arcos reales: ",g.numArcsReales()
-    print "numero de arcos ficticios: ",g.numArcsFicticios()
-    print
-    image_text = graph.pert2image(g, format='png')
-    fsalida = open('grafoCohenSadeh' + os.path.split(filename)[1] + '.png', 'w')
-    fsalida.write(image_text)
-    fsalida.close()
-
-    itime=os.times()
-    for i in range(repeticiones):
-        g=algoritmoConjuntos.algoritmoN(prelaciones1)
-    ftime=os.times()
-    utime = ftime[0] - itime[0]
-    print "Algoritmo Conjuntos"
-    print "utime %.4f"% (utime)
-    print "numero de nodos: ",g.number_of_nodes()
-    print "numero de arcos: ",g.number_of_arcs()
-    print "numero de arcos reales: ",g.numArcsReales()
-    print "numero de arcos ficticios: ",g.numArcsFicticios()
-    print
-    image_text = graph.pert2image(g, format='png')
-    fsalida = open('grafoConjuntos' + os.path.split(filename)[1] + '.png', 'w')
-    fsalida.write(image_text)
-    fsalida.close()
-
-    itime=os.times()
-    for i in range(repeticiones):
-        g=algoritmoSalas.salas(prelaciones1)
-    ftime=os.times()
-    utime = ftime[0] - itime[0]
-    print "Algoritmo Salas"
-    print "utime %.4f"% (utime)
-    print "numero de nodos: ",g.number_of_nodes()
-    print "numero de arcos: ",g.number_of_arcs()
-    print "numero de arcos reales: ",g.numArcsReales()
-    print "numero de arcos ficticios: ",g.numArcsFicticios()
-    print 
-    image_text = graph.pert2image(g, format='png')
-    fsalida = open('grafoSalas' + os.path.split(filename)[1] + '.png', 'w')
-    fsalida.write(image_text)
-    fsalida.close()
 else:
     print
     print "Numero de parametros introducidos erroneo."
