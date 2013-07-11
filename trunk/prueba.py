@@ -81,6 +81,10 @@ if len(sys.argv) == 3:
     ###obtengo los sucesores de cada actividad
     for i in data:
         successors[i[1]] = i[2]
+    ###Check conexos
+    print "\nConexos: ", conexos.check_conexos(successors)
+    ###Check cycles
+    print "Kahn: ", Kahn1962.check_cycles(successors)
     ###obtengo prelaciones revertiendo sucesores
     prelaciones1 = graph.reversed_prelation_table(successors)
     
@@ -176,10 +180,7 @@ if len(sys.argv) == 3:
         gg1 = Cohen_sadeh_Alberto.cohen_sadeh(prelaciones1)
 #        print "gg1: ", gg1.pertSuccessors()
 #        print "Successors: ", successors
-        print "Conexos: ", conexos.check_conexos(successors)
         print "Validation: ", validation.check_validation(successors, gg1)
-        print "Kahn: ", Kahn1962.check_cycles(successors)
-
 #        image_text = graph.pert2image(g) # Draw graph and save in a file (*.svg)
 #        fsalida = open(name + ' ' + os.path.split(filename)[1] + '.svg', 'w')
 #        fsalida.write(image_text) # Draw in directory images
