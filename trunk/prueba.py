@@ -1,4 +1,13 @@
 """
+Function that open a file with *.sm extension pass as parameter in command line, the function chek algorithms 
+(in list algorithms):
+    - If graph does not have cycles (Kahn1962)
+    - If graph have not related nodes (Conexos)
+    - If graph draw, have the nodes, arcs, and dummy required (validation_graph)
+Also function make run time, number of arcs, number of dummy arcs, numbers of real arcs and number of nodes
+
+algorithms is a list to include all algorithm to check.
+
 algoritmo que abre un fichero con extension *.sm pasado como parametro por linea de comandos,
 asi como el numero de repeticiones de cada algoritmo para que de resultados que se puedan comparar,
 y realiza pruebas a los tres algoritmos:
@@ -17,6 +26,9 @@ import Cohen_sadeh_Alberto
 import graph
 import fileFormats
 import pert
+import Kahn1962
+import validation
+import conexos
 
 #REPETICIONES = 1
 #REPETICIONES = int(sys.argv[2])
@@ -60,15 +72,15 @@ def openProject(filename):
         sys.exit(1)
 
 ###si hay dos argumentos pasados por lineas de comandos 
-if len(sys.argv)==3:
-    repeticiones= int(sys.argv[2]) ###repeticiones es igual al segundo parametro
-    filename=sys.argv[1]           ###el nombre del fichero es el primer parametro
+if len(sys.argv) == 3:
+    repeticiones = int(sys.argv[2]) ###repeticiones es igual al segundo parametro
+    filename = sys.argv[1]           ###el nombre del fichero es el primer parametro
 
     data = openProject(filename)
     successors = {}
     ###obtengo los sucesores de cada actividad
     for i in data:
-        successors[i[1]]=i[2]
+        successors[i[1]] = i[2]
     ###obtengo prelaciones revertiendo sucesores
     prelaciones1 = graph.reversed_prelation_table(successors)
     
@@ -145,29 +157,32 @@ if len(sys.argv)==3:
         }
     """
     # List of name and file of each algorithm to test 
-    algorithms = [('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), ('Algoritmo Salas', algoritmoSalas.salas), ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)]
+    algorithms = [('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), ('Algoritmo Salas', algoritmoSalas.salas), 
+    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)]
     
     for name, alg in algorithms:
-        itime=os.times()
+        itime = os.times()
         for i in range(repeticiones):
-            g = alg(prelaciones1)
-        ftime=os.times()
+            pert_graph = alg(prelaciones1)
+        ftime = os.times()
         utime = ftime[0] - itime[0]
         print name
         print "utime %.4f"% (utime)
-        print "numero de nodos: ",g.number_of_nodes()
-        print "numero de arcos: ",g.number_of_arcs()
-        print "numero de arcos reales: ",g.numArcsReales()
-        print "numero de arcos ficticios: ",g.numArcsFicticios()
+        print "numero de nodos: ", pert_graph.number_of_nodes()
+        print "numero de arcos: ", pert_graph.number_of_arcs()
+        print "numero de arcos reales: ", pert_graph.numArcsReales()
+        print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
 #        print "Prelaciones1: ", prelaciones1
         gg1 = Cohen_sadeh_Alberto.cohen_sadeh(prelaciones1)
 #        print "gg1: ", gg1.pertSuccessors()
 #        print "Successors: ", successors
-        print "Validation: ", Cohen_sadeh_Alberto.validation(successors, gg1)
-        print
+        print "Conexos: ", conexos.check_conexos(successors)
+        print "Validation: ", validation.check_validation(successors, gg1)
+        print "Kahn: ", Kahn1962.check_cycles(successors)
+
 #        image_text = graph.pert2image(g) # Draw graph and save in a file (*.svg)
 #        fsalida = open(name + ' ' + os.path.split(filename)[1] + '.svg', 'w')
-#        fsalida.write(image_text)
+#        fsalida.write(image_text) # Draw in directory images
 #        fsalida.close()
 
 else:

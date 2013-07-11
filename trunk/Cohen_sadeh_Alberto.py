@@ -6,6 +6,7 @@ import copy
 import pert
 import fileFormats
 import collections
+import validation
 
 def cohen_sadeh(prelations):
     """
@@ -274,19 +275,7 @@ def test(prelations, graph):
     print "Successors"
     for act, suc in graph.predecessors.items():
         print "NODOend:", act, "NODOstart:",  suc
-
-def validation(successors, pert): # Compare in's dict an graph's dict
-    """
-    """
-    successors_generated = pert.pertSuccessors()
-    for activity, successors in successors.items():
-        if not activity in successors_generated:
-            return False
-        else:
-            if set(successors) != set(successors_generated[activity]):
-                return False
-    return True
-    
+        
 def main():
     """
     Generates a ppc format file from a library file.
@@ -333,7 +322,7 @@ def main():
     graph.gtk.main()
     print "Successors: ", successors
     print "gg1: ", gg1.pertSuccessors()
-    print validation(successors, gg1)
+    print validation.check_validation(successors, gg1)
     return 0
 
 # If the program is run directly
