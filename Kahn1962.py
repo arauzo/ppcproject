@@ -4,7 +4,7 @@ import graph
 
 def check_cycles(prelations):
     """
-        Algorithm based on Kahn 1962 to check if dict has cycles
+    Algorithm based on Kahn 1962 to check if dict has cycles
     """
     #L ← Empty list that will contain the sorted elements
     #S ← Set of all nodes with no incoming edges

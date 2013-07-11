@@ -4,8 +4,8 @@ import graph
 
 def check_conexos(successors):
     """
-        Check if connected graph, graph must be undirected
-        Return set of visited elements
+    Check if connected graph, graph must be undirected
+    Return set of visited elements
     """
     undirected_graph = conected_to_undirected_prelations(successors)
     visited_elements = set() #Empty set that will contain the visited elements
