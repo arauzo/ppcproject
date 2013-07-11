@@ -1,24 +1,20 @@
 """
-Function that open a file with *.sm extension pass as parameter in command line, the function chek algorithms 
-(in list algorithms):
+Program to check graph generation algorithms with the project file passed as parameter
+
+The tests are:
     - If graph does not have cycles (Kahn1962)
     - If graph have not related nodes (Conexos)
     - If graph draw, have the nodes, arcs, and dummy required (validation_graph)
-Also function make run time, number of arcs, number of dummy arcs, numbers of real arcs and number of nodes
 
-algorithms is a list to include all algorithm to check.
+Apart from test results, show: run time, number of arcs, number of dummy arcs, numbers of real arcs and number of nodes
 
-algoritmo que abre un fichero con extension *.sm pasado como parametro por linea de comandos,
-asi como el numero de repeticiones de cada algoritmo para que de resultados que se puedan comparar,
-y realiza pruebas a los tres algoritmos:
-Conjuntos, Salas, Cohen-Sadeh
-las pruebas consisten en tiempo de ejecucion, numero de arcos, numero de arcos ficticios, numeros de arcos
-reales, y numero de nodos.
+algorithms: list to include all algorithm to check.
 """
 
 import os
 import os.path
 import sys
+
 import algoritmoConjuntos
 import algoritmoSalas
 import algoritmoCohenSadeh
@@ -161,8 +157,9 @@ if len(sys.argv) == 3:
         }
     """
     # List of name and file of each algorithm to test 
-    algorithms = [('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), ('Algoritmo Salas', algoritmoSalas.salas), 
-    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)]
+    algorithms = [  ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+                    ('Algoritmo Salas', algoritmoSalas.salas), 
+                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)  ]
     
     for name, alg in algorithms:
         itime = os.times()
