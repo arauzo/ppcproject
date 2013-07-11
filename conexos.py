@@ -22,10 +22,8 @@ def check_conexos(successors):
         set_prelations = set(undirected_graph[act]) #Create set of next activities
         start.update(set_prelations.difference(visited_elements)) #Update nexts elements to visit
     if visited_elements != activities:
-        print "False"
         return False
     else:
-        print "True"
         return True
 
 def conected_to_undirected_prelations(prelations):
@@ -54,18 +52,18 @@ def conected_to_undirected_prelations(prelations):
 #    return new_dictionary
     
 #--- Start running as a program
-if __name__ == '__main__':
-    successors = {
-        'a' : ['b','c'],
-        'b' : ['c','d'],
-        'c' : ['d'],
-        'd' : ['e'],
-        'e' : [],
+#if __name__ == '__main__':
+#    successors = {
+#        'a' : ['b','c'],
+#        'b' : ['c','d'],
+#        'c' : ['d'],
+#        'd' : ['e'],
+#        'e' : [],
 #        'f' : [],
 #        'g' : [],
 #        'h' : ['i'],
 #        'i' : [],
-    }
+#    }
     
 #    conected = set() #Empty set for recive result of check_conexos
 #    part_conected = set() #Empty set for all part conected
@@ -73,7 +71,7 @@ if __name__ == '__main__':
 #    aux_dict = prelations #Auxiliary dictionary to work on 
 #    while part_conected != set(prelations.keys()): 
 ##    undirected_graph = conected_to_undirected_prelations(prelations)
-    print "Check_Conexos: ", check_conexos(successors)
+##    print "Check_Conexos: ", check_conexos(successors)
 #        list_conected.append(conected)
 #        part_conected.update(conected)
 #        new_dict = update_dictionary(part_conected, prelations)
