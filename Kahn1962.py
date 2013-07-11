@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 import graph
 
-def check_kahn1962(prelations):
+def check_cycles(prelations):
     """
-        Check if graph has cycles
+        Algorithm based on Kahn 1962 to check if dict has cycles
     """
     #L ← Empty list that will contain the sorted elements
     #S ← Set of all nodes with no incoming edges
@@ -12,34 +12,29 @@ def check_kahn1962(prelations):
     #    remove a node n from S
     #    insert n into L
     #    for each node m with an edge e from n to m do
-    #        remove edge e from the graph
+    #        remove edge e from dict
     #        if m has no other incoming edges then
     #            insert m into S
-    #if graph has edges then
+    #if dict has edges then
     #    output error message (graph has at least one cycle)
     #else 
     #    output message (proposed topologically sorted order: L)
 
     visited_elements = [] #Empty list that will contain the visited elements
     no_incoming_edges = graph.begining_activities(prelations) #Set of all nodes with no incoming edges
-    print "Datos de Entrada\n", prelations, "\n\n"
+#    print "Datos de Entrada\n", prelations, "\n\n"
     iteracion=1
     while len(no_incoming_edges) > 0: #While no_incoming_edges no empty
         act = no_incoming_edges.pop()
         visited_elements.append(act) #Remove node n from no_incoming_edges and insert n into visited_elements
-        print "Iteracion ", iteracion
         iteracion+=1
-        print "Prelations: ", prelations
-        print "Activity: ", act
-        print "noIncomingEdges: ", no_incoming_edges
-        print "visitedElements: ", visited_elements, "\n"
         set_prelations = set(prelations[act]) #Get the new set prelations
         del prelations[act] #Delete prelations activity
         no_incoming_edges.update(graph.begining_activities(prelations, set_prelations)) #Update no_incoming_edges with new begining activities
     if prelations: #if graph has edges
-        print "ERROR" #graph has at least one cycle
+        print "ERROR Graph has at least one cycle" #graph has at least one cycle
     else: #graph has no cycles
-        print "OK"
+        print "OK Graph no have cycles"
         
 # --- Start running as a program
 if __name__ == '__main__':
@@ -79,9 +74,14 @@ if __name__ == '__main__':
         'e' : ['d','c'],
     }
     
-#    graph_list = [prelations, simple_cycle, two_cycles]
+    small_cycle = {
+        'a' : ['b'],
+        'b' : ['a'],
+    }
     
-#    for graph in graph_list:
-    print check_kahn1962(prelations)
+    #dict_list = [prelations, simple_cycle, cycle, two_cycles, small_cycle]
+    
+    #for dict_i in dict_list:
+#    print check_kahn1962(prelations)
 
 
