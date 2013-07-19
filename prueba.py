@@ -83,7 +83,6 @@ if len(sys.argv) == 3:
     print "Kahn: ", Kahn1962.check_cycles(successors)
     ###obtengo prelaciones revertiendo sucesores
     prelaciones1 = graph.reversed_prelation_table(successors)
-    
 
     """
     ejemplos de prelaciones
@@ -160,7 +159,7 @@ if len(sys.argv) == 3:
     algorithms = [  ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
                     ('Algoritmo Salas', algoritmoSalas.salas), 
                     ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)  ]
-    
+                    
     for name, alg in algorithms:
         itime = os.times()
         for i in range(repeticiones):
@@ -174,7 +173,7 @@ if len(sys.argv) == 3:
         print "numero de arcos reales: ", pert_graph.numArcsReales()
         print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
 #        print "Prelaciones1: ", prelaciones1
-        gg1 = Cohen_sadeh_Alberto.cohen_sadeh(prelaciones1)
+        gg1 = alg(prelaciones1)
 #        print "gg1: ", gg1.pertSuccessors()
 #        print "Successors: ", successors
         print "Validation: ", validation.check_validation(successors, gg1)
