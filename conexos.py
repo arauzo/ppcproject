@@ -10,15 +10,11 @@ def check_conexos(successors):
     undirected_graph = conected_to_undirected_prelations(successors)
     visited_elements = set() #Empty set that will contain the visited elements
     aux_random = undirected_graph.iterkeys() #Get iterator over the keys of undirected_graph
-    iteration = 1
     start = set(aux_random.next()) #Create a set with the elements to visit
     activities = set(undirected_graph.keys())
-#    print "Activities:", activities
-#    print "Undirected Graph:", undirected_graph
     while len(start) > 0 : #While there are elements to visit
         act = start.pop() #Choose last elements from start set to check
-        iteration += 1
-        visited_elements.add(act) #Add selected elements to visited 
+        visited_elements.add(act) #Add selected elements to visited
         set_prelations = set(undirected_graph[act]) #Create set of next activities
         start.update(set_prelations.difference(visited_elements)) #Update nexts elements to visit
     if visited_elements != activities:
@@ -51,7 +47,7 @@ def conected_to_undirected_prelations(prelations):
 #            new_dictionary[acts] = list(sigs) #Copy activities to new dictionary
 #    return new_dictionary
     
-#--- Start running as a program
+##--- Start running as a program
 #if __name__ == '__main__':
 #    successors = {
 #        'a' : ['b','c'],
