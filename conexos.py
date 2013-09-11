@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import graph
+import copy
 
 def check_conexos(successors):
     """
@@ -9,12 +10,13 @@ def check_conexos(successors):
     undirected_graph = conected_to_undirected_prelations(successors)
     visited_elements = set() #Empty set that will contain the visited elements
     aux_random = undirected_graph.iterkeys() #Get iterator over the keys of undirected_graph
-    start = set(aux_random.next()) #Create a set with the elements to visit
+    start = set()
+    start.add(aux_random.next()) #Create a set with the elements to visit
     activities = set(undirected_graph.keys())
     while len(start) > 0: #While there are elements to visit
         act = start.pop() #Choose last elements from start set to check
         visited_elements.add(act) #Add selected elements to visited
-        set_prelations = set(undirected_graph[act]) #Create set of next activities
+        set_prelations = set(undirected_graph[act]) #Create set of next activities ERROR
         start.update(set_prelations.difference(visited_elements)) #Update nexts elements to visit
     if visited_elements != activities:
         return False
@@ -26,8 +28,7 @@ def conected_to_undirected_prelations(prelations):
     Make undirected the conected prelations
     Return new prelations
     """
-    conected = dict(prelations)
-    
+    conected = copy.deepcopy(prelations)
     for act, sigs in prelations.items(): #Do undirected the conected prelations
         for sig in sigs:
             conected[sig].append(act) #Add activity to their next activity

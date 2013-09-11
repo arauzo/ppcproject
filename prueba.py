@@ -42,9 +42,6 @@ def openProject(filename):
 #            fileFormats.PPCProjectOLDFileFormat(),
             fileFormats.PSPProjectFileFormat(),
         ]
-
-        
-
         # Tries to load file with formats that match its extension in format order
         data = None
         extension = filename[filename.rfind('.')+1:]
@@ -77,8 +74,11 @@ if len(sys.argv) == 3:
     ###obtengo los sucesores de cada actividad
     for i in data:
         successors[i[1]] = i[2]
+    ###Name of file
+    print "\nFilename: ",filename 
     ###Check conexos
-    print "\nConexos: ", conexos.check_conexos(successors)
+    print "Succesors:", successors
+    print "Conexos: ", conexos.check_conexos(successors)
     ###Check cycles
     print "Kahn: ", Kahn1962.check_cycles(successors)
     ###obtengo prelaciones revertiendo sucesores
@@ -157,8 +157,9 @@ if len(sys.argv) == 3:
     """
     # List of name and file of each algorithm to test 
     algorithms = [  ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
-                    ('Algoritmo Salas', algoritmoSalas.salas), 
-                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN)  ]
+                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
+                    ('Algoritmo Salas', algoritmoSalas.salas)
+                 ]
                     
     for name, alg in algorithms:
         itime = os.times()
