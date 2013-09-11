@@ -1,7 +1,7 @@
 import pert
 import graph
 
-def sharma1998ext(successors):
+def sharma1998ext(precedents):
     """
     Generates a AOA graph (PERT) from successors table
     Algorithm sharma1998 extended
@@ -9,7 +9,7 @@ def sharma1998ext(successors):
     """
     pert_graph = pert.Pert()
     
-    precedents = graph.reversed_prelation_table(successors)  
+    successors = graph.reversed_prelation_table(precedents)  
 
     # Close the graph (not in sharma1998)
     origin = pert_graph.nextNodeNumber()
