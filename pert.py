@@ -21,6 +21,8 @@ import sys
 import graph
 import copy
 
+import algoritmoSharma
+
 class Pert(graph.DirectedGraph):
     """
     PERT class to store pert graph data
@@ -30,7 +32,7 @@ class Pert(graph.DirectedGraph):
     """
     def __init__(self, pert=None):
         super(Pert, self).__init__()
-        self.construct = self.sharma1998ext
+        self.construct = algoritmoSharma.sharma1998ext
         if pert != None:
             self.successors, self.arcs = pert
             self.predecesors = graph.reversed_prelation_table(self.successors)
@@ -170,62 +172,6 @@ class Pert(graph.DirectedGraph):
                 else:
                     successors[i] = outputs
         return successors
-
-    def sharma1998ext(self, successors):
-        """
-        Generates a AOA graph (PERT) from successors table
-        Algorithm sharma1998 extended
-        returns: PERT graph data structure
-        """
-        if self.successors or self.arcs:
-            raise Exception('PERT structure must be empty')
-
-        precedents = graph.reversed_prelation_table(successors)  
-
-        # Close the graph (not in sharma1998)
-        origin = self.nextNodeNumber()
-        self.add_node(origin)
-        dest = self.nextNodeNumber()
-        self.add_node(dest)
-        begin_act     = graph.begining_activities(successors)
-        end_act       = graph.ending_activities(successors)
-        begin_end_act = begin_act.intersection(end_act)
-
-        #  -Creates a common node for starting activities
-        for act in begin_act - begin_end_act:
-            self.addActivity(act, origin)
-
-        #  -Creates a common node for ending activities
-        for act in end_act - begin_end_act:
-            self.addActivity(act, origin=None, destination=dest)
-
-        #  -Deals with begin-end activities
-        if begin_end_act:
-            act = begin_end_act.pop()
-            self.addActivity(act, origin, dest)
-            for act in begin_end_act:
-                o, d = self.addActivity(act, origin)
-                self.addActivity("seDummy", d, dest, dummy=True)
-
-        # Sharma1998 algorithm
-        for act in successors:
-            #print "Processing", act, self
-            #window.images.append( graph.pert2image(self) )
-            if not self.activityArc(act):
-                self.addActivity(act)
-                #window.images.append( graph.pert2image(self) )
-            a_origin, a_dest = self.activityArc(act)
-            #print '(', a_origin, a_dest, ')'
-            for pre in precedents[act]:
-                #print self.successors
-                #print pre, pre in self.inActivitiesR(graph.reversed_prelation_table(self.successors), a_origin)
-                if pre not in self.inActivitiesR(a_origin):
-                    if not self.activityArc(pre):
-                        self.addActivity(pre)
-                        #window.images.append( graph.pert2image(self) )
-                    self.makePrelation(pre, act)
-                    a_origin, a_dest = self.activityArc(act)
-
 
     def equivalentRemovingDummy(self, dummy):
         """
@@ -479,10 +425,11 @@ def get_activities_start_time(activities, durations, prelations, minimum=True,
             # El float() de la siguiente linea es porque en algun momento se guarda como cadena
             # Investigar y corregir.
             if durations[activity] == '':
-	        dur_act=0
-	    else :
-		dur_act=float(durations[activity])
-		time.append(start_time[activity] + dur_act )
+                dur_act = 0
+            else:
+                dur_act = float(durations[activity])
+            time.append(start_time[activity] + dur_act )
+
         if previous_times != {} and not minimum:
             try:
                 time.append(previous_times[chosen])

@@ -18,6 +18,7 @@ import sys
 import algoritmoConjuntos
 import algoritmoSalas
 import algoritmoCohenSadeh
+import algoritmoSharma
 import Cohen_sadeh_Alberto
 import graph
 import fileFormats
@@ -39,7 +40,6 @@ def openProject(filename):
         schedules  = []
         fileFormat = [
             fileFormats.PPCProjectFileFormat(),
-#            fileFormats.PPCProjectOLDFileFormat(),
             fileFormats.PSPProjectFileFormat(),
         ]
         # Tries to load file with formats that match its extension in format order
@@ -158,7 +158,8 @@ if len(sys.argv) == 3:
     # List of name and file of each algorithm to test 
     algorithms = [  ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
                     ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
-                    ('Algoritmo Salas', algoritmoSalas.salas)
+                    ('Algoritmo Salas', algoritmoSalas.salas),
+                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
                  ]
                     
     for name, alg in algorithms:
