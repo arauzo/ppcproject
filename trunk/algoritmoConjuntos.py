@@ -211,11 +211,9 @@ def algoritmoN(prelaciones):
             gg.add_arc(arco2,label)
     return gg
 
-### ejecucion del algoritmo por defecto
-window = None
-
+# Test algorithm
 if __name__ == "__main__":
-
+    window = None
     window = graph.Test() 
 
     gg = algoritmoN(graph.prelaciones4)
@@ -223,3 +221,5 @@ if __name__ == "__main__":
 
     window.images.append(image1)
     graph.gtk.main()
+    
+
