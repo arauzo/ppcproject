@@ -76,7 +76,7 @@ def check_activities(activities):
     # Check conexos
     print "Conexos: ", conexos.check_conexos(successors)
     # Check cycles
-    print "Kahn: "
+    print "Kahn: ",
     Kahn1962.check_cycles(successors)
 
 def test_algorithm(activities, algorithm, repeat=1):
@@ -93,8 +93,8 @@ def test_algorithm(activities, algorithm, repeat=1):
 
     # Run algorithm
     itime = os.times()
-    for i in range(repeticiones):
-        pert_graph = alg(prelaciones)
+    for i in range(repeat):
+        pert_graph = algorithm(prelaciones)
     ftime = os.times()
     utime = ftime[0] - itime[0]
 
@@ -104,9 +104,8 @@ def test_algorithm(activities, algorithm, repeat=1):
     print "numero de arcos: ", pert_graph.number_of_arcs()
     print "numero de arcos reales: ", pert_graph.numArcsReales()
     print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
-    result_graph = alg(prelaciones)
-    print "Validation: ", validation.check_validation(successors, result_graph)
-    return result_graph
+    print "Validation: ", validation.check_validation(successors, pert_graph)
+    return pert_graph
 
 
 ###si hay dos argumentos pasados por lineas de comandos 
