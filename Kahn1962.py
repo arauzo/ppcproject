@@ -37,7 +37,6 @@ def check_cycles(prelations):
         print "ERROR Graph has at least one cycle" #graph has at least one cycle
     else: #graph has no cycles
         print "OK Graph no have cycles"
-        print 'hoy'
         
 # --- Start running as a program
 if __name__ == '__main__':

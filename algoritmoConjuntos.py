@@ -213,12 +213,18 @@ def algoritmoN(prelaciones):
 
 # Test algorithm
 if __name__ == "__main__":
+    import prueba
+
+    filename = sys.argv[1]    
+    data = prueba.openProject(filename)
+    prueba.check_activities(data)
+
+    result_graph = prueba.test_algorithm(data, algoritmoN)
+
+    # Draw graph on screen
     window = None
     window = graph.Test() 
-
-    gg = algoritmoN(graph.prelaciones4)
-    image1 = graph.pert2image(gg)
-
+    image1 = graph.pert2image(result_graph)
     window.images.append(image1)
     graph.gtk.main()
     
