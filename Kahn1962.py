@@ -37,53 +37,54 @@ def check_cycles(prelations):
         print "ERROR Graph has at least one cycle" #graph has at least one cycle
     else: #graph has no cycles
         print "OK Graph no have cycles"
+        print 'hoy'
         
 # --- Start running as a program
-#if __name__ == '__main__':
-#    prelations = {
-#        'a' : ['b','c'],
-#        'b' : ['d'],
-#        'c' : ['e'],
-#        'd' : ['e'],
-#        'e' : [],
-#    }
-#    
-#    simple_cycle = {
-#        'a' : ['b','c'],
-#        'b' : ['c','d'],
-#        'c' : ['e','b'],
-#        'd' : ['e'],
-#        'e' : [],
-#    }
-#    
-#    cycle = {
-#        'a' : ['b'],
-#        'b' : ['c','d'],
-#        'c' : ['e'],
-#        'd' : ['e'],
-#        'e' : ['f','h'],
-#        'f' : ['g'],
-#        'g' : ['h','i'],
-#        'h' : ['f','i'],
-#        'i' : [],
-#    }
-#    
-#    two_cycles = {
-#        'a' : ['b','c'],
-#        'b' : ['c','d'],
-#        'c' : ['e'],
-#        'd' : ['e'],
-#        'e' : ['d','c'],
-#    }
-#    
-#    small_cycle = {
-#        'a' : ['b'],
-#        'b' : ['a'],
-#    }
-#    
-#    dict_list = [prelations, simple_cycle, cycle, two_cycles, small_cycle]
-#    
-#    for dict_i in dict_list:
-#        print check_cycles(dict_i)
+if __name__ == '__main__':
+    prelations = {
+        'a' : ['b','c'],
+        'b' : ['d'],
+        'c' : ['e'],
+        'd' : ['e'],
+        'e' : [],
+    }
+    
+    simple_cycle = {
+        'a' : ['b','c'],
+        'b' : ['c','d'],
+        'c' : ['e','b'],
+        'd' : ['e'],
+        'e' : [],
+    }
+    
+    cycle = {
+        'a' : ['b'],
+        'b' : ['c','d'],
+        'c' : ['e'],
+        'd' : ['e'],
+        'e' : ['f','h'],
+        'f' : ['g'],
+        'g' : ['h','i'],
+        'h' : ['f','i'],
+        'i' : [],
+    }
+    
+    two_cycles = {
+        'a' : ['b','c'],
+        'b' : ['c','d'],
+        'c' : ['e'],
+        'd' : ['e'],
+        'e' : ['d','c'],
+    }
+    
+    small_cycle = {
+        'a' : ['b'],
+        'b' : ['a'],
+    }
+    
+    dict_list = [prelations, simple_cycle, cycle, two_cycles, small_cycle]
+    
+    for dict_i in dict_list:
+        print check_cycles(dict_i)
 
 

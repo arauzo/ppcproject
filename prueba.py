@@ -58,130 +58,82 @@ def openProject(filename):
             print 'Can not understand file'
             sys.exit(1)
 
-        actividad, schedules, recurso, asignacion = data
-        return data[0]
+        activities, schedules, recurso, asignacion = data
+        return activities
     except IOError:
         print 'Error reading file:', filename
         sys.exit(1)
 
+def check_activities(activities):
+    """
+    Activities table is checked for consistency printing results on stdout
+    """
+    # Get successors
+    successors = {}
+    for i in activities:
+        successors[i[1]] = i[2]
+
+    # Check conexos
+    print "Conexos: ", conexos.check_conexos(successors)
+    # Check cycles
+    print "Kahn: "
+    Kahn1962.check_cycles(successors)
+
+def test_algorithm(activities, algorithm, repeat=1):
+    """
+    Test one algorithm using activities table.
+    """
+    # Get successors
+    successors = {}
+    for i in activities:
+        successors[i[1]] = i[2]
+
+    # obtengo prelaciones revertiendo sucesores
+    prelaciones = graph.reversed_prelation_table(successors)
+
+    # Run algorithm
+    itime = os.times()
+    for i in range(repeticiones):
+        pert_graph = alg(prelaciones)
+    ftime = os.times()
+    utime = ftime[0] - itime[0]
+
+    # Print test results
+    print "utime %.4f"% (utime)
+    print "numero de nodos: ", pert_graph.number_of_nodes()
+    print "numero de arcos: ", pert_graph.number_of_arcs()
+    print "numero de arcos reales: ", pert_graph.numArcsReales()
+    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
+    result_graph = alg(prelaciones)
+    print "Validation: ", validation.check_validation(successors, result_graph)
+    return result_graph
+
+
 ###si hay dos argumentos pasados por lineas de comandos 
 if len(sys.argv) == 3:
-    repeticiones = int(sys.argv[2]) ###repeticiones es igual al segundo parametro
     filename = sys.argv[1]           ###el nombre del fichero es el primer parametro
+    repeticiones = int(sys.argv[2])  ###repeticiones es igual al segundo parametro
 
-    data = openProject(filename)
-    successors = {}
-    ###obtengo los sucesores de cada actividad
-    for i in data:
-        successors[i[1]] = i[2]
-    ###Name of file
+    # File input
     print "\nFilename: ",filename 
-    ###Check conexos
-    print "Conexos: ", conexos.check_conexos(successors)
-    ###Check cycles
-    print "Kahn: ", Kahn1962.check_cycles(successors)
-    ###obtengo prelaciones revertiendo sucesores
-    prelaciones1 = graph.reversed_prelation_table(successors)
-
-    """
-    ejemplos de prelaciones
-
-    prelaciones = {
-        'B': [], 
-        'A': [], 
-        'D': ['B'], 
-        'C': [], 
-        'F': ['C'], 
-        'E': ['D'], 
-        'H': ['B'], 
-        'G': ['F'], 
-        'J': ['F'], 
-        'I': ['A'], 
-        'L': ['C', 'E'], 
-        'K': ['I'], 
-        'N': ['B'], 
-        'M': ['H'], 
-        'P': ['D'], 
-        'O': ['E'], 
-        'R': ['F'], 
-        'Q': ['E'], 
-        'S': ['O'], 
-        'T': ['J', 'N', 'P'], 
-        'U': ['I'], 
-        'V': ['Q'], 
-        'W': ['K'],
-        'X': ['L', 'M', 'R'], 
-        'Y': ['J', 'P', 'O'], 
-        'Z': ['Y', 'U', 'G'], 
-        'AB': ['H'], 
-        'AC': ['W', 'U', 'P'],
-        'AD': ['X', 'Z', 'AB'],
-        'AE': ['S', 'T', 'V']
-        }
-    prelaciones = {
-        'A' : [],
-        'B' : [],
-        'C' : ['A','B'],
-        'D' : ['A'],
-        'E' : ['B'],
-        'F' : ['A','B'],
-        'G' : ['C'],
-        'H' : ['D','E'],
-        'I' : ['D','E','F'],
-        'J' : ['D','E','F'],
-        'K' : ['D','F','L'],
-        'L' : ['A'],
-        }
-    prelaciones = {
-        'A' : [],
-        'B' : [],
-        'C' : ['A'],
-        'D' : ['A','B'],
-        'E' : ['C','D'],
-        'F' : ['D'],
-        'G' : ['E'],
-        'H' : ['F','D','C'],
-        'I' : ['F'],
-        }
-    prelaciones = {
-        'A' : [],
-        'B' : [],
-        'C' : [],
-        'D' : ['A'],
-        'E' : ['B'],
-        'F' : ['C'],
-        'G' : ['E','F'],
-        'H' : ['D'],
-        }
-    """
+    data = openProject(filename)
+    check_activities(data)
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
-#                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
                     ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
-#                    ('Algoritmo Salas', algoritmoSalas.salas),
-#                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
+                    ('Algoritmo Salas', algoritmoSalas.salas),
+                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
                  ]
                     
     for name, alg in algorithms:
-        itime = os.times()
-        for i in range(repeticiones):
-            pert_graph = alg(prelaciones1)
-        ftime = os.times()
-        utime = ftime[0] - itime[0]
         print name
-        print "utime %.4f"% (utime)
-        print "numero de nodos: ", pert_graph.number_of_nodes()
-        print "numero de arcos: ", pert_graph.number_of_arcs()
-        print "numero de arcos reales: ", pert_graph.numArcsReales()
-        print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
-#        print "Prelaciones1: ", prelaciones1
-        gg1 = alg(prelaciones1)
-#        print "gg1: ", gg1.pertSuccessors()
-#        print "Successors: ", successors
-        print "Validation: ", validation.check_validation(successors, gg1)
-        image_text = graph.pert2image(gg1) # Draw graph and save in a file (*.svg)
+        result_graph = test_algorithm(data, alg, repeticiones)
+
+        # Draw graph and save in a file (*.svg)
+        image_text = graph.pert2image(result_graph) 
         fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-        fsalida.write(image_text) # Draw in directory images
+        fsalida.write(image_text)
         fsalida.close()
 
 else:
