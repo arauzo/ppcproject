@@ -77,7 +77,6 @@ if len(sys.argv) == 3:
     ###Name of file
     print "\nFilename: ",filename 
     ###Check conexos
-    print "Succesors:", successors
     print "Conexos: ", conexos.check_conexos(successors)
     ###Check cycles
     print "Kahn: ", Kahn1962.check_cycles(successors)
@@ -155,11 +154,12 @@ if len(sys.argv) == 3:
         'H' : ['D'],
         }
     """
-    # List of name and file of each algorithm to test 
-    algorithms = [  ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+    # List of name and file of each algorithm to test ##Poner como tupla##
+    algorithms = [  
+#                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
                     ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
-                    ('Algoritmo Salas', algoritmoSalas.salas),
-                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
+#                    ('Algoritmo Salas', algoritmoSalas.salas),
+#                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
                  ]
                     
     for name, alg in algorithms:
@@ -179,10 +179,10 @@ if len(sys.argv) == 3:
 #        print "gg1: ", gg1.pertSuccessors()
 #        print "Successors: ", successors
         print "Validation: ", validation.check_validation(successors, gg1)
-#        image_text = graph.pert2image(g) # Draw graph and save in a file (*.svg)
-#        fsalida = open(name + ' ' + os.path.split(filename)[1] + '.svg', 'w')
-#        fsalida.write(image_text) # Draw in directory images
-#        fsalida.close()
+        image_text = graph.pert2image(gg1) # Draw graph and save in a file (*.svg)
+        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+        fsalida.write(image_text) # Draw in directory images
+        fsalida.close()
 
 else:
     print
