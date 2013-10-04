@@ -62,18 +62,12 @@ def algoritmoN(prelations):
             else:
                 aux_activity = [activity]
                 if aux_activity not in Nodes:
-                    print "d:", aux_activity
                     Nodes.append(aux_activity)
-                    print "Nodes:", Nodes
 
     #Add end node
     # Anado el nodo final
     end_node = ['end']
-    print "d1:", end_node
-    print "Nodes1:", Nodes
     Nodes.append(end_node)
-    print "Nodes2:", Nodes
-
 
     #Add dummy Activities if node are included in other
     # para anadir las actividades ficiticias en el grafo
@@ -129,15 +123,11 @@ def algoritmoN(prelations):
     #(D a DEF) because have arcs (D a DE) and (DE a DEF)
     # Una vez anadidos todos los arcs veo que hay arcs que no deben estar
     # (D a DEF ya que ya anado arc de D a DE y de DE a DEF). Los borro
-    print "gg.arcs before delete:", gg.arcs
-    print "gg.successors:", gg.successors
 #    for suc1 in gg.successors:
 #        print "suc1:", suc1
     for successor in gg.successors:
         suc = gg.successors[successor] #suc esta siempre vacio
-        print "suc", suc
         for s in suc:
-            print "s:", s
             set_s = set(s)
             for s1 in suc:
                 if s1 != s:
