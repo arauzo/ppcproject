@@ -7,21 +7,21 @@ def check_conexos(successors):
     """
     Check if prelations make all activities connected
     """
-    undirected_graph = conected_to_undirected_prelations(successors)
-    visited_elements = set() #Empty set that will contain the visited elements
+    undirected_graph = conected_to_undirected_prelations(successors) #Make graph undirected
+    visited_activities = set() #Empty set that will contain the visited activities
     aux_random = undirected_graph.iterkeys() #Get iterator over the keys of undirected_graph
-    start = set()
-    start.add(aux_random.next()) #Create a set with the elements to visit
+    activities_for_visit = set()
+    activities_for_visit.add(aux_random.next()) #Create a set with the elements to visit
     activities = set(undirected_graph.keys())
-    while len(start) > 0: #While there are elements to visit
-        act = start.pop() #Choose last elements from start set to check
-        visited_elements.add(act) #Add selected elements to visited
-        set_prelations = set(undirected_graph[act]) #Create set of next activities ERROR
-        start.update(set_prelations.difference(visited_elements)) #Update nexts elements to visit
-    if visited_elements != activities:
-        return False
+    while len(activities_for_visit) > 0: #While there are elements to visit
+        act = activities_for_visit.pop() #Choose last elements from start set to check
+        visited_activities.add(act) #Add selected elements to visited
+        set_prelations = set(undirected_graph[act]) #Create set of next activities
+        activities_for_visit.update(set_prelations.difference(visited_activities)) #Update nexts activities to visit
+    if visited_activities != activities:
+        return False #Graph is no conected
     else:
-        return True
+        return True #Graph is conected
 
 def conected_to_undirected_prelations(prelations):
     """

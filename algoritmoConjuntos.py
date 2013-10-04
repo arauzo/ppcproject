@@ -5,217 +5,262 @@ import sys
 import pert
 import graph
 
-def algoritmoN(prelaciones):
+def algoritmoN(prelations):
     """
-    Dadas las prelaciones construye el grafo PERT
-
-    prelaciones = {'Act': ['Predecesora1','Predecesora2'], ... }
+    Built PERT graph with prelations
+    Dadas las prelations construye el grafo PERT
     
+    prelations = {'Activity': ['prelation1','prelation2'], ...}
+    prelations = {'Act': ['Predecesora1','Predecesora2'], ... }
+    
+    Return pert.Pert
     Devuelve: un pert.Pert()
     """
 
+    #Get nodes of graph from predecesors and add in Nodes
     # Dada la tabla de predecesores saco los nodos iniciales que
-    # compondran el grafo (predecesores) y los introduzco en NI
-    NI = []
-    for label in prelaciones:
-        if prelaciones[label]==[]:
-            a = ['start']
+    # compondran el grafo (predecesores) y los introduzco en Nodes
+    Nodes = [] #List of nodes
+    for label in prelations:
+        if prelations[label]==[]: 
+            node = ['start']
         else:
-            a = prelaciones[label]
-        if a not in NI:
-            NI.append(a)
+            node = prelations[label]
+        if node not in Nodes:
+            Nodes.append(node)
 
+    #Nodes with more than one activity
     # Cojo los nodos en los que hay mas de una actividad(b)
-    b = []
-    for i in NI:
-        if len(i)>1:
-            b.append(i)
+    more_than_one = [] #List of nodes with more than one activity
+    for n in Nodes:
+        if len(n)>1: #If node have more than one activity
+            more_than_one.append(n) #add to more_than_one
 
+    #Check every node with others, if it is included, it is delete from more_than_one
     # comparo cada nodo con todos los demas para ver si esta contenido en alguno
     # alguno de ellos, si esta contenido lo borro de la lista(b)
-    for i in b:
-        e = set(i)
-        for j in b:
-            f = set(j)
-            if f != e:
-                g = f&e
-                if g == e: 
-                    b.remove(i)
-                elif g == f:
-                    b.remove(j)
+    for activities1 in more_than_one:
+        set_1 = set(activities1)
+        for activities2 in more_than_one:
+            set_2 = set(activities2)
+            if set_2 != set_1:
+                set_intersection = set_2&set_1
+                if set_intersection == set_1: 
+                    more_than_one.remove(activities1)
+                elif set_intersection == set_2:
+                    more_than_one.remove(activities2)
 
+    #Check if more_then_one have two equal activities, if check true, add node
     # Descompongo(b) y voy introduciendo en una lista(c) y si se repite es que tengo que
     # anadir ese ndo 
-    c = []
-    for i in b:
-        for j in i:
-            if j not in c:
-                c.append(j)
+    node_list = []
+    for activities in more_than_one:
+        for activity in activities:
+            if activity not in node_list:
+                node_list.append(activity)
+                print "c:", node_list
             else:
-                d = [j]
-                if d not in NI:
-                    NI.append(d)
+                aux_activity = [activity]
+                if aux_activity not in Nodes:
+                    print "d:", aux_activity
+                    Nodes.append(aux_activity)
+                    print "Nodes:", Nodes
 
+    #Add end node
     # Anado el nodo final
-    d = ['end']
-    NI.append(d)
+    end_node = ['end']
+    print "d1:", end_node
+    print "Nodes1:", Nodes
+    Nodes.append(end_node)
+    print "Nodes2:", Nodes
 
 
-
+    #Add dummy Activities if node are included in other
     # para anadir las actividades ficiticias en el grafo
     # cojo los nodos y veo si alguno esta compuesto por otro nodo, si es asi
-    # trazo arco ficticio
+    # trazo arc ficticio
     gg = pert.Pert()
-    for i in NI:
-        l = ""
-        for j in i:
-            l = l + j + "-"
-        l = l[:-1]
-        gg.add_node(l)
+    for node in Nodes:
+        label = ""
+        for label1 in node: #l string join NO HACE STRING JOIN, NO SE SI SE PUEDE CAMBIAR POR STRING JOIN
+            label = label + label1 + "-"
+        label = label[:-1]
+        gg.add_node(label)
+#    print "gg:", gg
 
-    for i in NI:
-        y = set(i)
-        for j in NI:
-            l = ""
-            l1 = ""
-            w = set(j)
-            if i != j:
-                t = y&w
-                label = 'AA',True
-                if t == y:
-                    for k in i:
-                        l = l + k + "-"
-                    for k in j:
-                        l1 = l1 + k + "-"
-                    l,l1
-                    l = l[:-1]
-                    l1 = l1[:-1]
-                    arco = l,l1
-                    arco
+    for node in Nodes:
+        node_set = set(node)
+        for node1 in Nodes:
+            label = ""
+            label1 = ""
+            node_set1 = set(node1)
+#            print "node:", node, "node1:", node1
+            if node != node1: #NO TIENE SENTIDO hacemos que sean distintos
+                t = node_set&node_set1 #guardamos su interseccion (si son distintos nunca tendran interseccion)
+                aux_label = 'AA',True
+                if t == node_set: #Comparamos la interseccion(vacia) con un conjunto de nodos
+                    print "OK"
+                    built_labels(node, node1, label, label1)
+#                    for k in node:
+#                        l = l + k + "-"
+#                    for k in j:
+#                        l1 = l1 + k + "-"
+#                    l,l1
+#                    l = l[:-1]
+#                    l1 = l1[:-1]
+                    arc = label, label1
+#                    arc
+                    gg.add_arc(arc,aux_label)
+                elif t == node_set1:
+                    print "OKOK"
+                    built_labels(node, node1, label, label1)
+#                    for k in node:
+#                        l = l + k + "-"
+#                    for k in j:
+#                        l1 = l1 + k + "-"
+#                    l = l[:-1]
+#                    l1 = l1[:-1]
+                    arc = label1, label
+#                    arc
+                    gg.add_arc(arc, aux_label)
                     
-                    gg.add_arc(arco,label)
-                elif t == w:
-                    for k in i:
-                        l = l + k + "-"
-                    for k in j:
-                        l1 = l1 + k + "-"
-                    l = l[:-1]
-                    l1 = l1[:-1]
-                    arco = l1, l
-                    arco
-                    gg.add_arc(arco,label)
-                    
-    # Una vez anadidos todos los arcos veo que hay arcos que no deben estar
-    # (D a DEF ya que ya anado arco de D a DE y de DE a DEF). Los borro
-    for i in gg.successors:
-        a = gg.successors[i]
-        for j in a:
-            s = set(j)
-            for k in a:
-                if k != j:
-                    r = set(k)
-                    t = s&r
-                    if t == s:
-                        arco = i,k
-                        gg.remove_arc(arco)
-                    if t == r:
-                        arco = i,j
-                        gg.remove_arc(arco)
+#    print "gg::", gg
+    #Delete arcs in others that they are unnecessary
+    #(D a DEF) because have arcs (D a DE) and (DE a DEF)
+    # Una vez anadidos todos los arcs veo que hay arcs que no deben estar
+    # (D a DEF ya que ya anado arc de D a DE y de DE a DEF). Los borro
+    print "gg.arcs before delete:", gg.arcs
+    print "gg.successors:", gg.successors
+#    for suc1 in gg.successors:
+#        print "suc1:", suc1
+    for successor in gg.successors:
+        suc = gg.successors[successor] #suc esta siempre vacio
+        print "suc", suc
+        for s in suc:
+            print "s:", s
+            set_s = set(s)
+            for s1 in suc:
+                if s1 != s:
+                    set_s1 = set(s1)
+                    set_intersection = set_s&set_s1
+                    if set_intersection == set_s:
+                        arc = successor, s1
+                        gg.remove_arc(arc)
+                    if set_intersection == set_s1:
+                        arc = successor, s
+                        gg.remove_arc(arc)
+#    print "gg:::", gg
 
-    # para anadir las actividades reales cojo prelaciones y anado arco desde
+    #For add real activities pass through prelations and add arcs from prec a act
+    # para anadir las actividades reales cojo prelations y anado arc desde
     # prec a act. Si act no esta definida como nodo busco el nodo de menor tamano
     # que la contenga y act pasa a ser dicho nodo.
 
-    l = ""
-    for i in prelaciones:            
-        infinity = sys.maxint -1        # valor infinito para compara tamano en caso de que haga falta
-        ll = []
-        ll.append(i)
-        l = i
-        l1=""
-        if prelaciones[i] == []:
-            l1 = 'start'
+    label = ""
+    for predecessor in prelations:
+        infinity = sys.maxint -1 #infinite value for compare size if required valor infinito para compara tamano en caso de que haga falta
+        list_predecessor = []
+        list_predecessor.append(predecessor)
+        label = predecessor
+        label1=""
+        if prelations[predecessor] == []:
+            label1 = 'start'
         else:
-            for j in prelaciones[i]:     # como prec siempre va a ser nodo los desmiembro para ponerlo en una cadena
-                l1 = l1 + j + "-"
-            l1 = l1[:-1]
-        if ll in NI:                 # si act es un nodo
-            arco = l1,l                 # arco es prec-->act
-        else:                         # si act no es nodo            
-           # for j in gg.successors:
-            #    if l in j:             # busco nodo de menor tamano que contega a act
-             #       tam = len(j)
-              #      if tam < infinity:
-               #         infinity = tam
-                        
-                #        arco = l1,j
-            cad=""
-            cadena=""
-            lista=[]
+            for j in prelations[predecessor]: #prec always node divide to put on string como prec siempre va a ser nodo los desmiembro para ponerlo en una cadena
+                label1 = label1 + j + "-"
+            label1 = label1[:-1]
+        if list_predecessor in Nodes: #if sct is node si act es un nodo
+            arc = label1,label #arc is prec-->act arc es prec-->act
+        else: # si act no es nodo
+#            for j in gg.successors:
+#                if label in j:#search smaller in act busco nodo de menor tamano que contega a act
+#                    tam = len(j)
+#                    if tam < infinite:
+#                        infinite = tam
+#                        
+#                        arc = label1,j
+            aux_list=""
+            aux_list1=""
+            list_labels=[]
             for j in gg.successors:
-                if l in j:
-                    cadena=j+"-"
-                    lista=[]
-                    for k in cadena:
+                if label in j:
+                    aux_list1=j+"-"
+                    list_labels=[]
+                    for k in aux_list1:
                         if k !="-":
-                            cad=cad+k
+                            aux_list=aux_list+k
                         else:
-                            lista.append(cad)
-                            cad=""
-                    if ll[0] in lista:
-                        arco=l1,j
+                            list_labels.append(aux_list)
+                            aux_list=""
+                    if ll[0] in list_labels:
+                        arc=label1,j
 
+#        print "gg.arcs:", gg.arcs
+#        print "arc:", arc
+        label = predecessor,False
+        if arc not in gg.arcs:
+            gg.add_arc(arc,label) #join arc from prec to act trazo arc desde prec hasta act
+#    print "gg::::", gg
+    #Add to end_list nodes that haven't successors
+    #anado en una lista los nodos que no tienen sucesores porque es el nodo final
+    #o lo que es lo mismo los que no aparecen como actividades predecesoras de ninguna
 
-        label = i,False
-        if arco not in gg.arcs:
-            gg.add_arc(arco,label)         # trazo arco desde prec hasta act
+    end_list = []
+    for pre in prelations:
+        find = 0
+        for pre1 in prelations:
+            if pre in prelations[pre1]:
+                find = 1
+        if find == 0:
+            end_list.append(pre)
+#    print "gg:::::", gg
+    #For each node that haven'y successors search his predeccessor activity and add an arc to final node
+    #If two activities have same start and end if necessary to add dummy activity and intermediate node
+    #Para cada nodo que no tiene sucesores busco cual es su actividad precedente y trazo arc
+    #hacia el nodo final. si de un mismo nodo salen dos actividades hacia otro mismo nodo anado nodo 
+    #puente y actividad ficticia hasta dicho nodo
 
-    #  anado en una lista los nodos que no tienen sucesores porque es el nodo final
-    #  o lo que es lo mismo los que no aparecen como actividades predecesoras de ninguna
-
-    k = []
-    for i in prelaciones:
-        enc = 0
-        for j in prelaciones:
-            if i in prelaciones[j]:
-                enc = 1
-        if enc == 0:
-            k.append(i)
-
-    # Para cada nodo que no tiene sucesores busco cual es su actividad precedente y trazo arco
-    # hacia el nodo final. si de un mismo nodo salen dos actividades hacia otro mismo nodo anado nodo 
-    # puente y actividad ficticia hasta dicho nodo
-
-    for i in k:
-        cad = ""
-        for j in prelaciones[i]:
-            cad = cad + j + "-"
-        cad = cad[:-1]
-        if cad!="":
-            arco = cad,'end'
+    for node in end_list:
+        aux_label = ""
+        for pre in prelations[node]:
+            aux_label = aux_label + pre + "-"
+        aux_label = aux_label[:-1]
+        if aux_label!="":
+            arc = aux_label,'end'
         else:
-            arco = 'start','end'
-        hecho = 0
-        for j in gg.arcs:
-            if arco == j:
-                arco1 = cad,i
-                arco2 = i,'end'
-                hecho = 1
-        if hecho == 0:
-            label = i,False
-            gg.add_arc(arco,label)
+            arc = 'start','end'
+        ok = 0
+        for aux_arc in gg.arcs:
+            if arc == aux_arc:
+                arc1 = aux_label, node
+                arc2 = node, 'end'
+                ok = 1
+        if ok == 0:
+            label = node, False
+            gg.add_arc(arc,label)
         else:
-            label = 'AA',True
-            gg.add_arc(arco1,label)
-            label = i,False
-            gg.add_arc(arco2,label)
+            label = 'AA', True
+            gg.add_arc(arc1,label)
+            label = node, False
+            gg.add_arc(arc2,label)
+#    print "gg::::::", gg
     return gg
+
+
+def built_labels(node, node1, label, label1):
+    for n in node:
+        label = label + n + "-"
+    for n1 in node1:
+        label1 = label1 + n1 + "-"
+#    l,l1
+    label = label[:-1]
+    label1 = label1[:-1]
 
 # Test algorithm
 if __name__ == "__main__":
     import prueba
 
-    filename = sys.argv[1]    
+    filename = sys.argv[1]
     data = prueba.openProject(filename)
     prueba.check_activities(data)
 

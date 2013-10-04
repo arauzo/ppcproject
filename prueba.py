@@ -76,8 +76,7 @@ def check_activities(activities):
     # Check conexos
     print "Conexos: ", conexos.check_conexos(successors)
     # Check cycles
-    print "Kahn: ",
-    Kahn1962.check_cycles(successors)
+    print "Kahn: ", Kahn1962.check_cycles(successors)
 
 def test_algorithm(activities, algorithm, repeat=1):
     """
