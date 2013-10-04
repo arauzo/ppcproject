@@ -182,7 +182,7 @@ def algoritmoN(prelations):
                         else:
                             list_labels.append(aux_list)
                             aux_list=""
-                    if ll[0] in list_labels:
+                    if list_predecessor[0] in list_labels:
                         arc=label1,j
 
 #        print "gg.arcs:", gg.arcs
