@@ -79,6 +79,9 @@ def algoritmoN(prelations):
         for label1 in node: #l string join NO HACE STRING JOIN, NO SE SI SE PUEDE CAMBIAR POR STRING JOIN
             label = label + label1 + "-"
         label = label[:-1]
+        print "TEST", node 
+        print label
+        print '-'.join(node) # XXX Si hace lo mismo ¿no?
         gg.add_node(label)
 #    print "gg:", gg
 
