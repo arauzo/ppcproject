@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Check if a prelations table (AON graph encoded in a dictionary) has cycles
+"""
 import graph
 
 def check_cycles(prelations):
     """
     Algorithm based on Kahn 1962 to check if dict has cycles
+    http://en.wikipedia.org/wiki/Topological_sorting
     """
     #L ← Empty list that will contain the sorted elements
     #S ← Set of all nodes with no incoming edges
@@ -20,24 +24,30 @@ def check_cycles(prelations):
     #else 
     #    output message (proposed topologically sorted order: L)
 
-    check_prelations = dict.copy(prelations) #Work with a copy because it changes
-    visited_elements = [] #Empty list that will contain the visited elements
-    no_incoming_edges = graph.begining_activities(check_prelations) #Set of all nodes with no incoming edges
-    iteracion=1
-    while len(no_incoming_edges) > 0: #While no_incoming_edges no empty
+    # Work over a copy to make changes
+    check_prelations = dict.copy(prelations) 
+    # Set of all nodes with no incoming edges
+    no_incoming_edges = graph.begining_activities(check_prelations) 
+
+    while len(no_incoming_edges) > 0:
+        # Remove node where a cycle can not arrive as no_incoming_edges
         act = no_incoming_edges.pop()
-        visited_elements.append(act) #Remove node n from no_incoming_edges and insert n into visited_elements
-        iteracion+=1
-        set_prelations = set(check_prelations[act]) #Get the new set prelations
-        del check_prelations[act] #Delete prelations activity
-        no_incoming_edges.update(graph.begining_activities(check_prelations, set_prelations)) #Update no_incoming_edges with new begining activities
-    if check_prelations: #if graph has edges
-        return False #graph has at least one cycle
+        # Update no_incoming_edges with the new begining activities
+        set_prelations = set(check_prelations[act])
+        del check_prelations[act]
+        no_incoming_edges.update(graph.begining_activities(check_prelations, set_prelations)) 
+
+    # If graph still has edges
+    if check_prelations: 
+        return False # at least one cycle
     else: 
-        return True #graph has no cycles
-        
-# --- Start running as a program
-if __name__ == '__main__':
+        return True  # no cycles
+
+
+def test():
+    """
+    A few tests
+    """
     prelations = {
         'a' : ['b','c'],
         'b' : ['d'],
@@ -84,4 +94,13 @@ if __name__ == '__main__':
     for dict_i in dict_list:
         print check_cycles(dict_i)
 
+    return 0
 
+# If the program is run directly
+if __name__ == '__main__': 
+    # Imports needed only here
+    import sys
+    # Run
+    RTN = test()
+    sys.exit(RTN)
+            
