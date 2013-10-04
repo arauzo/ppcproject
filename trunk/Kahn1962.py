@@ -19,12 +19,10 @@ def check_cycles(prelations):
     #    output error message (graph has at least one cycle)
     #else 
     #    output message (proposed topologically sorted order: L)
-#    print "Prelations:", prelations
+
     check_prelations = dict.copy(prelations) #Work with a copy because it changes
-#    print "check_Prelations:", check_prelations
     visited_elements = [] #Empty list that will contain the visited elements
     no_incoming_edges = graph.begining_activities(check_prelations) #Set of all nodes with no incoming edges
-#    print "Datos de Entrada\n", prelations, "\n\n"
     iteracion=1
     while len(no_incoming_edges) > 0: #While no_incoming_edges no empty
         act = no_incoming_edges.pop()
@@ -34,9 +32,9 @@ def check_cycles(prelations):
         del check_prelations[act] #Delete prelations activity
         no_incoming_edges.update(graph.begining_activities(check_prelations, set_prelations)) #Update no_incoming_edges with new begining activities
     if check_prelations: #if graph has edges
-        print "ERROR Graph has at least one cycle" #graph has at least one cycle
-    else: #graph has no cycles
-        print "OK Graph no have cycles"
+        return False #graph has at least one cycle
+    else: 
+        return True #graph has no cycles
         
 # --- Start running as a program
 if __name__ == '__main__':
