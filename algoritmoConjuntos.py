@@ -81,7 +81,7 @@ def algoritmoN(prelations):
         label = label[:-1]
         print "TEST", node 
         print label
-        print '-'.join(node) # XXX Si hace lo mismo ¿no?
+        print '-'.join(node) # XXX Si hace lo mismo ?no?
         gg.add_node(label)
 #    print "gg:", gg
 
