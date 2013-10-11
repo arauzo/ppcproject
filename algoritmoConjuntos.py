@@ -58,7 +58,6 @@ def algoritmoN(prelations):
         for activity in activities:
             if activity not in node_list:
                 node_list.append(activity)
-                print "c:", node_list
             else:
                 aux_activity = [activity]
                 if aux_activity not in Nodes:
