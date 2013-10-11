@@ -77,6 +77,7 @@ def check_activities(activities):
     print "Conexos: ", conexos.check_conexos(successors)
     # Check cycles
     print "Kahn: ", Kahn1962.check_cycles(successors)
+    print ""
 
 def test_algorithm(activities, algorithm, repeat=1):
     """
@@ -104,6 +105,7 @@ def test_algorithm(activities, algorithm, repeat=1):
     print "numero de arcos reales: ", pert_graph.numArcsReales()
     print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
     print "Validation: ", validation.check_validation(successors, pert_graph)
+    print ""
     return pert_graph
 
 
@@ -119,11 +121,11 @@ if len(sys.argv) == 3:
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
                     ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
                     ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                     ('Algoritmo Salas', algoritmoSalas.salas),
-                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
                  ]
-                    
+
     for name, alg in algorithms:
         print name
         result_graph = test_algorithm(data, alg, repeticiones)
