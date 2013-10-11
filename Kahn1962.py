@@ -89,11 +89,19 @@ def test():
         'b' : ['a'],
     }
     
-    dict_list = [prelations, simple_cycle, cycle, two_cycles, small_cycle]
+    dict_list = [
+                    ('prelations', prelations),
+                    ('small_cycle', small_cycle),
+                    ('simple_cycle', simple_cycle),
+                    ('cycle', cycle),
+                    ('two_cycles', two_cycles),
+                ]
     
-    for dict_i in dict_list:
+    for name, dict_i in dict_list:
+        print "\n", name
+        print dict_i
         print check_cycles(dict_i)
-
+        
     return 0
 
 # If the program is run directly
