@@ -2013,6 +2013,59 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
             self.treemenu_invoker = treeview
 
+    def delete_activity(self, widget=None):
+        """
+        Delete an activity when pressed Supr. or context menu
+        """
+        # XXX This function is created to avoid a bug
+        #     The mess of delete_tree_row function below should be fixed with one function to delete
+        #         each specific thing
+        #     As links from Glade are not fixed delete_tree_row is still called from context menu
+        gantt_modified = False
+        path = self.interface.main_table_treeview.get_selection().get_selected_rows()[1][0]
+        model = self.interface.main_table_treeview.get_model()
+
+        for index in range(len(self.actividad)-1,-1, -1):
+            if model[path][1] in self.actividad[index][2]:
+                self.actividad[index][2].remove(model[path][1])
+                model[index][2] = ", ".join(self.actividad[index][2])
+            if self.actividad[index][1] == model[path][1]:
+                del self.actividad[index]
+        for index in range(len(self.asignacion)-1,-1, -1):
+            if self.asignacion[index][1] == model[path][1]:
+                del self.asignacion[index]
+            if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
+                self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
+                
+        self.gantt.remove_activity(model[path][1])
+        gantt_modified = True
+        
+        it = self.modeloComboS.get_iter(path)
+        self.modeloComboS.remove(it)  # Remove the activity of the comboBox (Next)
+        it = self.modeloComboARA.get_iter(path)
+        self.modeloComboARA.remove(it)  # Remove the activity of the comboBox (Resources view)
+        
+        model.remove(model.get_iter(path))      
+        self.reorder_activities()
+
+        if gantt_modified == True:
+            act_list = []
+            dur_dic = {}
+            pre_dic = {}
+            for i in range(len(self.actividad)):
+                act_list.append(self.actividad[i][1])
+                dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
+                pre_dic[self.actividad[i][1]] = self.actividad[i][2]
+            self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+                                                                   self.schedules[0][1])
+            for index in range(1, len(self.schedules)):
+                self.schedules[index][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, False,
+                                                                           self.schedules[index][1])
+            self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
+        self.set_modified_state(True)
+
+
+
     def delete_tree_row(self, widget=None):
         """
         Delete treeview row
@@ -3774,7 +3827,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             widget.hide()
             return True
         elif event.keyval == gtk.keysyms.Delete:  # Delete key
-            self.delete_tree_row()  # Delete Activity
+            self.delete_activity()  # Delete Activity
             return True
         else:
             return False
