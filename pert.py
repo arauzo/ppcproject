@@ -485,7 +485,7 @@ def pertFinal(actividad):
     """
     successors = dict(((act[1], act[2]) for act in actividad))
     grafo = Pert()
-    grafo.construct(successors)
+    grafo = grafo.construct(successors)
     grafoRenumerado = grafo.renumerar()
     return grafoRenumerado                 
 
@@ -553,7 +553,6 @@ def main(window):
         pertP = Pert()
         pertP.construct(successors2)
         window.images.append( graph.pert2image(pertP) )
-        print pertP
     except Exception:
         traceback.print_exception(*sys.exc_info())
 
