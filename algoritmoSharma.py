@@ -8,7 +8,6 @@ def sharma1998ext(precedents):
     returns: pert.Pert() graph data structure
     """
     pert_graph = pert.Pert()
-    
     successors = graph.reversed_prelation_table(precedents)  
 
     # Close the graph (not in sharma1998)
