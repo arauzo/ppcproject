@@ -183,21 +183,25 @@ def cohen_sadeh(prelations):
                 followed_dummies.append(act_suc)
             else: #Activities without sucessors
                 end_nodes.append(act_suc)
+    print "followed dummies: ", followed_dummies
     for activity in followed_dummies: #Activity follow only by dummies 
         relation = [] #Relation between act and end_node
         max_count += 1
         relation.append(activity)
         relation.append(max_count)
+        print "relation only by dummies: ", relation
         activity_end.append(relation)
     for act_end in end_nodes: #Activities without sucessors
         relation = [] #Relation between act and end_node
         final_node = max_count + 1 #Only final nodes
         relation.append(act_end)
         relation.append(final_node)
+        print "relation without sucessors: ", relation
         activity_end.append(relation)
-
+        
     #Step 7. Associate Dummy Arcs with Their Start nodes
     dummy_end = [] #List of dummy and end
+    print "activity_end: ", activity_end
     for activity, dummy in activity_dummy:
         relation = [] #Relation between activity(dummy) and end
         relation.append(activity)
@@ -206,6 +210,7 @@ def cohen_sadeh(prelations):
                 relation.append(end)
                 dummy_end.append(relation)
     for i in range(len(starting_node)): #Add ends for dummy_activities
+        print "dummy_end: ", dummy_end
         for dummy, end in dummy_end:
             if starting_node[i][0] == dummy:
                 starting_node[i][1] = end
