@@ -183,36 +183,44 @@ def cohen_sadeh(prelations):
                 followed_dummies.append(act_suc)
             else: #Activities without sucessors
                 end_nodes.append(act_suc)
-    print "followed dummies: ", followed_dummies
     for activity in followed_dummies: #Activity follow only by dummies 
         relation = [] #Relation between act and end_node
         max_count += 1
         relation.append(activity)
         relation.append(max_count)
-        print "relation only by dummies: ", relation
         activity_end.append(relation)
     for act_end in end_nodes: #Activities without sucessors
         relation = [] #Relation between act and end_node
         final_node = max_count + 1 #Only final nodes
         relation.append(act_end)
         relation.append(final_node)
-        print "relation without sucessors: ", relation
         activity_end.append(relation)
         
     #Step 7. Associate Dummy Arcs with Their Start nodes
     dummy_end = [] #List of dummy and end
+    print "activity_dummy: ", activity_dummy
     print "activity_end: ", activity_end
     for activity, dummy in activity_dummy:
         relation = [] #Relation between activity(dummy) and end
         relation.append(activity)
         for act, end in activity_end: #Add ends for activities
             if act == dummy:
-                relation.append(end)
-                dummy_end.append(relation)
+                print "relation: ", relation
+                print "end: ", end
+                if end not in relation:
+                    print "end not in relation"
+                    relation.append(end)
+                    dummy_end.append(relation)
+#                else:
+#                    print "end in relation"
+#                    dummy_end.append(relation)
+                print "dummy end", dummy_end
+    print "relation: ", relation
+    print "dummy_end: ", dummy_end
+    print "starting_node: ", starting_node
     for i in range(len(starting_node)): #Add ends for dummy_activities
-        print "dummy_end: ", dummy_end
-        for dummy, end in dummy_end:
-            if starting_node[i][0] == dummy:
+        for dummy1, end in dummy_end:
+            if starting_node[i][0] == dummy1:
                 starting_node[i][1] = end
 
     #Step 8. Update the table with the new activity names
