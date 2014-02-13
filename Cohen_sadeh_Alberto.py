@@ -205,16 +205,18 @@ def cohen_sadeh(prelations):
         relation.append(activity)
         for act, end in activity_end: #Add ends for activities
             if act == dummy:
-                print "relation: ", relation
-                print "end: ", end
-                if end not in relation:
-                    print "end not in relation"
-                    relation.append(end)
-                    dummy_end.append(relation)
-#                else:
-#                    print "end in relation"
+                relation.append(end)
+                dummy_end.append(relation)
+#                print "relation: ", relation
+#                print "end: ", end
+#                if end not in relation:
+#                    print "end not in relation"
+#                    relation.append(end)
 #                    dummy_end.append(relation)
-                print "dummy end", dummy_end
+##                else:
+##                    print "end in relation"
+##                    dummy_end.append(relation)
+#                print "dummy end", dummy_end
     print "relation: ", relation
     print "dummy_end: ", dummy_end
     print "starting_node: ", starting_node
