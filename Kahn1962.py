@@ -90,7 +90,7 @@ def test():
     }
     
     dict_list = [
-                    ('prelations', prelations),
+                    ('no_cycle', prelations),
                     ('small_cycle', small_cycle),
                     ('simple_cycle', simple_cycle),
                     ('cycle', cycle),
