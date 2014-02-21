@@ -323,10 +323,10 @@ class Pert(graph.DirectedGraph):
            
     def renumerar(self):
         """
-        Renumera los nodos para que vayan desde 1 a N cumpliendo que un nodo anterior a otro siempre
-        tenga un numero menor (N = número total de nodos).
-
-        Return: un nuevo grafo renumerardo
+        Renumber nodes from 1 to N satisfing that a previous node has always a lower number than its 
+        followers.
+        
+        Return: new Pert graph
         """
         niveles = self.demoucron()
         # Se crea un diccionario con la equivalencia entre los nodos originales y los nuevos
