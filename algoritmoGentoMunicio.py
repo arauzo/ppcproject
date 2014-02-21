@@ -41,19 +41,24 @@ def gento_municio(successors):
         if not set(more_than_once).intersection(set(successor)) and len(successor) != 0:
             standard_I.append(activity)
     print "standard_I: ", standard_I
-    
+    print "MORE TAN ONCE ALL: ", more_than_once_all
     #For step 4(Standard II) the same successor for two or more activities
-    for activity, successor in successors.items():
-        for element_more_than_once_all in more_than_once_all:
-            if set(element_more_than_once_all) == set(successor) and activity not in standard_II:
-                standard_II.append(activity)
+    
+    for element_more_than_once_all in more_than_once_all:
+        for activity, successor in successors.items():
+            if set(element_more_than_once_all).intersection((set(successor))):
+                if set(element_more_than_once_all) != (set(successor)) and activity not in standard_II: 
+                    standard_II_incomplete.append(activity)
+                else:
+                    standard_II.append(activity)
     print "standard_II: ", standard_II
     
     #For step 4.1(Standard II Incomplete)at least one successor of standard II are in other activity not standar II
-    for activity, successor in successors.items():
-        for suc in more_than_once_all:
-            if set(suc).intersection(set(successor)) and activity not in standard_II:
-                standard_II_incomplete.append(activity)
+#    for activity, successor in successors.items():
+#        for suc in more_than_once_all:
+#            if set(suc).intersection(set(successor)):
+#                standard_II_incomplete.append(activity)
+            
     print "standard_II Incompleto: ", standard_II_incomplete
     
 ## --- Start running as a program
@@ -73,11 +78,11 @@ if __name__ == '__main__':
     }
 
     successors1 = {
-        'A' : ['D'],
-        'B' : ['C', 'D', 'E'],
+        'A' : ['C'],
+        'B' : ['C', 'F', 'E'],
         'C' : ['F'],
         'D' : ['G'],
-        'E' : [],
+        'E' : ['C'],
         'F' : [],
         'G' : ['F'],
     }
