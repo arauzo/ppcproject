@@ -30,7 +30,8 @@ def cohen_sadeh(prelations):
         #If similar precedence
         if work_column[i] in visited and work_column[i] != ['-']: 
             work_column[i] = ['-'] #Block similar precedence
-        visited.append(work_column[i]) #Add activity to list of visited
+        else:
+            visited.append(work_column[i]) #Add activity to list of visited
 
     #Step 3. Identify Necessary Dummy Arcs
     #Scan work_column and list digit that appear more than once in that column
@@ -198,28 +199,11 @@ def cohen_sadeh(prelations):
         
     #Step 7. Associate Dummy Arcs with Their Start nodes
     dummy_end = [] #List of dummy and end
-    print "activity_dummy: ", activity_dummy
-    print "activity_end: ", activity_end
     for activity, dummy in activity_dummy:
-        relation = [] #Relation between activity(dummy) and end
-        relation.append(activity)
         for act, end in activity_end: #Add ends for activities
             if act == dummy:
-                relation.append(end)
-                dummy_end.append(relation)
-#                print "relation: ", relation
-#                print "end: ", end
-#                if end not in relation:
-#                    print "end not in relation"
-#                    relation.append(end)
-#                    dummy_end.append(relation)
-##                else:
-##                    print "end in relation"
-##                    dummy_end.append(relation)
-#                print "dummy end", dummy_end
-    print "relation: ", relation
-    print "dummy_end: ", dummy_end
-    print "starting_node: ", starting_node
+                dummy_end.append([activity,end])
+
     for i in range(len(starting_node)): #Add ends for dummy_activities
         for dummy1, end in dummy_end:
             if starting_node[i][0] == dummy1:
