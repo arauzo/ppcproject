@@ -88,7 +88,7 @@ def cohen_sadeh(prelations):
                     number = visited.count(immediate_pred[i][j]) 
                     dummy = immediate_pred[i][j] #Dummy = activity 
                     #Rename dummy
-                    immediate_pred[i][j] = immediate_pred[i][j] + str(number)
+                    immediate_pred[i][j] = immediate_pred[i][j] + '-' + str(number)
                     activity = immediate_pred[i][j] #Activity = dummy
                     dummy_activities.append(activity)
                     relation.append(activity)
