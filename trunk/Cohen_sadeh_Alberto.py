@@ -20,7 +20,10 @@ def cohen_sadeh(prelations):
     #Prepare a table with the immediate predecessors of each activity
     print "PRELATIONS: ", prelations
     immediate_pred = prelations.values() #Obtain only the predecessors
+#    set_work_column = frozenset(prelations.values())
     print "Inmediate_pred: ", immediate_pred
+#    set_work_column = frozenset(immediate_pred)
+#    print "SET WORK COLUMN: ", set_work_column
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     #Duplicate the Immediate Predecessors
     work_column = copy.deepcopy(immediate_pred)
@@ -68,29 +71,29 @@ def cohen_sadeh(prelations):
             #While more than one activity have some predecessors
             while len(intermediate_set) > 1: 
                 paralel_dummy.append(intermediate_set.pop())
-##    print "Paralel_dummy: ", paralel_dummy
-##    #If constraint of more_than_once not is a single activity dummy needed
-##    #Rename the dummies with numbers
-##    visited = [] #List of visited activities
-##    dummy_activities = [] #List of dummy activities
-##    activity_dummy = [] #List of activity and dummy
-##    for i in range(len(immediate_pred)):
-##        #If predecessors are not single
-##        if len(immediate_pred[i]) > 1:
-##            for j in range(len(immediate_pred[i])):
-##                #If activity have more than one constraint 
-##                #Or activity is paralel dummy
-##                if immediate_pred[i][j] in more_than_once or immediate_pred[i][j] in paralel_dummy:
-##                    visited.append(immediate_pred[i][j])
-##                    #Count number of dummy ocurrence
-##                    number = visited.count(immediate_pred[i][j]) 
-##                    dummy = immediate_pred[i][j] #Dummy = activity 
-##                    #Rename dummy
-##                    immediate_pred[i][j] = immediate_pred[i][j] + '-' + str(number)
-##                    activity = immediate_pred[i][j] #Activity = dummy
-##                    dummy_activities.append(activity)
-##                    activity_dummy.append([activity, dummy])
-##    print "Activity_dummy: ", activity_dummy
+    print "Paralel_dummy: ", paralel_dummy
+    #If constraint of more_than_once not is a single activity dummy needed
+    #Rename the dummies with numbers
+    visited = [] #List of visited activities
+    dummy_activities = [] #List of dummy activities
+    activity_dummy = [] #List of activity and dummy
+    for i in range(len(immediate_pred)):
+        #If predecessors are not single
+        if len(immediate_pred[i]) > 1:
+            for j in range(len(immediate_pred[i])):
+                #If activity have more than one constraint 
+                #Or activity is paralel dummy
+                if immediate_pred[i][j] in more_than_once or immediate_pred[i][j] in paralel_dummy:
+                    visited.append(immediate_pred[i][j])
+                    #Count number of dummy ocurrence
+                    number = visited.count(immediate_pred[i][j]) 
+                    dummy = immediate_pred[i][j] #Dummy = activity 
+                    #Rename dummy
+                    immediate_pred[i][j] = immediate_pred[i][j] + '-' + str(number)
+                    activity = immediate_pred[i][j] #Activity = dummy
+                    dummy_activities.append(activity)
+                    activity_dummy.append([activity, dummy])
+    print "Activity_dummy: ", activity_dummy
     #Create a table with activities and their immediate predecessors
     activity_predecessor = [] #List of activity and predecessor
     activities = prelations.keys() #List of activities
