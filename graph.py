@@ -44,7 +44,7 @@ Graph related classes and functions (module of PPC-PROJECT), includes:
                'End': [],
                }
 
- Copyright 2007-11 Universidad de Córdoba
+ Copyright 2007-14 Universidad de Córdoba
  This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
    by the Free Software Foundation, either version 3 of the License,
@@ -57,6 +57,44 @@ Graph related classes and functions (module of PPC-PROJECT), includes:
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import subprocess
+
+# XXX Maybe a MultiGraph could be useful for PERT construction (IN DEVELOPMENT)
+class DirectedMultiGraph(object):
+    """
+    Directed multigraph (several arcs may join a pair of nodes) 
+
+    Uses a data structure based on dictionaries. Incoming and outgoing nodes are kept 
+    (though redundant) to speedup access.
+
+        outgoing, destination nodes of arcs leaving the key node
+        incoming, source nodes of arcs reaching the key node
+        arcs, node pairs with a set of inmutable data objects arcs from graph with linked Data (a Python object)
+
+    Example: 
+        this multigraph:
+                  b <--5-- a --3--> c
+                             --1-->
+        is represented as:
+                  incoming = {'a' : set(['b','c'])}
+                  outgoing = {'b' : set(['a']), 
+                              'c' : set(['a']) }
+                  arcs = { ('a', 'b') : set([5]),
+                           ('a', 'c') : set([1,3]),
+                         }
+    """
+    def __init__(self):
+        """
+        Creates an empty graph
+        """              
+        self.outgoing = {}
+        self.incoming = {}
+        self.arcs = {}
+
+    def is_multi(self):
+        """Check if this multigraph has more than one arc in any node pair"""
+        more_than_one = map(lambda x : len(x) > 1, self.arcs.values)
+        return reduce(lambda x,y : x or y, more_than_one)
+
 
 class DirectedGraph(object):
     """
@@ -76,6 +114,7 @@ class DirectedGraph(object):
         Creates an empty graph
         """                    #XXX Hacer el cambio con @property
                                # http://docs.python.org/2/library/functions.html#property
+                               # la idea era prohibir modificaciones pero permitir lectura??
         self.successors = {}   #XXX next? followers? out?
         self.predecessors = {} #XXX previous? in? (no: reserved word) in_nodes?
         self.arcs = {}
@@ -155,13 +194,13 @@ class DirectedGraph(object):
         self.predecessors[j].remove(i)
         return self.arcs.pop(arc)
 
-    def number_of_nodes(self):
+    def number_of_nodes(self):# XXX Mejor permitir usar len standard
         """
         Return the number of nodes in graph
         """
         return len(self.successors)
 
-    def number_of_arcs(self):
+    def number_of_arcs(self): # XXX Podemos dejar que el usuario pregunte esto directamente
         """
         Return the number of arcs in graph
         """
