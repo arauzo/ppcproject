@@ -5,6 +5,7 @@ import graph
 def gento_municio(successors):
     """
     """
+    print "Successors: ", successors
     #Step 1. Search initials activities
     initials = graph.begining_activities(successors)
     print "Initials:", initials
@@ -13,7 +14,7 @@ def gento_municio(successors):
     endings = graph.ending_activities(successors)
     print "Endings:", endings
     
-    #Step 3. Search standard type I 
+    #Step 3. Search standard type I
     standard_I = []
     visited = []
     more_than_once = []
@@ -25,41 +26,63 @@ def gento_municio(successors):
     standard_II_incomplete = []
     
     #Find activities with unique successors and with same successors
-    for all_successors in successors.values():
-        for element_all_successors in all_successors_visited:
-            if len(all_successors) != 0 and set(all_successors) == (set(element_all_successors)):
-                if all_successors not in more_than_once_all:
-                    more_than_once_all.append(all_successors)
-        all_successors_visited.append(all_successors)
-        for successor in all_successors:
-            if successor in visited and successor not in more_than_once:
-                more_than_once.append(successor)
-            visited.append(successor)
-            
-    #For step 3(Standard I) all successor only can appear one time
+    #XXX
     for activity, successor in successors.items():
-        if not set(more_than_once).intersection(set(successor)) and len(successor) != 0:
-            standard_I.append(activity)
+        for act, suc in successors.items():
+            if activity != act and successor == suc:
+                standard_I.append([activity, successor])
+            if activity != act and set(successor).intersection(set(suc)):
+                print "Activity, successors, suc", activity, successor, suc
+                visited.extend([activity, act])
+                if activity not in visited:
+                    standard_II_incomplete.append([[activity, successor], [act, suc]])
+                if suc == successor:
+                    print "SUC==SUCCESSORActivity, successors, suc", activity, successor, suc
+    print "visited: ", visited
     print "standard_I: ", standard_I
-    print "MORE TAN ONCE ALL: ", more_than_once_all
-    #For step 4(Standard II) the same successor for two or more activities
-    
-    for element_more_than_once_all in more_than_once_all:
-        for activity, successor in successors.items():
-            if set(element_more_than_once_all).intersection((set(successor))):
-                if set(element_more_than_once_all) != (set(successor)) and activity not in standard_II: 
-                    standard_II_incomplete.append(activity)
-                else:
-                    standard_II.append(activity)
-    print "standard_II: ", standard_II
-    
-    #For step 4.1(Standard II Incomplete)at least one successor of standard II are in other activity not standar II
+    print "standard_II_incomplete: ", standard_II_incomplete
+    #XXX
+#    for all_successors in successors.values():
+#        for element_all_successors in all_successors_visited:
+#            if len(all_successors) != 0 and set(all_successors) == (set(element_all_successors)):
+#                if all_successors not in more_than_once_all:
+#                    more_than_once_all.append(all_successors)
+#        all_successors_visited.append(all_successors)
+#        for successor in all_successors:
+#            if successor in visited and successor not in more_than_once:
+#                more_than_once.append(successor)
+#            visited.append(successor)
+#            
+#    #For step 3(Standard I) all successor only can appear one time
 #    for activity, successor in successors.items():
-#        for suc in more_than_once_all:
-#            if set(suc).intersection(set(successor)):
-#                standard_II_incomplete.append(activity)
-            
-    print "standard_II Incompleto: ", standard_II_incomplete
+#        if not set(more_than_once).intersection(set(successor)) and len(successor) != 0:
+#            standard_I.append([activity, successor])
+#    print "standard_I: ", standard_I
+#    print "MORE TAN ONCE ALL: ", more_than_once_all
+#    #For step 4(Standard II) the same successor for two or more activities
+#    
+#    for element_more_than_once_all in more_than_once_all:
+#        for activity, successor in successors.items():
+##            print "Element mtoa: ", element_more_than_once_all
+##            print "successors: ", successor
+#            if set(element_more_than_once_all) == ((set(successor))):
+#                standard_II.append(activity)
+#    print "standard_II: ", standard_II
+#    
+#    for activity, successor in successors.items():
+#        for suc in successor:
+#            if [suc] in more_than_once_all and activity not in standard_II:
+#                standard_II_incomplete.append([activity, successor])
+#                print "Activity, successor: ", activity, successor
+#            elif activity in standard_II:
+#                print "Activity, successor ELSE: ", activity, successor
+#    #For step 4.1(Standard II Incomplete)at least one successor of standard II are in other activity not standar II
+##    for activity, successor in successors.items():
+##        for suc in more_than_once_all:
+##            if set(suc).intersection(set(successor)):
+##                standard_II_incomplete.append(activity)
+#            
+#    print "standard_II Incompleto: ", standard_II_incomplete
     
 ## --- Start running as a program
 if __name__ == '__main__':
@@ -82,7 +105,7 @@ if __name__ == '__main__':
         'B' : ['C', 'F', 'E'],
         'C' : ['F'],
         'D' : ['G'],
-        'E' : ['C'],
+        'E' : ['D'],
         'F' : [],
         'G' : ['F'],
     }
