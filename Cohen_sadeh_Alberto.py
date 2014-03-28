@@ -17,28 +17,36 @@ def cohen_sadeh(prelations):
     return graph pert.Pert()
     """
     #Step 1. Construct Immediate Predecessors Table
-    #Prepare a table with the immediate predecessors of each activity
-    print "PRELATIONS: ", prelations
-    immediate_pred = prelations.values() #Obtain only the predecessors
-#    set_work_column = frozenset(prelations.values())
-    print "Inmediate_pred: ", immediate_pred
-#    set_work_column = frozenset(immediate_pred)
-#    print "SET WORK COLUMN: ", set_work_column
+    work_column = {}
+    for act, predecessors in prelations.items():
+        work_column[act] = frozenset(predecessors)
+    print "WC:"
+    for k,v in work_column.items():
+        print k,v
+
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
-    #Duplicate the Immediate Predecessors
-    work_column = copy.deepcopy(immediate_pred)
-    print "Work column: ", work_column
-    #Find similar precedence constraint and block them
-    visited = [] #List of visited activities
-    for i in range(len(work_column)):
-        #If similar precedence
-        if work_column[i] in visited: # esta comparacion deb ser conj. indep. de orden XXX
-            work_column[i] = ['-'] #Block similar precedence
-        else:
-            visited.append(work_column[i]) #Add activity to list of visited
-    print "Visited: ", visited
-    print "work_column: ", work_column
+    non_blocked = set(work_column.values())        
+    print "NB:"
+    for v in non_blocked:
+        print v
+
     #Step 3. Identify Necessary Dummy Arcs
+    dups = set()
+    visited = set()
+    for pred in non_blocked:
+        for act in pred:
+            if act in visited:
+                dups.add(act)
+            visited.add(act)                        
+    print dups        
+    print "........"
+
+
+    #Step 3.2, 3.3 and 4. Create rows and information for Dummy Arcs
+    for act, predecessors in work_column.items():
+        
+
+    
     #3.1 Scan work_column and list digit that appear more than once in that column
     visited = [] #List of visited activities
     more_than_once = [] #List of activities that appear more than once
@@ -105,10 +113,13 @@ def cohen_sadeh(prelations):
                 relation.append(immediate_pred[j])
                 activity_predecessor.append(relation)
     print "Activity_predecessor: ", activity_predecessor
+
+
     #Step 4. Add Rows and Information for Dummy Arcs
     for activity in activity_dummy:
         activity_predecessor.append(activity)
     print "Step4.Activity_predecessor: ", activity_predecessor
+
 
     #Step 5. Number the AOA nodes
     starting_node = [] #List of starting nodes
