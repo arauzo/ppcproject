@@ -92,8 +92,8 @@ class DirectedMultiGraph(object):
 
     def is_multi(self):
         """Check if this multigraph has more than one arc in any node pair"""
-        more_than_one = map(lambda x : len(x) > 1, self.arcs.values)
-        return reduce(lambda x,y : x or y, more_than_one)
+        more_than_one = map(lambda x : len(x) > 1, self.arcs.values())
+        return reduce(lambda x,y : x or y, more_than_one, False)
 
 
 class DirectedGraph(object):
