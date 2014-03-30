@@ -23,6 +23,58 @@ import copy
 
 import algoritmoSharma
 
+class PertMultigraph(graph.DirectedMultigraph):
+    """
+    """
+    def __init__(self):
+        super(PertMultigraph, self).__init__()
+
+    def __str__(self):
+        rstr = str(self.outgoing) + '\n'
+        for link, act in self.arcs.iteritems():
+            rstr += str(link) + '-' + str(act) + '\n'
+        return rstr
+
+    def to_directed_graph(self):
+        """
+        Removes all multi arcs and returns a Pert DirectedGraph
+        """
+        # Remove parallel activities
+        arcs_with_more_than_one = filter(lambda x : len(x[1]) > 1, self.arcs.items())
+        for arc, labels in arcs_with_more_than_one:
+            origin, dest = arc
+            i = 0
+            while len(labels) > 1:
+                label = labels.pop()
+                new_node = self.nextNodeNumber()
+                self.add_arc( (origin, new_node), label )
+                self.add_arc( (new_node, dest), (label[0] + '-dp' + str(i), True) )
+                i += 1
+
+        # Construct a Pert Directed Graph
+        pert_sucs = {}
+        for origin, dest in self.outgoing.items():
+            pert_sucs[origin] = list(dest)        
+
+        pert_arcs = {}
+        for arc, labels in self.arcs.items():
+            pert_arcs[arc] = iter(labels).next()        
+
+        return Pert( (pert_sucs, pert_arcs) )
+
+    def nextNodeNumber(self):
+        """
+        New node number max(graph)+1 O(n)
+        """
+        # Could be O(1): len(directed graph)+1 must be an available node number
+        # (i.e. graph nodes must be numbered starting in 0 or 1 at most)
+        # Valid only if nodes are not deleted (or reasigned when deleted O(n))
+        if self.outgoing:
+            return max(self.outgoing) + 1
+        else:
+            return 0
+        
+
 class Pert(graph.DirectedGraph):
     """
     PERT class to store pert graph data
@@ -43,7 +95,7 @@ class Pert(graph.DirectedGraph):
     def __str__(self):
         rstr = str(self.successors) + '\n'
         for link, act in self.arcs.iteritems():
-            rstr += str(link) + ' ' + str(act) + '\n'
+            rstr += str(link) + '-' + str(act) + '\n'
         return rstr
 
     def numArcsReales(self):
@@ -68,12 +120,12 @@ class Pert(graph.DirectedGraph):
 
     def nextNodeNumber(self):
         """
-        New node number max(graph)+1 O(n)
-          O(1): len(directed graph)+1 must be an available node number
-          (i.e. graph nodes must be numbered starting in 0 or 1 at most)
-          Valid if nodes are not deleted (or reasigned when deleted
-          O(n))
+        New node number O(n): max(graph) + 1 
         """
+        # Could be O(1): len(directed graph)+1 must be an available node number
+        # (i.e. graph nodes must be numbered starting in 0 or 1 at most)
+        # Valid only if nodes are not deleted (or reasigned when deleted O(n))
+
         if self.successors:
             return max(self.successors)+1
         else:
