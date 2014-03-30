@@ -12,7 +12,8 @@ import validation
 
 def cohen_sadeh(prelations):
     """
-    Build graph PERT with prelations
+    Build graph PERT using Cohen-Sadeh algorithm
+    Note: the original algorithm does not consider parallel activities (creates a multigraph)
     
     prelations = {'activity': ['prelations1', 'prelations2'...}
     
@@ -43,7 +44,6 @@ def cohen_sadeh(prelations):
                 if act in visited_act:
                     dups.add(act)
                 visited_act.add(act)                        
-#    print "DUPS:", dups        
 
     #Step 3.2, 3.3 and 4. Create rows and information for Dummy Arcs
     dummy_counter = collections.Counter()
@@ -104,11 +104,12 @@ def cohen_sadeh(prelations):
 #        print k,v
 
     #Step 8. Generate the graph
-    graph = pert.Pert() #Graph to draw
+    graph = pert.PertMultigraph()
     for act, columns in work_table.items():
         _, _, dummy, _, start, end = columns
         graph.add_arc( (start, end), (act, dummy) )
 
+    graph = graph.to_directed_graph()
     return graph.renumerar()
 
 

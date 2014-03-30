@@ -58,8 +58,7 @@ Graph related classes and functions (module of PPC-PROJECT), includes:
 """
 import subprocess
 
-# XXX Maybe a MultiGraph could be useful for PERT construction (IN DEVELOPMENT)
-class DirectedMultiGraph(object):
+class DirectedMultigraph(object):
     """
     Directed multigraph (several arcs may join a pair of nodes) 
 
@@ -95,6 +94,35 @@ class DirectedMultiGraph(object):
         more_than_one = map(lambda x : len(x) > 1, self.arcs.values())
         return reduce(lambda x,y : x or y, more_than_one, False)
 
+    def add_node(self, node):
+        """
+        Add an unconnected node to graph
+        """
+        self.outgoing[node] = set([])
+        self.incoming[node] = set([])
+        
+    def add_arc(self, arc, label=None):
+        """
+        Insert an arc in the graph. If origin, destination nodes are not present in graph they get created.
+
+        arc = (origin node, destination)
+        label = label to be linked with arc (maybe None if unlabeled)
+        """
+        origin, destination = arc
+        if origin not in self.outgoing:
+            self.add_node(origin)
+        if destination not in self.outgoing:
+            self.add_node(destination)
+
+        self.outgoing[origin].add(destination)
+        self.incoming[destination].add(origin)
+
+        if (origin, destination) not in self.arcs:
+            self.arcs[(origin, destination)] = set([label])
+        else:
+            self.arcs[(origin, destination)].add(label)
+        
+
 
 class DirectedGraph(object):
     """
@@ -108,6 +136,7 @@ class DirectedGraph(object):
 
     """
     # XXX Use set instead of list??
+    # XXX tested in MultiDirectedgraph
 
     def __init__(self):
         """
