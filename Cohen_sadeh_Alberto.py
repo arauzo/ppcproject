@@ -22,17 +22,18 @@ def cohen_sadeh(prelations):
     #Step 1. Construct Immediate Predecessors Table
     work_table = {}
     for act, predecessors in prelations.items():
-                          # [Predecesors,     Blocked, Dummy, Successors, Start node, End node]
-        work_table[act] = [set(predecessors), False,   False, None,       None,       None]
+                          # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
+                          #            1 = (False or Activity with same precedents)   
+        work_table[act] = [set(predecessors), False,     False,   None,         None,         None]
 
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
-    visited_pred = set()
+    visited_pred = {}
     for act, columns in work_table.items():
         pred = columns[0] 
-        if pred not in visited_pred:
-            visited_pred.add( frozenset(pred) )
+        if frozenset(pred) not in visited_pred:
+            visited_pred[frozenset(pred)] = act
         else:
-            columns[1] = True
+            columns[1] = visited_pred[frozenset(pred)]
 
     #Step 3. Identify Necessary Dummy Arcs
     dups = set()
@@ -62,25 +63,35 @@ def cohen_sadeh(prelations):
                        
     #Step 5. Creating nodes
     node = 0
-    pred_to_nodes = {}
     for act, columns in work_table.items():
-        if not columns[2]: # not dummy
-            pred = columns[0]
-            if frozenset(pred) not in pred_to_nodes:
-                pred_to_nodes[frozenset(pred)] = node
-                columns[4] = node
-                node += 1
-            else:
-                columns[4] = pred_to_nodes[frozenset(pred)]                
+        if not columns[2] and not columns[1]: # not dummy
+            columns[4] = node
+            node += 1
+
+    for act, columns in work_table.items():
+        if not columns[2] and columns[1]: # not dummy
+            columns[4] = work_table[columns[1]][4]
+
+#    node = 0
+#    pred_to_nodes = {}
+#    for act, columns in work_table.items():
+#        if not columns[2]: # not dummy
+#            pred = columns[0]
+#            if frozenset(pred) not in pred_to_nodes:
+#                pred_to_nodes[frozenset(pred)] = node
+#                columns[4] = node
+#                node += 1
+#            else:
+#                columns[4] = pred_to_nodes[frozenset(pred)]                
 
     #Step 6. Associate activities with their end nodes
     # (a) find one non-dummy successor for each activity
     for act, columns in work_table.items():
         for suc, suc_columns in work_table.items():
-            if not suc_columns[2]: 
+            if not suc_columns[2] and not suc_columns[1]:
                 if act in suc_columns[0]:
                     columns[3] = suc 
-                    break 
+                    break
 
     # (b) find end node
     for act, columns in work_table.items():
