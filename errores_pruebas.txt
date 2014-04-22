@@ -1,0 +1,105 @@
+Alvarez -> Errores
+    Filename:  ../../examples/Alvarez/ST2722.sm
+        Validation:  ERROR1:  11 ['13', '14'] generated: ['13', '14', '15']
+    Filename:  ../../examples/Alvarez/ST2725.sm
+        Validation:  ERROR1:  11 ['14', '15'] generated: ['15', '16', '14']
+    Filename:  ../../examples/Alvarez/ST2728.sm
+        Validation:  ERROR1:  9 ['13', '14'] generated: ['14', '15', '13']
+    Filename:  ../../examples/Alvarez/ST2734.sm
+        Validation:  ERROR1:  11 ['14', '15'] generated: ['15', '16', '13', '14']
+    Filename:  ../../examples/Alvarez/ST2737.sm
+        Validation:  ERROR1:  12 ['13', '15', '16'] generated: ['13', '14', '15', '16']
+    Filename:  ../../examples/Alvarez/ST2746.sm
+        Validation:  ERROR1:  9 ['14', '15', '16'] generated: ['14', '13', '15', '16']
+    Filename:  ../../examples/Alvarez/ST2748.sm
+        Validation:  ERROR1:  12 ['13', '14'] generated: ['13', '15', '16', '14']
+    Filename:  ../../examples/Alvarez/ST5117.sm
+        Validation:  ERROR1:  9 ['15', '16'] generated: ['14', '15', '16']
+    Filename:  ../../examples/Alvarez/ST5135.sm
+        Validation:  ERROR1:  10 ['13', '14', '15', '16'] generated: ['13', '16', '15']
+    Filename:  ../../examples/Alvarez/ST5140.sm
+        Validation:  ERROR1:  11 ['13', '14', '15'] generated: ['14', '16', '15', '13', '14']
+    Filename:  ../../examples/Alvarez/ST5141.sm
+        Validation:  ERROR1:  9 ['13', '14', '15'] generated: ['14', '15', '13', '16', '15']
+    Filename:  ../../examples/Alvarez/ST5145.sm
+        Validation:  ERROR1:  10 ['13', '14', '16'] generated: ['16', '13']
+    Filename:  ../../examples/Alvarez/ST5147.sm
+        Validation:  ERROR1:  11 ['13', '14', '16'] generated: ['15', '14', '13', '16']
+Elmaghraby -> OK
+Jobshop and Flowshop -> OK
+Kolisch
+### 30 -> OK (Error Código)
+        Traceback (most recent call last):
+          File "../../../prueba.py", line 119, in <module>
+            data = openProject(filename)
+          File "../../../prueba.py", line 52, in openProject
+            data = format.load(filename)
+          File "/home/neo/ppcproject/fileFormats.py", line 189, in load
+            while l[0] != '*':
+        IndexError: string index out of range
+        Traceback (most recent call last):
+          File "../../../prueba.py", line 119, in <module>
+            data = openProject(filename)
+          File "../../../prueba.py", line 52, in openProject
+            data = format.load(filename)
+          File "/home/neo/ppcproject/fileFormats.py", line 211, in load
+            activities[n][6] = float(asig[n][2])
+        ValueError: could not convert string to float: basedata
+        
+        Filename:  ../../../examples/Kolisch/j30/j30opt.sm
+
+        Filename:  ../../../examples/Kolisch/j30/j30.sm
+### 60 -> OK (Error Código)
+        Traceback (most recent call last):
+          File "../../../prueba.py", line 119, in <module>
+            data = openProject(filename)
+          File "../../../prueba.py", line 52, in openProject
+            data = format.load(filename)
+          File "/home/neo/ppcproject/fileFormats.py", line 211, in load
+            activities[n][6] = float(asig[n][2])
+        IndexError: list index out of range
+        Traceback (most recent call last):
+          File "../../../prueba.py", line 120, in <module>
+            check_activities(data)
+          File "../../../prueba.py", line 77, in check_activities
+            print "Conexos: ", conexos.check_conexos(successors)
+          File "/home/neo/ppcproject/conexos.py", line 11, in check_conexos
+            undirected_graph = make_undirected_prelations(successors)
+          File "/home/neo/ppcproject/conexos.py", line 40, in make_undirected_prelations
+            conected[sig].append(act)
+        KeyError: '\x0000000014055'
+        
+        Filename:  ../../../examples/Kolisch/j60/j60hrs.sm
+        Can not understand file
+
+        Filename:  ../../../examples/Kolisch/j60/j60lb_alt.sm
+
+        Filename:  ../../../examples/Kolisch/j60/j60lb.sm
+        Can not understand file
+
+        Filename:  ../../../examples/Kolisch/j60/j60.sm
+        Conexos:
+### 90 -> OK
+### 120 -> OK
+Large Tavares -> Errores
+    Filename:  ../../examples/Large_Tavares/l1k_00.sm
+        Validation:  ERROR1:  591 ['617', '618', '635'] generated: ['635', '617', '623', '618']
+    Filename:  ../../examples/Large_Tavares/l1k_01.sm
+        Validation:  ERROR1:  592 ['617', '618', '619', '629', '634'] generated: ['634', '641', '617', '619', '618', '629']
+    Filename:  ../../examples/Large_Tavares/l1k_10.sm
+        Validation:  ERROR1:  643 ['646', '648'] generated: ['634', '645', '637', '646', '641', '648']
+    ###Pare la ejecución, tardaba mucho y daba errores
+Medium Tavares -> Errores
+    Filename:  ../../examples/Medium_Tavares/m200_01.sm
+        Validation:  ERROR1:  139 ['157', '159'] generated: ['165', '163', '159', '178', '157']
+    Filename:  ../../examples/Medium_Tavares/m200_02.sm
+        Validation:  ERROR1:  133 ['152', '153', '155', '164', '166', '171'] generated: ['155', '166', '165', '159', '161', '160', '164', '152', '171', '153']
+    Filename:  ../../examples/Medium_Tavares/m200_12.sm
+        Validation:  ERROR1:  8 ['11', '22'] generated: ['11', '22', '20', '19']
+    Filename:  ../../examples/Medium_Tavares/m400_00.sm
+        Validation:  ERROR1:  291 ['305', '311', '329'] generated: ['311', '347', '329', '332', '305']
+    Filename:  ../../examples/Medium_Tavares/m400_01.sm
+        Validation:  ERROR1:  107 ['123', '136', '137', '138', '152'] generated: ['137', '125', '152', '159', '121', '123', '138', '136', '123']
+    ###Pare la ejecución, tardaba mucho y daba errores
+Patterson -> OK
+Small Tavares -> OK
