@@ -57,6 +57,7 @@ Graph related classes and functions (module of PPC-PROJECT), includes:
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import subprocess
+import copy
 
 class DirectedMultigraph(object):
     """
@@ -235,6 +236,41 @@ class DirectedGraph(object):
         """
         return len(self.arcs)
 
+    def focus(self, origin, destination):
+        """
+        Returns a new subgraph including only nodes from origin node to destination node
+        """
+        included = set()
+        rejected = set()
+
+        def reach_dest(node, destination):
+            """
+            Is there a path from node to destination? (avoiding to visit any node twice)
+            """
+            reached = False
+            successors = self.successors[node]
+            if node == destination:
+                included.add(node)
+                reached = True
+            for suc in successors:
+                if suc in included:
+                    included.add(node)
+                    reached = True
+                elif suc not in rejected:
+                    if reach_dest(suc, destination):
+                        included.add(node)
+                        reached = True
+            if not reached:
+                rejected.add(node)
+            return reached
+
+        reach_dest(origin, destination)
+
+        new_graph = copy.deepcopy(self)
+        for node in new_graph.successors.keys():
+            if node not in included:
+                new_graph.remove_node(node)
+        return new_graph
 
 
 #
@@ -602,13 +638,24 @@ def main():
                   'e':['d/,2,!@9)'],
                   }
 
+    
+    # Testing focus() method
+    dg = DirectedGraph() # Parche para crear el grafo de sucessors 2
+    for k,v in successors2.items():
+        for d in v:
+            dg.add_arc( (k,d) )
+    sub = dg.focus('a', 'k')
+    sub = dg.focus('d', 'k')
+
     window.images.append( graph2image(successors2) )
-    window.images.append( graph2image(successors3) )
+    window.images.append( graph2image(sub.successors) )
+
+#    window.images.append( graph2image(successors3) )
+
     pert_p = pert.Pert()
     pert_p.construct(successors2)
-    #print pert_p
 
-    window.images.append( pert2image(pert_p) )
+#    window.images.append( pert2image(pert_p) )
 
 ##   s = pertSuccessors(pert_p)
 ##   window.images.append( graph2image( roy(s) ) )
