@@ -1,0 +1,18 @@
+ERROR Ejecutando ppcproject
+Traceback (most recent call last):
+  File "./ppcproject.py", line 431, in col_edited_cb
+    self.actualizacion(modelo, path, n, preVal)
+  File "./ppcproject.py", line 606, in actualizacion
+    self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
+  File "./ppcproject.py", line 761, in set_schedule
+    row[9] = schedule[row[1]]
+KeyError: 'c'
+
+datos introducidos
+Actividad       Siguientes
+a               b, c
+b               c, d
+c               e
+d               e
+e               d, c
+
