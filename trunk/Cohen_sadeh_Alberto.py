@@ -203,22 +203,16 @@ def main():
     gg1 = cohen_sadeh(graph.successors2precedents(successors))
     #test(successors, gg1)
     
-
-#    gg11 = cohen_sadeh(successors)
-#    test(successors, gg11)
-
-#    gg = cohen_sadeh(graph.successors2precedents(successors))
-#    print graph.successors2precedents(successors)
-
-#    gg2 = cohen_sadeh(successors)
-#    print successors
+    subgraph = gg1.focus(787, 875)
 
     window = graph.Test() 
-    window.add_image(graph.pert2image(gg1))
-#    window.add_image(graph.pert2image(gg11))
+    #window.add_image(graph.pert2image(gg1))
+    window.add_image(graph.pert2image(subgraph))
     graph.gtk.main()
+    print gg1
     print "Successors: ", successors
     print "gg1: ", gg1.pertSuccessors()
+    print subgraph
     print validation.check_validation(successors, gg1)
     return 0
 
