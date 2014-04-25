@@ -110,9 +110,9 @@ def cohen_sadeh(prelations):
             start_node = work_table[pred][5]            
             columns[4] = start_node
 
-#    print "WC:"
-#    for k,v in work_table.items():
-#        print k,v
+    print "WC:"
+    for k,v in work_table.items():
+        print k,v
 
     #Step 8. Generate the graph
     graph = pert.PertMultigraph()
@@ -203,16 +203,16 @@ def main():
     gg1 = cohen_sadeh(graph.successors2precedents(successors))
     #test(successors, gg1)
     
-    subgraph = gg1.focus(787, 875)
+    #subgraph = gg1.focus(787, 875) # Error en Large Tavares
 
     window = graph.Test() 
-    #window.add_image(graph.pert2image(gg1))
-    window.add_image(graph.pert2image(subgraph))
+    window.add_image(graph.pert2image(gg1))
+    #window.add_image(graph.pert2image(subgraph))
     graph.gtk.main()
     print gg1
     print "Successors: ", successors
     print "gg1: ", gg1.pertSuccessors()
-    print subgraph
+    #print subgraph
     print validation.check_validation(successors, gg1)
     return 0
 
