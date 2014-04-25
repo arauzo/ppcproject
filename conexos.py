@@ -51,19 +51,84 @@ def make_undirected_prelations(prelations):
 #            new_dictionary[acts] = list(sigs)
 #    return new_dictionary
     
-#--- Start running as a program
-#if __name__ == '__main__':
-#    successors = {
-#        'a' : ['b','c'],
-#        'b' : ['c','d'],
-#        'c' : ['d'],
-#        'd' : ['e'],
-#        'e' : [],
-#        'f' : [],
-#        'g' : [],
-#        'h' : ['i'],
-#        'i' : [],
-#    }
+def test():
+    """
+    A few tests
+    """
+    prelations = {
+        'a' : ['b','c'],
+        'b' : ['d'],
+        'c' : ['e'],
+        'd' : ['e'],
+        'e' : [],
+    }
+    
+    big_related = {
+        'a' : ['b','c', 'e', 'g'],
+        'b' : ['c','d', 'h'],
+        'c' : ['e','b', 'k'],
+        'd' : ['e', 'f', 'g'],
+        'e' : ['f', 'g', 'h', 'j'],
+        'f' : ['g', 'i', 'k', 'l'],
+        'g' : ['h', 'i'],
+        'h' : ['l'],
+        'i' : ['j', 'k'],
+        'j' : ['k', 'l'],
+        'k' : ['h'],
+        'l' : [],
+    }
+    
+    not_related = {
+        'a' : ['b'],
+        'b' : ['c','d'],
+        'c' : ['e'],
+        'd' : ['e'],
+        'e' : ['f','h'],
+        'f' : ['g'],
+        'g' : ['h','i'],
+        'h' : ['f','i'],
+        'i' : [],
+        'j' : [],
+    }
+    
+    big_not_related = {
+        'a' : ['b','c', 'e'],
+        'b' : ['c','d', 'h'],
+        'c' : ['e','b', 'k'],
+        'd' : ['e', 'f'],
+        'e' : ['f', 'h', 'j'],
+        'f' : ['i', 'k', 'l'],
+        'g' : [],
+        'h' : ['l'],
+        'i' : ['j', 'k'],
+        'j' : ['k', 'l'],
+        'k' : ['h'],
+        'l' : [],
+        'm' : [],
+    }
+
+    dict_list = [
+                    ('related', prelations),
+                    ('big_related', big_related),
+                    ('not_related', not_related),
+                    ('big_not_related', big_not_related),
+                ]
+    
+    for name, dict_i in dict_list:
+        print "\n", name
+        print dict_i
+        print check_conexos(dict_i)
+        
+    return 0
+
+# If the program is run directly
+if __name__ == '__main__': 
+    # Imports needed only here
+    import sys
+    # Run
+    RTN = test()
+    sys.exit(RTN)
+            
     
 #    conected = set() #Empty set for recive result of check_conexos
 #    part_conected = set() #Empty set for all part conected
