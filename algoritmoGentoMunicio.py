@@ -5,13 +5,21 @@ import graph
 def gento_municio(successors):
     """
     """
+    #node array for activity, begin and end
+    node_array = {}
     print "Successors: ", successors
     #Step 1. Search initials activities
     initials = graph.begining_activities(successors)
+    for ini in initials:
+        node_array[ini] = ('start')
+    print "Node Array: ", node_array
     print "Initials:", initials
     
     #Step 2. Search endings activities
     endings = graph.ending_activities(successors)
+    for end in endings:
+       node_array[end] = ('end')
+    print "Node Array: ", node_array
     print "Endings:", endings
     
     #Step 3. Search standard type I
