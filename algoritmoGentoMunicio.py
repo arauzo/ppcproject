@@ -11,18 +11,65 @@ def gento_municio(successors):
     #Step 1. Search initials activities
     initials = graph.begining_activities(successors)
     for ini in initials:
-        node_array[ini] = ('start')
+        node_array[ini] = ([0, None])
     print "Node Array: ", node_array
     print "Initials:", initials
     
     #Step 2. Search endings activities
     endings = graph.ending_activities(successors)
     for end in endings:
-       node_array[end] = ('end')
+       node_array[end] = ([None, 1])
     print "Node Array: ", node_array
     print "Endings:", endings
     
     #Step 3. Search standard type I
+   ##Matrix Predeccessors
+##    precedence_matrix = []
+##    
+##    for rows in range(len(successors.keys())):
+##        precedence_matrix.append([0]*len(successors.values()))
+##        precedence_matrix[rows][rows] = "-"
+##    print "Matrix: ", precedence_matrix
+    act_not_unique = []
+    suc_not_unique = []
+    for activity, successor in successors.items():
+        for act, suc in successors.items():
+            if activity != act and set(successor).intersection(set(suc)):
+                if act not in act_not_unique:
+                    act_not_unique.append(activity)
+                    act_not_unique.append(act)
+                    for s in suc:
+                        if s not in suc_not_unique:
+                            suc_not_unique.append(s)
+    print "activity, successor, act, suc: ", activity, successor, act, suc
+    print "act_not_unique: ", act_not_unique
+    print "suc_not_unique: ", suc_not_unique
+    
+    standard_I = []
+    for activity, successor in successors.items():
+        if activity not in act_not_unique:
+            for suc in successor:
+                if suc not in suc_not_unique and len(suc) > 0:
+                    if activity not in standard_I:
+                        standard_I.append(activity)
+                        node_array[activity] = ([0, 1])
+    print "Standard I: ", standard_I
+    print "node_array: ", node_array
+#    matrix_predeccessors = []
+#    list_act_countpredecessors = [[0]]
+#    vis = []
+#    for act, suc in successors.items():
+#            for s in suc:
+#                if s in vis
+#                if s not in vis:
+#                    vis.append(s)
+##                print "Successors values: ", successors.values()
+##                print "suc: ", suc
+##                integer = successors.values().count(suc)
+##                print "act, s, integer: ", a, s, integer
+##            matrix_predeccessors[act] = integer
+#    print "MATRIX_PREDECCESSORS: ", matrix_predeccessors
+#    
     standard_I = []
     visited = []
     more_than_once = []
@@ -35,20 +82,20 @@ def gento_municio(successors):
     
     #Find activities with unique successors and with same successors
     #XXX
-    for activity, successor in successors.items():
-        for act, suc in successors.items():
-            if activity != act and successor == suc:
-                standard_I.append([activity, successor])
-            if activity != act and set(successor).intersection(set(suc)):
-                print "Activity, successors, suc", activity, successor, suc
-                visited.extend([activity, act])
-                if activity not in visited:
-                    standard_II_incomplete.append([[activity, successor], [act, suc]])
-                if suc == successor:
-                    print "SUC==SUCCESSORActivity, successors, suc", activity, successor, suc
-    print "visited: ", visited
-    print "standard_I: ", standard_I
-    print "standard_II_incomplete: ", standard_II_incomplete
+#    for activity, successor in successors.items():
+#        for act, suc in successors.items():
+#            if activity != act and set(successor) == set(suc):
+#                standard_I.append([activity, successor])
+#            if activity != act and set(successor).intersection(set(suc)):
+#                print "Activity, successors, suc", activity, successor, suc
+#                visited.extend([activity, act])
+#                if activity not in visited:
+#                    standard_II_incomplete.append([[activity, successor], [act, suc]])
+#                if suc == successor:
+#                    print "SUC==SUCCESSORActivity, successors, suc", activity, successor, suc
+#    print "visited: ", visited
+#    print "standard_I: ", standard_I
+#    print "standard_II_incomplete: ", standard_II_incomplete
     #XXX
 #    for all_successors in successors.values():
 #        for element_all_successors in all_successors_visited:

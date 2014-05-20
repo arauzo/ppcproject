@@ -2329,6 +2329,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             svg_text = graph.pert2image(grafo)
             title = 'PERT-CohenSadeh graph'
 
+        elif menu_item == self._widgets.get_widget('algoritmoGentoMunicio'):
+#            grafo = Cohen_sadeh_Alberto.cohen_sadeh( graph.successors2precedents(successors) )
+            svg_text = graph.pert2image(grafo)
+            title = 'PERT-GentoMunicio graph'
+
         elif menu_item == self._widgets.get_widget('algoritmoSalas'):
             grafo = algoritmoSalas.salas( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
