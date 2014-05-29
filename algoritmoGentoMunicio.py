@@ -1,10 +1,44 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import graph
+import scipy
+import numpy
 
 def gento_municio(successors):
     """
     """
+    
+    matrix = scipy.zeros([len(successors.keys()), len(successors.keys())], dtype = int)
+    print "MATRIX: ", matrix
+    
+    relation = successors.keys()
+    print "RELATION: ", relation
+    
+    for activity, successor in successors.items():
+        for suc in successor:
+            matrix[relation.index(activity)][relation.index(suc)] = 1
+    print "MATRIX rellena: ", matrix
+    
+    num_predecessors = scipy.sum(matrix, axis=0)
+    print "NUM_PREDECESSORS: ", num_predecessors
+    
+    num_successors = scipy.sum(matrix, axis=1)
+    print "NUM_SUCCESSORS: ", num_successors
+    
+    for i in num_predecessors:
+        if i == 0:
+            beginning = numpy.where(num_predecessors == 0)
+    
+    for i in num_successors:
+        if i == 0:
+            ending = numpy.where(num_successors == 0)
+    
+    print "Beginning: ", beginning
+    
+    print "Ending: ", ending
+    
+    #Step 1. Search initials activities
+    
     #node array for activity, begin and end
     node_array = {}
     print "Successors: ", successors
@@ -23,7 +57,7 @@ def gento_municio(successors):
     print "Endings:", endings
     
     #Step 3. Search standard type I
-   ##Matrix Predeccessors
+    ##Matrix Predeccessors
 ##    precedence_matrix = []
 ##    
 ##    for rows in range(len(successors.keys())):
@@ -32,6 +66,7 @@ def gento_municio(successors):
 ##    print "Matrix: ", precedence_matrix
     act_not_unique = []
     suc_not_unique = []
+    same_sucs = []
     for activity, successor in successors.items():
         for act, suc in successors.items():
             if activity != act and set(successor).intersection(set(suc)):
@@ -41,7 +76,11 @@ def gento_municio(successors):
                     for s in suc:
                         if s not in suc_not_unique:
                             suc_not_unique.append(s)
-    print "activity, successor, act, suc: ", activity, successor, act, suc
+            if activity != act and set(successor) == set(suc):
+                if successor not in same_sucs: 
+                    same_sucs.append(successor)
+    print "same sucs: ", same_sucs
+#    print "activity, successor, act, suc: ", activity, successor, act, suc
     print "act_not_unique: ", act_not_unique
     print "suc_not_unique: ", suc_not_unique
     
@@ -53,8 +92,23 @@ def gento_municio(successors):
                     if activity not in standard_I:
                         standard_I.append(activity)
                         node_array[activity] = ([0, 1])
+        for same_suc in same_sucs:
+#            print "s, same_sucs: ", same_suc, same_sucs
+##            print "activity, successor, act, suc: ", activity, successor, act, s
+#            print "len s, len successor: ", len(same_suc), len(successor)
+            if set(same_suc).intersection(set(successor)):
+                if len(same_suc) == len(successor):
+                    print "Standard II Completo"
+                    print "###***INactivity, successor, suc: ", activity, successor, same_suc
+                else:
+                    print "Standard II INCompleto"
+                    print "###***INactivity, successor, suc: ", activity, successor, same_suc
     print "Standard I: ", standard_I
     print "node_array: ", node_array
+    
+#    standard_II = []
+#    for activity, successor in successors.items():
+        
 #    matrix_predeccessors = []
 #    list_act_countpredecessors = [[0]]
 #    vis = []
@@ -70,16 +124,16 @@ def gento_municio(successors):
 ##            matrix_predeccessors[act] = integer
 #    print "MATRIX_PREDECCESSORS: ", matrix_predeccessors
 #    
-    standard_I = []
-    visited = []
-    more_than_once = []
-    
-    #Step 4. Search standard II(Full) and standard II(Incomplete)
-    standard_II = []
-    all_successors_visited = []
-    more_than_once_all = []
-    standard_II_incomplete = []
-    
+#    standard_I = []
+#    visited = []
+#    more_than_once = []
+#    
+#    #Step 4. Search standard II(Full) and standard II(Incomplete)
+#    standard_II = []
+#    all_successors_visited = []
+#    more_than_once_all = []
+#    standard_II_incomplete = []
+#    
     #Find activities with unique successors and with same successors
     #XXX
 #    for activity, successor in successors.items():
