@@ -19,23 +19,52 @@ def gento_municio(successors):
             matrix[relation.index(activity)][relation.index(suc)] = 1
     print "MATRIX rellena: ", matrix
     
-    num_predecessors = scipy.sum(matrix, axis=0)
-    print "NUM_PREDECESSORS: ", num_predecessors
+    sum_predecessors = scipy.sum(matrix, axis=0)
+    print "NUM_PREDECESSORS: ", sum_predecessors
     
-    num_successors = scipy.sum(matrix, axis=1)
-    print "NUM_SUCCESSORS: ", num_successors
+    sum_successors = scipy.sum(matrix, axis=1)
+    print "NUM_SUCCESSORS: ", sum_successors
     
-    for i in num_predecessors:
+    for i in sum_predecessors:
         if i == 0:
-            beginning = numpy.where(num_predecessors == 0)
+            beginning = numpy.where(sum_predecessors == 0)
     
-    for i in num_successors:
+    for i in sum_successors:
         if i == 0:
-            ending = numpy.where(num_successors == 0)
+            ending = numpy.where(sum_successors == 0)
     
     print "Beginning: ", beginning
     
     print "Ending: ", ending
+    
+    list_of_index = []
+    list_of_count = []
+    index = -1
+    for i in sum_predecessors:
+        index += 1
+        if i == 1:
+            print "sum_predecessors: ", sum_predecessors
+            print "index: ", index
+            print "sum_successors[index]: ", sum_successors[index]
+            print "matrix[index]: ", matrix[index]
+            count = -1;
+            for j in matrix[:, index]:
+                count += 1
+                print "j: ", j
+                print "count: ", count
+                if j == 1:
+                    print "index, count: ", index, count
+                    list_of_index.append(index)
+                    list_of_count.append(count)
+    print "list_of_index: ", list_of_index
+    for a in list_of_count:
+        print "matrix[a]: ", matrix[a]
+        for b in matrix[a]:
+            print "b: ", b
+            print "b.index(1): ", b.index(1)
+        
+#    for i in matrix.flat:
+#            print "Matrix[i,j]: ", i
     
     #Step 1. Search initials activities
     
