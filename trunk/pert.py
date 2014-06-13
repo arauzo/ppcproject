@@ -519,7 +519,7 @@ def pertFinal(actividad):
     """
     successors = dict(((act[1], act[2]) for act in actividad))
     grafo = Pert()
-    grafo = grafo.construct(successors)
+    grafo = grafo.construct(graph.successors2precedents(successors))
     grafoRenumerado = grafo.renumerar()
     return grafoRenumerado                 
 
