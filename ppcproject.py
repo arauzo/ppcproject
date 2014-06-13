@@ -60,7 +60,7 @@ from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
-import algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas, Cohen_sadeh_Alberto
+import algoritmoSharma, algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas, Cohen_sadeh_Alberto
 import graph
 import math
 #import pruebaInterface
@@ -2313,11 +2313,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             svg_text = graph.graph2image(roy)
             title = 'Roy graph'
 
-        elif menu_item == self._widgets.get_widget('grafoPert'):
+        elif menu_item == self._widgets.get_widget('algoritmoSharma'):
             # Creates Pert graph renumbered and creates SVG
-            grafoRenumerado = pert.pertFinal(self.actividad)
+            grafo = algoritmoSharma.sharma1998ext( graph.successors2precedents(successors) )
+            grafoRenumerado = grafo.renumerar()
             svg_text = graph.pert2image(grafoRenumerado)
-            title = 'PERT graph'
+            title = 'PERT graph Sharma'
 
         elif menu_item == self._widgets.get_widget('algoritmoConjuntos'):
             grafo = algoritmoConjuntos.algoritmoN( graph.successors2precedents(successors) )

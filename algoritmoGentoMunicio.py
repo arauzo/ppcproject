@@ -7,68 +7,75 @@ import numpy
 def gento_municio(successors):
     """
     """
-    
+    #Generate precedences/successors matrix
     matrix = scipy.zeros([len(successors.keys()), len(successors.keys())], dtype = int)
     print "MATRIX: ", matrix
-    
+    #Assign number to letters of activity
     relation = successors.keys()
     print "RELATION: ", relation
-    
+    #Put one each relationship
     for activity, successor in successors.items():
         for suc in successor:
             matrix[relation.index(activity)][relation.index(suc)] = 1
-    print "MATRIX rellena: ", matrix
-    
+    print "MATRIX filled: ", matrix
+    #Sum each column
     sum_predecessors = scipy.sum(matrix, axis=0)
-    print "NUM_PREDECESSORS: ", sum_predecessors
-    
+    print "SUM_PREDECESSORS: ", sum_predecessors
+    #Sum each row
     sum_successors = scipy.sum(matrix, axis=1)
-    print "NUM_SUCCESSORS: ", sum_successors
-    
-    for i in sum_predecessors:
-        if i == 0:
+    print "SUM_SUCCESSORS: ", sum_successors
+    #Step 1. Search initials activities (have no predecessors)
+    for num_predecessors in sum_predecessors:
+        if num_predecessors == 0:
             beginning = numpy.where(sum_predecessors == 0)
-    
-    for i in sum_successors:
-        if i == 0:
-            ending = numpy.where(sum_successors == 0)
-    
+            
     print "Beginning: ", beginning
-    
+    #Step 2. Search endings activities (have no successors)
+    for num_successors in sum_successors:
+        if num_successors == 0:
+            ending = numpy.where(sum_successors == 0)
+            
     print "Ending: ", ending
-    
-    list_of_index = []
-    list_of_count = []
-    for i in range(len(sum_predecessors)):
-        if sum_predecessors[i] == 1:
-            print "sum_predecessors: ", sum_predecessors
-            print "index: ", i
-            print "sum_successors[index]: ", sum_successors[i]
-            print "matrix[index]: ", matrix[i]
-            for j in range(len(matrix[:, i])):
-                if matrix[j, i] == 1:
-                    list_of_index.append(i)
-                    list_of_count.append(j)
-#    print "list_of_index: ", list_of_index
-#    for a in list_of_count:
-#        print "matrix[a]: ", matrix[a]
-#        for b in matrix[a]:
-#            print "b: ", b
-    
+    #Step 3. Search standard type I (Activity have unique successors)
+    stI = []
+    for num_successors in range(len(sum_predecessors)):
+        print "matrix[i]: ", matrix[num_successors]
+        ok = True
+        unique_successors = []
+        for predecessor in range(len(matrix[num_successors])):
+            if matrix[num_successors][predecessor] == 1 and ok == True:
+                print "matrix['%d']['%d']: " % (num_successors, predecessor), matrix[num_successors][predecessor]
+                print "sum_predecessors[predecessor]: ", sum_predecessors[predecessor]
+                if (sum_predecessors[predecessor] > 1): #More than one not unique successor activity 
+                    ok = False
+                elif sum_predecessors[predecessor] == 1:
+                    unique_successors.append(predecessor)
+                    print "unique_successors: ", unique_successors
+                    print "%s : %s" % (relation[num_successors], unique_successors)
+                    print "OKOKOKOKActivity: successorOKOKOKOK", num_successors, predecessor
+                    stI.append([num_successors, predecessor])
+                
+    print "stI: ", stI
+    #Step 4. Search standard II(Full) and standard II(Incomplete)
     same_predecessors = []
     print "matrix: ", matrix
-    for i in range(len(successors.keys())):
-        for j in range(len(successors.keys())):
-            if j != i and (matrix[i] == matrix[j]).all():
-                if i not in same_predecessors:
-                    same_predecessors.append(i)
-                if j not in same_predecessors:
-                    same_predecessors.append(j)
-                    sum_pre = matrix[i] + matrix[j]
-                    print "(i, j): ", i, j
-                    print "matrix[i]: ", matrix[i]
-                    print "matrix[j]: ", matrix[j]
+    for num_successors in range(len(sum_successors)):
+        for num_predecessors in range(len(sum_predecessors)):
+            if num_predecessors != num_successors and (matrix[num_successors] == matrix[num_predecessors]).all():
+                if num_successors not in same_predecessors:
+                    same_predecessors.append(num_successors)
+                if num_predecessors not in same_predecessors:
+                    same_predecessors.append(num_predecessors)
+                    sum_pre = matrix[num_predecessors] + matrix[num_successors]
+                    print "##sum_preIN: ", sum_pre
+                    print "(i, j): ", num_successors, num_predecessors
+                    print "matrix[i]: ", matrix[num_successors]
+                    print "matrix[j]: ", matrix[num_predecessors]
     print "same_predecessors: ", same_predecessors
+#    for i in same_predecessors:
+#        print "sum_pre before: ", sum_pre
+#        sum_pre += matrix[i]
+#        print "sum_pre after: ", sum_pre
     print "sum_pre: ", sum_pre
     for p in range(len(sum_pre)):
         if sum_pre[p] > 0:
@@ -94,7 +101,7 @@ def gento_municio(successors):
 #    for i in matrix.flat:
 #            print "Matrix[i,j]: ", i
     
-#    #Step 1. Search initials activities
+
 #    
 #    #node array for activity, begin and end
 #    node_array = {}
@@ -106,14 +113,14 @@ def gento_municio(successors):
 #    print "Node Array: ", node_array
 #    print "Initials:", initials
 #    
-#    #Step 2. Search endings activities
+
 #    endings = graph.ending_activities(successors)
 #    for end in endings:
 #       node_array[end] = ([None, 1])
 #    print "Node Array: ", node_array
 #    print "Endings:", endings
 #    
-#    #Step 3. Search standard type I
+
 #    ##Matrix Predeccessors
 ###    precedence_matrix = []
 ###    
@@ -185,7 +192,6 @@ def gento_municio(successors):
 ##    visited = []
 ##    more_than_once = []
 ##    
-##    #Step 4. Search standard II(Full) and standard II(Incomplete)
 ##    standard_II = []
 ##    all_successors_visited = []
 ##    more_than_once_all = []
@@ -271,8 +277,8 @@ if __name__ == '__main__':
         'A' : ['C'],
         'B' : ['C', 'F', 'E'],
         'C' : ['F'],
-        'D' : ['G'],
-        'E' : ['D'],
+        'D' : ['G', 'D'],
+        'E' : [],
         'F' : [],
         'G' : ['F'],
     }

@@ -1396,16 +1396,6 @@ Uniform</property>
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkMenuItem" id="grafoPert">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
-                        <property name="label" translatable="yes">Draw _PERT graph</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
-                      </widget>
-                    </child>
-                    <child>
                       <widget class="GtkMenuItem" id="mnActividades">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1456,6 +1446,16 @@ Uniform</property>
                       </widget>
                     </child>
                     <child>
+                      <widget class="GtkMenuItem" id="algoritmoSharma">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="label" translatable="yes">Draw _PERT Sharma</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                      </widget>
+                    </child>
+                    <child>
                       <widget class="GtkMenuItem" id="algoritmoConjuntos">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -1486,7 +1486,7 @@ Uniform</property>
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkMenuItem" id="algoritmoCohenSadeh">
+                      <widget class="GtkMenuItem" id="algoritmoGentoMunicio">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
