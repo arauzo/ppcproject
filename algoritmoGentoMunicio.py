@@ -57,46 +57,56 @@ def gento_municio(successors):
                 
     print "stI: ", stI
     #Step 4. Search standard II(Full) and standard II(Incomplete)
-    same_predecessors = []
     print "matrix: ", matrix
     for num_successors in range(len(sum_successors)):
-        for num_predecessors in range(len(sum_predecessors)):
-            if num_predecessors != num_successors and (matrix[num_successors] == matrix[num_predecessors]).all():
-                if num_successors not in same_predecessors:
-                    same_predecessors.append(num_successors)
-                if num_predecessors not in same_predecessors:
-                    same_predecessors.append(num_predecessors)
-                    sum_pre = matrix[num_predecessors] + matrix[num_successors]
-                    print "##sum_preIN: ", sum_pre
-                    print "(i, j): ", num_successors, num_predecessors
-                    print "matrix[i]: ", matrix[num_successors]
-                    print "matrix[j]: ", matrix[num_predecessors]
-    print "same_predecessors: ", same_predecessors
+        same_predecessors = [num_successors]
+        for num_predecessors in range(num_successors+1, len(sum_predecessors)):
+            if (matrix[num_successors] == matrix[num_predecessors]).all():
+                same_predecessors.append(num_predecessors)
+                sum_pre = matrix[num_predecessors] + matrix[num_successors]
+                print "##sum_preIN: ", sum_pre
+                print "(i, j): ", num_successors, num_predecessors
+                print "matrix[i]: ", matrix[num_successors]
+                print "matrix[j]: ", matrix[num_predecessors]
+        print "same_predecessors: ", same_predecessors
+#        print "same_predecessors[0]: ", same_predecessors[0]
+        if len(same_predecessors) > 1:
+            for i in range(len(matrix[same_predecessors[0]])):
+#                print "i: ", i
+#                print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
+                if matrix[same_predecessors[0],[i]] != 0:
+#                    print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
+                    print "i: ", i
+                    if len(same_predecessors) == sum_predecessors[i]:
+                        print "STII COMPLETO: "
+                    else:
+                        print "###ERROR### STII Incompleto"
 #    for i in same_predecessors:
 #        print "sum_pre before: ", sum_pre
 #        sum_pre += matrix[i]
 #        print "sum_pre after: ", sum_pre
+    print "same_predecessors FINAL: ", same_predecessors
     print "sum_pre: ", sum_pre
-    for p in range(len(sum_pre)):
-        if sum_pre[p] > 0:
-            print "p: ", p
-            print "sum_pre[p]: ", sum_pre[p]
-            print "same_predecessors[0]: ", same_predecessors[0]
-            print "sum_predecessors[p]: ", sum_predecessors[p]
-            if sum_pre[p] == sum_predecessors[p]:
-                print "stII Completo"
-                print "same_predecessors: ", same_predecessors
-                print "p: ", p
-            else:
-                print "stII Incompleto"
-                print "same_predecessors: ", same_predecessors
-                print "p: ", p
-                for i in range(len(matrix[:, p])):
-                    if matrix[i,p] == 1 and i not in same_predecessors:
-                        print "i: ", i
-                        same_predecessors.append(i)
-                        print "same_predecessors: ", same_predecessors
-                        
+##    for p in range(len(sum_pre)):
+##        if sum_pre[p] > 0:
+##            print "p: ", p
+##            print "sum_pre[p]: ", sum_pre[p]
+##            print "same_predecessors[0]: ", same_predecessors[0]
+##            print "sum_predecessors[p]: ", sum_predecessors[p]
+##            if sum_pre[p] == sum_predecessors[p]:
+##                print "stII Completo"
+##                print "same_predecessors: ", same_predecessors
+##                print "p: ", p
+##            else:
+##                print "stII Incompleto"
+##                print "same_predecessors: ", same_predecessors
+##                print "p: ", p
+##                for i in range(len(matrix[:, p])):
+##                    if matrix[i,p] == 1 and i not in same_predecessors:
+##                        print "i: ", i
+##                        same_predecessors.append(i)
+##                        print "same_predecessors: ", same_predecessors
+##                        
 #                print "matrix[same_predecessors[0]]: ", matrix[same_predecessors[0][p]
 #    for i in matrix.flat:
 #            print "Matrix[i,j]: ", i
@@ -275,10 +285,10 @@ if __name__ == '__main__':
 
     successors1 = {
         'A' : ['C'],
-        'B' : ['C', 'F', 'E'],
+        'B' : ['C', 'D', 'E'],
         'C' : ['F'],
         'D' : ['G', 'D'],
-        'E' : [],
+        'E' : ['F'],
         'F' : [],
         'G' : ['F'],
     }
