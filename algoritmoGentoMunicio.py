@@ -58,6 +58,8 @@ def gento_municio(successors):
     print "stI: ", stI
     #Step 4. Search standard II(Full) and standard II(Incomplete)
     print "matrix: ", matrix
+    stII_complete = []
+    stII_incomplete = []
     for num_successors in range(len(sum_successors)):
         same_predecessors = [num_successors]
         for num_predecessors in range(num_successors+1, len(sum_predecessors)):
@@ -78,9 +80,11 @@ def gento_municio(successors):
 #                    print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
                     print "i: ", i
                     if len(same_predecessors) == sum_predecessors[i]:
-                        print "STII COMPLETO: "
+                        if same_predecessors not in stII_complete:
+                            stII_complete.append(same_predecessors)
                     else:
-                        print "###ERROR### STII Incompleto"
+                        stII_incomplete.append(same_predecessors)
+    print "STII COMPLETO: ",  stII_complete, "###ERROR### STII Incompleto", stII_incomplete
 #    for i in same_predecessors:
 #        print "sum_pre before: ", sum_pre
 #        sum_pre += matrix[i]
@@ -285,8 +289,8 @@ if __name__ == '__main__':
 
     successors1 = {
         'A' : ['C'],
-        'B' : ['C', 'D', 'E'],
-        'C' : ['F'],
+        'B' : ['G', 'D'],
+        'C' : ['G', 'D'],
         'D' : ['G', 'D'],
         'E' : ['F'],
         'F' : [],
