@@ -48,7 +48,7 @@ def gento_municio(successors):
                 print "sum_predecessors[predecessor]: ", sum_predecessors[predecessor]
                 if (sum_predecessors[predecessor] > 1): #More than one not unique successor activity 
                     ok = False
-                elif sum_predecessors[predecessor] == 1:
+                elif sum_predecessors[predecessor] == 1: #
                     unique_successors.append(predecessor)
                     print "unique_successors: ", unique_successors
                     print "%s : %s" % (relation[num_successors], unique_successors)
@@ -60,30 +60,33 @@ def gento_municio(successors):
     print "matrix: ", matrix
     stII_complete = []
     stII_incomplete = []
+    iguales = []
     for num_successors in range(len(sum_successors)):
         same_predecessors = [num_successors]
         for num_predecessors in range(num_successors+1, len(sum_predecessors)):
-            if (matrix[num_successors] == matrix[num_predecessors]).all():
+            if (matrix[num_successors] == matrix[num_predecessors]).all() and num_predecessors not in iguales:
+                iguales.append(num_predecessors)
                 same_predecessors.append(num_predecessors)
                 sum_pre = matrix[num_predecessors] + matrix[num_successors]
                 print "##sum_preIN: ", sum_pre
                 print "(i, j): ", num_successors, num_predecessors
                 print "matrix[i]: ", matrix[num_successors]
                 print "matrix[j]: ", matrix[num_predecessors]
-        print "same_predecessors: ", same_predecessors
-#        print "same_predecessors[0]: ", same_predecessors[0]
         if len(same_predecessors) > 1:
+            print "same_predecessors: ", same_predecessors
+            print "same_predecessors[0]: ", same_predecessors[0]
+            print "sum_predecessors: ", sum_predecessors
+            print "matrix[same_predecessors[0]]: ", matrix[same_predecessors[0]]
+            a = numpy.array(sum_predecessors)
+            b = numpy.array(matrix[same_predecessors[0]])
+            print "MULTIPLICACION MATRICIALnp.dot: ", numpy.dot(a, b)
+            print "len(same_predeccessors): ", len(same_predecessors)
+            print "sum(Matrix[i]): ", numpy.sum(matrix[same_predecessors[0]])
             for i in range(len(matrix[same_predecessors[0]])):
-#                print "i: ", i
-#                print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
+                print "i: ", i
+                print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
                 if matrix[same_predecessors[0],[i]] != 0:
-#                    print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
-                    print "i: ", i
-                    if len(same_predecessors) == sum_predecessors[i]:
-                        if same_predecessors not in stII_complete:
-                            stII_complete.append(same_predecessors)
-                    else:
-                        stII_incomplete.append(same_predecessors)
+                    print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
     print "STII COMPLETO: ",  stII_complete, "###ERROR### STII Incompleto", stII_incomplete
 #    for i in same_predecessors:
 #        print "sum_pre before: ", sum_pre
@@ -291,8 +294,8 @@ if __name__ == '__main__':
         'A' : ['C'],
         'B' : ['G', 'D'],
         'C' : ['G', 'D'],
-        'D' : ['G', 'D'],
-        'E' : ['F'],
+        'D' : ['F'],
+        'E' : ['G', 'D'],
         'F' : [],
         'G' : ['F'],
     }
