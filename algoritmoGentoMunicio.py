@@ -20,10 +20,10 @@ def gento_municio(successors):
     print "MATRIX filled: ", matrix
     #Sum each column
     sum_predecessors = scipy.sum(matrix, axis=0)
-    print "SUM_PREDECESSORS: ", sum_predecessors
+    print "SUM_SUCCESSORS: ", sum_predecessors
     #Sum each row
     sum_successors = scipy.sum(matrix, axis=1)
-    print "SUM_SUCCESSORS: ", sum_successors
+    print "SUM_PREDECCESSORS: ", sum_successors
     #Step 1. Search initials activities (have no predecessors)
     for num_predecessors in sum_predecessors:
         if num_predecessors == 0:
@@ -82,11 +82,17 @@ def gento_municio(successors):
             print "MULTIPLICACION MATRICIALnp.dot: ", numpy.dot(a, b)
             print "len(same_predeccessors): ", len(same_predecessors)
             print "sum(Matrix[i]): ", numpy.sum(matrix[same_predecessors[0]])
-            for i in range(len(matrix[same_predecessors[0]])):
-                print "i: ", i
-                print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
-                if matrix[same_predecessors[0],[i]] != 0:
-                    print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
+            if numpy.dot(a, b) == len(same_predecessors) * numpy.sum(matrix[same_predecessors[0]]):
+                stII_complete.append(same_predecessors)
+                print "OKOKOK"
+            else:
+                stII_incomplete.append(same_predecessors)
+                print "INCOMPLETE"
+#            for i in range(len(matrix[same_predecessors[0]])):
+#                print "i: ", i
+#                print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
+#                if matrix[same_predecessors[0],[i]] != 0:
+#                    print "matrix[same_predecessors[0][i]]: ", matrix[same_predecessors[0],[i]]
     print "STII COMPLETO: ",  stII_complete, "###ERROR### STII Incompleto", stII_incomplete
 #    for i in same_predecessors:
 #        print "sum_pre before: ", sum_pre
