@@ -384,6 +384,9 @@ def pert2image(pert_graph, file_format='svg'):
     Graph drawed to a image data string in the file_format specified as a
     format string supported by dot.
     """
+#    f = file('grafopru.dot', 'a')
+#    f.write( pert2dot(pert_graph))
+#    f.close()
     process = subprocess.Popen(['dot', '-T', file_format], bufsize=-1, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     dot_in, dot_out = (process.stdin, process.stdout)
     dot_in.write( pert2dot(pert_graph) )
