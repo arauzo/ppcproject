@@ -99,6 +99,7 @@ def test_algorithm(activities, algorithm, repeat=1):
     utime = ftime[0] - itime[0]
 
     # Print test results
+    print "numero de actividades: ", len(activities)
     print "utime %.4f"% (utime)
     print "numero de nodos: ", pert_graph.number_of_nodes()
     print "numero de arcos: ", pert_graph.number_of_arcs()
@@ -120,7 +121,7 @@ if len(sys.argv) == 3:
     check_activities(data)
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
-                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+#                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
                     ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
 #                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                  ]
@@ -129,11 +130,11 @@ if len(sys.argv) == 3:
         print name
         result_graph = test_algorithm(data, alg, repeticiones)
 
-        # Draw graph and save in a file (*.svg)
-        image_text = graph.pert2image(result_graph) 
-        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-        fsalida.write(image_text)
-        fsalida.close()
+#        # Draw graph and save in a file (*.svg)
+#        image_text = graph.pert2image(result_graph) 
+#        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+#        fsalida.write(image_text)
+#        fsalida.close()
 
 else:
     print
