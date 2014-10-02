@@ -38,10 +38,12 @@ def check_cycles(prelations):
         no_incoming_edges.update(graph.begining_activities(check_prelations, set_prelations)) 
 
     # If graph still has edges
-    if check_prelations: 
-        return False # at least one cycle
-    else: 
-        return True  # no cycles
+    if check_prelations:
+        print "FAIL --> No Pass" # False at least one cycle
+        return False
+    else:
+        print "OK --> Pass" # True no cycles
+        return True
 
 
 def test():

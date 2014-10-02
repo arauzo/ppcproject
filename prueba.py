@@ -74,9 +74,9 @@ def check_activities(activities):
         successors[i[1]] = i[2]
 
     # Check conexos
-    print "Conexos: ", conexos.check_conexos(successors)
+    print "Check Conexos: ", conexos.check_conexos(successors)
     # Check cycles
-    print "Kahn: ", Kahn1962.check_cycles(successors)
+    print "Check Cycles: ", Kahn1962.check_cycles(successors)
     print ""
 
 def test_algorithm(activities, algorithm, repeat=1):
@@ -130,11 +130,11 @@ if len(sys.argv) == 3:
         print name
         result_graph = test_algorithm(data, alg, repeticiones)
 
-#        # Draw graph and save in a file (*.svg)
-#        image_text = graph.pert2image(result_graph) 
-#        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-#        fsalida.write(image_text)
-#        fsalida.close()
+        # Draw graph and save in a file (*.svg)
+        image_text = graph.pert2image(result_graph) 
+        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+        fsalida.write(image_text)
+        fsalida.close()
 
 else:
     print
