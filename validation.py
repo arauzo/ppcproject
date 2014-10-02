@@ -21,5 +21,5 @@ def check_validation(successors, pert):
         if set(successors) != set(successors_generated[activity]):
             print "WRONG GRAPH:\n    IN: '%s' -> %s\n GRAPH: '%s' -> %s" % (activity, sorted(successors), activity, sorted(successors_generated[activity]))
             return False
-
+    print "OK --> Pass"
     return True

@@ -25,9 +25,11 @@ def check_conexos(successors):
         set_prelations = set(undirected_graph[act])
         activities_for_visit.update(set_prelations.difference(visited_activities))
     if visited_activities != activities:
-        return False #Graph is no conected
+        print "FAIL --> No Pass" # False Graph is no conected
+        return "False"
     else:
-        return True #Graph is conected
+        print "OK --> Pass" # True Graph is conected
+        return True
 
 def make_undirected_prelations(prelations):
     """
