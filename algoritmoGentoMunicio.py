@@ -12,6 +12,7 @@ def gento_municio(successors):
     print "MATRIX: ", matrix
     #Assign number to letters of activity
     relation = successors.keys()
+    relation.sort() # XXX Quitar en version definitiva para eficiencia
     print "RELATION: ", relation
     #Put one each relationship
     for activity, successor in successors.items():
@@ -27,13 +28,13 @@ def gento_municio(successors):
     #Step 1. Search initials activities (have no predecessors)
     for num_predecessors in sum_predecessors:
         if num_predecessors == 0:
-            beginning = numpy.where(sum_predecessors == 0)
+            beginning, = numpy.where(sum_predecessors == 0)
             
     print "Beginning: ", beginning
     #Step 2. Search endings activities (have no successors)
     for num_successors in sum_successors:
         if num_successors == 0:
-            ending = numpy.where(sum_successors == 0)
+            ending, = numpy.where(sum_successors == 0)
             
     print "Ending: ", ending
     #Step 3. Search standard type I (Activity have unique successors)
@@ -81,7 +82,7 @@ def gento_municio(successors):
         stII_complete_final.append((stII_complete[i], numpy.nonzero(matrix[stII_complete[i][0]])))
     
     for i in range(len(stII_incomplete)):
-        stII_incomplete_final.append((stII_incomplete[i], numpy.nonzero(matrix[stII_incomplete[i][0]])))
+        stII_incomplete_final.append( (stII_incomplete[i], numpy.nonzero(matrix[stII_incomplete[i][0]])[0] ) )
     print "STII COMPLETO: ", stII_complete, "###ERROR### STII Incompleto", stII_incomplete
     print "STII COMPLETO FINAL: ", stII_complete_final
     print "STII INCOMPLETO FINAL: ", stII_incomplete_final
