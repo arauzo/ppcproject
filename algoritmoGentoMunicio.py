@@ -88,7 +88,7 @@ def gento_municio(successors):
     print "STII INCOMPLETO FINAL: ", stII_incomplete_final
     
     #Step 5. Search for matches
-
+    
     
 # --- Start running as a program
 if __name__ == '__main__': 
