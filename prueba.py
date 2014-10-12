@@ -79,42 +79,42 @@ def check_activities(activities):
     print "Check Cycles: ", Kahn1962.check_cycles(successors)
     print ""
 
-def test_algorithm(activities, algorithm, repeat=1):
-    """
-    Test one algorithm using activities table.
-    """
-    # Get successors
-    successors = {}
-    for i in activities:
-        successors[i[1]] = i[2]
+##def test_algorithm(activities, algorithm, repeat=1):
+##    """
+##    Test one algorithm using activities table.
+##    """
+##    # Get successors
+##    successors = {}
+##    for i in activities:
+##        successors[i[1]] = i[2]
 
-    # obtengo prelaciones revertiendo sucesores
-    prelaciones = graph.reversed_prelation_table(successors)
+##    # obtengo prelaciones revertiendo sucesores
+##    prelaciones = graph.reversed_prelation_table(successors)
 
-    # Run algorithm
-    itime = os.times()
-    for i in range(repeat):
-        pert_graph = algorithm(prelaciones)
-    ftime = os.times()
-    utime = ftime[0] - itime[0]
-
-    # Print test results
-    print "numero de actividades: ", len(activities)
-    print "utime %.4f"% (utime)
-    print "numero de nodos: ", pert_graph.number_of_nodes()
-    print "numero de arcos: ", pert_graph.number_of_arcs()
-    print "numero de arcos reales: ", pert_graph.numArcsReales()
-    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
-    print "Validation: ", validation.check_validation(successors, pert_graph)
-    print ""
-    return pert_graph
+##    # Run algorithm
+##    itime = os.times()
+##    for i in range(repeat):
+##        pert_graph = algorithm(prelaciones)
+##    ftime = os.times()
+##    utime = ftime[0] - itime[0]
+##    execution_time = utime
+##    
+##    # Print test results
+##    print "utime %.4f"% (utime)
+##    print "numero de nodos: ", pert_graph.number_of_nodes()
+##    print "numero de arcos: ", pert_graph.number_of_arcs()
+##    print "numero de arcos reales: ", pert_graph.numArcsReales()
+##    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
+##    print "Validation: ", validation.check_validation(successors, pert_graph)
+##    print ""
+##    return pert_graph
 
 
 ###si hay dos argumentos pasados por lineas de comandos 
 if len(sys.argv) == 3:
     filename = sys.argv[1]           ###el nombre del fichero es el primer parametro
-    repeticiones = int(sys.argv[2])  ###repeticiones es igual al segundo parametro
-
+    repeat = int(sys.argv[2])  ###repeticiones es igual al segundo parametro
+    
     # File input
     print "\nFilename: ",filename 
     data = openProject(filename)
@@ -126,15 +126,51 @@ if len(sys.argv) == 3:
 #                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                  ]
 
+    f_csv = open("resultados.csv", "a")
+
     for name, alg in algorithms:
         print name
-        result_graph = test_algorithm(data, alg, repeticiones)
+#Sacar aqui test algorithm
+#   Test one algorithm using data(activities table).
+    # Get successors
+    successors = {}
+    repeat = 1;
+    for i in data:
+        successors[i[1]] = i[2]
 
+    # obtengo prelaciones revertiendo sucesores
+    prelaciones = graph.reversed_prelation_table(successors)
+
+    # Run algorithm
+    itime = os.times()
+    for i in range(repeat):
+        pert_graph = alg(prelaciones)
+    ftime = os.times()
+    utime = ftime[0] - itime[0]
+    
+    # Print test results
+#    precision_utime = "utime %.4f"% (utime)
+    print "numero de nodos: ", pert_graph.number_of_nodes()
+    print "numero de arcos: ", pert_graph.number_of_arcs()
+    print "numero de arcos reales: ", pert_graph.numArcsReales()
+    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
+    print "Validation: ", validation.check_validation(successors, pert_graph)
+    print ""
+
+#        result_graph = test_algorithm(data, alg, repeat)
+
+    result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + \
+        str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
+        str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
         # Draw graph and save in a file (*.svg)
-        image_text = graph.pert2image(result_graph) 
-        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-        fsalida.write(image_text)
-        fsalida.close()
+#        image_text = graph.pert2image(result_graph) 
+#        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+#        fsalida.write(image_text)
+#        fsalida.close()
+
+    f_csv.write(result_line + "\n")
+    f_csv.close()
+
 
 else:
     print
