@@ -78,24 +78,19 @@ def gento_municio(successors):
     print nodes
     #Step 3. Search standard type I (Activity have unique successors)
     indice, = numpy.nonzero(sum_predecessors == 1)
-    prueba_stI = collections.defaultdict(list)
-    print "indice: ", indice
-    print "suma matrix \"indices\":", scipy.sum(matrix[:,indice])
+    stI = collections.defaultdict(list)
     for i in indice:
-        print "i: ", i
-        print "matrix[:,i]: ", matrix[:,i]
         activity = numpy.nonzero((matrix[:,i]))[0][0]
         if sum_successors[activity] == 1 or scipy.sum(matrix[:,numpy.nonzero(matrix[activity])]) == sum_successors[activity]:
-            print "activity: ", activity
-            prueba_stI[activity].append(i)
-    print "prueba_stI: ", prueba_stI
+            stI[activity].append(i)
+    print "stI: ", stI
     
-    for node_activity in prueba_stI:
+    for node_activity in stI:
         print "node_activity: ", node_activity
         stI_node = nodes.next_node()
         print "stI_node: ", stI_node
         nodes[node_activity][1] = stI_node
-        for successor in prueba_stI[node_activity]:
+        for successor in stI[node_activity]:
             nodes[successor][0] = stI_node
     
     print nodes
@@ -113,6 +108,9 @@ def gento_municio(successors):
 #    print "stI: ", stI
     #Step 4. Search standard II(Full) and standard II(Incomplete)
     print "matrix: \n", matrix
+    ##
+    stII = collections.defaultdict(list)
+    ##
     stII_complete = []
     stII_complete_final = []
     stII_incomplete = []
@@ -125,50 +123,34 @@ def gento_municio(successors):
             if (matrix[num_successors] == matrix[num_predecessors]).all() and num_predecessors not in equal:
                 equal.append(num_predecessors)
                 same_predecessors.append(num_predecessors)
-                sum_pre = matrix[num_predecessors] + matrix[num_successors]
+#                sum_pre = matrix[num_predecessors] + matrix[num_successors]
         if len(same_predecessors) > 1:
-            print "same_predecessors: ", same_predecessors
-            prueba_same_pred = same_predecessors #same predecesor change
-            print "numpy.dot(numpy.array(sum_predecessors), numpy.array(matrix[same_predecessors[0]]))", \
-               numpy.dot(numpy.array(sum_predecessors), numpy.array(matrix[same_predecessors[0]]))
-            print "len(same_predecessors) * numpy.sum(matrix[same_predecessors[0]])", \
-                len(same_predecessors) * numpy.sum(matrix[same_predecessors[0]])
             if numpy.dot(numpy.array(sum_predecessors), numpy.array(matrix[same_predecessors[0]])) == \
                len(same_predecessors) * numpy.sum(matrix[same_predecessors[0]]): 
                 stII_complete.append(same_predecessors)
             else:
                 stII_incomplete.append(same_predecessors)
+                num_same_pred = len(same_predecessors)
                 
-    print "stII_incomplete[0][0]: ", stII_incomplete
-    indices = numpy.nonzero(matrix[stII_incomplete[0][0]])
-    print "indices: ", indices
-    print "same predecessors: ", same_predecessors
-    print "len(same_predecessors)", len(same_predecessors)
-    print "sum_predecessors: ", sum_predecessors
-    print "sum_predecessors[ind]", sum_predecessors[indices[0]]
-    print "sum_predecessors[ind]2", sum_predecessors[indices[0][1]]
-    for ind in indices[0]:
-        if sum_predecessors[ind] > len(prueba_same_pred):
-            print "ind: ", ind
-            print "OK"
-            print "matrix[0][ind]", matrix[:,ind]
-            columna = numpy.nonzero(matrix[:,ind])
-            print "columna: ", columna
-
-    print "stII_incomplete: ", stII_incomplete
-            
-    for i in range(len(stII_complete)):
-        stII_complete_final.append((stII_complete[i], numpy.nonzero(matrix[stII_complete[i][0]])))
     
-    for i in range(len(stII_incomplete)):
-        stII_incomplete_final.append( (stII_incomplete[i], numpy.nonzero(matrix[stII_incomplete[i][0]])[0] ) )
-    print "STII COMPLETO: ", stII_complete, "###ERROR### STII Incompleto", stII_incomplete
-    print "STII COMPLETO FINAL: ", stII_complete_final
-    print "STII INCOMPLETO FINAL: ", stII_incomplete_final
+    index = numpy.nonzero(matrix[stII_incomplete[0][0]])
+    for ind in index[0]:
+        if sum_predecessors[ind] > num_same_pred:
+            activities_stII_incomplete, = numpy.nonzero(matrix[:,ind])
+            
+    print "STII COMPLETO: ", stII_complete, "###ERROR### STII Incompleto", activities_stII_incomplete
+    
+    stII_node = nodes.next_node()
+    for node_activity in stII_complete:
+        print "node activity: ", node_activity
+        for n in node_activity:
+            print "n: ", n
+            nodes[n][1] = stII_node
+    
+    print nodes
     
     #Step 5. Search for matches
     npc = []
-    print "stII incomplete final: ", stII_incomplete_final
     for activity, sucessor in stII_incomplete_final:
         ocurrencia = 0
         for s in sucessor:
