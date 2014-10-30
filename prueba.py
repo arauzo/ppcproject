@@ -121,8 +121,8 @@ if len(sys.argv) == 3:
     check_activities(data)
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
-#                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
-                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
+                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+#                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
 #                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                  ]
 
