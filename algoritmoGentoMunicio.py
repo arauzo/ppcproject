@@ -150,13 +150,17 @@ def gento_municio(successors):
     print nodes
     
     #Step 5. Search for matches
+    print "MATRIX: ", matrix
+    print "INDEX: ", index
+    for i in index:
+        print "I!: ", i[0], sum_predecessors[i[0]]
+        
     npc = []
-    for activity, sucessor in stII_incomplete_final:
-        ocurrencia = 0
-        for s in sucessor:
-            npc.append((s,ocurrencia+len(activity)))
-            print "npc: ", npc
-            print "activity, sucessor: ", activity, sucessor
+    for activity in activities_stII_incomplete:
+        print "activity, siguientes: ", activity, numpy.nonzero(matrix[activity])
+        for i in numpy.nonzero(matrix[activity]),:
+            print "I: ", i
+        
     #Step 5.1 Know initial nodes of activities of matches standar
 #    for activity, matches in npc:
 #        if matches > 1:
