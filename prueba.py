@@ -121,8 +121,8 @@ if len(sys.argv) == 3:
     check_activities(data)
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
-                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
-#                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
+#                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
 #                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                  ]
 
@@ -130,45 +130,45 @@ if len(sys.argv) == 3:
 
     for name, alg in algorithms:
         print name
-#Sacar aqui test algorithm
-#   Test one algorithm using data(activities table).
-    # Get successors
-    successors = {}
-    repeat = 1;
-    for i in data:
-        successors[i[1]] = i[2]
+    #Sacar aqui test algorithm
+    #   Test one algorithm using data(activities table).
+        # Get successors
+        successors = {}
+        repeat = 1;
+        for i in data:
+            successors[i[1]] = i[2]
 
-    # obtengo prelaciones revertiendo sucesores
-    prelaciones = graph.reversed_prelation_table(successors)
+        # obtengo prelaciones revertiendo sucesores
+        prelaciones = graph.reversed_prelation_table(successors)
 
-    # Run algorithm
-    itime = os.times()
-    for i in range(repeat):
-        pert_graph = alg(prelaciones)
-    ftime = os.times()
-    utime = ftime[0] - itime[0]
-    
-    # Print test results
-#    precision_utime = "utime %.4f"% (utime)
-    print "numero de nodos: ", pert_graph.number_of_nodes()
-    print "numero de arcos: ", pert_graph.number_of_arcs()
-    print "numero de arcos reales: ", pert_graph.numArcsReales()
-    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
-    print "Validation: ", validation.check_validation(successors, pert_graph)
-    print ""
+        # Run algorithm
+        itime = os.times()
+        for i in range(repeat):
+            pert_graph = alg(prelaciones)
+        ftime = os.times()
+        utime = ftime[0] - itime[0]
+        
+        # Print test results
+    #    precision_utime = "utime %.4f"% (utime)
+        print "numero de nodos: ", pert_graph.number_of_nodes()
+        print "numero de arcos: ", pert_graph.number_of_arcs()
+        print "numero de arcos reales: ", pert_graph.numArcsReales()
+        print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
+        print "Validation: ", validation.check_validation(successors, pert_graph)
+        print ""
 
-#        result_graph = test_algorithm(data, alg, repeat)
+    #        result_graph = test_algorithm(data, alg, repeat)
 
-    result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + \
-        str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
-        str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
-        # Draw graph and save in a file (*.svg)
-#        image_text = graph.pert2image(result_graph) 
-#        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-#        fsalida.write(image_text)
-#        fsalida.close()
+        result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + \
+            str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
+            str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
+            # Draw graph and save in a file (*.svg)
+    #        image_text = graph.pert2image(result_graph) 
+    #        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+    #        fsalida.write(image_text)
+    #        fsalida.close()
 
-    f_csv.write(result_line + "\n")
+        f_csv.write(result_line + "\n")
     f_csv.close()
 
 
