@@ -147,15 +147,15 @@ def gento_municio(successors):
             nodes[activity][1] = stII_node
         for successor in stII_complete_successors[0]:
             nodes[successor][0] = stII_node
-    print ":::", numpy.nonzero(matrix[node_activity[0]])
     
     print nodes
     
     #Step 5. Search for matches
     print "MATRIX: ", matrix
-    print "INDEX: ", index
-    for i in index:
-        print "I!: ", i[0], sum_predecessors[i[0]]
+    print "STII INCOMPLETE: ", activities_stII_incomplete
+    
+    MASC = []
+    
         
     npc = []
     for activity in activities_stII_incomplete:
