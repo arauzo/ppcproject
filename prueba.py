@@ -72,7 +72,7 @@ def check_activities(activities):
     successors = {}
     for i in activities:
         successors[i[1]] = i[2]
-
+    
     # Check conexos
     print "Check Conexos: ", conexos.check_conexos(successors)
     # Check cycles
@@ -137,7 +137,13 @@ if len(sys.argv) == 3:
         repeat = 1;
         for i in data:
             successors[i[1]] = i[2]
-
+            
+        # Count prelations
+        list_of_predecessors = successors.values()
+        num_of_predecessors = 0
+        for predecessors in list_of_predecessors:
+            num_of_predecessors += len(predecessors)
+            
         # obtengo prelaciones revertiendo sucesores
         prelaciones = graph.reversed_prelation_table(successors)
 
@@ -149,17 +155,19 @@ if len(sys.argv) == 3:
         utime = ftime[0] - itime[0]
         
         # Print test results
-    #    precision_utime = "utime %.4f"% (utime)
+
+        print "utime %.4f"% (utime)
         print "numero de nodos: ", pert_graph.number_of_nodes()
         print "numero de arcos: ", pert_graph.number_of_arcs()
         print "numero de arcos reales: ", pert_graph.numArcsReales()
         print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
+        print "numero de predecesors/sucesores: ", num_of_predecessors
         print "Validation: ", validation.check_validation(successors, pert_graph)
         print ""
 
     #        result_graph = test_algorithm(data, alg, repeat)
 
-        result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + \
+        result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + str(num_of_predecessors) + ',' + \
             str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
             str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
             # Draw graph and save in a file (*.svg)

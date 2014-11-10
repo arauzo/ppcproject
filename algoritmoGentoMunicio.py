@@ -154,14 +154,17 @@ def gento_municio(successors):
     print "MATRIX: ", matrix
     print "STII INCOMPLETE: ", activities_stII_incomplete
     
-    MASC = []
-    
+    masc = []
+    for activity in activities_stII_incomplete:
+        masc.append([activity, numpy.nonzero(matrix[activity])])
+        print "MASC: ", masc
         
     npc = []
-    for activity in activities_stII_incomplete:
-        print "activity, siguientes: ", activity, numpy.nonzero(matrix[activity])
-        for i in numpy.nonzero(matrix[activity]),:
-            print "I: ", i
+    for act_masc in masc:
+        print "act: ", act_masc
+        for a in act_masc[1][0]:
+            print "a: ", a
+            print "COUNT: ", act_masc.count(a) 
         
     #Step 5.1 Know initial nodes of activities of matches standar
 #    for activity, matches in npc:
