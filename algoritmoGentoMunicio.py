@@ -108,9 +108,6 @@ def gento_municio(successors):
 #    print "stI: ", stI
     #Step 4. Search standard II(Full) and standard II(Incomplete)
     print "matrix: \n", matrix
-    ##
-    stII = collections.defaultdict(list)
-    ##
     stII_complete = []
     stII_complete_final = []
     stII_incomplete = []
@@ -123,7 +120,6 @@ def gento_municio(successors):
             if (matrix[num_successors] == matrix[num_predecessors]).all() and num_predecessors not in equal:
                 equal.append(num_predecessors)
                 same_predecessors.append(num_predecessors)
-#                sum_pre = matrix[num_predecessors] + matrix[num_successors]
         if len(same_predecessors) > 1:
             if numpy.dot(numpy.array(sum_predecessors), numpy.array(matrix[same_predecessors[0]])) == \
                len(same_predecessors) * numpy.sum(matrix[same_predecessors[0]]): 
@@ -131,21 +127,27 @@ def gento_municio(successors):
             else:
                 stII_incomplete.append(same_predecessors)
                 num_same_pred = len(same_predecessors)
+                stII_incomplete_node = nodes.next_node()
+                for node_activity_incomplete in same_predecessors:
+                    nodes[node_activity_incomplete][1] = stII_incomplete_node
                 
+    if len(stII_incomplete) > 0:
+        index = numpy.nonzero(matrix[stII_incomplete[0][0]])
+        for ind in index[0]:
+            if sum_predecessors[ind] > num_same_pred:
+                activities_stII_incomplete, = numpy.nonzero(matrix[:,ind])
+        print "###ERROR### STII Incompleto", activities_stII_incomplete
+        
+    print "STII COMPLETO: ", stII_complete
     
-    index = numpy.nonzero(matrix[stII_incomplete[0][0]])
-    for ind in index[0]:
-        if sum_predecessors[ind] > num_same_pred:
-            activities_stII_incomplete, = numpy.nonzero(matrix[:,ind])
-            
-    print "STII COMPLETO: ", stII_complete, "###ERROR### STII Incompleto", activities_stII_incomplete
-    
-    stII_node = nodes.next_node()
     for node_activity in stII_complete:
-        print "node activity: ", node_activity
-        for n in node_activity:
-            print "n: ", n
-            nodes[n][1] = stII_node
+        stII_node = nodes.next_node()
+        stII_complete_successors = numpy.nonzero(matrix[node_activity[0]])
+        for activity in node_activity:
+            nodes[activity][1] = stII_node
+        for successor in stII_complete_successors[0]:
+            nodes[successor][0] = stII_node
+    print ":::", numpy.nonzero(matrix[node_activity[0]])
     
     print nodes
     
@@ -189,7 +191,7 @@ if __name__ == '__main__':
         'B' : ['G', 'D'],
         'C' : ['G', 'D'],
         'D' : ['F'],
-        'E' : ['G'],
+        'E' : ['G'],#G
         'F' : [],
         'G' : ['F'],
     }
