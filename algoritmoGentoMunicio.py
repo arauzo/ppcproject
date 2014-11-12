@@ -154,24 +154,39 @@ def gento_municio(successors):
     print "MATRIX: ", matrix
     print "STII INCOMPLETE: ", activities_stII_incomplete
     
+#    print "SUCCESSORS: ", successors
+#    incomplete_sig = [successors[activity] for act in activities_stII_incomplete]
+#    print "INCOMPLETE SIG: ", incomplete_sig
+    
     masc = []
     for activity in activities_stII_incomplete:
-        masc.append([activity, numpy.nonzero(matrix[activity])])
-        print "MASC: ", masc
-        
-    npc = []
-    for act_masc in masc:
-        print "act: ", act_masc
-        for a in act_masc[1][0]:
-            print "a: ", a
-            print "COUNT: ", act_masc.count(a) 
-        
-    #Step 5.1 Know initial nodes of activities of matches standar
-#    for activity, matches in npc:
-#        if matches > 1:
-#            print "1"
-#            else:
-#                print "OKKO"
+        masc.append(numpy.nonzero(matrix[activity])[0])
+    print "MASC: ", masc
+    
+    incomplete_index = set()
+    for m in masc:
+        for i_m in m:
+            incomplete_index.add(i_m)
+    print "incomplete_index: ", incomplete_index
+    
+    list_incomplete_index = list(incomplete_index)
+    print "list_incomplete_index: ", list_incomplete_index
+    
+    MRA = scipy.zeros([len(list_incomplete_index), len(list_incomplete_index) ], dtype = int)
+    print "MRA: ", MRA
+    
+    for l in masc:
+        print "L: ", l
+        for i in range(0, len(l)):
+            print "l[i]FOR[I]: ", l[i]
+            for j in range(0, len(l)):
+                if not i == j:
+                    print "l[i]: ", l[i], "l[j]: ", l[j]
+                    print "list_incomplete_index[i]: ", list_incomplete_index.index(l[i])
+                    print "list_incomplete_index[j]: ", list_incomplete_index.index(l[j])
+                    MRA[list_incomplete_index.index(l[i])][list_incomplete_index.index(l[j])] += 1
+    print "MRA: ", MRA
+    
 # --- Start running as a program
 if __name__ == '__main__': 
     
@@ -192,7 +207,7 @@ if __name__ == '__main__':
     successors1 = {
         'A' : ['C'],
         'B' : ['G', 'D'],
-        'C' : ['G', 'D'],
+        'C' : ['G', 'D'],#G, D
         'D' : ['F'],
         'E' : ['G'],#G
         'F' : [],
