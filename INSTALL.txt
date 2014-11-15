@@ -1,0 +1,8 @@
+Requires
+--------
+sudo apt-get -y install python-rsvg python-scipy python-matplotlib
+sudo apt-get install matplotlib
+
+sudo apt-get install python-pip
+sudo pip install namedlist
+
