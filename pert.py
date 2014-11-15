@@ -2,7 +2,7 @@
 """
  PERT graph class (module of PPC-PROJECT)
 
- A class to construct and represent PERT graphs (also known as AOA networks) and 
+ A class to construct and represent PERT graphs (also known as AOA networks) and
  related functions
 
  Copyright 2007-11 Universidad de Cordoba
@@ -54,11 +54,11 @@ class PertMultigraph(graph.DirectedMultigraph):
         # Construct a Pert Directed Graph
         pert_sucs = {}
         for origin, dest in self.outgoing.items():
-            pert_sucs[origin] = list(dest)        
+            pert_sucs[origin] = list(dest)
 
         pert_arcs = {}
         for arc, labels in self.arcs.items():
-            pert_arcs[arc] = iter(labels).next()        
+            pert_arcs[arc] = iter(labels).next()
 
         return Pert( (pert_sucs, pert_arcs) )
 
@@ -73,7 +73,7 @@ class PertMultigraph(graph.DirectedMultigraph):
             return max(self.outgoing) + 1
         else:
             return 0
-        
+
 
 class Pert(graph.DirectedGraph):
     """
@@ -87,7 +87,7 @@ class Pert(graph.DirectedGraph):
         self.construct = algoritmoSharma.sharma1998ext
         if pert != None:
             self.successors, self.arcs = pert
-            self.predecesors = graph.reversed_prelation_table(self.successors)
+            self.predecessors = graph.reversed_prelation_table(self.successors)
 
     def __repr__(self):
         return 'Pert( (' + str(self.successors) + ',' + str(self.arcs) + ') )'
@@ -120,7 +120,7 @@ class Pert(graph.DirectedGraph):
 
     def nextNodeNumber(self):
         """
-        New node number O(n): max(graph) + 1 
+        New node number O(n): max(graph) + 1
         """
         # Could be O(1): len(directed graph)+1 must be an available node number
         # (i.e. graph nodes must be numbered starting in 0 or 1 at most)
@@ -141,7 +141,7 @@ class Pert(graph.DirectedGraph):
         if destination == None:
             destination = self.nextNodeNumber()
             self.add_node(destination)
-            
+
         self.add_arc( (origin, destination), (activityName, dummy) )
         return (origin, destination)
 
@@ -275,7 +275,7 @@ class Pert(graph.DirectedGraph):
             self.predecessors[node].remove(nodeD)
             self.predecessors[node].append(nodeO)
         self.predecessors[nodeO] += inD
-            
+
         # Activities table
         self.arcs.pop( (nodeO, nodeD) )
         for node in inD:
@@ -306,7 +306,7 @@ class Pert(graph.DirectedGraph):
         pre_act = self.remove_arc(pre)
         fol_act = self.remove_arc(fol)
         self.add_arc( (preO, newO), pre_act )
-        self.add_arc( (newD, folD), fol_act )         
+        self.add_arc( (newD, folD), fol_act )
 
         # New dummies
         dummy1 = (folO, newD)
@@ -314,7 +314,7 @@ class Pert(graph.DirectedGraph):
         dummy3 = (newO, newD)
         self.add_arc( dummy1, ('dummy', True) )
         self.add_arc( dummy3, ('dummy', True) )
-        self.add_arc( dummy2, ('dummy', True) ) 
+        self.add_arc( dummy2, ('dummy', True) )
 
         #window.images.append( graph.pert2image(self) )
 
@@ -343,7 +343,7 @@ class Pert(graph.DirectedGraph):
         nodos = self.successors.keys()
 
         # v inicial, se obtiene un diccionario con la suma de '1' de cada nodo
-        v = {}       
+        v = {}
         for n in nodos:
             v[n] = 0
             for m in nodos:
@@ -371,13 +371,13 @@ class Pert(graph.DirectedGraph):
 
         niveles.reverse()
         return niveles
-         
-           
+
+
     def renumerar(self):
         """
-        Renumber nodes from 1 to N satisfing that a previous node has always a lower number than its 
+        Renumber nodes from 1 to N satisfing that a previous node has always a lower number than its
         followers.
-        
+
         Return: new Pert graph
         """
         niveles = self.demoucron()
@@ -390,15 +390,15 @@ class Pert(graph.DirectedGraph):
                 s += 1
             else:
                 for a in niveles[m]:
-                    nuevosNodos[a] = s            
+                    nuevosNodos[a] = s
                     s += 1
 
         # Se crea un nuevo grafo
         nuevoGrafo = Pert()
-        
+
         # New activities'
         for n in self.arcs:
-            for m in nuevosNodos:            
+            for m in nuevosNodos:
                 if n[0] == m:
                     for a in nuevosNodos:
                         if n[1] == a:
@@ -412,14 +412,14 @@ class Pert(graph.DirectedGraph):
         return nuevoGrafo
 
 
-def get_activities_start_time(activities, durations, prelations, minimum=True, 
+def get_activities_start_time(activities, durations, prelations, minimum=True,
                               previous_times=None, root_activity=None):
     """
     Get activities start time
     """
     if previous_times == None:
         previous_times = {}
-        
+
     open_list = []
     inv_prelations = {}
     closed_list = []
@@ -521,7 +521,7 @@ def pertFinal(actividad):
     grafo = Pert()
     grafo = grafo.construct(graph.successors2precedents(successors))
     grafoRenumerado = grafo.renumerar()
-    return grafoRenumerado                 
+    return grafoRenumerado
 
 
 #
@@ -557,8 +557,8 @@ def main(window):
                   'k':[],
                   'l':[],
                    }
-    
-    
+
+
 
 
 ##   print graph.reversed_prelation_table(pert2[0])
@@ -578,7 +578,7 @@ def main(window):
 ##   addActivity( pertP, 'nueva' )
 ##   makePrelation( pertP, (1,2), (7,8) )
 ##   makePrelation( pertP, (9,8), (6,4) )
-       
+
 #    window.images.append( graph.pert2image(pert.Pert(pert4)) )
 
 #    window.images.append( graph2image(successors2) )
@@ -593,9 +593,9 @@ def main(window):
 ##   s = pertSuccessors(pertP)
 ##   window.images.append( graph2image( roy(s) ) )
     gtk.main()
-    
 
-# If the program is run directly    
+
+# If the program is run directly
 if __name__ == "__main__":
     pert2= ( {1 : [2,4],
               2 : [3],
