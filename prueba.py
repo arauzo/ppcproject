@@ -19,7 +19,6 @@ import algoritmoConjuntos
 import algoritmoSalas
 import algoritmoCohenSadeh
 import algoritmoSharma
-import Cohen_sadeh_Alberto
 import graph
 import fileFormats
 import pert
@@ -121,7 +120,7 @@ if len(sys.argv) == 3:
     check_activities(data)
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
-#                    ('Cohen-Sadeh', Cohen_sadeh_Alberto.cohen_sadeh), 
+                    ('Cohen-Sadeh', algoritmoCohenSadeh.cohen_sadeh), 
                     ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
 #                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                  ]
@@ -186,5 +185,5 @@ else:
     print
     print "Ejemplo:"
     print
-    print "python pruebaAC.py j301_1.sm 1000"
+    print "python prueba.py j301_1.sm 1000"
     print
