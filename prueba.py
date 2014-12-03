@@ -121,7 +121,7 @@ if len(sys.argv) == 3:
     # List of name and file of each algorithm to test ##Poner como tupla##
     algorithms = [  
                     ('Cohen-Sadeh', algoritmoCohenSadeh.cohen_sadeh), 
-                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
+#                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
 #                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
                  ]
 
@@ -156,6 +156,7 @@ if len(sys.argv) == 3:
         # Print test results
 
         print "utime %.4f"% (utime)
+        print "utime: ", utime
         print "numero de nodos: ", pert_graph.number_of_nodes()
         print "numero de arcos: ", pert_graph.number_of_arcs()
         print "numero de arcos reales: ", pert_graph.numArcsReales()
@@ -164,16 +165,16 @@ if len(sys.argv) == 3:
         print "Validation: ", validation.check_validation(successors, pert_graph)
         print ""
 
-    #        result_graph = test_algorithm(data, alg, repeat)
+        #result_graph = test_algorithm(data, alg, repeat)
 
         result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + str(num_of_predecessors) + ',' + \
             str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
             str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
-            # Draw graph and save in a file (*.svg)
-    #        image_text = graph.pert2image(result_graph) 
-    #        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-    #        fsalida.write(image_text)
-    #        fsalida.close()
+        # Draw graph and save in a file (*.svg)
+        image_text = graph.pert2image(pert_graph) 
+        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+        fsalida.write(image_text)
+        fsalida.close()
 
         f_csv.write(result_line + "\n")
     f_csv.close()
