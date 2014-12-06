@@ -39,7 +39,6 @@ class SVGViewer(gtk.DrawingArea):
         
         pw, ph, graph_width, graph_height = self.svg.get_dimension_data()
         scale_factor = min(width/graph_width, height/graph_height) # keep proportions
-        #scale_factor *= self.zoom_factor # esto era para cuando no se ampliaba el espacio
         self.matrix = cairo.Matrix()
         self.matrix.scale(scale_factor, scale_factor)
         
@@ -59,11 +58,11 @@ class SVGViewer(gtk.DrawingArea):
         return False
 
     def draw(self, cr):
-        rect = self.get_allocation()
-        width = rect.width
-        height = rect.height
-
 #        # Fill the background with default foreground color (just to see if we are not drawing some area)
+#        rect = self.get_allocation()
+#        width = rect.width
+#        height = rect.height
+
 #        cr.set_source_color(self.style.fg[self.state]) #rgb(0.5, 0.5, 0.5) #grey
 #        cr.rectangle(0, 0, width, height)
 #        cr.fill()

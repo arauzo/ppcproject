@@ -1,5 +1,5 @@
 """
-Algorithm to draw Graph PERT based on Algorithm Yuval Cohen and Arick Sadeh
+Algorithm to draw Graph PERT based on algorithm from Yuval Cohen and Arick Sadeh
 """
 import collections
 import namedlist
@@ -148,15 +148,10 @@ def cohen_sadeh(prelations):
 
 def main():
     """
-    Generates a ppc format file from a library file.
-    This new file will be filled with the information of the fields required to perform the
-    simulation of the activity duration.
+    Test Cohen-Sadeh algorithm
 
-    The program shall receive four arguments:
-        infile (.sm file whose data will be read)
-        outfile (.ppc file in which the info required for the simulation will be saved)
-        -d (type of statistical distribution to be used)
-        -k (proportionality constant of the typical deviation)
+    Arguments:
+        infile - project file
     """
     # Parse arguments and options
     parser = argparse.ArgumentParser()
