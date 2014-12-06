@@ -531,15 +531,14 @@ class Test(object):
         self.images = []
         self.image_index = 0
 
-        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_size_request(800, 600)
-        self.window.connect("delete_event", self.delete_event)
-        self.window.connect("destroy", gtk.main_quit)
-
         self.svg_viewer = SVGViewer()
-        self.svg_viewer.show()
+
         screen = gtk.ScrolledWindow()
         screen.add_with_viewport(self.svg_viewer)
+# This makes large graph to expand window outside of screen
+#        svg_reqx, svg_reqy = self.svg_viewer.size_request()
+#        screen.set_size_request(svg_reqx, svg_reqy)
+#        print "screen says: ", screen.size_request()
 
         self.pos_label = gtk.Label(" -- / -- ")
         self.b_prev = gtk.Button("< Previous")
@@ -555,8 +554,13 @@ class Test(object):
         v_box = gtk.VBox(homogeneous=False, spacing=0)
         v_box.pack_start(screen, expand=True,  fill=True,  padding=0)
         v_box.pack_start(h_box,   expand=False, fill=False, padding=4)
-        self.window.add(v_box)
 
+        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+        self.window.connect("delete_event", self.delete_event)
+        self.window.connect("destroy", gtk.main_quit)
+        self.window.add(v_box)
+        self.window.maximize()
+        self.window.set_size_request(300, 200) # Allows some space to see at least a part of the graph when demaximized
         self.window.show_all()
 
     def delete_event(self, widget, event, data=None):
