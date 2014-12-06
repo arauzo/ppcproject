@@ -23,17 +23,16 @@ def check_validation(successors, pert):
             return False
 
     # Check that there is exactly one start node and one end node
-    # XXX TODO
-    #Find Nodo without predecessors
-#    for nodo, nodo_successor in graph.predecessors.items():
-#        if len(nodo_successor) == 0:
-#            successors_nodes.append(nodo)
-#
-#    if len(successors_nodes) != 1:
-#        raise Exception ("**ERROR** No es un grafo pert correcto")
-#    else:
-#        print "Nodo start:", successors_nodes
+    start_nodes = [node for node, preds in pert.predecessors.items() if len(preds) < 1]
+    if len(start_nodes) > 1:
+        print "WRONG GRAPH: more than one start node (%s)" % (str(end_nodes), )
+        return False
 
+    end_nodes = [node for node, sucs in pert.successors.items() if len(sucs) < 1]
+    if len(end_nodes) > 1:
+        print "WRONG GRAPH: more than one end node (%s)" % (str(end_nodes), )
+        return False
 
     print "OK --> Pass"
     return True
+
