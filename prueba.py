@@ -9,59 +9,53 @@ The tests are:
 Apart from test results, show: run time, number of arcs, number of dummy arcs, numbers of real arcs and number of nodes
 
 algorithms: list to include all algorithm to check.
+
+(C) 2014 Antonio Arauzo-Azofra, Alberto Perez Caballero, Universidad de Cordoba
 """
 
 import os
 import os.path
 import sys
+import traceback
 
-import algoritmoConjuntos
-import algoritmoSalas
-import algoritmoCohenSadeh
-import algoritmoSharma
 import graph
 import fileFormats
 import pert
 import Kahn1962
 import validation
 import conexos
+import algoritmoCohenSadeh
+import algoritmoSharma
+import algoritmoConjuntos
+import algoritmoGentoMunicio
+import algoritmoSalas
 
-#REPETICIONES = 1
-#REPETICIONES = int(sys.argv[2])
 def openProject(filename):
     """
-    abre un proyecto ante un nombre pasado como paramentro por linea de comandos
-    """
-    try:
-        actividad  = []
-        recurso    = []
-        asignacion = []
-        schedules  = []
-        fileFormat = [
-            fileFormats.PPCProjectFileFormat(),
-            fileFormats.PSPProjectFileFormat(),
-        ]
-        # Tries to load file with formats that match its extension in format order
-        data = None
-        extension = filename[filename.rfind('.')+1:]
+    Open filename as a project and return activities data
 
+    if error or format not recognized returns None
+    """
+    fileFormat = [
+        fileFormats.PPCProjectFileFormat(),
+        fileFormats.PSPProjectFileFormat(),
+    ]
+    activities = None
+    extension = filename[filename.rfind('.')+1:]
+    # Tries to load file with formats that match its extension in format order
+    try:
         for format in fileFormat:
             if extension in format.filenameExtensions:
                 try:
-                    data = format.load(filename)
+                    activities, _, _, _ = format.load(filename)
                     break
                 except fileFormats.InvalidFileFormatException:
                     pass
 
-        if not data:
-            print 'Can not understand file'
-            sys.exit(1)
-
-        activities, schedules, recurso, asignacion = data
         return activities
+
     except IOError:
-        print 'Error reading file:', filename
-        sys.exit(1)
+        return None
 
 def check_activities(activities):
     """
@@ -77,114 +71,135 @@ def check_activities(activities):
     # Check cycles
     print "Check Cycles: ", Kahn1962.check_cycles(successors)
     print ""
+    # XXX Miss checking for non-redundancy
 
-##def test_algorithm(activities, algorithm, repeat=1):
-##    """
-##    Test one algorithm using activities table.
-##    """
-##    # Get successors
-##    successors = {}
-##    for i in activities:
-##        successors[i[1]] = i[2]
+def main():
+    """
+    Test AOA (PERT) network generation algorithms with some given project files
+    """
+    # Parse arguments and options
+    parser = argparse.ArgumentParser(description='Test AOA graph generation algorithms with given files')
+    parser.add_argument('infiles', nargs='*',
+                        help='Project files to test')
+    parser.add_argument('--table-file', '-t', default='resultados.csv',
+                        help='Name of file to append test results in CSV format (default: resultados.csv)')
+    parser.add_argument('-r', '--repeat', default=1, type=int,
+                        help='Number of repetitions (default: 1)')
+    parser.add_argument('--SVG', action='store_true',
+                        help='Draw the graph in a SVG file')
 
-##    # obtengo prelaciones revertiendo sucesores
-##    prelaciones = graph.reversed_prelation_table(successors)
+    parser.add_argument('-c', '--CohenSadeh', action='store_true',
+                        help='Test Cohen Sadeh algorithm')
+    parser.add_argument('-s', '--Sharma', action='store_true',
+                        help='Test Sharma algorithm')
+    parser.add_argument('-l', '--Salas', action='store_true',
+                        help='Test Lorenzo Salas algorithm')
+    parser.add_argument('-g', '--GentoMunicio', action='store_true',
+                        help='Test Gento Municio algorithm')
+    parser.add_argument('-o', '--Optimal', action='store_true',
+                        help='Test set based optimal algorithm')
 
-##    # Run algorithm
-##    itime = os.times()
-##    for i in range(repeat):
-##        pert_graph = algorithm(prelaciones)
-##    ftime = os.times()
-##    utime = ftime[0] - itime[0]
-##    execution_time = utime
-##    
-##    # Print test results
-##    print "utime %.4f"% (utime)
-##    print "numero de nodos: ", pert_graph.number_of_nodes()
-##    print "numero de arcos: ", pert_graph.number_of_arcs()
-##    print "numero de arcos reales: ", pert_graph.numArcsReales()
-##    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
-##    print "Validation: ", validation.check_validation(successors, pert_graph)
-##    print ""
-##    return pert_graph
+    args = parser.parse_args()
 
+    if args.repeat < 1:
+        print 'Number of repetitions must be > 0'
+        return 1
 
-###si hay dos argumentos pasados por lineas de comandos 
-if len(sys.argv) == 3:
-    filename = sys.argv[1]           ###el nombre del fichero es el primer parametro
-    repeat = int(sys.argv[2])  ###repeticiones es igual al segundo parametro
-    
-    # File input
-    print "\nFilename: ",filename 
-    data = openProject(filename)
-    check_activities(data)
-    # List of name and file of each algorithm to test ##Poner como tupla##
-    algorithms = [  
-                    ('Cohen-Sadeh', algoritmoCohenSadeh.cohen_sadeh), 
-#                    ('Algoritmo Sharma', algoritmoSharma.sharma1998ext),
-#                    ('Algoritmo Conjuntos', algoritmoConjuntos.algoritmoN),
-                 ]
+    try:
+        f_csv = open(args.table_file, "a")
+    except IOError:
+        print 'Can not open table file (%s) to append results in CSV format' % (args.table_file, )
+        return 1        
 
-    f_csv = open("resultados.csv", "a")
+    # List of name and function of each algorithm to test
+    algorithms = []  
+    if args.CohenSadeh:
+        algorithms.append( ('CohenSadeh', algoritmoCohenSadeh.cohen_sadeh) )
+    if args.Sharma: 
+        algorithms.append( ('Sharma', algoritmoSharma.sharma1998ext) )
+    if args.Optimal:
+        algorithms.append( ('Conjuntos', algoritmoConjuntos.algoritmoN) )
+    if args.GentoMunicio:
+        algorithms.append( ('GentoMunicio', algoritmoGentoMunicio.gento_municio) )
+    if args.Salas:
+        algorithms.append( ('Salas', algoritmoSalas.salas) )
 
-    for name, alg in algorithms:
-        print name
-    #Sacar aqui test algorithm
-    #   Test one algorithm using data(activities table).
-        # Get successors
-        successors = {}
-        repeat = 1;
-        for i in data:
-            successors[i[1]] = i[2]
-            
-        # Count prelations
-        list_of_predecessors = successors.values()
-        num_of_predecessors = 0
-        for predecessors in list_of_predecessors:
-            num_of_predecessors += len(predecessors)
-            
-        # obtengo prelaciones revertiendo sucesores
-        prelaciones = graph.reversed_prelation_table(successors)
+    # Perform tests on each file 
+    for filename in args.infiles:
+        print "\nFilename: ", filename 
+        data = openProject(filename)
+        if not data:
+            print 'Can not read or understand file'
+        else:
+            # XXX Aqui habria que cortar si falla el checkeo del fichero
+            check_activities(data)
 
-        # Run algorithm
-        itime = os.times()
-        for i in range(repeat):
-            pert_graph = alg(prelaciones)
-        ftime = os.times()
-        utime = ftime[0] - itime[0]
-        
-        # Print test results
+            # Test each algorithm
+            for name, alg in algorithms:
+                print name
 
-        print "utime %.4f"% (utime)
-        print "utime: ", utime
-        print "numero de nodos: ", pert_graph.number_of_nodes()
-        print "numero de arcos: ", pert_graph.number_of_arcs()
-        print "numero de arcos reales: ", pert_graph.numArcsReales()
-        print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
-        print "numero de predecesors/sucesores: ", num_of_predecessors
-        print "Validation: ", validation.check_validation(successors, pert_graph)
-        print ""
+                # Get successors from activities table
+                successors = {}
+                for i in data:
+                    successors[i[1]] = i[2]
+                    
+                # Count prelations
+                list_of_predecessors = successors.values()
+                num_of_predecessors = 0
+                for predecessors in list_of_predecessors:
+                    num_of_predecessors += len(predecessors)
+                    
+                # Get predecessors from successors
+                prelaciones = graph.reversed_prelation_table(successors)
 
-        #result_graph = test_algorithm(data, alg, repeat)
+                # Run algorithm
+                pert_graph = None
+                itime = os.times()
+                for i in range(args.repeat):
+                    try:
+                        pert_graph = alg(prelaciones)
+                    except Exception:
+                        print traceback.format_exc()
+                        print " --- Algorithm failed! --- "
+                        break
 
-        result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + str(num_of_predecessors) + ',' + \
-            str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
-            str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
-        # Draw graph and save in a file (*.svg)
-        image_text = graph.pert2image(pert_graph) 
-        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
-        fsalida.write(image_text)
-        fsalida.close()
+                if pert_graph:
+                    ftime = os.times()
+                    utime = ftime[0] - itime[0]
+                    
+                    # Print test results
+                    print "utime %.4f"% (utime)
+                    print "utime: ", utime
+                    print "numero de nodos: ", pert_graph.number_of_nodes()
+                    print "numero de arcos: ", pert_graph.number_of_arcs()
+                    print "numero de arcos reales: ", pert_graph.numArcsReales()
+                    print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
+                    print "numero de predecesors/sucesores: ", num_of_predecessors
+                    print "Validation: ", validation.check_validation(successors, pert_graph)
+                    print ""
 
-        f_csv.write(result_line + "\n")
+                    # XXX ??Falta incluir aqui el numero de actividades??
+                    result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + str(num_of_predecessors) + ',' + \
+                        str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
+                        str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
+                    f_csv.write(result_line + "\n")
+                        
+
+                    # Draw graph and save in a file (*.svg)
+                    if args.SVG:
+                        image_text = graph.pert2image(pert_graph) 
+                        fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
+                        fsalida.write(image_text)
+                        fsalida.close()
+
     f_csv.close()
+    return 0
 
+# If the program is run directly
+if __name__ == '__main__': 
+    # Imports needed just for main()
+    import sys
+    import argparse
+    # Run
+    sys.exit(main())
 
-else:
-    print
-    print "Numero de parametros introducidos erroneo."
-    print
-    print "Ejemplo:"
-    print
-    print "python prueba.py j301_1.sm 1000"
-    print

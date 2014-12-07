@@ -47,8 +47,8 @@ def cohen_sadeh(prelations):
         else:
             columns.blocked = visited_pred[pred]
 
-    print "\n--- Step 2 ---"
-    __print_work_table(work_table)
+#    print "\n--- Step 2 ---"
+#    __print_work_table(work_table)
 
 
     #Step 3. Identify Necessary Dummy Arcs
@@ -61,8 +61,8 @@ def cohen_sadeh(prelations):
                     dups.add(act)
                 visited_act.add(act)
 
-    print "\n--- Step 3.1 ---"
-    print dups
+#    print "\n--- Step 3.1 ---"
+#    print dups
 
 
     #Step 3.2, 3.3 and 4. Create rows and information for Dummy Arcs
@@ -80,8 +80,8 @@ def cohen_sadeh(prelations):
                         predecessors.add(dummy_name)
                         work_table[dummy_name] = Columns(set([pre]), False, True, None, None, None)
 
-    print "\n--- Step 4 ---"
-    __print_work_table(work_table)
+#    print "\n--- Step 4 ---"
+#    __print_work_table(work_table)
 
 
     #Step 5. Creating nodes
@@ -91,15 +91,15 @@ def cohen_sadeh(prelations):
             columns.start_node = node
             node += 1
 
-    print "\n--- Step 5a ---"
-    __print_work_table(work_table)
+#    print "\n--- Step 5a ---"
+#    __print_work_table(work_table)
 
     for act, columns in work_table.items():
         if not columns.dummy and columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
 
-    print "\n--- Step 5b ---"
-    __print_work_table(work_table)
+#    print "\n--- Step 5b ---"
+#    __print_work_table(work_table)
 
 
     #Step 6. Associate activities with their end nodes
@@ -121,8 +121,8 @@ def cohen_sadeh(prelations):
             columns.end_node = node 
 
 
-    print "\n--- Step 6 ---"
-    __print_work_table(work_table)
+#    print "\n--- Step 6 ---"
+#    __print_work_table(work_table)
 
 
     #Step 7. Associate dummy arcs with start nodes
@@ -132,8 +132,8 @@ def cohen_sadeh(prelations):
             start_node = work_table[pred].end_node
             columns.start_node = start_node
 
-    print "\n--- Step 7 ---"
-    __print_work_table(work_table)
+#    print "\n--- Step 7 ---"
+#    __print_work_table(work_table)
 
 
     #Step 8. Generate the graph
