@@ -13,6 +13,7 @@ def __print_work_table(table):
     """
     For debugging purposes, pretty prints CohenSadeh working table
     """
+    print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
     for k, col in sorted(table.items()):
         print "%-5s %-30s %5s %5s %5s %5s %5s" % tuple(
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
@@ -23,10 +24,14 @@ def cohen_sadeh(prelations):
     Build graph PERT using Cohen-Sadeh algorithm
     Note: the original algorithm does not consider parallel activities (creates a multigraph)
 
-    prelations = {'activity': ['prelations1', 'prelations2'...}
+    prelations = {'activity': ['predecesor1', 'predecesor2'...}
 
     return graph pert.Pert()
     """
+    # Adaptation to avoid multiple end nodes
+    successors = graph.reversed_prelation_table(prelations)
+    end_act = graph.ending_activities(successors)
+
     #Step 1. Construct work table with Immediate Predecessors
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
@@ -111,17 +116,25 @@ def cohen_sadeh(prelations):
                     columns.suc = suc
                     break
 
+#    print "\n--- Step 6a ---"
+#    __print_work_table(work_table)
+
     # (b) find end nodes
+    graph_end_node = node # Reserve one node for graph end 
+    node += 1
     for act, columns in work_table.items():
         suc = columns.suc
         if suc:
             columns.end_node = work_table[suc].start_node
         else:
-            # Graph end node (last node to be assigned, do not increment to avoid creating several graph end nodes)
-            columns.end_node = node 
+            # Create needed end nodes, avoiding multiple graph end nodes (adaptation)
+            if act in end_act:
+                columns.end_node = graph_end_node
+            else:
+                columns.end_node = node 
+                node += 1
 
-
-#    print "\n--- Step 6 ---"
+#    print "\n--- Step 6b ---"
 #    __print_work_table(work_table)
 
 
@@ -143,7 +156,7 @@ def cohen_sadeh(prelations):
         pm_graph.add_arc((start, end), (act, dummy))
 
     p_graph = pm_graph.to_directed_graph()
-    return p_graph.renumerar()
+    return p_graph #.renumerar()
 
 
 
