@@ -34,7 +34,7 @@ class NodeList(object):
         self.node_list.append( [None, None] )
         return len(self.node_list) - 1
 
-def gento_municio(successors):
+def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     """
     """
     #Generate precedences/successors matrix

@@ -87,6 +87,8 @@ def main():
                         help='Number of repetitions (default: 1)')
     parser.add_argument('--SVG', action='store_true',
                         help='Draw the graph in a SVG file')
+    parser.add_argument('--no-stop', action='store_true',
+                        help='Do not stop when an algorithm fails')
 
     parser.add_argument('-c', '--CohenSadeh', action='store_true',
                         help='Test Cohen Sadeh algorithm')
@@ -161,6 +163,8 @@ def main():
                     except Exception:
                         print traceback.format_exc()
                         print " --- Algorithm failed! --- "
+                        if not args.no_stop:
+                            return 1
                         break
 
                 if pert_graph:
@@ -175,7 +179,9 @@ def main():
                     print "numero de arcos reales: ", pert_graph.numArcsReales()
                     print "numero de arcos ficticios: ", pert_graph.numArcsFicticios()
                     print "numero de predecesors/sucesores: ", num_of_predecessors
-                    print "Validation: ", validation.check_validation(successors, pert_graph)
+                    print "Validation: "
+                    if not validation.check_validation(successors, pert_graph) and not args.no_stop:
+                        return 1
                     print ""
 
                     # XXX ??Falta incluir aqui el numero de actividades??
