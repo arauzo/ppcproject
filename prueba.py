@@ -184,7 +184,7 @@ def main():
                         return 1
                     print ""
 
-                    # XXX ??Falta incluir aqui el numero de actividades??
+                    # XXX ??Falta incluir aqui el numero de actividades?? Alberto -> Comprobar str(len(data)) num_actividades
                     result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + str(num_of_predecessors) + ',' + \
                         str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
                         str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)

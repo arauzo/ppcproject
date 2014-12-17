@@ -133,7 +133,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
                 stII_incomplete_node = nodes.next_node()
                 for node_activity_incomplete in same_successors:
                     nodes[node_activity_incomplete][1] = stII_incomplete_node
-                
+    print nodes
     if len(stII_incomplete) > 0:
         print "stII_incomplete: ", stII_incomplete
         for pre in stII_incomplete:
@@ -236,7 +236,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
         MNS[i] = nodes[i][0]
     print "MNS: ", MNS
     MRN = scipy.zeros([len(list_incomplete_index), len(list_incomplete_index)], dtype = int)
-    for i in incomplete_same_node:
+    for i in MNS.keys():
         print "i: ", i
     print "MRN: \n", MRN
     print "list incomplete index: ", list_incomplete_index
