@@ -40,7 +40,6 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     #Generate precedences/successors matrix
     num_real_activities = len(successors.keys())
     matrix = scipy.zeros([num_real_activities, num_real_activities], dtype = int)
-    print "MATRIX: \n", matrix
     #Assign number to letters of activity
     relation = successors.keys()
     relation.sort() # XXX Quitar en version definitiva para eficiencia
@@ -58,8 +57,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     print "SUM_SUCCCESSORS: ", sum_successors
         
     nodes = NodeList(num_real_activities)
-    print nodes
-    #Step 1. Search initials activities (have no predecessors)
+    #Step 1. Search initial activities (have no predecessors)
     beginning, = numpy.nonzero(sum_predecessors == 0)
     print "Beginning: ", beginning
     
@@ -76,45 +74,68 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     end_node = nodes.next_node()
     for node_activity in ending:
         nodes[node_activity][1] = end_node
-    
     print nodes
+
     #Step 3. Search standard type I (Activity have unique successors)
-    indice, = numpy.nonzero(sum_predecessors == 1)
+    act_one_predeccessor, = numpy.nonzero(sum_predecessors == 1)
     stI = collections.defaultdict(list)
-    for i in indice:
-        activity = numpy.nonzero((matrix[:,i]))[0][0]
-        if sum_successors[activity] == 1 or scipy.sum(matrix[:,numpy.nonzero(matrix[activity])]) == sum_successors[activity]:
-            stI[activity].append(i)
+    for i in act_one_predeccessor:
+        pred = numpy.nonzero((matrix[:,i]))[0][0]
+        if (sum_successors[pred] == 1 # this condition is redundant but faster than the following check
+            or sum_successors[pred] == scipy.sum(matrix[:,numpy.nonzero(matrix[pred])]) ):
+            stI[pred].append(i)
+            # XXX This may be faster if first pred introduced on dict and then remove those pred that have more successors in sum_successors than values in this dict
     print "stI: ", stI
     #Add the same end node of activities to the begin node of its successors activities
     for node_activity in stI:
-        print "node_activity: ", node_activity
         stI_node = nodes.next_node()
-        print "stI_node: ", stI_node
         nodes[node_activity][1] = stI_node
         for successor in stI[node_activity]:
             nodes[successor][0] = stI_node
-    
     print nodes
-#    stI = []
-#    for num_successors in range(len(sum_predecessors)):
-#        ok = True
-#        unique_successors = []
-#        for predecessor in range(len(matrix[num_successors])):
-#            if matrix[num_successors][predecessor] == 1 and ok == True:
-#                if (sum_predecessors[predecessor] > 1): #More than one not unique successor activity 
-#                    ok = False
-#                elif sum_predecessors[predecessor] == 1:
-#                    unique_successors.append(predecessor)
-#                    stI.append([num_successors, predecessor])
-#    print "stI: ", stI
+
+
     #Step 4. Search standard II(Full) and standard II(Incomplete)
+    print "--- Step 4 ---"
     print "matrix: \n", matrix
+    # dictionary with key: equal successors; value: mother activities
+    stII = collections.defaultdict(list)
+
+    for act in range(num_real_activities):
+        stII[frozenset(matrix[act].nonzero()[0])].append(act) 
+
+    # remove ending activities and those included in type I
+    del(stII[ frozenset([]) ]) 
+    for pred, succs in stI.items():
+        del(stII[ frozenset(succs) ])
+    print '---'
+    for key, value in stII.items():
+        print key, '<-', value
+
+    # assigns nodes to type II complete (as indicated in figure 8)
+    for succs, preds in stII.items():
+        u = len(preds)
+        # if NP[succs] != u (complete)
+        print preds, '->', succs,
+        if not [ i for i in succs if sum_predecessors[i] != u ]:
+            print 'complete'
+            node = nodes.next_node()
+            for act in preds:
+                nodes[act][1] = node
+            for act in succs:
+                nodes[act][0] = node
+        else: # (incomplete)
+            print 'incomplete'
+            node = nodes.next_node()
+            for act in preds:
+                nodes[act][1] = node
+    print nodes
+
+    system.exit()
+
+
     stII_complete = []
-    stII_complete_final = []
     stII_incomplete = []
-    stII_incomplete_final = []
-    predecessor_stII = []
     equal = [] #XXX Deberia ser conjunto por eficiencia o cambiar estructura para simplificar lo siguiente
     for act in range(num_real_activities):
         same_successors = [act]
@@ -261,6 +282,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 ##        print "list_incomplete_index.index(l1): ", list_incomplete_index.index(l1)
 #        print "#####"
 ##        if npc.count(l1) == 
+
 # --- Start running as a program
 if __name__ == '__main__': 
     
@@ -287,30 +309,43 @@ if __name__ == '__main__':
         'F' : [],
         'G' : ['F'],
     }
-#    Datos con coincidencias
-#    successors1 = {
-#        'A' : ['C'],
-#        'B' : ['G', 'D', 'F', 'E'],
-#        'C' : ['G', 'D', 'F', 'E'],#G, D
-#        'D' : [],
-#        'E' : [],#G
-#        'F' : [],
-#        'G' : [],
-#        'H' : ['D']#Analizar D, F, E
-#    }
+    # Datos con coincidencias
+    successors2 = {
+        'A' : ['C'],
+        'B' : ['G', 'D', 'F', 'E'],
+        'C' : ['G', 'D', 'F', 'E'],#G, D
+        'D' : [],
+        'E' : [],#G
+        'F' : [],
+        'G' : [],
+        'H' : ['D']#Analizar D, F, E
+    }
     
-#    Datos con multiples stI
-#    successors1 = {
-#        'A' : ['C', 'E'],
-#        'B' : ['G', 'D'],
-#        'C' : ['G', 'D'],
-#        'D' : ['F'],
-#        'E' : ['G'],
-#        'F' : ['B'],
-#        'G' : ['F'],
-#    }
+    # Datos con multiples stI
+    successors3 = {
+        'A' : ['C', 'E'],
+        'B' : ['G', 'D'],
+        'C' : ['G', 'D'],
+        'D' : ['F'],
+        'E' : ['G'],
+        'F' : ['B'],
+        'G' : ['F'],
+    }
     
-    gento_municio(successors1)
+    # Datos con un stI de 3 actividades y dos casos casi stI (dos predecesores) y (pred compartido)
+    successors4 = {
+        'A' : ['B', 'C', 'D'],
+        'B' : [],
+        'C' : [],
+        'D' : [],
+        'E' : ['F'],
+        'F' : [],
+        'G' : ['F', 'H'],
+        'H' : [],
+    }
+
+
+    gento_municio(successors)
     
 ##ACLARACION FUNCIONAMIENTO##
 #Para el tipo II incompleto. Si una o varias actividades tienen las mismas siguientes, pero alguna o algunas de las siguientes son precededidas por alguna más, entonces es seguro que: 
