@@ -131,9 +131,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
                 nodes[act][1] = node
     print nodes
 
-    system.exit()
-
-
+    # old - code
     stII_complete = []
     stII_incomplete = []
     equal = [] #XXX Deberia ser conjunto por eficiencia o cambiar estructura para simplificar lo siguiente
