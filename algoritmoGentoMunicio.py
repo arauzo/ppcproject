@@ -5,6 +5,8 @@ import scipy
 import numpy
 import collections
 
+import Kahn1962
+
 class NodeList(object):
     """List of nodes for each activity to create PERT graph"""
 
@@ -57,16 +59,16 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     print "SUM_SUCCCESSORS: ", sum_successors
         
     nodes = NodeList(num_real_activities)
-    #Step 1. Search initial activities (have no predecessors)
+    # Step 1. Search initial activities (have no predecessors) [3.1] 
     beginning, = numpy.nonzero(sum_predecessors == 0)
     print "Beginning: ", beginning
     
-    #Add begin node to activities that begin at initial node
+    # add begin node to activities that begin at initial node
     begin_node = nodes.next_node()
     for node_activity in beginning:
         nodes[node_activity][0] = begin_node
     
-    #Step 2. Search endings activities (have no successors)
+    # Step 2. Search endings activities (have no successors) [3.2]
     ending, = numpy.nonzero(sum_successors == 0)
     print "Ending: ", ending
     #XXX Igual a STII si mas de una actividad (no es necesario este paso) stI no lo considera
@@ -76,7 +78,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
         nodes[node_activity][1] = end_node
     print nodes
 
-    #Step 3. Search standard type I (Activity have unique successors)
+    # Step 3. Search standard type I (Activity have unique successors) [3.3]
     act_one_predeccessor, = numpy.nonzero(sum_predecessors == 1)
     stI = collections.defaultdict(list)
     for i in act_one_predeccessor:
@@ -95,9 +97,8 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     print nodes
 
 
-    #Step 4. Search standard II(Full) and standard II(Incomplete)
+    #Step 4. Search standard II(Full) and standard II(Incomplete) [3.4]
     print "--- Step 4 ---"
-    print "matrix: \n", matrix
     # dictionary with key: equal successors; value: mother activities
     stII = collections.defaultdict(list)
 
@@ -108,17 +109,16 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     del(stII[ frozenset([]) ]) 
     for pred, succs in stI.items():
         del(stII[ frozenset(succs) ])
-    print '---'
-    for key, value in stII.items():
-        print key, '<-', value
 
-    # assigns nodes to type II complete (as indicated in figure 8)
+    # assigns nodes to type II as indicated in figure 8
+    mark_complete = []
     for succs, preds in stII.items():
         u = len(preds)
         # if NP[succs] != u (complete)
         print preds, '->', succs,
         if not [ i for i in succs if sum_predecessors[i] != u ]:
             print 'complete'
+            mark_complete.append(succs)
             node = nodes.next_node()
             for act in preds:
                 nodes[act][1] = node
@@ -130,6 +130,58 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
             for act in preds:
                 nodes[act][1] = node
     print nodes
+
+    # Step 5. Search for matching successors [3.5]
+    print "--- Step 5 ---"
+    # remove type II complete so that stII becomes MASC
+    for succs in mark_complete:
+        del stII[succs]
+    masc = stII
+
+    print "MASC"
+    for succs, preds in stII.items():
+        print preds, succs
+
+    npc = collections.defaultdict(int)  # XXX Puede usarse un vector mejor
+    for succs, preds in stII.items():
+        num_preds = len(preds)
+        for succ in succs:
+            npc[succ] += num_preds
+    print npc
+
+    # Step 6. Identifying start nodes on matching successors
+    print "--- Step 6 ---"
+    act_no_initial = [i for i in range(num_real_activities) if nodes[i][0] == None]
+    print "No initial node:", act_no_initial
+    num_no_initial = len(act_no_initial)
+
+    mra = scipy.zeros([num_no_initial, num_no_initial], dtype = int)
+    for succs, preds in masc.items():
+        num_preds = len(preds)
+        succs = list(succs)
+        for i in range(len(succs)):
+            act_i = succs[i]
+            for j in range(i+1, len(succs)):
+                act_j = succs[j]
+                mra[act_no_initial.index(act_i), act_no_initial.index(act_j)] += num_preds
+                # mra[act_no_initial.index(act_j), act_no_initial.index(act_i)] += num_preds # XXX no necesitamso esta simetria?
+    print mra
+
+    # check matching successors and assign them initial nodes
+    for i in range(num_no_initial):
+        for j in range(i+1, num_no_initial):
+            if mra[i,j] == npc[act_no_initial[i]] and mra[i,j] == npc[act_no_initial[j]]: 
+                print 'coincidencia', i, j, "(", act_no_initial[i], act_no_initial[j], ")"
+                if nodes[act_no_initial[i]][0] != None:
+                    node = nodes[act_no_initial[i]][0]
+                else:
+                    node = nodes.next_node()
+                    nodes[act_no_initial[i]][0] = node
+                nodes[act_no_initial[j]][0] = node               
+
+    print nodes
+
+    exit_now
 
     # old - code
     stII_complete = []
@@ -288,7 +340,7 @@ if __name__ == '__main__':
         'A' : ['G', 'D'],
         'B' : ['C', 'E'],
         'C' : ['F'],
-        'D' : ['G', 'D'],
+        'D' : ['G'],
         'E' : [],
         'F' : ['G', 'D', 'E'],
         'G' : ['H'],
@@ -342,8 +394,23 @@ if __name__ == '__main__':
         'H' : [],
     }
 
+    # Coincidencias successors2 sin E en B
+    successors5 = {
+        'A' : ['C'],
+        'B' : ['G', 'D', 'F'],
+        'C' : ['G', 'D', 'F', 'E'],#G, D
+        'D' : [],
+        'E' : [],#G
+        'F' : [],
+        'G' : [],
+        'H' : ['D']#Analizar D, F, E
+    }
 
-    gento_municio(successors)
+    tab = successors5
+    if Kahn1962.check_cycles(tab):
+        gento_municio(tab)
+    else:
+        print "Example contains cicles!!"
     
 ##ACLARACION FUNCIONAMIENTO##
 #Para el tipo II incompleto. Si una o varias actividades tienen las mismas siguientes, pero alguna o algunas de las siguientes son precededidas por alguna más, entonces es seguro que: 
