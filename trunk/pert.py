@@ -45,7 +45,6 @@ class PertMultigraph(graph.DirectedMultigraph):
             origin, dest = arc
             i = 0
             while len(labels) > 1:
-                print 'labels', labels
                 label = labels.pop()
                 new_node = self.nextNodeNumber()
                 self.add_arc( (origin, new_node), label )
