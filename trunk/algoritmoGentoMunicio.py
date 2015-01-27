@@ -179,8 +179,6 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
                     nodes[act_no_initial[i]][0] = node
                 nodes[act_no_initial[j]][0] = node               
 
-    print nodes
-
     # assign initial node to the remaining activities (they must be alone, interpreted, not clear on paper)
     for node in nodes:
         if node[0] == None:
@@ -190,6 +188,15 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 
     # Step 7. 
     # create MNS (to avoid counting matching successors twice)
+    mns = {}
+    for succs, preds in masc.items():
+        for pred in preds:
+            MNS[pred] = [nodes[succ][1] for succ in succs]
+
+    print 'MNS'
+    for pred, succs in mns.items():
+        print pred, '-', succs
+
 
     # create MRN
 
