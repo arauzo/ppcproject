@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import graph
 import scipy
 import numpy
 import collections
 
+import graph
+import pert
 import Kahn1962
 
 class NodeList(object):
@@ -22,6 +23,9 @@ class NodeList(object):
             s += str(act) + ' ' + str(self.node_list[act]) + '\n'
         s += "Last_node_created: " + str(self.last_node_created) + '\n'
         return s
+
+    def __len__(self):
+        return len(self.node_list)
     
     def __getitem__(self, key):
         return self.node_list[key]
@@ -190,17 +194,31 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     # create MNS (to avoid counting matching successors twice)
     mns = {}
     for succs, preds in masc.items():
-        for pred in preds:
-            MNS[pred] = [nodes[succ][1] for succ in succs]
+        mns[ nodes[preds[0]][1] ] = set([nodes[succ][0] for succ in succs])
 
     print 'MNS'
     for pred, succs in mns.items():
         print pred, '-', succs
 
-
     # create MRN
+    # XXX
+
+    pm_graph = pert.PertMultigraph()
+    for i in range(len(nodes)):
+        pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], False))
+
+    p_graph = pm_graph.to_directed_graph()
+    return p_graph#.renumerar()
+
+
+
+
+
+
 
     exit_now
+
+
 
     # old - code
     stII_complete = []
@@ -421,9 +439,18 @@ if __name__ == '__main__':
 
     tab = successors6
     if Kahn1962.check_cycles(tab):
-        gento_municio(tab)
+        gg1 = gento_municio(tab)
     else:
         print "Example contains cicles!!"
+
+    import graph
+    window = graph.Test()
+    window.add_image(graph.pert2image(gg1))
+    graph.gtk.main()
+    print gg1
+    print validation.check_validation(successors, gg1)
+
+
     
 ##ACLARACION FUNCIONAMIENTO##
 #Para el tipo II incompleto. Si una o varias actividades tienen las mismas siguientes, pero alguna o algunas de las siguientes son precededidas por alguna más, entonces es seguro que: 
