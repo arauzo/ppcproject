@@ -181,6 +181,18 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 
     print nodes
 
+    # assign initial node to the remaining activities (they must be alone, interpreted, not clear on paper)
+    for node in nodes:
+        if node[0] == None:
+            node[0] = nodes.next_node()
+
+    print nodes
+
+    # Step 7. 
+    # create MNS (to avoid counting matching successors twice)
+
+    # create MRN
+
     exit_now
 
     # old - code
@@ -311,27 +323,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
         print "i: ", i
     print "MRN: \n", MRN
     print "list incomplete index: ", list_incomplete_index
-#    for i in range(0, len(list_incomplete_index)):
-#        for j in range(0, len(list_incomplete_index)):
-#            if not i == j:
-#                print "i,j: ", i, j
-#                print "l[i]: ", list_incomplete_index[i]
-#                print "list_incomplete_index[i]: ", list_incomplete_index[i]
-##                print "list_incomplete_index[j]: ", list_incomplete_index.index(l[j])
-#                print "MRA[list_incomplete_index.index([l[i]])]: ", MRA[i, j]
-##                print "MRA[list_incomplete_index.index([l[j]])]: ", MRA[list_incomplete_index.index([l[j]])]
-#                print "npc.count(l[i]): ", npc.count(list_incomplete_index[i])
-##                print "npc.count(lj): ", npc.count(l[j])
-#                if npc.count(list_incomplete_index[i]) == MRA[i, j]:
-#                    print "list_incomplete_index[i]OK CUMPLE LAS CONDICIONES: ", list_incomplete_index[i]
-#    #Contamos las apariciones de cada actividad y comparamos con su valor en MRA
-#    for l1 in list_incomplete_index:
-#        print "#####"
-#        print "npc.count(l1): ", npc.count(l1)
-#        print "l1: ", l1
-##        print "list_incomplete_index.index(l1): ", list_incomplete_index.index(l1)
-#        print "#####"
-##        if npc.count(l1) == 
+
 
 # --- Start running as a program
 if __name__ == '__main__': 
@@ -406,7 +398,21 @@ if __name__ == '__main__':
         'H' : ['D']#Analizar D, F, E
     }
 
-    tab = successors5
+    # Coincidencias successors2 con R
+    successors6 = {
+        'A' : ['C'],
+        'B' : ['G', 'D', 'F', 'E'],
+        'C' : ['G', 'D', 'F', 'E'],#G, D
+        'D' : [],
+        'E' : [],#G
+        'F' : [],
+        'G' : [],
+        'H' : ['D','R'],#Analizar D, F, E
+        'R'  : [],
+    }
+
+
+    tab = successors6
     if Kahn1962.check_cycles(tab):
         gento_municio(tab)
     else:
