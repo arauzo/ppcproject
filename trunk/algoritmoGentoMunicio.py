@@ -36,7 +36,10 @@ class NodeList(object):
         self.last_node_created += 1
         return self.last_node_created
 
-    def new_dummy(self):
+    def append_dummy(self, begin, end):
+        self.node_list.append( [begin, end] )
+
+    def new_dummy(self):# XXX are we usign this?
         """Creates a new dummy activity and return its index"""
         self.node_list.append( [None, None] )
         return len(self.node_list) - 1
@@ -163,10 +166,9 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     mra = scipy.zeros([num_no_initial, num_no_initial], dtype = int)
     for succs, preds in masc.items():
         num_preds = len(preds)
-        succs = list(succs)
         for act_i, act_j in itertools.combinations(succs, 2):
             mra[act_no_initial.index(act_i), act_no_initial.index(act_j)] += num_preds
-            # mra[act_no_initial.index(act_j), act_no_initial.index(act_i)] += num_preds # XXX no necesitamso esta simetria?
+            mra[act_no_initial.index(act_j), act_no_initial.index(act_i)] += num_preds # Symmetry, any succ order
     print 'MRA'
     print mra
 
@@ -202,21 +204,53 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     for pred, succs in mns.items():
         print pred, '-', succs
 
-    print unconnected
-
     # create MRN
     unconnected = list(unconnected)
     num_unconnected = len(unconnected)
+    print unconnected, '<-Unconnected'
 
-    mrn = scipy.zeros([num_unconnected, num_unconnected], dtype = int)    
+    appear = scipy.zeros([num_unconnected], dtype=int)
+    mrn = scipy.zeros([num_unconnected, num_unconnected], dtype=int)    
     for pred, u_nodes in mns.items():
+        for node in u_nodes:
+            appear[ unconnected.index(node) ] += 1
         for node_a, node_b in itertools.combinations(u_nodes, 2):
-            print node_a, node_b
             mrn[unconnected.index(node_a), unconnected.index(node_b)] += 1
-
+            mrn[unconnected.index(node_b), unconnected.index(node_a)] += 1
     print 'MRN'
     print mrn
+    print 'Appear'
+    print appear
 
+    # create MC
+    mc = []
+    for i in range(num_unconnected):
+        print i
+        mc.append([j for j in range(num_unconnected) if mrn[i,j] == appear[i] ])
+
+    print 'MC'
+    for i in range(num_unconnected):
+        print i, '-', mc[i]
+
+    # use strings to connect nodes
+    next_dummy = 0
+    for i in range(num_unconnected):
+        following_nodes = sorted([ (len(mc[j]), j) for j in mc[i] ], reverse=True)
+        while following_nodes:
+            print following_nodes
+            num, follower = following_nodes.pop(0)
+            if num == 0: pass
+
+            # Create dummy i -> follower (unconnected to real)
+            relation.append('dummy' + str(next_dummy))            
+            next_dummy += 1
+            nodes.append_dummy(unconnected[i], unconnected[follower])
+            for fol_follower in mc[follower]:
+                following_nodes.remove( (len(mc[fol_follower]), fol_follower) )
+                
+                
+
+    print nodes
 
 
     # XXX
@@ -453,8 +487,21 @@ if __name__ == '__main__':
         'R'  : [],
     }
 
+    # Ejemplo con las cadenas del articulo
+    successors7 = {
+        'Ai' : ['C'],
+        'Aj' : ['D'],
+        'Ak' : ['B', 'C', 'D'],
+        'Al' : ['A', 'B', 'C', 'D'],
+        'A' : [],
+        'B' : [],
+        'C' : [],
+        'D' : ['R'],
+        'R'  : [],
 
-    tab = successors6
+    }
+
+    tab = successors7
     if Kahn1962.check_cycles(tab):
         gg1 = gento_municio(tab)
     else:
