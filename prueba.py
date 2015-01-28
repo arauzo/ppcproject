@@ -10,7 +10,7 @@ Apart from test results, show: run time, number of arcs, number of dummy arcs, n
 
 algorithms: list to include all algorithm to check.
 
-(C) 2014 Antonio Arauzo-Azofra, Alberto Perez Caballero, Universidad de Cordoba
+(C) 2014-2015 Antonio Arauzo-Azofra, Alberto Perez Caballero, Universidad de Cordoba
 """
 
 import os
@@ -125,6 +125,8 @@ def main():
         algorithms.append( ('GentoMunicio', algoritmoGentoMunicio.gento_municio) )
     if args.Salas:
         algorithms.append( ('Salas', algoritmoSalas.salas) )
+    if len(algorithms) < 1:
+        print 'No algorithm selected. Just testing input files...'
 
     # Perform tests on each file 
     for filename in args.infiles:
