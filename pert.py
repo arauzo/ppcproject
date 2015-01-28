@@ -5,7 +5,7 @@
  A class to construct and represent PERT graphs (also known as AOA networks) and
  related functions
 
- Copyright 2007-11 Universidad de Cordoba
+ Copyright 2007-15 Universidad de Cordoba
  This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published
    by the Free Software Foundation, either version 3 of the License,
