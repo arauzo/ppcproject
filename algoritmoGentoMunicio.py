@@ -3,6 +3,7 @@
 import scipy
 import numpy
 import collections
+import itertools
 
 import graph
 import pert
@@ -75,7 +76,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     # Step 2. Search endings activities (have no successors) [3.2]
     ending, = numpy.nonzero(sum_successors == 0)
     print "Ending: ", ending
-    #XXX Igual a STII si mas de una actividad (no es necesario este paso) stI no lo considera
+    #XXX Igual a STII si mas de una actividad (no es necesario este paso) stI no lo considera???
     #Add end node to activities that end in final node
     end_node = nodes.next_node()
     for node_activity in ending:
@@ -156,19 +157,17 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     # Step 6. Identifying start nodes on matching successors
     print "--- Step 6 ---"
     act_no_initial = [i for i in range(num_real_activities) if nodes[i][0] == None]
-    print "No initial node:", act_no_initial
+    print act_no_initial, "<- No initial node"
     num_no_initial = len(act_no_initial)
 
     mra = scipy.zeros([num_no_initial, num_no_initial], dtype = int)
     for succs, preds in masc.items():
         num_preds = len(preds)
         succs = list(succs)
-        for i in range(len(succs)):
-            act_i = succs[i]
-            for j in range(i+1, len(succs)):
-                act_j = succs[j]
-                mra[act_no_initial.index(act_i), act_no_initial.index(act_j)] += num_preds
-                # mra[act_no_initial.index(act_j), act_no_initial.index(act_i)] += num_preds # XXX no necesitamso esta simetria?
+        for act_i, act_j in itertools.combinations(succs, 2):
+            mra[act_no_initial.index(act_i), act_no_initial.index(act_j)] += num_preds
+            # mra[act_no_initial.index(act_j), act_no_initial.index(act_i)] += num_preds # XXX no necesitamso esta simetria?
+    print 'MRA'
     print mra
 
     # check matching successors and assign them initial nodes
@@ -190,19 +189,37 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 
     print nodes
 
-    # Step 7. 
+    # Step 7. String search
     # create MNS (to avoid counting matching successors twice)
     mns = {}
+    unconnected = set() # all nodes in MNS
     for succs, preds in masc.items():
-        mns[ nodes[preds[0]][1] ] = set([nodes[succ][0] for succ in succs])
+        succ_nodes = set([nodes[succ][0] for succ in succs])
+        mns[ nodes[preds[0]][1] ] = succ_nodes  # as all preds have same successors they will be usign just one node
+        unconnected.update(succ_nodes)
 
     print 'MNS'
     for pred, succs in mns.items():
         print pred, '-', succs
 
-    # create MRN
-    # XXX
+    print unconnected
 
+    # create MRN
+    unconnected = list(unconnected)
+    num_unconnected = len(unconnected)
+
+    mrn = scipy.zeros([num_unconnected, num_unconnected], dtype = int)    
+    for pred, u_nodes in mns.items():
+        for node_a, node_b in itertools.combinations(u_nodes, 2):
+            print node_a, node_b
+            mrn[unconnected.index(node_a), unconnected.index(node_b)] += 1
+
+    print 'MRN'
+    print mrn
+
+
+
+    # XXX
     pm_graph = pert.PertMultigraph()
     for i in range(len(nodes)):
         pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], False))
