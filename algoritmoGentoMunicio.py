@@ -262,11 +262,26 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
             for pred in preds:
                 nodes[pred][1] = nodes[next(iter(succs))][0]
         else: # Case III
-            sorted_succs = sorted(list(succs), reverse=True)
-            found = False
-            while not found:
-                sig = sorted_succs.pop()
-                found = True
+            sorted_succs = sorted(list(succs), reverse=True)# ordenar por NPC!! min??
+
+            # Get follower with lower npc
+            min_follower = None
+            min_npc = None
+            for succ in succs:
+                if min_npc == None or min_npc > npc[succ]:
+                    min_follower = succ
+                    min_npc = npc[succ]
+
+            # Count the number of masc rows containing our successor activities
+            count = 0
+            for others in masc:
+                if succs.issubset(others):
+                    count += 1
+                    
+            if count >= min_npc:
+                for pred in preds:
+                    nodes[pred][1] = nodes[min_follower][0]
+                
 
 
     # Step 9. Final nodes for type II incomplete
@@ -277,8 +292,11 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 
     # XXX
     pm_graph = pert.PertMultigraph()
-    for i in range(len(nodes)):
+    for i in range(num_real_activities):
         pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], False))
+
+    for i in range(num_real_activities, len(nodes)):
+        pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], True))
 
     p_graph = pm_graph.to_directed_graph()
     return p_graph#.renumerar()
@@ -530,11 +548,12 @@ if __name__ == '__main__':
         print "Example contains cicles!!"
 
     import graph
+    import validation
     window = graph.Test()
     window.add_image(graph.pert2image(gg1))
     graph.gtk.main()
     print gg1
-    print validation.check_validation(successors, gg1)
+    print validation.check_validation(tab, gg1)
 
 
     
