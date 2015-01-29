@@ -151,7 +151,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
         print preds, succs
 
     npc = collections.defaultdict(int)  # XXX Puede usarse un vector mejor
-    for succs, preds in stII.items():
+    for succs, preds in masc.items():
         num_preds = len(preds)
         for succ in succs:
             npc[succ] += num_preds
@@ -225,7 +225,6 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     # create MC
     mc = []
     for i in range(num_unconnected):
-        print i
         mc.append([j for j in range(num_unconnected) if mrn[i,j] == appear[i] ])
 
     print 'MC'
@@ -235,10 +234,10 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     # use strings to connect nodes
     next_dummy = 0
     for i in range(num_unconnected):
-        following_nodes = sorted([ (len(mc[j]), j) for j in mc[i] ], reverse=True)
+        following_nodes = sorted([ (len(mc[j]), j) for j in mc[i] ])
         while following_nodes:
             print following_nodes
-            num, follower = following_nodes.pop(0)
+            num, follower = following_nodes.pop()
             if num == 0: pass
 
             # Create dummy i -> follower (unconnected to real)
@@ -248,9 +247,32 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
             for fol_follower in mc[follower]:
                 following_nodes.remove( (len(mc[fol_follower]), fol_follower) )
                 
-                
-
     print nodes
+
+    # Step 8. Final nodes and dummies
+    # (note: contrary to what paper says, we have already set final nodes for all
+    #  activities in step 4 as indicated in figure 8. Nevertheless, these nodes are
+    #  unconnected so we replace them here if necessary. Not assigning nodes in step 4
+    #  would break step 7)
+    for succs, preds in masc.items():
+        if len(succs) == 1: # Case I
+            for pred in preds:
+                nodes[pred][1] = nodes[next(iter(succs))][0]
+        elif [s for s in succs if npc[s] == 1]: # Case II
+            for pred in preds:
+                nodes[pred][1] = nodes[next(iter(succs))][0]
+        else: # Case III
+            sorted_succs = sorted(list(succs), reverse=True)
+            found = False
+            while not found:
+                sig = sorted_succs.pop()
+                found = True
+
+
+    # Step 9. Final nodes for type II incomplete
+    # (note: they have already been assigned in step 8. We do not understand section 3.9
+    #  of the paper)
+
 
 
     # XXX
