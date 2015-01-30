@@ -87,6 +87,8 @@ def main():
                         help='Number of repetitions (default: 1)')
     parser.add_argument('--SVG', action='store_true',
                         help='Draw the graph in a SVG file')
+    parser.add_argument('--show', action='store_true',
+                        help='Draw the graph in a window')
     parser.add_argument('--no-stop', action='store_true',
                         help='Do not stop when an algorithm fails')
 
@@ -103,6 +105,10 @@ def main():
 
     args = parser.parse_args()
 
+    if not args.infiles:
+        print 'No input files. Use --help to see syntax.'
+        return 0
+        
     if args.repeat < 1:
         print 'Number of repetitions must be > 0'
         return 1
@@ -199,6 +205,13 @@ def main():
                         fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
                         fsalida.write(image_text)
                         fsalida.close()
+
+                    # Interactively show graph on a window
+                    if args.show:
+                        window = graph.Test()
+                        window.add_image(graph.pert2image(pert_graph))
+                        graph.gtk.main()
+
 
     f_csv.close()
     return 0
