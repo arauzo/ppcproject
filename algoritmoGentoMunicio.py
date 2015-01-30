@@ -255,15 +255,12 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
     #  unconnected so we replace them here if necessary. Not assigning nodes in step 4
     #  would break step 7)
     for succs, preds in masc.items():
+        print "Studying:", preds, '->', succs
         if len(succs) == 1: # Case I
+            print "Case I"
             for pred in preds:
                 nodes[pred][1] = nodes[next(iter(succs))][0]
-        elif [s for s in succs if npc[s] == 1]: # Case II
-            for pred in preds:
-                nodes[pred][1] = nodes[next(iter(succs))][0]
-        else: # Case III
-            sorted_succs = sorted(list(succs), reverse=True)# ordenar por NPC!! min??
-
+        else:
             # Get follower with lower npc
             min_follower = None
             min_npc = None
@@ -271,14 +268,16 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
                 if min_npc == None or min_npc > npc[succ]:
                     min_follower = succ
                     min_npc = npc[succ]
+            print min_follower, 'npc:', min_npc
 
             # Count the number of masc rows containing our successor activities
             count = 0
             for others in masc:
                 if succs.issubset(others):
-                    count += 1
+                    count += len(masc[others])  # XXX o hay que tener en cuenta len(preds)???
                     
-            if count >= min_npc:
+            if count >= min_npc: # Case II (if min_npc==1) and Case III             
+                print "Case II or III"
                 for pred in preds:
                     nodes[pred][1] = nodes[min_follower][0]
                 
@@ -290,7 +289,7 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 
 
 
-    # XXX
+    # Build PertGraph (creating dummy activities for parallel activities)
     pm_graph = pert.PertMultigraph()
     for i in range(num_real_activities):
         pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], False))
@@ -303,154 +302,16 @@ def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
 
 
 
-
-
-
-
-    exit_now
-
-
-
-    # old - code
-    stII_complete = []
-    stII_incomplete = []
-    equal = [] #XXX Deberia ser conjunto por eficiencia o cambiar estructura para simplificar lo siguiente
-    for act in range(num_real_activities):
-        same_successors = [act]
-        for aux_act in range(act+1, num_real_activities):
-            if (matrix[act] == matrix[aux_act]).all() and aux_act not in equal:
-                equal.append(aux_act)
-                same_successors.append(aux_act)
-        if len(same_successors) > 1:
-            print "SAME SUCCESSORS: ", same_successors
-            if numpy.dot(numpy.array(sum_predecessors), numpy.array(matrix[same_successors[0]])) == \
-               len(same_successors) * numpy.sum(matrix[same_successors[0]]): 
-                stII_complete.append(same_successors)
-            else:
-                stII_incomplete.append(same_successors)
-                num_same_pred = len(same_successors)
-                stII_incomplete_node = nodes.next_node()
-                for node_activity_incomplete in same_successors:
-                    nodes[node_activity_incomplete][1] = stII_incomplete_node
-    print nodes
-    if len(stII_incomplete) > 0:
-        print "stII_incomplete: ", stII_incomplete
-        for pre in stII_incomplete:
-            print "PRE: ", pre
-            index = numpy.nonzero(matrix[pre[0]]) #matrix[stII_incomplete[0][0]])
-        print "INDEX: ", index
-        for ind in index[0]:
-            print "IND", ind
-            if sum_predecessors[ind] > num_same_pred:
-                activities_stII_incomplete, = numpy.nonzero(matrix[:,ind])
-                print "###ERROR### STII Incompleto", activities_stII_incomplete
-    print "STII COMPLETO: ", stII_complete
-    
-    for node_activity in stII_complete:
-        stII_node = nodes.next_node()
-        stII_complete_successors = numpy.nonzero(matrix[node_activity[0]])
-        for activity in node_activity:
-            nodes[activity][1] = stII_node
-        for successor in stII_complete_successors[0]:
-            nodes[successor][0] = stII_node
-    
-    print nodes
-    
-    #Step 5. Search for matches
-    print "MATRIX: ", matrix
-    
-#    print "SUCCESSORS: ", successors
-#    incomplete_sig = [successors[activity] for act in activities_stII_incomplete]
-#    print "INCOMPLETE SIG: ", incomplete_sig
-    
-    #XXX (Eficiencia) guardar numpy.nonzero(matrix[activity])[0] en una variable en vez de llamar 3 veces?
-    if len(stII_incomplete) > 0:
-        print "STII INCOMPLETE: ", activities_stII_incomplete
-        masc = []
-        for activity in activities_stII_incomplete:
-            masc.append(numpy.nonzero(matrix[activity])[0])
-            if len(numpy.nonzero(matrix[activity])[0]) == 1:
-                stII_incomplete_node = nodes.next_node()
-                nodes[activity][1] = stII_incomplete_node
-                nodes[numpy.nonzero(matrix[activity])[0]][0] = stII_incomplete_node 
-                print "ACT: ", activity
-                print "LEN numpy.nonzero: ", len(numpy.nonzero(matrix[activity])[0])
-        print "MASC: ", masc
-        
-        print nodes
-        npc = []
-        incomplete_index = set()
-        for m in masc:
-            for i_m in m:
-                print "i_m: ", i_m
-                npc.append(i_m)
-                incomplete_index.add(i_m)
-        list_incomplete_index = list(incomplete_index)
-        print "list_incomplete_index: ", list_incomplete_index
-        
-        MRA = scipy.zeros([len(list_incomplete_index), len(list_incomplete_index)], dtype = int)
-        print "MRA: \n", MRA
-        print "npc: ", npc
-        print "masc: ", masc
-        incomplete_same_node = []
-        for l in masc:
-            print "L: ", l
-            for i in range(0, len(l)):
-                print "l[i]FOR[I]: ", l[i]
-                for j in range(0, len(l)):
-                    if not i == j:
-                        MRA[list_incomplete_index.index(l[i])][list_incomplete_index.index(l[j])] += 1
-                        print "npc.count(li): ", npc.count(list_incomplete_index[i])
-                        print "npc.count(lj): ", npc.count(list_incomplete_index[j])
-                        print "MRA[i, j]: ", MRA[i, j]
-                        if npc.count(list_incomplete_index[i]) == MRA[i, j] and npc.count(list_incomplete_index[j]) == MRA[i, j]:
-                            print "l[i]: ", l[i], "l[j]: ", l[j]
-                            print "list_incomplete_index[i]: ", list_incomplete_index.index(l[i])
-                            print "list_incomplete_index[j]: ", list_incomplete_index.index(l[j])
-                            print "list_incomplete_index[i]OK CUMPLE LAS CONDICIONES: ", list_incomplete_index[i]
-                            print "nodes [i][0]: ", nodes[list_incomplete_index[i]][0]
-                            if nodes[list_incomplete_index[i]][0] == None:
-                                matches_node = nodes.next_node()
-                                nodes[list_incomplete_index[i]][0] = matches_node
-                                nodes[list_incomplete_index[j]][0] = matches_node
-                                print "Pasada IF"
-                            else:
-                                nodes[list_incomplete_index[j]][0] = matches_node
-                                print "Pasada ELSE"
-                            incomplete_same_node.append([list_incomplete_index[i], list_incomplete_index[j]])
-#                            stII_incomplete_same_node = nodes.next_node()
-#                            nodes[list_incomplete_index[i]][0] = stII_incomplete_same_node
-#                            nodes[list_incomplete_index[j]][0] = stII_incomplete_same_node
-            print "MRA: \n", MRA
-            print "incomplete_same_node: ", incomplete_same_node
-    print nodes
-        
-    #Step 6. Search for strings
-##    Matrix
-##    MNS = scipy.zeros([len(list_incomplete_index), len(list_incomplete_index)], dtype = int)
-##    print "MNS: ", MNS
-    MNS = {}
-    for i in list_incomplete_index:
-        print "i: ", i
-        MNS[i] = nodes[i][0]
-    print "MNS: ", MNS
-    MRN = scipy.zeros([len(list_incomplete_index), len(list_incomplete_index)], dtype = int)
-    for i in MNS.keys():
-        print "i: ", i
-    print "MRN: \n", MRN
-    print "list incomplete index: ", list_incomplete_index
-
-
 # --- Start running as a program
 if __name__ == '__main__': 
     
-    successors = {
-        'A' : ['G', 'D'],
+    successors = { # with redundancy
+        'A' : ['D'],
         'B' : ['C', 'E'],
         'C' : ['F'],
         'D' : ['G'],
         'E' : [],
-        'F' : ['G', 'D', 'E'],
+        'F' : ['D', 'E'],
         'G' : ['H'],
         'H' : ['E'],
         'I' : ['H'],
@@ -541,19 +402,35 @@ if __name__ == '__main__':
 
     }
 
-    tab = successors7
+    successors8 = { # similar to 0 without redundancy
+        'A' : ['D'],
+        'B' : ['C', 'E'],
+        'C' : ['F'],
+        'D' : ['G'],
+        'E' : [],
+        'F' : ['D', 'L'],
+        'G' : ['H'],
+        'H' : ['E'],
+        'I' : ['H'],
+        'J' : ['H'],
+        'K' : ['A', 'B', 'I', 'J'],
+        'L' : [],
+    }
+
+
+    tab = successors4
     if Kahn1962.check_cycles(tab):
         gg1 = gento_municio(tab)
+        import graph
+        import validation
+        window = graph.Test()
+        window.add_image(graph.pert2image(gg1))
+        graph.gtk.main()
+        print gg1
+        print validation.check_validation(tab, gg1)
     else:
         print "Example contains cicles!!"
 
-    import graph
-    import validation
-    window = graph.Test()
-    window.add_image(graph.pert2image(gg1))
-    graph.gtk.main()
-    print gg1
-    print validation.check_validation(tab, gg1)
 
 
     
