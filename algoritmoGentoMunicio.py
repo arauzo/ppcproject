@@ -44,9 +44,10 @@ class NodeList(object):
         self.node_list.append( [None, None] )
         return len(self.node_list) - 1
 
-def gento_municio(successors): # XXX Lo que se le pasa son predecesores ?no?
+def gento_municio(predecessors):
     """
     """
+    successors = graph.reversed_prelation_table(predecessors)
     #Generate precedences/successors matrix
     num_real_activities = len(successors.keys())
     matrix = scipy.zeros([num_real_activities, num_real_activities], dtype = int)
@@ -418,7 +419,7 @@ if __name__ == '__main__':
     }
 
 
-    tab = successors4
+    tab = successors8
     if Kahn1962.check_cycles(tab):
         gg1 = gento_municio(tab)
         import graph
