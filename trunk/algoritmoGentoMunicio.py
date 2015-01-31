@@ -235,10 +235,11 @@ def gento_municio(predecessors):
     # use strings to connect nodes
     next_dummy = 0
     for i in range(num_unconnected):
-        following_nodes = sorted([ (len(mc[j]), j) for j in mc[i] ])
+        following_nodes = sorted([ (len(mc[j]), j) for j in mc[i] ]) # XXX se puede optimizar con key sin incluir el len
         while following_nodes:
             print following_nodes
             num, follower = following_nodes.pop()
+            print 'extracted:', num, follower
             if num == 0: pass
 
             # Create dummy i -> follower (unconnected to real)
@@ -246,8 +247,11 @@ def gento_municio(predecessors):
             next_dummy += 1
             nodes.append_dummy(unconnected[i], unconnected[follower])
             for fol_follower in mc[follower]:
-                following_nodes.remove( (len(mc[fol_follower]), fol_follower) )
-                
+                print 'remove:', (len(mc[fol_follower]), fol_follower)
+                try: 
+                    following_nodes.remove( (len(mc[fol_follower]), fol_follower) )
+                except ValueError:
+                    pass # if it has already been connected, it will not be in list now                
     print nodes
 
     # Step 8. Final nodes and dummies
@@ -281,13 +285,17 @@ def gento_municio(predecessors):
                 print "Case II or III"
                 for pred in preds:
                     nodes[pred][1] = nodes[min_follower][0]
+            else:                
+                for succ in succs:
+                    relation.append('dummy' + str(next_dummy))            
+                    next_dummy += 1
+                    # note: if there are several predecessors, they have the same end node assigned in step 4
+                    nodes.append_dummy(nodes[next(iter(preds))][1], nodes[succ][0])
                 
-
 
     # Step 9. Final nodes for type II incomplete
     # (note: they have already been assigned in step 8. We do not understand section 3.9
     #  of the paper)
-
 
 
     # Build PertGraph (creating dummy activities for parallel activities)
