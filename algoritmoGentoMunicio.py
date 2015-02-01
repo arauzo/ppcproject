@@ -12,10 +12,16 @@ import Kahn1962
 class NodeList(object):
     """List of nodes for each activity to create PERT graph"""
 
-    def __init__(self, num_real_activities):
-        #List of nodes for each activity [0, n-1] real activities, [n, n+m-1] the dummy activities )
-        self.node_list = [ [None, None] for i in range(num_real_activities) ]
-        self.last_node_created = 99 #-1 para la version definitiva XXX
+    def __init__(self, activity_names):
+        """Create emplty node table from activities"""
+        # Create an index for activities, each activity is associated with an integer
+        self.activity_names = activity_names
+        #self.activity_names.sort() # for debuggin purposes may be better to have activities in order
+        self.num_real_activities = len(activity_names)
+        self.next_dummy = 0
+        # List of nodes for each activity [0, n-1] real activities, [n, n+m-1] the dummy activities
+        self.node_list = [[None, None] for i in range(self.num_real_activities)]
+        self.last_node_created = -1 # for debugging purposes 99 may be better to differentiate of activities
 
     def __str__(self):
         """String for debuging"""
@@ -26,62 +32,74 @@ class NodeList(object):
         return s
 
     def __len__(self):
+        """Total number of activities real + dummy"""
         return len(self.node_list)
-    
+
     def __getitem__(self, key):
+        """Allow iteration and random access to node list"""
         return self.node_list[key]
-    
+
     def next_node(self):
         """Creates a new node number"""
         self.last_node_created += 1
         return self.last_node_created
 
     def append_dummy(self, begin, end):
-        self.node_list.append( [begin, end] )
+        """Creates a new dummy activity with given begin and end nodes"""
+        self.activity_names.append('dummy' + str(self.next_dummy))
+        self.next_dummy += 1
+        self.node_list.append([begin, end])
 
-    def new_dummy(self):# XXX are we usign this?
-        """Creates a new dummy activity and return its index"""
-        self.node_list.append( [None, None] )
-        return len(self.node_list) - 1
+    def to_pert_graph(self):
+        """Build PertGraph from nodes table (creating dummy activities for parallel activities)"""
+        pm_graph = pert.PertMultigraph()
+        for i in range(self.num_real_activities):
+            pm_graph.add_arc((self.node_list[i][0], self.node_list[i][1]), (self.activity_names[i], False))
+
+        for i in range(self.num_real_activities, len(self.node_list)):
+            pm_graph.add_arc((self.node_list[i][0], self.node_list[i][1]), (self.activity_names[i], True))
+
+        return pm_graph.to_directed_graph()
+
+
 
 def gento_municio(predecessors):
     """
+    Creates a PERT graph usign the algorithm defined in:
+        Gento-Municio, Angel M. “Un Algoritmo Para La Realización de Grafos Con Las Actividades En Los Arcos, Grafos
+        PERT.” Cuadernos Del CIMBAGE, no. 7 (2004): 103.
     """
+    nodes = NodeList(predecessors.keys())
     successors = graph.reversed_prelation_table(predecessors)
-    #Generate precedences/successors matrix
-    num_real_activities = len(successors.keys())
-    matrix = scipy.zeros([num_real_activities, num_real_activities], dtype = int)
-    #Assign number to letters of activity
-    relation = successors.keys()
-    relation.sort() # XXX Quitar en version definitiva para eficiencia
-    print "RELATION: ", relation
-    #Put one each relationship
+
+    # Generate precedences/successors matrix
+    matrix = scipy.zeros([nodes.num_real_activities, nodes.num_real_activities], dtype=int)
     for activity, successor in successors.items():
         for suc in successor:
-            matrix[relation.index(activity)][relation.index(suc)] = 1
+            matrix[nodes.activity_names.index(activity)][nodes.activity_names.index(suc)] = 1
     print "MATRIX filled: \n", matrix
-    #Sum each column
+    # sum each column
     sum_predecessors = scipy.sum(matrix, axis=0)
     print "SUM_PREDECESSORS: ", sum_predecessors
-    #Sum each row
+    # sum each row
     sum_successors = scipy.sum(matrix, axis=1)
     print "SUM_SUCCCESSORS: ", sum_successors
-        
-    nodes = NodeList(num_real_activities)
-    # Step 1. Search initial activities (have no predecessors) [3.1] 
+
+
+    # Step 1. Search initial activities (have no predecessors) [3.1]
     beginning, = numpy.nonzero(sum_predecessors == 0)
     print "Beginning: ", beginning
-    
+
     # add begin node to activities that begin at initial node
     begin_node = nodes.next_node()
     for node_activity in beginning:
         nodes[node_activity][0] = begin_node
-    
+
     # Step 2. Search endings activities (have no successors) [3.2]
     ending, = numpy.nonzero(sum_successors == 0)
     print "Ending: ", ending
-    #XXX Igual a STII si mas de una actividad (no es necesario este paso) stI no lo considera???
-    #Add end node to activities that end in final node
+    # add end node to activities that end in final node
+    # note: this step may be replaced by handling them in steps 3 and 4 as stI and stII
     end_node = nodes.next_node()
     for node_activity in ending:
         nodes[node_activity][1] = end_node
@@ -93,9 +111,8 @@ def gento_municio(predecessors):
     for i in act_one_predeccessor:
         pred = numpy.nonzero((matrix[:,i]))[0][0]
         if (sum_successors[pred] == 1 # this condition is redundant but faster than the following check
-            or sum_successors[pred] == scipy.sum(matrix[:,numpy.nonzero(matrix[pred])]) ):
+            or sum_successors[pred] == scipy.sum(matrix[:,numpy.nonzero(matrix[pred])])):
             stI[pred].append(i)
-            # XXX This may be faster if first pred introduced on dict and then remove those pred that have more successors in sum_successors than values in this dict
     print "stI: ", stI
     #Add the same end node of activities to the begin node of its successors activities
     for node_activity in stI:
@@ -111,11 +128,11 @@ def gento_municio(predecessors):
     # dictionary with key: equal successors; value: mother activities
     stII = collections.defaultdict(list)
 
-    for act in range(num_real_activities):
-        stII[frozenset(matrix[act].nonzero()[0])].append(act) 
+    for act in range(nodes.num_real_activities):
+        stII[frozenset(matrix[act].nonzero()[0])].append(act)
 
     # remove ending activities and those included in type I
-    del(stII[ frozenset([]) ]) 
+    del(stII[ frozenset([]) ])
     for pred, succs in stI.items():
         del(stII[ frozenset(succs) ])
 
@@ -151,7 +168,7 @@ def gento_municio(predecessors):
     for succs, preds in stII.items():
         print preds, succs
 
-    npc = collections.defaultdict(int)  # XXX Puede usarse un vector mejor
+    npc = scipy.zeros([nodes.num_real_activities], dtype=int)
     for succs, preds in masc.items():
         num_preds = len(preds)
         for succ in succs:
@@ -160,11 +177,11 @@ def gento_municio(predecessors):
 
     # Step 6. Identifying start nodes on matching successors
     print "--- Step 6 ---"
-    act_no_initial = [i for i in range(num_real_activities) if nodes[i][0] == None]
+    act_no_initial = [i for i in range(nodes.num_real_activities) if nodes[i][0] == None]
     print act_no_initial, "<- No initial node"
     num_no_initial = len(act_no_initial)
 
-    mra = scipy.zeros([num_no_initial, num_no_initial], dtype = int)
+    mra = scipy.zeros([num_no_initial, num_no_initial], dtype=int)
     for succs, preds in masc.items():
         num_preds = len(preds)
         for act_i, act_j in itertools.combinations(succs, 2):
@@ -176,14 +193,14 @@ def gento_municio(predecessors):
     # check matching successors and assign them initial nodes
     for i in range(num_no_initial):
         for j in range(i+1, num_no_initial):
-            if mra[i,j] == npc[act_no_initial[i]] and mra[i,j] == npc[act_no_initial[j]]: 
+            if mra[i,j] == npc[act_no_initial[i]] and mra[i,j] == npc[act_no_initial[j]]:
                 print 'coincidencia', i, j, "(", act_no_initial[i], act_no_initial[j], ")"
                 if nodes[act_no_initial[i]][0] != None:
                     node = nodes[act_no_initial[i]][0]
                 else:
                     node = nodes.next_node()
                     nodes[act_no_initial[i]][0] = node
-                nodes[act_no_initial[j]][0] = node               
+                nodes[act_no_initial[j]][0] = node
 
     # assign initial node to the remaining activities (they must be alone, interpreted, not clear on paper)
     for node in nodes:
@@ -211,7 +228,7 @@ def gento_municio(predecessors):
     print unconnected, '<-Unconnected'
 
     appear = scipy.zeros([num_unconnected], dtype=int)
-    mrn = scipy.zeros([num_unconnected, num_unconnected], dtype=int)    
+    mrn = scipy.zeros([num_unconnected, num_unconnected], dtype=int)
     for pred, u_nodes in mns.items():
         for node in u_nodes:
             appear[ unconnected.index(node) ] += 1
@@ -233,25 +250,21 @@ def gento_municio(predecessors):
         print i, '-', mc[i]
 
     # use strings to connect nodes
-    next_dummy = 0
     for i in range(num_unconnected):
-        following_nodes = sorted([ (len(mc[j]), j) for j in mc[i] ]) # XXX se puede optimizar con key sin incluir el len
+        following_nodes = sorted(mc[i], key=lambda x : len(mc[x]))
         while following_nodes:
             print following_nodes
-            num, follower = following_nodes.pop()
-            print 'extracted:', num, follower
-            if num == 0: pass
+            follower = following_nodes.pop()
+            print 'extracted:', follower
 
             # Create dummy i -> follower (unconnected to real)
-            relation.append('dummy' + str(next_dummy))            
-            next_dummy += 1
             nodes.append_dummy(unconnected[i], unconnected[follower])
             for fol_follower in mc[follower]:
-                print 'remove:', (len(mc[fol_follower]), fol_follower)
-                try: 
-                    following_nodes.remove( (len(mc[fol_follower]), fol_follower) )
+                print 'remove:', fol_follower
+                try:
+                    following_nodes.remove(fol_follower)
                 except ValueError:
-                    pass # if it has already been connected, it will not be in list now                
+                    pass # if it has already been connected, it will not be in list now
     print nodes
 
     # Step 8. Final nodes and dummies
@@ -279,41 +292,27 @@ def gento_municio(predecessors):
             count = 0
             for others in masc:
                 if succs.issubset(others):
-                    count += len(masc[others])  # XXX o hay que tener en cuenta len(preds)???
-                    
-            if count >= min_npc: # Case II (if min_npc==1) and Case III             
+                    count += len(masc[others])
+
+            if count >= min_npc: # Case II (if min_npc==1) and Case III
                 print "Case II or III"
                 for pred in preds:
                     nodes[pred][1] = nodes[min_follower][0]
-            else:                
+            else:
                 for succ in succs:
-                    relation.append('dummy' + str(next_dummy))            
-                    next_dummy += 1
                     # note: if there are several predecessors, they have the same end node assigned in step 4
                     nodes.append_dummy(nodes[next(iter(preds))][1], nodes[succ][0])
-                
 
     # Step 9. Final nodes for type II incomplete
-    # (note: they have already been assigned in step 8. We do not understand section 3.9
-    #  of the paper)
-
-
-    # Build PertGraph (creating dummy activities for parallel activities)
-    pm_graph = pert.PertMultigraph()
-    for i in range(num_real_activities):
-        pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], False))
-
-    for i in range(num_real_activities, len(nodes)):
-        pm_graph.add_arc((nodes[i][0], nodes[i][1]), (relation[i], True))
-
-    p_graph = pm_graph.to_directed_graph()
-    return p_graph#.renumerar()
+    # (note: final nodes have already been assigned in step 8. We think section 3.9 of paper is unnecessary)
+    
+    return nodes.to_pert_graph()#.renumerar()
 
 
 
 # --- Start running as a program
-if __name__ == '__main__': 
-    
+if __name__ == '__main__':
+
     successors = { # with redundancy
         'A' : ['D'],
         'B' : ['C', 'E'],
@@ -348,7 +347,7 @@ if __name__ == '__main__':
         'G' : [],
         'H' : ['D']#Analizar D, F, E
     }
-    
+
     # Datos con multiples stI
     successors3 = {
         'A' : ['C', 'E'],
@@ -359,7 +358,7 @@ if __name__ == '__main__':
         'F' : ['B'],
         'G' : ['F'],
     }
-    
+
     # Datos con un stI de 3 actividades y dos casos casi stI (dos predecesores) y (pred compartido)
     successors4 = {
         'A' : ['B', 'C', 'D'],
@@ -430,7 +429,6 @@ if __name__ == '__main__':
     tab = successors8
     if Kahn1962.check_cycles(tab):
         gg1 = gento_municio(tab)
-        import graph
         import validation
         window = graph.Test()
         window.add_image(graph.pert2image(gg1))
@@ -442,9 +440,9 @@ if __name__ == '__main__':
 
 
 
-    
+
 ##ACLARACION FUNCIONAMIENTO##
-#Para el tipo II incompleto. Si una o varias actividades tienen las mismas siguientes, pero alguna o algunas de las siguientes son precededidas por alguna más, entonces es seguro que: 
+#Para el tipo II incompleto. Si una o varias actividades tienen las mismas siguientes, pero alguna o algunas de las siguientes son precededidas por alguna más, entonces es seguro que:
 
 #El nudo inicio de las que no tienen otra precedente es el mismo nudo de fin de las que tienen las mismas siguientes... y.
 #Del nudo fin de las que tienen las mismas siguientes sale al menos una ficticia que va al nudo inicio de las que tienen más precedentes. Ahora habría que analizar si las que tienen otras precedentes tienen precedentes comunes o no comunes y sería como el tipo I (o no).
