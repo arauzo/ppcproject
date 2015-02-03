@@ -78,9 +78,9 @@ def algoritmoN(prelations):
         for label1 in node: #l string join NO HACE STRING JOIN, NO SE SI SE PUEDE CAMBIAR POR STRING JOIN
             label = label + label1 + "-"
         label = label[:-1]
-        print "TEST", node 
-        print label
-        print '-'.join(node) # XXX Si hace lo mismo ?no?
+#        print "TEST", node 
+#        print label
+#        print '-'.join(node) # XXX Si hace lo mismo ?no?
         gg.add_node(label)
 #    print "gg:", gg
 
@@ -95,7 +95,7 @@ def algoritmoN(prelations):
                 t = node_set&node_set1 #guardamos su interseccion (si son distintos nunca tendran interseccion)
                 aux_label = 'AA',True
                 if t == node_set: #Comparamos la interseccion(vacia) con un conjunto de nodos
-                    print "OK"
+#                    print "OK"
                     built_labels(node, node1, label, label1)
 #                    for k in node:
 #                        l = l + k + "-"
@@ -108,7 +108,7 @@ def algoritmoN(prelations):
 #                    arc
                     gg.add_arc(arc,aux_label)
                 elif t == node_set1:
-                    print "OKOK"
+#                    print "OKOK"
                     built_labels(node, node1, label, label1)
 #                    for k in node:
 #                        l = l + k + "-"
