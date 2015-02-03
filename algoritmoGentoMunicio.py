@@ -77,18 +77,18 @@ def gento_municio(predecessors):
     for activity, successor in successors.items():
         for suc in successor:
             matrix[nodes.activity_names.index(activity)][nodes.activity_names.index(suc)] = 1
-    print "MATRIX filled: \n", matrix
+#    print "MATRIX filled: \n", matrix
     # sum each column
     sum_predecessors = scipy.sum(matrix, axis=0)
-    print "SUM_PREDECESSORS: ", sum_predecessors
+#    print "SUM_PREDECESSORS: ", sum_predecessors
     # sum each row
     sum_successors = scipy.sum(matrix, axis=1)
-    print "SUM_SUCCCESSORS: ", sum_successors
+#    print "SUM_SUCCCESSORS: ", sum_successors
 
 
     # Step 1. Search initial activities (have no predecessors) [3.1]
     beginning, = numpy.nonzero(sum_predecessors == 0)
-    print "Beginning: ", beginning
+#    print "Beginning: ", beginning
 
     # add begin node to activities that begin at initial node
     begin_node = nodes.next_node()
@@ -97,13 +97,13 @@ def gento_municio(predecessors):
 
     # Step 2. Search endings activities (have no successors) [3.2]
     ending, = numpy.nonzero(sum_successors == 0)
-    print "Ending: ", ending
+#    print "Ending: ", ending
     # add end node to activities that end in final node
     # note: this step may be replaced by handling them in steps 3 and 4 as stI and stII
     end_node = nodes.next_node()
     for node_activity in ending:
         nodes[node_activity][1] = end_node
-    print nodes
+#    print nodes
 
     # Step 3. Search standard type I (Activity have unique successors) [3.3]
     act_one_predeccessor, = numpy.nonzero(sum_predecessors == 1)
@@ -113,18 +113,18 @@ def gento_municio(predecessors):
         if (sum_successors[pred] == 1 # this condition is redundant but faster than the following check
             or sum_successors[pred] == scipy.sum(matrix[:,numpy.nonzero(matrix[pred])])):
             stI[pred].append(i)
-    print "stI: ", stI
+#    print "stI: ", stI
     #Add the same end node of activities to the begin node of its successors activities
     for node_activity in stI:
         stI_node = nodes.next_node()
         nodes[node_activity][1] = stI_node
         for successor in stI[node_activity]:
             nodes[successor][0] = stI_node
-    print nodes
+#    print nodes
 
 
     #Step 4. Search standard II(Full) and standard II(Incomplete) [3.4]
-    print "--- Step 4 ---"
+#    print "--- Step 4 ---"
     # dictionary with key: equal successors; value: mother activities
     stII = collections.defaultdict(list)
 
@@ -141,9 +141,9 @@ def gento_municio(predecessors):
     for succs, preds in stII.items():
         u = len(preds)
         # if NP[succs] != u (complete)
-        print preds, '->', succs,
+#        print preds, '->', succs,
         if not [ i for i in succs if sum_predecessors[i] != u ]:
-            print 'complete'
+#            print 'complete'
             mark_complete.append(succs)
             node = nodes.next_node()
             for act in preds:
@@ -151,20 +151,20 @@ def gento_municio(predecessors):
             for act in succs:
                 nodes[act][0] = node
         else: # (incomplete)
-            print 'incomplete'
+#            print 'incomplete'
             node = nodes.next_node()
             for act in preds:
                 nodes[act][1] = node
-    print nodes
+#    print nodes
 
     # Step 5. Search for matching successors [3.5]
-    print "--- Step 5 ---"
+#    print "--- Step 5 ---"
     # remove type II complete so that stII becomes MASC
     for succs in mark_complete:
         del stII[succs]
     masc = stII
 
-    print "MASC"
+#    print "MASC"
     for succs, preds in stII.items():
         print preds, succs
 
@@ -173,12 +173,12 @@ def gento_municio(predecessors):
         num_preds = len(preds)
         for succ in succs:
             npc[succ] += num_preds
-    print npc
+#    print npc
 
     # Step 6. Identifying start nodes on matching successors
-    print "--- Step 6 ---"
+#    print "--- Step 6 ---"
     act_no_initial = [i for i in range(nodes.num_real_activities) if nodes[i][0] == None]
-    print act_no_initial, "<- No initial node"
+#    print act_no_initial, "<- No initial node"
     num_no_initial = len(act_no_initial)
 
     mra = scipy.zeros([num_no_initial, num_no_initial], dtype=int)
@@ -187,14 +187,14 @@ def gento_municio(predecessors):
         for act_i, act_j in itertools.combinations(succs, 2):
             mra[act_no_initial.index(act_i), act_no_initial.index(act_j)] += num_preds
             mra[act_no_initial.index(act_j), act_no_initial.index(act_i)] += num_preds # Symmetry, any succ order
-    print 'MRA'
-    print mra
+#    print 'MRA'
+#    print mra
 
     # check matching successors and assign them initial nodes
     for i in range(num_no_initial):
         for j in range(i+1, num_no_initial):
             if mra[i,j] == npc[act_no_initial[i]] and mra[i,j] == npc[act_no_initial[j]]:
-                print 'coincidencia', i, j, "(", act_no_initial[i], act_no_initial[j], ")"
+#                print 'coincidencia', i, j, "(", act_no_initial[i], act_no_initial[j], ")"
                 if nodes[act_no_initial[i]][0] != None:
                     node = nodes[act_no_initial[i]][0]
                 else:
@@ -207,7 +207,7 @@ def gento_municio(predecessors):
         if node[0] == None:
             node[0] = nodes.next_node()
 
-    print nodes
+#    print nodes
 
     # Step 7. String search
     # create MNS (to avoid counting matching successors twice)
@@ -218,14 +218,14 @@ def gento_municio(predecessors):
         mns[ nodes[preds[0]][1] ] = succ_nodes  # as all preds have same successors they will be usign just one node
         unconnected.update(succ_nodes)
 
-    print 'MNS'
-    for pred, succs in mns.items():
-        print pred, '-', succs
+#    print 'MNS'
+#    for pred, succs in mns.items():
+#        print pred, '-', succs
 
     # create MRN
     unconnected = list(unconnected)
     num_unconnected = len(unconnected)
-    print unconnected, '<-Unconnected'
+#    print unconnected, '<-Unconnected'
 
     appear = scipy.zeros([num_unconnected], dtype=int)
     mrn = scipy.zeros([num_unconnected, num_unconnected], dtype=int)
@@ -235,17 +235,17 @@ def gento_municio(predecessors):
         for node_a, node_b in itertools.combinations(u_nodes, 2):
             mrn[unconnected.index(node_a), unconnected.index(node_b)] += 1
             mrn[unconnected.index(node_b), unconnected.index(node_a)] += 1
-    print 'MRN'
-    print mrn
-    print 'Appear'
-    print appear
+#    print 'MRN'
+#    print mrn
+#    print 'Appear'
+#    print appear
 
     # create MC
     mc = []
     for i in range(num_unconnected):
         mc.append([j for j in range(num_unconnected) if mrn[i,j] == appear[i] ])
 
-    print 'MC'
+#    print 'MC'
     for i in range(num_unconnected):
         print i, '-', mc[i]
 
@@ -255,17 +255,17 @@ def gento_municio(predecessors):
         while following_nodes:
             print following_nodes
             follower = following_nodes.pop()
-            print 'extracted:', follower
+#            print 'extracted:', follower
 
             # Create dummy i -> follower (unconnected to real)
             nodes.append_dummy(unconnected[i], unconnected[follower])
             for fol_follower in mc[follower]:
-                print 'remove:', fol_follower
+#                print 'remove:', fol_follower
                 try:
                     following_nodes.remove(fol_follower)
                 except ValueError:
                     pass # if it has already been connected, it will not be in list now
-    print nodes
+#    print nodes
 
     # Step 8. Final nodes and dummies
     # (note: contrary to what paper says, we have already set final nodes for all
@@ -273,9 +273,9 @@ def gento_municio(predecessors):
     #  unconnected so we replace them here if necessary. Not assigning nodes in step 4
     #  would break step 7)
     for succs, preds in masc.items():
-        print "Studying:", preds, '->', succs
+#        print "Studying:", preds, '->', succs
         if len(succs) == 1: # Case I
-            print "Case I"
+#            print "Case I"
             for pred in preds:
                 nodes[pred][1] = nodes[next(iter(succs))][0]
         else:
@@ -286,7 +286,7 @@ def gento_municio(predecessors):
                 if min_npc == None or min_npc > npc[succ]:
                     min_follower = succ
                     min_npc = npc[succ]
-            print min_follower, 'npc:', min_npc
+#            print min_follower, 'npc:', min_npc
 
             # Count the number of masc rows containing our successor activities
             count = 0
@@ -295,7 +295,7 @@ def gento_municio(predecessors):
                     count += len(masc[others])
 
             if count >= min_npc: # Case II (if min_npc==1) and Case III
-                print "Case II or III"
+#                print "Case II or III"
                 for pred in preds:
                     nodes[pred][1] = nodes[min_follower][0]
             else:
