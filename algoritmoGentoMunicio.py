@@ -165,8 +165,8 @@ def gento_municio(predecessors):
     masc = stII
 
 #    print "MASC"
-    for succs, preds in stII.items():
-        print preds, succs
+#    for succs, preds in stII.items():
+#        print preds, succs
 
     npc = scipy.zeros([nodes.num_real_activities], dtype=int)
     for succs, preds in masc.items():
@@ -246,14 +246,14 @@ def gento_municio(predecessors):
         mc.append([j for j in range(num_unconnected) if mrn[i,j] == appear[i] ])
 
 #    print 'MC'
-    for i in range(num_unconnected):
-        print i, '-', mc[i]
+#    for i in range(num_unconnected):
+#        print i, '-', mc[i]
 
     # use strings to connect nodes
     for i in range(num_unconnected):
         following_nodes = sorted(mc[i], key=lambda x : len(mc[x]))
         while following_nodes:
-            print following_nodes
+#            print following_nodes
             follower = following_nodes.pop()
 #            print 'extracted:', follower
 
@@ -433,8 +433,8 @@ if __name__ == '__main__':
         window = graph.Test()
         window.add_image(graph.pert2image(gg1))
         graph.gtk.main()
-        print gg1
-        print validation.check_validation(tab, gg1)
+#        print gg1
+#        print validation.check_validation(tab, gg1)
     else:
         print "Example contains cicles!!"
 
