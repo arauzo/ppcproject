@@ -156,7 +156,7 @@ def cohen_sadeh(prelations):
         pm_graph.add_arc((start, end), (act, dummy))
 
     p_graph = pm_graph.to_directed_graph()
-    return p_graph.renumerar()
+    return p_graph#.renumerar()
 
 
 
