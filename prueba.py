@@ -174,7 +174,7 @@ def main():
                         if not args.no_stop:
                             return 1
                         break
-
+#                print pert_graph
                 if pert_graph:
                     ftime = os.times()
                     utime = ftime[0] - itime[0]
