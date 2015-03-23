@@ -30,10 +30,11 @@ def mouhoub(prelations):
                             #   Blocked = (False or Activity with same precedents) 
     
 # PREVIOUS CONDITIONS
-    # Previous condition 01. Test Delta Configuration - (Already tested)
+    # Previous condition 01. Test Delta Configuration - (Already tested in CheckCycles)
     
     # Previous condition 02.  Remove Z Configuration
     complete_bipartite.update(Zconfiguration.zconf(successors))  
+    
     
 # MOUHOUB RULES
     # Rule 01
@@ -54,8 +55,8 @@ def mouhoub(prelations):
     #RULE 07
     #MouhoubRules.rule_7(complete_bipartite)
     
+    
 # STEPS TO BUILD THE PERT GRAPH
-     
     #Step 1. Save the prelations in the work table
     complete_bipartite = graph.successors2precedents(complete_bipartite)
     work_table = {}

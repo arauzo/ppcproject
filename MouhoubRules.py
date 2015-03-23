@@ -1,12 +1,12 @@
 """
 MOUHOUB ALGORITHM RULES 
-Delete dummy arcs to build a graph with minimum dummy activities 
+Delete dummy arcs to build a graph with minimum dummy activities according to the Mouhoub algorithm rules
 """
 import graph
 
 def rule_1(successors_copy, complete_bipartite):
     """
-    # Rule 1 - For each subgraph with common and not uncommon activities, contract end vertices in one vertex
+    # Rule 1 - For each subgraph with common and not uncommon successor activities, contract end vertices in one vertex
     """
     visited = []
 
@@ -34,7 +34,7 @@ def rule_1(successors_copy, complete_bipartite):
     
 def rule_2(predecessors, complete_bipartite):
     """
-    # Rule 2 - For each subgraph with common and not uncommon activities, contract end vertices in one vertex
+    # Rule 2 - For each subgraph with common and not uncommon predecessors activities, contract end vertices in one vertex
     """
     visited = []
     predece = graph.reversed_prelation_table(complete_bipartite)
@@ -79,13 +79,13 @@ def rule_3(complete_bipartite):
 
             if str(vertex).find('/') != -1:
                 end = True
-                reg = str(vertex).partition('/')
+                end_node = str(vertex).partition('/')
 
-                for p in predecessors[reg[2]]:
+                for p in predecessors[end_node[2]]:
                     for arc in predecessors[p]:
                         r3 = set(complete_bipartite[arc])
                         r3.discard(node)
-                        r3.add(reg[2])
+                        r3.add(end_node[2])
                         r3.discard(vertex)
                         
                         if vertex in complete_bipartite:
@@ -128,13 +128,12 @@ def rule_5_6(sucesores_copy, complete_bipartite):
 
                                     Rule 5 and rule 6 are simetric
     """
-    visited = []
     predecessors = graph.successors2precedents(complete_bipartite)
     
     for node, arcs, in  reversed(sorted(sucesores_copy.items())):
         for node2, arcs2, in sucesores_copy.items():
             if set(arcs2).issuperset(arcs) and node != node2 and len(arcs) > 0  and len(arcs) + 1 == len(arcs2):
-                if node2 not in visited and predecessors[node] == predecessors[node2]:
+                if predecessors[node] == predecessors[node2]:
                     common = set(arcs) & set(arcs2)
                     not_common = set(arcs) ^ set(arcs2)
                     if len(common) > 1:
@@ -153,12 +152,8 @@ def rule_5_6(sucesores_copy, complete_bipartite):
                             complete_bipartite[arc2] = list(set(complete_bipartite[arc2]))
                         else:
                             complete_bipartite[arc2] = list(set(complete_bipartite[node]))
-     
-                        if complete_bipartite.has_key(arc2):   
                             complete_bipartite[node2] = list(r5r6) 
- 
-                        visited.append(node)
-                        
+
     remove_leftDummies(complete_bipartite)
     
     return complete_bipartite
