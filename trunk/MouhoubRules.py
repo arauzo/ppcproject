@@ -4,46 +4,67 @@ Delete dummy arcs to build a graph with minimum dummy activities
 """
 import graph
 
-
-def rule_1_2_7(complete_bipartite, successors_copy):
+def rule_1(successors_copy, complete_bipartite):
     """
-    # Rule 1 - If the subgraph is a complete bipartite, then contract beggining vertices in one vertex
-    # Rule 2 - If the subgraph is a complete bipartite, then contract end vertices in one vertex
-    # Rule 7 - If the subgraph is a bipartite partial, then delete all its arcs and conect the activities building a star of dummy arcs
-    
-    Rule 1 and 2 are an special case of rule 7 
+    # Rule 1 - For each subgraph with common and not uncommon activities, contract end vertices in one vertex
     """
-    new_suc = set()
+    visited = []
 
-    for act, sucesores in successors_copy.items():
-        for act2, sucesores2 in successors_copy.items():
-            if act in successors_copy and act2 in successors_copy:
-                common = set(successors_copy[act]) & set(successors_copy[act2])
-                not_common = set(successors_copy[act]) ^ set(successors_copy[act2])
+    for node, arcs in successors_copy.items():
+        for node2, arcs2 in successors_copy.items():
+            common = set(arcs) & set(arcs2)
+            not_common = set(arcs) ^ set(arcs2)
+                
+            if common and not not_common and node != node2:
+                if len(common) > 1 and node not in visited:
+                    r1  = set(complete_bipartite[node])
+                    for vertex in common:
+                        r1.discard(str(node) + '/' + vertex)
+                        r1.add(str(node)  + '/' + vertex)
+                        complete_bipartite[str(node)  + '/' + vertex] =  [vertex]
+                            
+                    complete_bipartite[node] = list(r1)
+                    complete_bipartite[node2] = list(r1)
+                    visited.append(node2)
 
-                # Build a star of dummy arcs
-                if common and not not_common and act != act2 and len(common) > 1:
-                    star1 = act2 + '-' + 'dp0'
-                    for l in common:
-                        star2 = 'dp0'  + '-' + str(l)
-                        old_dum = act + '-' + l
-                        complete_bipartite[star2] = [l]
-                        new_suc.add(star2)
-                        if old_dum in complete_bipartite:
-                            del complete_bipartite[old_dum]
-
-                    # Update node connections
-                    complete_bipartite[star1] = list(new_suc)
-                    complete_bipartite[act2] = [star1]
-
-                    for arc in new_suc: 
-                        act_ = str(arc).partition('-')
-                        complete_bipartite[arc] = [act_[2]]
-
-            new_suc.clear()
+    remove_leftDummies(complete_bipartite)
 
     return complete_bipartite
+    
+    
+def rule_2(predecessors, complete_bipartite):
+    """
+    # Rule 2 - For each subgraph with common and not uncommon activities, contract end vertices in one vertex
+    """
+    visited = []
+    predece = graph.reversed_prelation_table(complete_bipartite)
+    
+    for node, arcs in predecessors.items():
+        for node2, arcs2 in predecessors.items():
+            common = set(arcs) & set(arcs2)
+            not_common = set(arcs) ^ set(arcs2)
+                
+            if common and not not_common and node != node2:
+                if len(common) > 1 and node not in visited and node2 not in visited:
+                    visited.append(node) ; visited.append(node2)
+                     
+                    for p in predece[node2]:
+                         complete_bipartite[p] = [node, node2]
+    
+                    for vertex in arcs:
+                        r2 = set(list(complete_bipartite[vertex]))
+                        for q in predece[node]:
+                            r2.discard(q)
+                        for q in predece[node2]:
+                            if vertex in complete_bipartite[vertex]:
+                                r2.add(q)
+    
+                        complete_bipartite[vertex] = list(r2) 
+              
+    remove_leftDummies(complete_bipartite)
 
+    return complete_bipartite
+    
 
 def rule_3(complete_bipartite):
     """
@@ -52,21 +73,27 @@ def rule_3(complete_bipartite):
     end = False
     predecessors = graph.successors2precedents(complete_bipartite)
 
-    for act, pred in predecessors.items():
-        if len(pred) == 1 and str(act).find('-') == -1:
-            act_ = set(pred).pop()
+    for node, arcs in predecessors.items():
+        if len(arcs) == 1 and str(node).find('/') == -1:
+            vertex = set(arcs).pop()
 
-            if str(act_).find('-') != -1:
+            if str(vertex).find('/') != -1:
                 end = True
-                reg = str(act_).partition('-')
-                del complete_bipartite[act_]
+                reg = str(vertex).partition('/')
 
-                for pre in predecessors[reg[2]]:
-                    for arc in predecessors[pre]:
-                        new_suc = set(complete_bipartite[arc])
-                        new_suc.discard(act)
-                        new_suc.add(reg[2])
-                        complete_bipartite[arc] = list(new_suc)
+                for p in predecessors[reg[2]]:
+                    for arc in predecessors[p]:
+                        r3 = set(complete_bipartite[arc])
+                        r3.discard(node)
+                        r3.add(reg[2])
+                        r3.discard(vertex)
+                        
+                        if vertex in complete_bipartite:
+                            for x in complete_bipartite[vertex]:
+                                 r3.add(x) 
+                            complete_bipartite[arc] = list(r3)
+
+    remove_leftDummies(complete_bipartite)
 
     return end
 
@@ -75,58 +102,93 @@ def rule_3(complete_bipartite):
 def rule_4(complete_bipartite):
     """
     # Rule 4 - If a vertex x has one successor vertex y, then contract both vertices in one vertex and delete the resulting loop
-    """  
+    """
     end = False
+    predecessors = graph.successors2precedents(complete_bipartite)
 
-    for act, succe in complete_bipartite.items():
-        if len(set(succe)) == 1 and str(set(succe)).find('-') != -1 and str(act).find('-') == -1:
-            _act = str(act).partition('-')
+    for node, arcs in complete_bipartite.items():
+        if len(set(arcs)) == 1 and str(set(arcs)).find('/') != -1 and str(node).find('/') == -1:
+            vertex = str(node).partition('/')
 
-            if len(set(complete_bipartite[_act[0]])) == 1:
-                act_suc = set(succe).pop()
-                complete_bipartite[act] = list(complete_bipartite[act_suc])
-                del complete_bipartite[act_suc] 
+            if len(set(complete_bipartite[vertex[0]])) == 1:
                 end = True
-
+                r4 = set(arcs).pop()
+                for t in predecessors[r4]:
+                    complete_bipartite[t] = list(complete_bipartite[r4])
+      
+    remove_leftDummies(complete_bipartite)
+            
     return end
 
 
-def rule_5_6(complete_bipartite, sucesores_copy):
+def rule_5_6(sucesores_copy, complete_bipartite):
     """
-    # Rule 5 - If the successor activities of x are a superset of the successor activities of y, then delete common activities and connect with a dummy arc from x to y
-    # Rule 6 - If the successor activities of x are a subset of the successor activities of y, then delete common activities and connect with a dummy arc from y to x
+    # Rule 5 - If the successors of x are a superset of the successors y, then delete common activities and connect with a dummy arc from x to y
+    # Rule 6 - If the successors of x are a subset of the successors of y, then delete common activities and connect with a dummy arc from y to x
 
-    Rule 5 and rule 6 are simetric
+                                    Rule 5 and rule 6 are simetric
     """
-    ini = False
+    visited = []
+    predecessors = graph.successors2precedents(complete_bipartite)
+    
+    for node, arcs, in  reversed(sorted(sucesores_copy.items())):
+        for node2, arcs2, in sucesores_copy.items():
+            if set(arcs2).issuperset(arcs) and node != node2 and len(arcs) > 0  and len(arcs) + 1 == len(arcs2):
+                if node2 not in visited and predecessors[node] == predecessors[node2]:
+                    common = set(arcs) & set(arcs2)
+                    not_common = set(arcs) ^ set(arcs2)
+                    if len(common) > 1:
+                        vertex = not_common.pop()
+                        arc1 = node2 + '/' + vertex
+                        arc2 = node2 + '/' + node
+                        r5r6 = set()
+                        r5r6.add(arc2)
+                       
+                        if complete_bipartite.has_key(arc1):
+                            r5r6.add(arc1)
+                        else:
+                            r5r6.add(vertex)
+                        
+                        if complete_bipartite.has_key(arc2):
+                            complete_bipartite[arc2] = list(set(complete_bipartite[arc2]))
+                        else:
+                            complete_bipartite[arc2] = list(set(complete_bipartite[node]))
+     
+                        if complete_bipartite.has_key(arc2):   
+                            complete_bipartite[node2] = list(r5r6) 
+ 
+                        visited.append(node)
+                        
+    remove_leftDummies(complete_bipartite)
+    
+    return complete_bipartite
+    
+    
 
-    for act, sucesores, in  reversed(sorted(sucesores_copy.items())):
-        for act2, sucesores2, in sucesores_copy.items():
-
-            if set(sucesores2).issuperset(sucesores) and act != act2 and len(sucesores) > 0  and len(sucesores) + 1 == len(sucesores2):
-                common = set(sucesores) & set(sucesores2)
-                not_common = set(sucesores) ^ set(sucesores2)
-
-                if len(common) > 1:
-                    act_ = not_common.pop()
-                    arc1 = act2 + '-' + str(act_)
-                    arc2 = act2 + '-' + act
-
-                    new_suc = [arc1, arc2] 
-
-                    if ini == False:
-                        complete_bipartite[arc2] = list(set(complete_bipartite[act]))
-                        prev_suc = list(new_suc)
-                        ini = True
-                    else:
-                        complete_bipartite[arc2] = prev_suc
-                        prev_suc = new_suc
-
-                    for ex in common:
-                        del complete_bipartite[act2 + '-' + str(ex)]
-
-                    complete_bipartite[act2] = new_suc
-                    complete_bipartite[arc1] = [act_]
-
+def remove_leftDummies(complete_bipartite):
+    """
+    # Remove the left dummies arcs no connected
+    """
+    predecessors = graph.successors2precedents(complete_bipartite)
+    
+    for node, arcs in predecessors.items():
+        if len(arcs) == 0 and str(node).find('/') != -1:
+            del complete_bipartite[node]
+    return 
+    
+    
+    
+def rule_3_4(complete_bipartite):
+    """
+    # Repeat rule 3 and rule 4. Return a dictionary with the updated prelations
+    """
+    loop = True
+    while loop != False:
+        loop = rule_3(complete_bipartite)
+    
+    loop = True
+    while loop != False:
+        loop = rule_4(complete_bipartite)
+        
     return complete_bipartite
     
