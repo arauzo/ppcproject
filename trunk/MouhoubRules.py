@@ -2,6 +2,7 @@
 MOUHOUB ALGORITHM RULES 
 Remove dummy arcs to build a graph with minimum dummy activities according to the Mouhoub algorithm rules
 """
+separator = '-'
 
 def rule_1(work_table_pred, work_table, Columns):
     """
@@ -28,7 +29,7 @@ def rule_1(work_table_pred, work_table, Columns):
                             remove.add(y)
                             work_table[y].aux = True
                             
-    # Save the graph after the modification. Input graph G is concerted in graph G1
+    # Save the graph after the modification. Input graph G results graph G1
     work_table_G1 = {}
     for act, sucesores in work_table.items():
         if sucesores.aux != True:
@@ -56,23 +57,23 @@ def rule_2(work_table_suc, work_table, work_table_G1, Columns):
             # Join nodes when two activities have common successors and uncommon successors activities
             if common and not not_common and vertex1 != vertex2:
                 if len(common) > 1 and vertex1 not in visited:
-                    eliminar =  work_table[vertex2].end_node
+                    delete = work_table[vertex2].end_node
                     work_table[vertex2].end_node = work_table[vertex1].end_node 
                     visited.append(vertex2)
                     
                     for y in work_table:
-                        if work_table[y].start_node == eliminar:
+                        if work_table[y].start_node == delete:
                             work_table[y].aux = True
                             remove.add(y)
             
-    # Save the graph after the modification. Input graph G is concerted in graph G1
+    # Save the graph after the modification. Input graph G1 results graph G2
     work_table_G2 = {}
     for act, sucesores in work_table_G1.items():
         if sucesores.aux != True:
             if sucesores.pre != None:
                 for u in remove:
                     if u in sucesores.pre:
-                        sucesores.pre =  set(sucesores.pre) - set([u])
+                        sucesores.pre = set(sucesores.pre) - set([u])
             work_table_G2[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
 
     return work_table_G2
@@ -89,12 +90,12 @@ def rule_3(work_table_G2, work_table, Columns):
             
             # Contract node with only one dummy predecessor
             if work_table[extra].dummy == True:
-                v = str(extra).partition('/')
+                v = str(extra).partition(separator)
                 if work_table[v[2]].start_node != work_table[v[0]].end_node:
                     work_table[v[2]].start_node = work_table[v[0]].end_node 
                     work_table[extra].aux = True
                     
-    # Save the graph after the modification. Input graph G is concerted in graph G1
+    # Save the graph after the modification. Input graph G2 results graph G3
     work_table_G3 = {}
     for act, sucesores in work_table.items():
         if sucesores.aux != True:
@@ -117,12 +118,12 @@ def rule_4(work_table_G3, work_table, Columns):
                 
                 # Contract node with only one dummy successor
                 if work_table[extra].dummy == True:
-                    v = str(extra).partition('/')
-                    if work_table[v[0]].end_node !=  work_table[v[2]].start_node:
+                    v = str(extra).partition(separator)
+                    if work_table[v[0]].end_node != work_table[v[2]].start_node:
                         work_table[v[0]].end_node = work_table[v[2]].start_node 
                         work_table[extra].aux = True
     
-    # Save the graph after the modification. Input graph G is concerted in graph G1                 
+    # Save the graph after the modification. Input graph G3 results graph G4                 
     work_table_G4 = {}
     for act, sucesores in work_table.items():
         if sucesores.aux != True:
@@ -152,30 +153,30 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
                     new = set(work_table_G4[vertex2].su)
                         
                     for u in common:
-                        work_table[vertex2 + '/' + u].aux = True
-                        remove.add(vertex2 + '/' + u)
-                        new.discard(vertex2 + '/' + u)
+                        work_table[d_node(vertex2, u)].aux = True
+                        remove.add(d_node(vertex2, u))
+                        new.discard(d_node(vertex2, u))
 
                     for u in not_common:
-                        new.add(vertex2 + '/' + u)
+                        new.add(d_node(vertex2, u))
 
-                    work_table[vertex2 + '/' + vertex1] = Columns(work_table_G4[vertex2].pre, arcs1.pre, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
-                    new.add(vertex2 + '/' + vertex1)
+                    work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1.pre, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
+                    new.add(d_node(vertex2, vertex1))
                     work_table[vertex2].su = list(new)
                     work_table[vertex2].aux = False
                     visited.append(vertex2)
 
-    # Save the graph after the modification. Input graph G4 is concerted in graph G5    
-    work_table_G5 = {}
+    # Save the graph after the modification. Input graph G4 is concerted in graph G5/G6 
+    work_table_G5_G6 = {}
     for act, sucesores in work_table.items():
         if sucesores.aux != True:
-            la = set(sucesores.pre)
+            pred = set(sucesores.pre)
             for q in sucesores.pre:
                 if q in remove:
-                    la.discard(q)
-            work_table_G5[act] = Columns(la, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+                    pred.discard(q)
+            work_table_G5_G6[act] = Columns(pred, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
     
-    return work_table_G5
+    return work_table_G5_G6
 
 
 
@@ -184,22 +185,21 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
     """
     # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
     """
-    visited = []
     left = set()
 
     # Find subgraph with common dummy activities
     for node1, arcs in sorted(successors_copy.items()):
-        mifro = frozenset(arcs)
+        suc = frozenset(arcs)
         sub = set()
         
         for node2, arcs2 in successors_copy.items():
-            common = mifro & set(arcs2)
-            notcommon = mifro ^ set(arcs2)
+            common = suc & set(arcs2)
+            notcommon = suc ^ set(arcs2)
             
-            if work_table[node1].aux != False and work_table[node2].aux != False and len(common) >= 2 and notcommon and node1!=node2 and node1 not in visited and node2 not in visited:
-                sub.add(node1) ; sub.add(node2)
-                visited.append(node2) ; visited.append(node1)
-                
+            if work_table[node1].aux != False and work_table[node2].aux != False and len(common) >= 2 and notcommon and node1!=node2 and node1 not in sub and node2 not in sub:
+                sub.add(node1)
+                sub.add(node2)
+ 
         if len(sub) >= 2:   
             for q in sub:
                 if q != node1:
@@ -208,12 +208,12 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
             # Build a star of dummy arcs with the common activities of the subgraph
             if len(sub) * len(act_common) >= 6: 
                 for q in sub:
-                    work_table[q + '/' + str(node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
+                    work_table[d_node(q, node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
                         
                     for l in act_common:
                         for y in successors[q]:
-                            if str(y).find('/') != -1:
-                                re1 = str(y).partition('/')
+                            if str(y).find(separator) != -1:
+                                re1 = str(y).partition(separator)
                                 if re1[2] in act_common:
                                     left.add(y)
                             else:
@@ -221,13 +221,23 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
                                     left.add(y)
 
                 for t in act_common:
-                    work_table[str(node) + '/' + t] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
-                node +=1
+                    work_table[d_node(node, t)] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
+                
+                node += 1
     
-    # Save the graph after the modification. Input graph G6 is concerted in graph G7     
+    # Save the graph after the modification. Input graph G5/G6 results graph G7     
     work_table_G7 = {}
     for act, sucesores in work_table.items():
         if act not in left:
             work_table_G7[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, None)
     
     return work_table_G7
+    
+
+
+
+def d_node(x, y):
+    
+    node = str(x) + separator + str(y)
+    
+    return node
