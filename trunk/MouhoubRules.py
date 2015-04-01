@@ -1,189 +1,233 @@
 """
 MOUHOUB ALGORITHM RULES 
-Delete dummy arcs to build a graph with minimum dummy activities according to the Mouhoub algorithm rules
+Remove dummy arcs to build a graph with minimum dummy activities according to the Mouhoub algorithm rules
 """
-import graph
 
-def rule_1(successors_copy, complete_bipartite):
+def rule_1(work_table_pred, work_table, Columns):
     """
-    # Rule 1 - For each subgraph with common and not uncommon successor activities, contract end vertices in one vertex
-    """
+    # Rule 1 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
+     return work_table_G1
+   """
     visited = []
-
-    for node, arcs in successors_copy.items():
-        for node2, arcs2 in successors_copy.items():
-            common = set(arcs) & set(arcs2)
-            not_common = set(arcs) ^ set(arcs2)
-                
-            if common and not not_common and node != node2:
-                if len(common) > 1 and node not in visited:
-                    r1  = set(complete_bipartite[node])
-                    for vertex in common:
-                        r1.discard(str(node) + '/' + vertex)
-                        r1.add(str(node)  + '/' + vertex)
-                        complete_bipartite[str(node)  + '/' + vertex] =  [vertex]
-                            
-                    complete_bipartite[node] = list(r1)
-                    complete_bipartite[node2] = list(r1)
-                    visited.append(node2)
-
-    remove_leftDummies(complete_bipartite)
-
-    return complete_bipartite
+    remove = set()
     
-    
-def rule_2(predecessors, complete_bipartite):
-    """
-    # Rule 2 - For each subgraph with common and not uncommon predecessors activities, contract end vertices in one vertex
-    """
-    visited = []
-    predece = graph.reversed_prelation_table(complete_bipartite)
-    
-    for node, arcs in predecessors.items():
-        for node2, arcs2 in predecessors.items():
-            common = set(arcs) & set(arcs2)
-            not_common = set(arcs) ^ set(arcs2)
-                
-            if common and not not_common and node != node2:
-                if len(common) > 1 and node not in visited and node2 not in visited:
-                    visited.append(node) ; visited.append(node2)
-                     
-                    for p in predece[node2]:
-                         complete_bipartite[p] = [node, node2]
-    
-                    for vertex in arcs:
-                        r2 = set(list(complete_bipartite[vertex]))
-                        for q in predece[node]:
-                            r2.discard(q)
-                        for q in predece[node2]:
-                            if vertex in complete_bipartite[vertex]:
-                                r2.add(q)
-    
-                        complete_bipartite[vertex] = list(r2) 
-              
-    remove_leftDummies(complete_bipartite)
-
-    return complete_bipartite
-    
-
-def rule_3(complete_bipartite):
-    """
-    # Rule 3 - If a vertex x has one predecessor vertex y, then contract both vertices in one vertex and delete the resulting loop
-    """
-    end = False
-    predecessors = graph.successors2precedents(complete_bipartite)
-
-    for node, arcs in predecessors.items():
-        if len(arcs) == 1 and str(node).find('/') == -1:
-            vertex = set(arcs).pop()
-
-            if str(vertex).find('/') != -1:
-                end = True
-                end_node = str(vertex).partition('/')
-
-                for p in predecessors[end_node[2]]:
-                    for arc in predecessors[p]:
-                        r3 = set(complete_bipartite[arc])
-                        r3.discard(node)
-                        r3.add(end_node[2])
-                        r3.discard(vertex)
-                        
-                        if vertex in complete_bipartite:
-                            for x in complete_bipartite[vertex]:
-                                 r3.add(x) 
-                            complete_bipartite[arc] = list(r3)
-
-    remove_leftDummies(complete_bipartite)
-
-    return end
-
-
-
-def rule_4(complete_bipartite):
-    """
-    # Rule 4 - If a vertex x has one successor vertex y, then contract both vertices in one vertex and delete the resulting loop
-    """
-    end = False
-    predecessors = graph.successors2precedents(complete_bipartite)
-
-    for node, arcs in complete_bipartite.items():
-        if len(set(arcs)) == 1 and str(set(arcs)).find('/') != -1 and str(node).find('/') == -1:
-            vertex = str(node).partition('/')
-
-            if len(set(complete_bipartite[vertex[0]])) == 1:
-                end = True
-                r4 = set(arcs).pop()
-                for t in predecessors[r4]:
-                    complete_bipartite[t] = list(complete_bipartite[r4])
-      
-    remove_leftDummies(complete_bipartite)
+    for vertex1, arcs in work_table_pred.items():
+        for vertex2, arcs2 in work_table_pred.items():
+            common = set(list(arcs.pre)) & set(list(arcs2.pre))
+            not_common = set(list(arcs.pre)) ^ set(list(arcs2.pre))
             
-    return end
+            # Join nodes when two activities have common predecessor and uncommon predecessor activities
+            if common and not not_common and vertex1 != vertex2:
+                if len(common) > 1 and vertex1 not in visited:
+                    eliminar = work_table[vertex1].start_node
+                    work_table[vertex1].start_node = work_table[vertex2].start_node 
+                    visited.append(vertex2)
+                    
+                    for y in work_table:
+                        if work_table[y].end_node == eliminar:
+                            remove.add(y)
+                            work_table[y].aux = True
+                            
+    # Save the graph after the modification. Input graph G is concerted in graph G1
+    work_table_G1 = {}
+    for act, sucesores in work_table.items():
+        if sucesores.aux != True:
+            if sucesores.su != None:
+                for u in remove:
+                    if u in sucesores.su:
+                        sucesores.su =  list(set(sucesores.su) - set([u]))
+            work_table_G1[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+
+    return work_table_G1
+    
+    
+def rule_2(work_table_suc, work_table, work_table_G1, Columns):
+    """
+    # Rule 2 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
+    """      
+    visited = []
+    remove = set()
+    
+    for vertex1, arcs in work_table_suc.items():
+        for vertex2, arcs2 in work_table_suc.items():
+            common = set(list(arcs.pre)) & set(list(arcs2.pre))
+            not_common = set(list(arcs.pre)) ^ set(list(arcs2.pre))
+            
+            # Join nodes when two activities have common successors and uncommon successors activities
+            if common and not not_common and vertex1 != vertex2:
+                if len(common) > 1 and vertex1 not in visited:
+                    eliminar =  work_table[vertex2].end_node
+                    work_table[vertex2].end_node = work_table[vertex1].end_node 
+                    visited.append(vertex2)
+                    
+                    for y in work_table:
+                        if work_table[y].start_node == eliminar:
+                            work_table[y].aux = True
+                            remove.add(y)
+            
+    # Save the graph after the modification. Input graph G is concerted in graph G1
+    work_table_G2 = {}
+    for act, sucesores in work_table_G1.items():
+        if sucesores.aux != True:
+            if sucesores.pre != None:
+                for u in remove:
+                    if u in sucesores.pre:
+                        sucesores.pre =  set(sucesores.pre) - set([u])
+            work_table_G2[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+
+    return work_table_G2
+    
+
+def rule_3(work_table_G2, work_table, Columns):
+    """
+    # Rule 3 - If a vertex X has one predecessor vertex Y, then contract both vertices in one vertex and delete the resulting loop
+    """
+    
+    for vertex1 in sorted(work_table_G2.keys()):
+        if len(work_table_G2[vertex1].pre) == 1:
+            extra = set(work_table_G2[vertex1].pre).pop()
+            
+            # Contract node with only one dummy predecessor
+            if work_table[extra].dummy == True:
+                v = str(extra).partition('/')
+                if work_table[v[2]].start_node != work_table[v[0]].end_node:
+                    work_table[v[2]].start_node = work_table[v[0]].end_node 
+                    work_table[extra].aux = True
+                    
+    # Save the graph after the modification. Input graph G is concerted in graph G1
+    work_table_G3 = {}
+    for act, sucesores in work_table.items():
+        if sucesores.aux != True:
+            work_table_G3[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+
+    return work_table_G3
 
 
-def rule_5_6(sucesores_copy, complete_bipartite):
+
+def rule_4(work_table_G3, work_table, Columns):
+    """
+    # Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
+    """
+    visited = []
+    
+    for vertex1, arcs in work_table_G3.items():
+        if arcs.su != None and vertex1 not in visited:
+            if len(arcs.su) == 1:
+                extra = set(arcs.su).pop()
+                
+                # Contract node with only one dummy successor
+                if work_table[extra].dummy == True:
+                    v = str(extra).partition('/')
+                    if work_table[v[0]].end_node !=  work_table[v[2]].start_node:
+                        work_table[v[0]].end_node = work_table[v[2]].start_node 
+                        work_table[extra].aux = True
+    
+    # Save the graph after the modification. Input graph G is concerted in graph G1                 
+    work_table_G4 = {}
+    for act, sucesores in work_table.items():
+        if sucesores.aux != True:
+            work_table_G4[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+
+    return work_table_G4
+
+
+def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
     """
     # Rule 5 - If the successors of x are a superset of the successors y, then delete common activities and connect with a dummy arc from x to y
-    # Rule 6 - If the successors of x are a subset of the successors of y, then delete common activities and connect with a dummy arc from y to x
-
-                                    Rule 5 and rule 6 are simetric
+    # Rule 6 - 
     """
-    predecessors = graph.successors2precedents(complete_bipartite)
+    visited = []
+    new = set()
+    remove = set()
     
-    for node, arcs, in  reversed(sorted(sucesores_copy.items())):
-        for node2, arcs2, in sucesores_copy.items():
-            if set(arcs2).issuperset(arcs) and node != node2 and len(arcs) > 0  and len(arcs) + 1 == len(arcs2):
-                if predecessors[node] == predecessors[node2]:
-                    common = set(arcs) & set(arcs2)
-                    not_common = set(arcs) ^ set(arcs2)
-                    if len(common) > 1:
-                        vertex = not_common.pop()
-                        arc1 = node2 + '/' + vertex
-                        arc2 = node2 + '/' + node
-                        r5r6 = set()
-                        r5r6.add(arc2)
-                       
-                        if complete_bipartite.has_key(arc1):
-                            r5r6.add(arc1)
-                        else:
-                            r5r6.add(vertex)
+    for vertex1, arcs1, in reversed(sorted(work_table_suc.items())):
+        for vertex2, arcs2, in work_table_suc.items():
+            if len(arcs1.pre) > 0:
+                
+                # Update prelations if a subgraph is a subset 
+                if vertex2 not in visited and set(arcs1.pre).issubset(set(arcs2.pre)) and vertex1 != vertex2 and len(arcs1.pre) + 1 == len(arcs2.pre):
+                    common = set(arcs1.pre) & set(arcs2.pre)
+                    not_common = set(arcs1.pre) ^ set(arcs2.pre)
+                    new.clear()
+                    new = set(work_table_G4[vertex2].su)
                         
-                        if complete_bipartite.has_key(arc2):
-                            complete_bipartite[arc2] = list(set(complete_bipartite[arc2]))
-                        else:
-                            complete_bipartite[arc2] = list(set(complete_bipartite[node]))
-                            complete_bipartite[node2] = list(r5r6) 
+                    for u in common:
+                        work_table[vertex2 + '/' + u].aux = True
+                        remove.add(vertex2 + '/' + u)
+                        new.discard(vertex2 + '/' + u)
 
-    remove_leftDummies(complete_bipartite)
-    
-    return complete_bipartite
-    
-    
+                    for u in not_common:
+                        new.add(vertex2 + '/' + u)
 
-def remove_leftDummies(complete_bipartite):
+                    work_table[vertex2 + '/' + vertex1] = Columns(work_table_G4[vertex2].pre, arcs1.pre, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
+                    new.add(vertex2 + '/' + vertex1)
+                    work_table[vertex2].su = list(new)
+                    work_table[vertex2].aux = False
+                    visited.append(vertex2)
+
+    # Save the graph after the modification. Input graph G4 is concerted in graph G5    
+    work_table_G5 = {}
+    for act, sucesores in work_table.items():
+        if sucesores.aux != True:
+            la = set(sucesores.pre)
+            for q in sucesores.pre:
+                if q in remove:
+                    la.discard(q)
+            work_table_G5[act] = Columns(la, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+    
+    return work_table_G5
+
+
+
+    
+def rule_7(successors_copy, successors, work_table, Columns, node):
     """
-    # Remove the left dummies arcs no connected
+    # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
     """
-    predecessors = graph.successors2precedents(complete_bipartite)
-    
-    for node, arcs in predecessors.items():
-        if len(arcs) == 0 and str(node).find('/') != -1:
-            del complete_bipartite[node]
-    return 
-    
-    
-    
-def rule_3_4(complete_bipartite):
-    """
-    # Repeat rule 3 and rule 4. Return a dictionary with the updated prelations
-    """
-    loop = True
-    while loop != False:
-        loop = rule_3(complete_bipartite)
-    
-    loop = True
-    while loop != False:
-        loop = rule_4(complete_bipartite)
+    visited = []
+    left = set()
+
+    # Find subgraph with common dummy activities
+    for node1, arcs in sorted(successors_copy.items()):
+        mifro = frozenset(arcs)
+        sub = set()
         
-    return complete_bipartite
+        for node2, arcs2 in successors_copy.items():
+            common = mifro & set(arcs2)
+            notcommon = mifro ^ set(arcs2)
+            
+            if work_table[node1].aux != False and work_table[node2].aux != False and len(common) >= 2 and notcommon and node1!=node2 and node1 not in visited and node2 not in visited:
+                sub.add(node1) ; sub.add(node2)
+                visited.append(node2) ; visited.append(node1)
+                
+        if len(sub) >= 2:   
+            for q in sub:
+                if q != node1:
+                    act_common = set(successors_copy[node1]) & set(successors_copy[q])
+
+            # Build a star of dummy arcs with the common activities of the subgraph
+            if len(sub) * len(act_common) >= 6: 
+                for q in sub:
+                    work_table[q + '/' + str(node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
+                        
+                    for l in act_common:
+                        for y in successors[q]:
+                            if str(y).find('/') != -1:
+                                re1 = str(y).partition('/')
+                                if re1[2] in act_common:
+                                    left.add(y)
+                            else:
+                                if y in act_common:
+                                    left.add(y)
+
+                for t in act_common:
+                    work_table[str(node) + '/' + t] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
+                node +=1
     
+    # Save the graph after the modification. Input graph G6 is concerted in graph G7     
+    work_table_G7 = {}
+    for act, sucesores in work_table.items():
+        if act not in left:
+            work_table_G7[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, None)
+    
+    return work_table_G7
