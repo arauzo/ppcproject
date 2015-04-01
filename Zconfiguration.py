@@ -79,7 +79,7 @@ def add_node(act, suc, temp, successors):
     """
     Insert a new node and update the table
     """
-    node = act + "/" + suc
+    node = act + "-" + suc
    
     if not temp.has_key(act):
         temp[act] = successors[act]

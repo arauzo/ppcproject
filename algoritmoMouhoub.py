@@ -2,11 +2,12 @@
 Algorithm to build a PERT graph based on Malek Mouhoub et. al algorithm
 """
 import namedlist
-import graph
-import pert
+import argparse
 import fileFormats
 import validation
-import argparse
+
+import pert
+import graph
 import Zconfiguration
 import MouhoubRules
 
