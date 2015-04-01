@@ -60,18 +60,20 @@ def zconf(successors):
                                 if _act not in successors[act2]:
                                     add_node(act2, act_, bipartite_subgraph, successors)
                     else: 
-                            if act2 not in successors[act] and act not in visited2:
-                                visited2.append(act)
+                        if act2 not in successors[act] and act not in visited2:
+                            visited2.append(act)
                                 
-                                for _act in common:
-                                    add_node(act2, _act, bipartite_subgraph, successors)
-                                    add_node(act, _act, bipartite_subgraph, successors)
+                            for _act in common:
+                                add_node(act2, _act, bipartite_subgraph, successors)
+                                add_node(act, _act, bipartite_subgraph, successors)
                                     
-                                for _act in not_common:
-                                    add_node(act, _act, bipartite_subgraph, successors)
+                            for _act in not_common:
+                                add_node(act, _act, bipartite_subgraph, successors)
 
     return bipartite_subgraph
         
+
+
 
 def add_node(act, suc, temp, successors):
     """
