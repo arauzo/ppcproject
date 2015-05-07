@@ -1,11 +1,11 @@
 
 
 import namedlist
-
+import graph
 
 def __print_work_table_family(table):
     """
-    For debugging purposes, pretty prints Mouhoub working table
+    For debugging purposes, pretty prints Syslo working table
     """
     print "%-5s %-30s %-30s %-15s %-25s %-5s" % ('INDEX', 'Ui', 'Wi', 'STA', 'NON_STA', 'BLOCKED')
     for k, col in sorted(table.items()):
@@ -219,11 +219,7 @@ def syslo(temp, grafo):
     for act, suc in sorted(work_table.items()):
         for e in suc.u:
             grafo[e] = suc.w
-        for w in suc.w:
-            grafo[w] = []
     
-    
-   
     return grafo
 
 
