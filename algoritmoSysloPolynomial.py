@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Algorithm to draw Graph PERT based on algorithm from Mouhoub
+Algorithm to draw Graph PERT based on algorithm from Syslo
 """
 import namedlist
 import graph
@@ -13,7 +13,7 @@ global i
 
 def __print_work_table(table):
     """
-    For debugging purposes, pretty prints Mouhoub working table
+    For debugging purposes, pretty prints Syslo working table
     """
     print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
     for k, col in sorted(table.items()):
@@ -24,7 +24,7 @@ def __print_work_table(table):
 
 def SysloPolynomial(prelations):
     """
-    Build a PERT graph using Mouhoub algorithm
+    Build a PERT graph using Syslo algorithm
 
     return p_graph pert.PertMultigraph()
     """
