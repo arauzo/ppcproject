@@ -2,10 +2,13 @@
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo
 """
+
+import argparse
+import fileFormats
+import validation
 import namedlist
 import graph
 import pert
-import os
 import Kahn1962
 import syslo_table
 
@@ -21,7 +24,6 @@ def __print_work_table(table):
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
 
 
-
 def SysloPolynomial(prelations):
     """
     Build a PERT graph using Syslo algorithm
@@ -31,54 +33,43 @@ def SysloPolynomial(prelations):
     # Adaptation to avoid multiple end nodes
     successors = graph.reversed_prelation_table(prelations)
     end_act = graph.ending_activities(successors)
-
+    
     Kahn1962.check_cycles(successors)
-    prela = prelations.copy()
+    prela = successors.copy()
 
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                             #   Blocked = (False or Activity with same precedents)  
 
-
+    
     grafo = {}
-    endnodes = 0
     
+    # 
+    grafo = syslo_table.syslo(prela, grafo)
 
-    for t, r in prela.items():
-        if len(r) == 0:
-            endnodes += 1
-            
-    while len(prela) - endnodes > 1:
-        temp = subgraph(prela)
+    print ".................."
+    print grafo
 
-        tempgrafo = syslo_table.syslo(temp, grafo)
-        #print "TEMPGRAFO: ", tempgrafo
-        for q, values in tempgrafo.items():
-            if len(values) != 0:
-                grafo[q] = values
-            if q == max(prelations):
-                grafo[q] = values
-            
-        for d in prela.keys():
-                if d in temp.keys():
-                    del prela[d]
-                
-        #print "----", grafo
-        #raw_input('-->')        
-        
-    for c, d in prelations.items():
-        if c not in grafo.keys():
-            grafo[c] = d
-    
-   
-    
+
+    # Completar el grafo con las prelaciones que no han sufrido cambios    
+    for k, v in successors.items():
+        if k not in grafo.keys():
+            grafo[k] = v
+
+    # 
     grafo = graph.successors2precedents(grafo)
-    
+
     work_table = {}
     for act, pre in grafo.items():
-        work_table[act] = Columns(set(pre), False, None, None, None, None)
+        if not act in prelations:
+            work_table[act] = Columns(set(pre), False, True, None, None, None)
+        else:
+            work_table[act] = Columns(set(pre), False, False, None, None, None)
 
-
+    #print "PREVIOUS"
+    #__print_work_table(work_table)
+    
+    
     #Step 6. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
@@ -92,12 +83,12 @@ def SysloPolynomial(prelations):
     #Step 7. Creating nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
-        if not columns.dummy and not columns.blocked:
+        if not columns.blocked:
             columns.start_node = node
             node += 1
 
     for act, columns in work_table.items():
-        if not columns.dummy and columns.blocked:
+        if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
 
 
@@ -127,21 +118,12 @@ def SysloPolynomial(prelations):
                 node += 1 
 
 
-    # Step  . Set dummies activities
-    work_table_final = {}
-    for act, predecessors in work_table.items():
-        if not act in prelations:
-            work_table_final[act] = Columns(work_table[act].pre, work_table[act].blocked, True, work_table[act].suc, work_table[act].start_node, work_table[act].end_node)
-        else:
-            work_table_final[act] = Columns(work_table[act].pre,  work_table[act].blocked, False, work_table[act].suc, work_table[act].start_node, work_table[act].end_node)
-
-
     print "STEP FINAL"
-    __print_work_table(work_table_final)
+    __print_work_table(work_table)
     
     #Step 5 Generate the graph
     pm_graph = pert.PertMultigraph()
-    for act, columns in work_table_final.items():
+    for act, columns in work_table.items():
         _, _, dummy, _, start, end = columns
         pm_graph.add_arc((start, end), (act, dummy))
     p_graph = pm_graph.to_directed_graph()
@@ -149,120 +131,31 @@ def SysloPolynomial(prelations):
     return p_graph
  
  
- 
 
-        
 
-def subgraph(prela):
-    
-    # Step 0. Agupar por dependencias ordenado topologicamente
-    mul = []
-    temp = {}
-    
-    for act, predecessors in sorted(prela.items()):
-        pre = frozenset(predecessors)
-        if len(mul) == 0:
-            if pre & set(predecessors):
-                for r in pre:
-                    mul.append(r)
-                for r in predecessors:
-                    mul.append(r)
-                #print act, predecessors, set(mul)
-                temp[act] = predecessors
-        else:
-            if set(mul) & set(predecessors):
-                for r in pre:
-                    mul.append(r)
-                for r in predecessors:
-                    mul.append(r)
-                #print act, predecessors, set(mul)
-                temp[act] = predecessors 
-                
-    return temp
 
-def save_graph2file(pert_graph, name):
-
-    image_text = graph.pert2image(pert_graph) 
-    fsalida = open(os.path.split('SysloPolynomial')[1] + '_' + name + '.svg', 'w')
-    fsalida.write(image_text)
-    fsalida.close()
-    print 'El grafo se ha guardado correctamente: SysloPolynomial' , name, '.svg'
-    
-    return 0
-      
-      
-      
-        
 def main():
-    ejemplo01 = {
-        '1' : ['5','6', '7'],
-        '2' : ['6','7'],
-        '3' : ['6'],
-        '4' : ['7'],
-        '5' : [],
-        '6' : [],
-        '7' : [],
-    }
+    # Parse arguments and options
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile')
+    args = parser.parse_args()
 
-    ejemplo02 = {
+    # Open the input file collecting the required information.
+    activities, _, _, _ = fileFormats.load_with_some_format(args.infile, [fileFormats.PPCProjectFileFormat(),
+                                                                          fileFormats.PSPProjectFileFormat()])
+    successors = dict(((act[1], act[2]) for act in activities))
 
-        'a' : ['k','h', 'f', 'g'],
-        'b' : ['k','g'],
-        'c' : ['h', 'f', 'g'],
-        'd' : ['f', 'g'],
-        'e' : ['h', 'i', 'g'],
-        'f' : ['i', 'l', 'j'],
-        'g' : ['l', 'j'],   
-        'h' : ['j'], 
-        'i' : [], 
-        'j' : [], 
-        'k' : [],
-        'l' : [],
-    }
+    window = graph.Test()
     
+    pert_graph = SysloPolynomial(graph.precedents2successors(successors, window))
+    window.add_image(graph.pert2image(pert_graph))
     
-    ejemplo04 = {
-        'b' : ['g','e', 'f'],
-        'c' : ['f', 'g', 'h'],
-        'd' : ['f', 'g', 'h'],
-        'e' : [],
-        'f' : [],   
-        'g' : [],
-        'h' : [], 
-    }
+    graph.gtk.main()
     
-    ejemplo05 = {
-        'a' : ['c','d'],
-        'b' : ['c','d', 'e'],
-        'c' : ['i', 'j'],
-        'd' : ['f', 'g', 'h'],
-        'e' : ['h'],
-        'f' : ['i', 'j'],
-        'g' : ['j', 'k'],
-        'h' : ['k'],
-        'i' : [],
-        'j' : ['l'],
-        'k' : ['l'],
-        'l' : [],
-    }
-    
-    
-    dict_list = [
-                    #('ejemplo01', ejemplo01),
-                    ('ejemplo02', ejemplo02),
-                    #('ejemplo04', ejemplo04),
-                    ('ejemplo05', ejemplo05),
-                ]
-    
-    for name, dict_i in dict_list:
-        print "\n", name
-        print dict_i
-        prueba = SysloPolynomial(dict_i)
-        
-        #Save the graph in a file
-        save_graph2file(prueba, name)
+    print validation.check_validation(successors, pert_graph)
 
-    return 0   
+    return 0 
+    
     
     
 # If the program is run directly
