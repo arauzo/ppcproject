@@ -40,35 +40,21 @@ def SysloPolynomial(prelations):
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                             #   Blocked = (False or Activity with same precedents)  
-
     
+    # 
     grafo = {}
-    
-    # 
     grafo = syslo_table.syslo(prela, grafo)
-
-    print ".................."
-    print grafo
-
-
-    # Completar el grafo con las prelaciones que no han sufrido cambios    
-    for k, v in successors.items():
-        if k not in grafo.keys():
-            grafo[k] = v
-
-    # 
     grafo = graph.successors2precedents(grafo)
 
+    # 
     work_table = {}
     for act, pre in grafo.items():
         if not act in prelations:
-            work_table[act] = Columns(set(pre), False, True, None, None, None)
+            work_table[act] = Columns(pre, False, True, None, None, None)
         else:
-            work_table[act] = Columns(set(pre), False, False, None, None, None)
+            work_table[act] = Columns(pre, False, False, None, None, None)
 
-    #print "PREVIOUS"
-    #__print_work_table(work_table)
-    
+
     
     #Step 6. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
@@ -118,8 +104,8 @@ def SysloPolynomial(prelations):
                 node += 1 
 
 
-    print "STEP FINAL"
-    __print_work_table(work_table)
+    #print "STEP FINAL"
+    #__print_work_table(work_table)
     
     #Step 5 Generate the graph
     pm_graph = pert.PertMultigraph()
@@ -129,8 +115,7 @@ def SysloPolynomial(prelations):
     p_graph = pm_graph.to_directed_graph()
     
     return p_graph
- 
- 
+
 
 
 
