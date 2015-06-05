@@ -12,7 +12,6 @@ import pert
 import Kahn1962
 import syslo_table
 
-global i
 
 def __print_work_table(table):
     """
@@ -43,8 +42,7 @@ def SysloPolynomial(prelations):
     
     # 
     grafo = {}
-    grafo = syslo_table.syslo(prela, grafo)
-    grafo = graph.successors2precedents(grafo)
+    grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo))
 
     # 
     work_table = {}
@@ -55,7 +53,7 @@ def SysloPolynomial(prelations):
             work_table[act] = Columns(pre, False, False, None, None, None)
 
 
-    
+
     #Step 6. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
@@ -65,7 +63,9 @@ def SysloPolynomial(prelations):
         else:
             columns.blocked = visited_pred[pred]
 
-
+    #print "STEP 6
+    #__print_work_table(work_table)
+    
     #Step 7. Creating nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
@@ -77,17 +77,23 @@ def SysloPolynomial(prelations):
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
 
-
+   # print "STEP 7
+   # __print_work_table(work_table)
+    
     #Step 8. Associate activities with their end nodes
     # (a) find one non-dummy successor for each activity
     for act, columns in work_table.items():
         for suc, suc_columns in work_table.items():
-            if not suc_columns.blocked:
+            if  not suc_columns.blocked:
                 if act in suc_columns.pre:
                     columns.suc = suc
                     break
 
-
+    
+    #print "STEP 8"
+    #__print_work_table(work_table)
+    
+    
     # (b) find end nodes
     graph_end_node = node # Reserve one node for graph end 
     node += 1
@@ -104,7 +110,7 @@ def SysloPolynomial(prelations):
                 node += 1 
 
 
-    #print "STEP FINAL"
+    #print "STEP 9"
     #__print_work_table(work_table)
     
     #Step 5 Generate the graph
