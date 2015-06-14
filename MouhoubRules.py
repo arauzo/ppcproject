@@ -14,8 +14,8 @@ def rule_1(work_table_pred, work_table, Columns):
     
     for vertex1, arcs in work_table_pred.items():
         for vertex2, arcs2 in work_table_pred.items():
-            common = set(list(arcs.pre)) & set(list(arcs2.pre))
-            not_common = set(list(arcs.pre)) ^ set(list(arcs2.pre))
+            common = set(list(arcs)) & set(list(arcs2))
+            not_common = set(list(arcs)) ^ set(list(arcs2))
             
             # Join nodes when two activities have common predecessor and uncommon predecessor activities
             if common and not not_common and vertex1 != vertex2:
@@ -45,14 +45,15 @@ def rule_1(work_table_pred, work_table, Columns):
 def rule_2(work_table_suc, work_table, work_table_G1, Columns):
     """
     # Rule 2 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
-    """      
+      return work_table_G2
+   """      
     visited = []
     remove = set()
     
     for vertex1, arcs in work_table_suc.items():
         for vertex2, arcs2 in work_table_suc.items():
-            common = set(list(arcs.pre)) & set(list(arcs2.pre))
-            not_common = set(list(arcs.pre)) ^ set(list(arcs2.pre))
+            common = set(list(arcs)) & set(list(arcs2))
+            not_common = set(list(arcs)) ^ set(list(arcs2))
             
             # Join nodes when two activities have common successors and uncommon successors activities
             if common and not not_common and vertex1 != vertex2:
@@ -82,6 +83,7 @@ def rule_2(work_table_suc, work_table, work_table_G1, Columns):
 def rule_3(work_table_G2, work_table, Columns):
     """
     # Rule 3 - If a vertex X has one predecessor vertex Y, then contract both vertices in one vertex and delete the resulting loop
+      return work_table_G3
     """
     
     for vertex1 in sorted(work_table_G2.keys()):
@@ -108,6 +110,7 @@ def rule_3(work_table_G2, work_table, Columns):
 def rule_4(work_table_G3, work_table, Columns):
     """
     # Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
+      return work_table_G4
     """
     visited = []
     
@@ -134,8 +137,9 @@ def rule_4(work_table_G3, work_table, Columns):
 
 def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
     """
-    # Rule 5 - If the successors of x are a superset of the successors y, then delete common activities and connect with a dummy arc from x to y
-    # Rule 6 - 
+    # Rule 5 - If successors of x are a superset of successors of y, then delete common activities and connect with a dummy arc from x to y
+    # Rule 6 - If predecessors of x are a superset of predecessors of y, then delete common activities and connect with a dummy arc from x to y
+      return work_table_G5_G6
     """
     visited = []
     new = set()
@@ -143,12 +147,12 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
     
     for vertex1, arcs1, in reversed(sorted(work_table_suc.items())):
         for vertex2, arcs2, in work_table_suc.items():
-            if len(arcs1.pre) > 0:
+            if len(arcs1) > 0:
                 
                 # Update prelations if a subgraph is a subset 
-                if vertex2 not in visited and set(arcs1.pre).issubset(set(arcs2.pre)) and vertex1 != vertex2 and len(arcs1.pre) + 1 == len(arcs2.pre):
-                    common = set(arcs1.pre) & set(arcs2.pre)
-                    not_common = set(arcs1.pre) ^ set(arcs2.pre)
+                if vertex2 not in visited and set(arcs1).issubset(set(arcs2)) and vertex1 != vertex2 and len(arcs1) + 1 == len(arcs2):
+                    common = set(arcs1) & set(arcs2)
+                    not_common = set(arcs1) ^ set(arcs2)
                     new.clear()
                     new = set(work_table_G4[vertex2].su)
                         
@@ -160,7 +164,7 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
                     for u in not_common:
                         new.add(d_node(vertex2, u))
 
-                    work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1.pre, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
+                    work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
                     new.add(d_node(vertex2, vertex1))
                     work_table[vertex2].su = list(new)
                     work_table[vertex2].aux = False
@@ -184,6 +188,7 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
 def rule_7(successors_copy, successors, work_table, Columns, node):
     """
     # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
+      return work_table_G7
     """
     left = set()
 
