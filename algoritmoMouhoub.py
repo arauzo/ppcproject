@@ -12,7 +12,7 @@ import Zconfiguration
 import MouhoubRules
 
 
-def mouhoub(prelations, window=None):
+def mouhoub(prelations):
     """
     Build a PERT graph applying Mouhoub algorithm rules
 
@@ -30,16 +30,6 @@ def mouhoub(prelations, window=None):
     Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc', 'start_node', 'end_node', 'aux'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                             #   Blocked = (False or Activity with same precedents) 
-    
-    # (b) Build an auxiliar work table with inmediate predecessors    
-    work_table_pred = {}
-    for act, pred in prelations.items():
-        work_table_pred[act] = Columns(set(pred), None, None, False, None, None, None, None)
-   
-   # (c) Build an auxiliar work table with inmediate successors
-    work_table_suc = {}
-    for act, succ in successors_copy.items():
-        work_table_suc[act] = Columns(set(succ), None, None, False, None, None, None, None)
 
         
 # PREVIOUS CONDITIONS
@@ -86,7 +76,7 @@ def mouhoub(prelations, window=None):
     # (a) find one non-dummy successor for each activity
     for act, columns in work_table.items():
         for suc, suc_columns in work_table.items():
-            if  not suc_columns.blocked:
+            if not suc_columns.blocked:
                 if act in suc_columns.pre:
                     columns.suc = suc
                     break
@@ -108,39 +98,40 @@ def mouhoub(prelations, window=None):
                 node += 1   
 
 
-    # Step 5. Apply Mouhoub algorithm rules
-    # Rule 01
-    work_table_G1 = MouhoubRules.rule_1(work_table_pred, work_table, Columns)
+# Apply Mouhoub algorithm rules reducing dummy activities
+
+    # Rule 01 - 
+    work_table_G1 = MouhoubRules.rule_1(prelations, work_table, Columns)
     
-    # Rule 02
-    work_table_G2 = MouhoubRules.rule_2(work_table_suc, work_table, work_table_G1, Columns)
+    # Rule 02 - 
+    work_table_G2 = MouhoubRules.rule_2(successors_copy, work_table, work_table_G1, Columns)
      
-    # Rule 03
+    # Rule 03 - 
     work_table_G3 = MouhoubRules.rule_3(work_table_G2, work_table, Columns)
 
-    # Rule 04
+    # Rule 04 - 
     work_table_G4 = MouhoubRules.rule_4(work_table_G3, work_table, Columns)
 
-    # Rule 05 and Rule 06
-    work_table_G5_6 = MouhoubRules.rule_5_6(work_table_suc, work_table, work_table_G4, Columns)
+    # Rule 05 and Rule 06 - 
+    work_table_G5_6 = MouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
     
-    # Rule 03
+    # Rule 03 - 
     work_table_G3a = MouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
 
-    # Rule 04
+    # Rule 04 - 
     work_table_G4a = MouhoubRules.rule_4(work_table_G3a, work_table, Columns)
 
-    # Rule 07
+    # Rule 07 - 
     work_table_G7 =  MouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
 
 
-    # Step 6. Save the output graph after the rules of the Mouhoub algorithm
+    #Save the prelations after the rules
     work_table_final = {}
     for act, sucesores in work_table_G7.items():
         work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
     
 
-    #Step 7. Generate the graph
+    #SGenerate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table_final.items():
         _, _, _, dummy, _, start, end, _ = columns
@@ -168,11 +159,8 @@ def main():
     activities, _, _, _ = fileFormats.load_with_some_format(args.infile, [fileFormats.PPCProjectFileFormat(),
                                                                           fileFormats.PSPProjectFileFormat()])
     successors = dict(((act[1], act[2]) for act in activities))
-
-    window = graph.Test()
     
-    pert_graph = mouhoub(graph.successors2precedents(successors), window)
-    window.add_image(graph.pert2image(pert_graph))
+    pert_graph = mouhoub(graph.successors2precedents(successors))
     
     graph.gtk.main()
     
