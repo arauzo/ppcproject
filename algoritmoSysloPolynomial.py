@@ -9,6 +9,7 @@ import graph
 import pert
 import fileFormats
 import validation
+import improperCover
 
 def __print_work_table(table):
     """
@@ -17,15 +18,6 @@ def __print_work_table(table):
     print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
     for k, col in sorted(table.items()):
         print "%-5s %-30s %5s %5s %5s %5s %5s" % tuple(
-                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
-
-def __print_work_pol(table):
-    """
-    For debugging purposes, pretty prints Syslo working table
-    """
-    print "%-5s %-30s %30s %5s %5s %5s %5s" % ('i', 'Ui', 'Wi', 'Dummy', 'Succ', 'start', 'end')
-    for k, col in sorted(table.items()):
-        print "%-5s %-30s %30s %5s %5s %5s %5s" % tuple(
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
 
 
@@ -41,71 +33,14 @@ def SysloPolynomial(prelations):
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                             #   Blocked = (False or Activity with same precedents)
     
-    #Step 1. Construct work table with Immediate Predecessors
-    MinRev = namedlist.namedlist('MinRev', ['u', 'w', 'dummy', 'suc', 'start_node', 'end_node'])
-                            # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
-                            #   Blocked = (False or Activity with same precedents)
+
     
-
-    #################
-    #################
-
-
-    work_table_pol = {}
-    work_table = {}
+    work_table_pol = improperCover.makeCover(prelations, successors)
     
-    #Step 2. Identify Identical Successor Constraint of Diferent Activities
-    visited_pred = {}
-    i = 0
-    for act, columns in successors.items():
-        u = []
-        pred = frozenset(columns)
-        if pred not in visited_pred:
-            visited_pred[pred] = act
-            u.append(act)
-            for act2, columns2 in successors.items():
-                if columns2 == columns:
-                    u.append(act2)
-                    
-        if len(u) > 0:
-            work_table_pol[i] = MinRev(set(u), False, False, None, None, None)
-            i+=1
-            
-        
-    #Step 2. Identify Identical Precedence Constraint of Diferent Activities
-    visited_pred = {}
-    i = 0
-    for act, columns in prelations.items():
-        u = []
-        pred = frozenset(columns)
-        if pred not in visited_pred:
-            visited_pred[pred] = act
-            u.append(act)
-            for act2, columns2 in prelations.items():
-                if columns2 == columns:
-                    u.append(act2)
-                    
-        if len(u) > 0:
-            if work_table_pol.has_key(i):
-                work_table_pol[i] = MinRev(work_table_pol[i].u, list(set(u)) , False, None, None, None)
-                i+=1
-            else:
-                work_table_pol[i] = MinRev([], list(set(u)), False, None, None, None)
-                i+=1
-        
-    for k, v in work_table_pol.items():      
-        if v.w == False:
-            v.w = []
-            
-
-    #################
-    #################
-
-    final = {}
     uvedoble = []
     visited = []
-    
-    x = 0
+    final = successors.copy()
+            
     for w, pred in prelations.items():
         for v in pred:
             for u in pred:
@@ -118,36 +53,28 @@ def SysloPolynomial(prelations):
                         if set(value.u).issubset(prelations[w]) and len(value.u) > 0:
                             act = set(value.u).pop()
                             if successors[act] != uvedoble:
-                                #print w, " : ", prelations[w],  successors[w], "____________________", u, v, visited
-                                #print "COMPARA: ", successors[pipo], " - ", uvedoble, " // ", successors[u], successors[v]
                                 for q in value.u: 
                                     if final.has_key(q):
-                                        final[q] = list(set(final[q]) - set(uvedoble) | set(['z' + str(x)]))
+                                        final[q] = list(set(final[q]) - set(uvedoble) | set([str(act) + '-' + str(w)]))
                                     else:
-                                        final[q] = list(set(successors[q]) - set(uvedoble) | set(['z' + str(x)]))
-                                final['z' + str(x)] = set(uvedoble) & set(successors[q])
+                                        final[q] = list(set(successors[q]) - set(uvedoble) | set([str(act) + '-' + str(w)]))
+                                final[str(act) + '-' + str(w)] = set(uvedoble) & set(successors[q])
                                 
                                 for l in uvedoble:
                                     visited.append(l)
-                                x += 1
 
-    
-    for w, suc in successors.items():
-        if not final.has_key(w):
-            final[w] = suc
-    
+
     final = graph.successors2precedents(final)
     
+    
+    work_table = {}
     for k, v in final.items():
         if not prelations.has_key(k):
             work_table[k] = Columns(set(v), False, True, None, None, None)
         else:
             work_table[k] = Columns(set(v), False, False, None, None, None)
         
-
-    
-    #print "\n--- Step 1 ---"
-    #__print_work_table(work_table)   
+ 
     
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
@@ -158,8 +85,6 @@ def SysloPolynomial(prelations):
         else:
             columns.blocked = visited_pred[pred]
 
-    #print "\n--- Step 2 ---"
-    #__print_work_table(work_table)
 
         
     #Step 5. Creating nodes
@@ -169,15 +94,11 @@ def SysloPolynomial(prelations):
             columns.start_node = node
             node += 1
 
-    #print "\n--- Step 5a ---"
-    #__print_work_table(work_table)
 
     for act, columns in work_table.items():
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
 
-    #print "\n--- Step 5b ---"
-    #__print_work_table(work_table)
 
 
     #Step 6. Associate activities with their end nodes
@@ -189,8 +110,7 @@ def SysloPolynomial(prelations):
                     columns.suc = suc
                     break
 
-#    print "\n--- Step 6a ---"
-#    __print_work_table(work_table)
+
 
     # (b) find end nodes
     graph_end_node = node # Reserve one node for graph end 
