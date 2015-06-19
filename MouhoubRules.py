@@ -4,48 +4,11 @@ Remove dummy arcs to build a graph with minimum dummy activities according to th
 """
 separator = '-'
 
-def rule_1(work_table_pred, work_table, Columns):
+    
+def rule_1(work_table_suc, work_table, Columns):
     """
-    # Rule 1 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
-     return work_table_G1
-   """
-    visited = []
-    remove = set()
-    
-    for vertex1, arcs in work_table_pred.items():
-        for vertex2, arcs2 in work_table_pred.items():
-            common = set(list(arcs)) & set(list(arcs2))
-            not_common = set(list(arcs)) ^ set(list(arcs2))
-            
-            # Join nodes when two activities have common predecessor and uncommon predecessor activities
-            if common and not not_common and vertex1 != vertex2:
-                if len(common) > 1 and vertex1 not in visited:
-                    eliminar = work_table[vertex1].start_node
-                    work_table[vertex1].start_node = work_table[vertex2].start_node 
-                    visited.append(vertex2)
-                    
-                    for y in work_table:
-                        if work_table[y].end_node == eliminar:
-                            remove.add(y)
-                            work_table[y].aux = True
-                            
-    # Save the graph after the modification. Input graph G results graph G1
-    work_table_G1 = {}
-    for act, sucesores in work_table.items():
-        if sucesores.aux != True:
-            if sucesores.su != None:
-                for u in remove:
-                    if u in sucesores.su:
-                        sucesores.su =  list(set(sucesores.su) - set([u]))
-            work_table_G1[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
-
-    return work_table_G1
-    
-    
-def rule_2(work_table_suc, work_table, work_table_G1, Columns):
-    """
-    # Rule 2 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
-      return work_table_G2
+    # Rule 1 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
+      return work_table_G1
    """      
     visited = []
     remove = set()
@@ -53,7 +16,7 @@ def rule_2(work_table_suc, work_table, work_table_G1, Columns):
     for vertex1, arcs in work_table_suc.items():
         for vertex2, arcs2 in work_table_suc.items():
             common = set(list(arcs)) & set(list(arcs2))
-            not_common = set(list(arcs)) ^ set(list(arcs2))
+            not_common = set(arcs) ^ set(arcs2)
             
             # Join nodes when two activities have common successors and uncommon successors activities
             if common and not not_common and vertex1 != vertex2:
@@ -66,19 +29,61 @@ def rule_2(work_table_suc, work_table, work_table_G1, Columns):
                         if work_table[y].start_node == delete:
                             work_table[y].aux = True
                             remove.add(y)
-            
+                            
     # Save the graph after the modification. Input graph G1 results graph G2
-    work_table_G2 = {}
-    for act, sucesores in work_table_G1.items():
+    work_table_G1 = {}
+    for act, sucesores in work_table.items():
         if sucesores.aux != True:
             if sucesores.pre != None:
                 for u in remove:
                     if u in sucesores.pre:
                         sucesores.pre = set(sucesores.pre) - set([u])
+            work_table_G1[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+
+    return work_table_G1
+    
+    
+    
+    
+def rule_2(work_table_pred, work_table, work_table_G1, Columns):
+    """
+    # Rule 2 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
+     return work_table_G2
+   """
+    visited = []
+    remove = set()
+    
+    for vertex1, arcs in work_table_pred.items():
+        for vertex2, arcs2 in work_table_pred.items():
+            common = set(arcs) & set(arcs2)
+            not_common = set(arcs) ^ set(arcs2)
+            
+            # Join nodes when two activities have common predecessor and uncommon predecessor activities
+            if common and not not_common and vertex1 != vertex2:
+                if len(common) > 1 and vertex1 not in visited:
+                    eliminar = work_table[vertex1].start_node
+                    work_table[vertex1].start_node = work_table[vertex2].start_node 
+                    visited.append(vertex2)
+                    #print vertex1, vertex2, work_table[vertex1].start_node, " = ", work_table[vertex1].start_node, work_table[vertex1].end_node, eliminar
+                    for y in work_table[vertex1].pre:
+                        if work_table[y].end_node == eliminar:
+                            remove.add(y)
+                            #print "DEL: ", y
+                            work_table[y].aux = True
+                            
+    # Save the graph after the modification. Input graph G results graph G1
+    work_table_G2 = {}
+    for act, sucesores in work_table.items():
+        if sucesores.aux != True:
+            if sucesores.su != None:
+                for u in remove:
+                    if u in sucesores.su:
+                        sucesores.su =  list(set(sucesores.su) - set([u]))
             work_table_G2[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
 
     return work_table_G2
     
+
 
 def rule_3(work_table_G2, work_table, Columns):
     """
@@ -163,7 +168,8 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
 
                     for u in not_common:
                         new.add(d_node(vertex2, u))
-
+                    
+                    print ">>> ", d_node(vertex2, vertex1)
                     work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
                     new.add(d_node(vertex2, vertex1))
                     work_table[vertex2].su = list(new)
