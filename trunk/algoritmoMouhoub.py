@@ -8,8 +8,21 @@ import validation
 
 import pert
 import graph
-import Zconfiguration
-import MouhoubRules
+import zConfiguration
+import mouhoubRules
+
+
+
+def __print_work_table(table):
+    """
+    For debugging purposes, pretty prints CohenSadeh working table
+    """
+    print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Succe', 'Block', 'Dummy', 'Succ', 'start', 'end', 'delet')
+    for k, col in sorted(table.items()):
+        print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % tuple(
+                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
+
+
 
 
 def mouhoub(prelations):
@@ -36,7 +49,7 @@ def mouhoub(prelations):
     # Previous condition 01. Test Delta Configuration - (Already tested from prueba.py Khan.CheckCycles())
     
     # Previous condition 02.  Remove Z Configuration. Update the prelation table stored in the dict
-    complete_bipartite.update(Zconfiguration.zconf(successors))  
+    complete_bipartite.update(zConfiguration.zconf(successors))  
     
     
 # STEPS TO BUILD THE PERT GRAPH
@@ -99,38 +112,39 @@ def mouhoub(prelations):
 
 
 # Apply Mouhoub algorithm rules reducing dummy activities
-
+    
     # Rule 01 - 
-    work_table_G1 = MouhoubRules.rule_1(prelations, work_table, Columns)
+    work_table_G1 = mouhoubRules.rule_1(successors_copy, work_table, Columns)
     
     # Rule 02 - 
-    work_table_G2 = MouhoubRules.rule_2(successors_copy, work_table, work_table_G1, Columns)
-     
-    # Rule 03 - 
-    work_table_G3 = MouhoubRules.rule_3(work_table_G2, work_table, Columns)
-
-    # Rule 04 - 
-    work_table_G4 = MouhoubRules.rule_4(work_table_G3, work_table, Columns)
-
-    # Rule 05 and Rule 06 - 
-    work_table_G5_6 = MouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
+    work_table_G2 = mouhoubRules.rule_2(prelations, work_table, work_table_G1, Columns)
     
     # Rule 03 - 
-    work_table_G3a = MouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
+    work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
+    
+    # Rule 04 - 
+    work_table_G4 = mouhoubRules.rule_4(work_table_G3, work_table, Columns)
+    
+    # Rule 05 and Rule 06 - 
+    work_table_G5_6 = mouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
+    
+    # Rule 03 - 
+    work_table_G3a = mouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
 
     # Rule 04 - 
-    work_table_G4a = MouhoubRules.rule_4(work_table_G3a, work_table, Columns)
+    work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
 
     # Rule 07 - 
-    work_table_G7 =  MouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
-
-
+    work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
+    
+    
     #Save the prelations after the rules
     work_table_final = {}
     for act, sucesores in work_table_G7.items():
         work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
     
-
+    #__print_work_table(work_table)
+     
     #SGenerate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table_final.items():
@@ -162,10 +176,11 @@ def main():
     
     pert_graph = mouhoub(graph.successors2precedents(successors))
     
+    window = graph.Test()
+    window.add_image(graph.pert2image(pert_graph))
     graph.gtk.main()
-    
+    print pert_graph
     print validation.check_validation(successors, pert_graph)
-
     return 0   
     _
     
