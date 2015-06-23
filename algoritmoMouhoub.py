@@ -130,17 +130,18 @@ def mouhoub(prelations):
     
     # Rule 03 - 
     work_table_G3a = mouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
-
+    
     # Rule 04 - 
     work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
-
+    """
+    FALLA
     # Rule 07 - 
     work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
-    
+    """
     
     #Save the prelations after the rules
     work_table_final = {}
-    for act, sucesores in work_table_G7.items():
+    for act, sucesores in work_table_G4a.items():
         work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
     
     #__print_work_table(work_table)
