@@ -118,7 +118,7 @@ def rule_4(work_table_G3, work_table, Columns):
       return work_table_G4
     """
     visited = []
-    
+    #print "####################################################"
     for vertex1, arcs in work_table_G3.items():
         if arcs.su != None and vertex1 not in visited:
             if len(arcs.su) == 1:
@@ -126,11 +126,17 @@ def rule_4(work_table_G3, work_table, Columns):
                 
                 # Contract node with only one dummy successor
                 if work_table[extra].dummy == True:
+                    for k, v in work_table_G3.items():
+                        if v.end_node == work_table_G3[vertex1].end_node and k != vertex1 and v.dummy == False:
+                            #print "_____", k, v.su
+                            work_table[k].end_node = work_table[extra].end_node 
+                        
                     v = str(extra).partition(separator)
                     if work_table[v[0]].end_node != work_table[v[2]].start_node:
-                        work_table[v[0]].end_node = work_table[v[2]].start_node 
+                        work_table[vertex1].end_node = work_table[extra].end_node 
                         work_table[extra].aux = True
-    
+                        #print "->->->",  vertex1, work_table[extra].end_node 
+  
     # Save the graph after the modification. Input graph G3 results graph G4                 
     work_table_G4 = {}
     for act, sucesores in work_table.items():
@@ -149,8 +155,10 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
     visited = []
     new = set()
     remove = set()
-    
+    snode = []
+    svertex = []
     for vertex1, arcs1, in reversed(sorted(work_table_suc.items())):
+        
         for vertex2, arcs2, in work_table_suc.items():
             if len(arcs1) > 0:
                 
@@ -165,16 +173,22 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
                         work_table[d_node(vertex2, u)].aux = True
                         remove.add(d_node(vertex2, u))
                         new.discard(d_node(vertex2, u))
+                        #print "----", vertex2, u
 
                     for u in not_common:
+                        #if work_table[u].start_node not in snode:
                         new.add(d_node(vertex2, u))
                     
-                    print ">>> ", d_node(vertex2, vertex1)
-                    work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
-                    new.add(d_node(vertex2, vertex1))
-                    work_table[vertex2].su = list(new)
-                    work_table[vertex2].aux = False
-                    visited.append(vertex2)
+                    
+                    if vertex1 not in snode and work_table_G4[vertex2].end_node not in svertex:
+                        #print ">>> ", d_node(vertex2, vertex1),  new
+                        work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
+                        new.add(d_node(vertex2, vertex1))
+                        work_table[vertex2].su = list(new)
+                        work_table[vertex2].aux = False
+                        visited.append(vertex2)
+                        #snode.append(vertex1)
+                        svertex.append(work_table_G4[vertex2].end_node)
 
     # Save the graph after the modification. Input graph G4 is concerted in graph G5/G6 
     work_table_G5_G6 = {}
