@@ -15,7 +15,7 @@ import mouhoubRules
 
 def __print_work_table(table):
     """
-    For debugging purposes, pretty prints CohenSadeh working table
+    For debugging purposes, pretty prints Mouhoub working table
     """
     print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Succe', 'Block', 'Dummy', 'Succ', 'start', 'end', 'delet')
     for k, col in sorted(table.items()):
@@ -33,7 +33,7 @@ def mouhoub(prelations):
     """
     # Adaptation to avoid multiple end nodes
     successors = graph.reversed_prelation_table(prelations)
-    successors_copy = graph.reversed_prelation_table(prelations.copy())
+    successors_copy = graph.reversed_prelation_table(prelations)
     end_act = graph.ending_activities(successors)
 
     complete_bipartite = successors
@@ -56,6 +56,7 @@ def mouhoub(prelations):
     #Step 1. Save the prelations in the work table
     complete_bipartite = graph.successors2precedents(complete_bipartite)
     work_table = {}
+    
     for act, sucesores in complete_bipartite.items():
         if act in prelations:
             work_table[act] = Columns(set(sucesores), successors[act], None, False, None, None, None, None)
@@ -74,7 +75,7 @@ def mouhoub(prelations):
                    
             
     #Step 3. Creating nodes
-    node = 0
+    node = 1
     for act, columns in work_table.items():
         if not columns.blocked:
             columns.start_node = node
@@ -133,18 +134,15 @@ def mouhoub(prelations):
     
     # Rule 04 - 
     work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
-    """
-    FALLA
+    
     # Rule 07 - 
-    work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
-    """
+    work_table_G7 =  mouhoubRules.rule_7(successors, work_table_G4a, Columns, node)
     
     #Save the prelations after the rules
     work_table_final = {}
-    for act, sucesores in work_table_G4a.items():
+    for act, sucesores in work_table_G7.items():
         work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
-    
-    #__print_work_table(work_table)
+
      
     #SGenerate the graph
     pm_graph = pert.PertMultigraph()

@@ -2,6 +2,9 @@
 MOUHOUB ALGORITHM RULES 
 Remove dummy arcs to build a graph with minimum dummy activities according to the Mouhoub algorithm rules
 """
+
+from collections import Counter
+
 separator = '-'
 
     
@@ -91,13 +94,14 @@ def rule_3(work_table_G2, work_table, Columns):
       return work_table_G3
     """
     
-    for vertex1 in sorted(work_table_G2.keys()):
+    for vertex1, arcs in work_table_G2.items():
         if len(work_table_G2[vertex1].pre) == 1:
             extra = set(work_table_G2[vertex1].pre).pop()
             
             # Contract node with only one dummy predecessor
             if work_table[extra].dummy == True:
                 v = str(extra).partition(separator)
+                print v[2], v[0], vertex1
                 if work_table[v[2]].start_node != work_table[v[0]].end_node:
                     work_table[v[2]].start_node = work_table[v[0]].end_node 
                     work_table[extra].aux = True
@@ -118,7 +122,7 @@ def rule_4(work_table_G3, work_table, Columns):
       return work_table_G4
     """
     visited = []
-    #print "####################################################"
+    
     for vertex1, arcs in work_table_G3.items():
         if arcs.su != None and vertex1 not in visited:
             if len(arcs.su) == 1:
@@ -126,22 +130,16 @@ def rule_4(work_table_G3, work_table, Columns):
                 
                 # Contract node with only one dummy successor
                 if work_table[extra].dummy == True:
-                    for k, v in work_table_G3.items():
-                        if v.end_node == work_table_G3[vertex1].end_node and k != vertex1 and v.dummy == False:
-                            #print "_____", k, v.su
-                            work_table[k].end_node = work_table[extra].end_node 
-                        
                     v = str(extra).partition(separator)
                     if work_table[v[0]].end_node != work_table[v[2]].start_node:
-                        work_table[vertex1].end_node = work_table[extra].end_node 
+                        work_table[v[0]].end_node = work_table[v[2]].start_node 
                         work_table[extra].aux = True
-                        #print "->->->",  vertex1, work_table[extra].end_node 
-  
+    
     # Save the graph after the modification. Input graph G3 results graph G4                 
     work_table_G4 = {}
     for act, sucesores in work_table.items():
         if sucesores.aux != True:
-            work_table_G4[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
+            work_table_G4[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, None)
 
     return work_table_G4
 
@@ -173,21 +171,16 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
                         work_table[d_node(vertex2, u)].aux = True
                         remove.add(d_node(vertex2, u))
                         new.discard(d_node(vertex2, u))
-                        #print "----", vertex2, u
 
                     for u in not_common:
-                        #if work_table[u].start_node not in snode:
-                        new.add(d_node(vertex2, u))
-                    
+                        new.add(d_node(vertex2, u))    
                     
                     if vertex1 not in snode and work_table_G4[vertex2].end_node not in svertex:
-                        #print ">>> ", d_node(vertex2, vertex1),  new
                         work_table[d_node(vertex2, vertex1)] = Columns(work_table_G4[vertex2].pre, arcs1, vertex1, True, None, work_table_G4[vertex2].end_node, work_table_G4[vertex1].end_node, False)
                         new.add(d_node(vertex2, vertex1))
                         work_table[vertex2].su = list(new)
                         work_table[vertex2].aux = False
                         visited.append(vertex2)
-                        #snode.append(vertex1)
                         svertex.append(work_table_G4[vertex2].end_node)
 
     # Save the graph after the modification. Input graph G4 is concerted in graph G5/G6 
@@ -205,51 +198,95 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
 
 
     
-def rule_7(successors_copy, successors, work_table, Columns, node):
+def rule_7(successors, work_table, Columns, node):
     """
     # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
       return work_table_G7
     """
     left = set()
-
-    # Find subgraph with common dummy activities
-    for node1, arcs in sorted(successors_copy.items()):
-        suc = frozenset(arcs)
-        sub = set()
-        
-        for node2, arcs2 in successors_copy.items():
-            common = suc & set(arcs2)
-            notcommon = suc ^ set(arcs2)
-            
-            if work_table[node1].aux != False and work_table[node2].aux != False and len(common) >= 2 and notcommon and node1!=node2 and node1 not in sub and node2 not in sub:
-                sub.add(node1)
-                sub.add(node2)
- 
-        if len(sub) >= 2:   
-            for q in sub:
-                if q != node1:
-                    act_common = set(successors_copy[node1]) & set(successors_copy[q])
-
-            # Build a star of dummy arcs with the common activities of the subgraph
-            if len(sub) * len(act_common) >= 6: 
-                for q in sub:
-                    work_table[d_node(q, node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
-                        
-                    for l in act_common:
-                        for y in successors[q]:
-                            if str(y).find(separator) != -1:
-                                re1 = str(y).partition(separator)
-                                if re1[2] in act_common:
-                                    left.add(y)
-                            else:
-                                if y in act_common:
-                                    left.add(y)
-
-                for t in act_common:
-                    work_table[d_node(node, t)] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
-                
-                node += 1
+    visi = [] 
     
+    for k, v in work_table.items():
+        snodes = []
+        if v.dummy == False:
+            for r in v.pre:
+                if r in r in work_table:
+                    snodes.append(work_table[r].start_node)
+
+        if snodes != []:
+            work_table[k].aux = snodes 
+
+
+    for k, v in work_table.items():
+        if v.aux != None:
+            nodoscomunes = []
+            for k2, v2 in work_table.items():
+                if v2.aux != None:
+                    common = set(v.aux) & set(v2.aux)
+                    
+                    if len(common) > 1 and k != k2 and k not in visi:
+                        visi.append(k2)
+                        
+                        for p in common:
+                            nodoscomunes.append(p)
+                            
+            if len(nodoscomunes) > 0:     
+                maximo = list(Counter(nodoscomunes).most_common(1)[0]).pop()
+                
+                if maximo > 1:
+                    final = []
+                    diccy = Counter(nodoscomunes)
+                    
+                    for j, va in dict(diccy).items():
+                        if va == maximo:
+                            final.append(j)
+                            
+                    if len(final) >= 2:
+                        #print "------------------------------"
+                        iniciales = []
+                        vi = 0
+                        finalcommon = set()
+                        
+                        for k3, v3 in work_table.items():
+                            if v3.end_node in final and v3.dummy != True:
+                                iniciales.append(k3)
+                       
+                        #print iniciales
+                        for f in iniciales:
+                            for g in iniciales:
+                                if f != g:
+                                    common = set(successors[f]) & set(successors[g])
+                                    #print "---", common, finalcommon
+                                    if finalcommon.issuperset(common):
+                                        finalcommon = finalcommon
+                                        if len(finalcommon) > len(common):
+                                            finalcommon = finalcommon & common
+                                    elif vi == 0:
+                                        finalcommon = common
+                                        vi = 1
+                                    else:
+                                        finalcommon = finalcommon & common
+                       
+                        #print "-_",  finalcommon
+                        if len(finalcommon) + len(common) >= 6:
+                            for q in iniciales:
+                                work_table[d_node(q, node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
+                                    
+                                for l in finalcommon:
+                                    for y in successors[q]:
+                                        if str(y).find(separator) != -1:
+                                            re1 = str(y).partition(separator)
+                                            if re1[2] in finalcommon:
+                                                left.add(y)
+                                        else:
+                                            if y in finalcommon:
+                                                left.add(y)
+            
+                            for t in finalcommon:
+                                work_table[d_node(node, t)] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
+                                #raw_input()
+                            node += 1
+
     # Save the graph after the modification. Input graph G5/G6 results graph G7     
     work_table_G7 = {}
     for act, sucesores in work_table.items():
