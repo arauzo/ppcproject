@@ -5,7 +5,7 @@ Remove dummy arcs to build a graph with minimum dummy activities according to th
 
 from collections import Counter
 
-separator = '-'
+separator = '|'
 
     
 def rule_1(work_table_suc, work_table, Columns):
@@ -22,16 +22,15 @@ def rule_1(work_table_suc, work_table, Columns):
             not_common = set(arcs) ^ set(arcs2)
             
             # Join nodes when two activities have common successors and uncommon successors activities
-            if common and not not_common and vertex1 != vertex2:
-                if len(common) > 1 and vertex1 not in visited:
-                    delete = work_table[vertex2].end_node
-                    work_table[vertex2].end_node = work_table[vertex1].end_node 
-                    visited.append(vertex2)
+            if not not_common and vertex1 != vertex2 and len(common) > 1 and vertex1 not in visited:
+                delete = work_table[vertex2].end_node
+                work_table[vertex2].end_node = work_table[vertex1].end_node 
+                visited.append(vertex2)
                     
-                    for y in work_table:
-                        if work_table[y].start_node == delete:
-                            work_table[y].aux = True
-                            remove.add(y)
+                for y, pred in work_table.items():
+                    if pred.start_node == delete:
+                        pred.aux = True
+                        remove.add(y)
                             
     # Save the graph after the modification. Input graph G1 results graph G2
     work_table_G1 = {}
@@ -62,17 +61,15 @@ def rule_2(work_table_pred, work_table, work_table_G1, Columns):
             not_common = set(arcs) ^ set(arcs2)
             
             # Join nodes when two activities have common predecessor and uncommon predecessor activities
-            if common and not not_common and vertex1 != vertex2:
-                if len(common) > 1 and vertex1 not in visited:
-                    eliminar = work_table[vertex1].start_node
-                    work_table[vertex1].start_node = work_table[vertex2].start_node 
-                    visited.append(vertex2)
-                    #print vertex1, vertex2, work_table[vertex1].start_node, " = ", work_table[vertex1].start_node, work_table[vertex1].end_node, eliminar
-                    for y in work_table[vertex1].pre:
-                        if work_table[y].end_node == eliminar:
-                            remove.add(y)
-                            #print "DEL: ", y
-                            work_table[y].aux = True
+            if not not_common and vertex1 != vertex2 and len(common) > 1 and vertex1 not in visited:
+                eliminar = work_table[vertex1].start_node
+                work_table[vertex1].start_node = work_table[vertex2].start_node 
+                visited.append(vertex2)
+                 
+                for y in work_table[vertex1].pre:
+                    if work_table[y].end_node == eliminar:
+                        remove.add(y)
+                        work_table[y].aux = True
                             
     # Save the graph after the modification. Input graph G results graph G1
     work_table_G2 = {}
@@ -95,16 +92,14 @@ def rule_3(work_table_G2, work_table, Columns):
     """
     
     for vertex1, arcs in work_table_G2.items():
-        if len(work_table_G2[vertex1].pre) == 1:
-            extra = set(work_table_G2[vertex1].pre).pop()
+        if len(arcs.pre) == 1:
+            extra = set(arcs.pre).pop()
             
             # Contract node with only one dummy predecessor
             if work_table[extra].dummy == True:
                 v = str(extra).partition(separator)
-                print v[2], v[0], vertex1
-                if work_table[v[2]].start_node != work_table[v[0]].end_node:
-                    work_table[v[2]].start_node = work_table[v[0]].end_node 
-                    work_table[extra].aux = True
+                work_table[v[2]].start_node = work_table[v[0]].end_node 
+                work_table[extra].aux = True
                     
     # Save the graph after the modification. Input graph G2 results graph G3
     work_table_G3 = {}
@@ -121,19 +116,16 @@ def rule_4(work_table_G3, work_table, Columns):
     # Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
       return work_table_G4
     """
-    visited = []
     
     for vertex1, arcs in work_table_G3.items():
-        if arcs.su != None and vertex1 not in visited:
-            if len(arcs.su) == 1:
-                extra = set(arcs.su).pop()
+        if arcs.su != None and len(arcs.su) == 1:
+            extra = set(arcs.su).pop()
                 
-                # Contract node with only one dummy successor
-                if work_table[extra].dummy == True:
+            # Contract node with only one dummy successor
+            if work_table[extra].dummy == True:
                     v = str(extra).partition(separator)
-                    if work_table[v[0]].end_node != work_table[v[2]].start_node:
-                        work_table[v[0]].end_node = work_table[v[2]].start_node 
-                        work_table[extra].aux = True
+                    work_table[v[0]].end_node = work_table[v[2]].start_node 
+                    work_table[extra].aux = True
     
     # Save the graph after the modification. Input graph G3 results graph G4                 
     work_table_G4 = {}
@@ -155,8 +147,8 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
     remove = set()
     snode = []
     svertex = []
+    
     for vertex1, arcs1, in reversed(sorted(work_table_suc.items())):
-        
         for vertex2, arcs2, in work_table_suc.items():
             if len(arcs1) > 0:
                 
@@ -198,16 +190,18 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
 
 
     
-def rule_7(successors, work_table, Columns, node):
+def rule_7(successors_copy, successors, work_table, Columns, node):
     """
     # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
       return work_table_G7
     """
     left = set()
-    visi = [] 
+    visited = [] 
     
+    #Store start node numbers of ecg predecssor in column aux
     for k, v in work_table.items():
         snodes = []
+        
         if v.dummy == False:
             for r in v.pre:
                 if r in r in work_table:
@@ -216,7 +210,7 @@ def rule_7(successors, work_table, Columns, node):
         if snodes != []:
             work_table[k].aux = snodes 
 
-
+    #
     for k, v in work_table.items():
         if v.aux != None:
             nodoscomunes = []
@@ -224,8 +218,8 @@ def rule_7(successors, work_table, Columns, node):
                 if v2.aux != None:
                     common = set(v.aux) & set(v2.aux)
                     
-                    if len(common) > 1 and k != k2 and k not in visi:
-                        visi.append(k2)
+                    if len(common) > 1 and k != k2 and k not in visited:
+                        visited.append(k2)
                         
                         for p in common:
                             nodoscomunes.append(p)
@@ -240,34 +234,33 @@ def rule_7(successors, work_table, Columns, node):
                     for j, va in dict(diccy).items():
                         if va == maximo:
                             final.append(j)
-                            
+                    
+                    #
                     if len(final) >= 2:
-                        #print "------------------------------"
                         iniciales = []
-                        vi = 0
+                        maxco = False
                         finalcommon = set()
                         
                         for k3, v3 in work_table.items():
                             if v3.end_node in final and v3.dummy != True:
                                 iniciales.append(k3)
                        
-                        #print iniciales
                         for f in iniciales:
                             for g in iniciales:
                                 if f != g:
-                                    common = set(successors[f]) & set(successors[g])
-                                    #print "---", common, finalcommon
+                                    common = set(successors_copy[f]) & set(successors_copy[g])
+                                    
                                     if finalcommon.issuperset(common):
                                         finalcommon = finalcommon
                                         if len(finalcommon) > len(common):
                                             finalcommon = finalcommon & common
-                                    elif vi == 0:
+                                    elif maxco == False:
                                         finalcommon = common
-                                        vi = 1
+                                        maxco = True
                                     else:
                                         finalcommon = finalcommon & common
-                       
-                        #print "-_",  finalcommon
+                        
+                        #
                         if len(finalcommon) + len(common) >= 6:
                             for q in iniciales:
                                 work_table[d_node(q, node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
@@ -276,15 +269,17 @@ def rule_7(successors, work_table, Columns, node):
                                     for y in successors[q]:
                                         if str(y).find(separator) != -1:
                                             re1 = str(y).partition(separator)
+                                            
                                             if re1[2] in finalcommon:
                                                 left.add(y)
                                         else:
                                             if y in finalcommon:
                                                 left.add(y)
-            
+                            
+                            #
                             for t in finalcommon:
                                 work_table[d_node(node, t)] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
-                                #raw_input()
+                            
                             node += 1
 
     # Save the graph after the modification. Input graph G5/G6 results graph G7     
