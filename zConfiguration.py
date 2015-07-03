@@ -4,9 +4,9 @@ Algorithm to remove the Z Configuration from a prelation table
 
 def zconf(successors):
     """
-    Delete Z CONFIGURATION adding dummy activities
+     Obtain a new prelation table without Z CONFIGURATION adding dummy activities
     
-    return bipartite_subgraph dictionary without Z CONFIGURATION
+    return bipartite_subgraph dictionary
     """
     bipartite_subgraph = {}
     visited1 = []
@@ -25,7 +25,7 @@ def zconf(successors):
                     add_node(act2, act_, bipartite_subgraph, successors)
                     add_node(act, act_, bipartite_subgraph, successors)
             
-            # Insert dummy nodes if the activity conections have a Z form 
+            # Insert dummy nodes if prelations have a Z configuartion 
             if common and not_common and act != act2 and act not in visited1:
                 visited1.append(act2)
                 
@@ -79,7 +79,7 @@ def add_node(act, suc, temp, successors):
     """
     Insert a new node and update the table
     """
-    node = act + "-" + suc
+    node = act + "|" + suc
    
     if not temp.has_key(act):
         temp[act] = successors[act]

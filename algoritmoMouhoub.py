@@ -11,17 +11,16 @@ import graph
 import zConfiguration
 import mouhoubRules
 
-
-
+"""
 def __print_work_table(table):
-    """
-    For debugging purposes, pretty prints Mouhoub working table
-    """
+
+    #For debugging purposes, pretty prints Mouhoub working table
+    
     print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Succe', 'Block', 'Dummy', 'Succ', 'start', 'end', 'delet')
     for k, col in sorted(table.items()):
         print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % tuple(
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
-
+"""
 
 
 
@@ -33,30 +32,27 @@ def mouhoub(prelations):
     """
     # Adaptation to avoid multiple end nodes
     successors = graph.reversed_prelation_table(prelations)
-    successors_copy = graph.reversed_prelation_table(prelations)
+    successors_copy = graph.reversed_prelation_table(prelations.copy())
     end_act = graph.ending_activities(successors)
 
-    complete_bipartite = successors
-
-    #Step 1.Save the prelations in a work table 
-    # (a) Build a work table with immediate predecessors
+    #Save the prelations in a work table 
+    #Build a work table with immediate predecessors
     Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc', 'start_node', 'end_node', 'aux'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                             #   Blocked = (False or Activity with same precedents) 
 
-        
-# PREVIOUS CONDITIONS
-    # Previous condition 01. Test Delta Configuration - (Already tested from prueba.py Khan.CheckCycles())
-    
-    # Previous condition 02.  Remove Z Configuration. Update the prelation table stored in the dict
+
+    # Previous condition.  Remove Z Configuration. Update the prelation table stored in the dict
+    complete_bipartite = successors
     complete_bipartite.update(zConfiguration.zconf(successors))  
     
     
 # STEPS TO BUILD THE PERT GRAPH
-    #Step 1. Save the prelations in the work table
-    complete_bipartite = graph.successors2precedents(complete_bipartite)
-    work_table = {}
     
+    #Step 1. Save the prelations in the work table
+    complete_bipartite = graph.successors2precedents(complete_bipartite) 
+    
+    work_table = {}
     for act, sucesores in complete_bipartite.items():
         if act in prelations:
             work_table[act] = Columns(set(sucesores), successors[act], None, False, None, None, None, None)
@@ -112,31 +108,31 @@ def mouhoub(prelations):
                 node += 1   
 
 
-# Apply Mouhoub algorithm rules reducing dummy activities
+# Apply Mouhoub algorithm rules deleting extra dummy activities
     
-    # Rule 01 - 
+    # Rule 01 
     work_table_G1 = mouhoubRules.rule_1(successors_copy, work_table, Columns)
     
-    # Rule 02 - 
+    # Rule 02
     work_table_G2 = mouhoubRules.rule_2(prelations, work_table, work_table_G1, Columns)
     
-    # Rule 03 - 
+    # Rule 03
     work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
     
-    # Rule 04 - 
+    # Rule 04
     work_table_G4 = mouhoubRules.rule_4(work_table_G3, work_table, Columns)
     
-    # Rule 05 and Rule 06 - 
+    # Rule 05 and Rule 06
     work_table_G5_6 = mouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
     
-    # Rule 03 - 
+    # Rule 03
     work_table_G3a = mouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
     
-    # Rule 04 - 
+    # Rule 04
     work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
     
-    # Rule 07 - 
-    work_table_G7 =  mouhoubRules.rule_7(successors, work_table_G4a, Columns, node)
+    # Rule 07
+    work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
     
     #Save the prelations after the rules
     work_table_final = {}
