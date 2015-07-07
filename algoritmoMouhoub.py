@@ -2,14 +2,13 @@
 Algorithm to build a PERT graph based on Malek Mouhoub et. al algorithm
 """
 import namedlist
-import argparse
-import fileFormats
 import validation
 
 import pert
 import graph
 import zConfiguration
 import mouhoubRules
+
 
 """
 def __print_work_table(table):
@@ -30,16 +29,16 @@ def mouhoub(prelations):
 
     return p_graph pert.PertMultigraph()
     """
+    
+    Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc', 'start_node', 'end_node', 'aux'])
+                            # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
+                            #   Blocked = (False or Activity with same precedents) 
+
+
     # Adaptation to avoid multiple end nodes
     successors = graph.reversed_prelation_table(prelations)
     successors_copy = graph.reversed_prelation_table(prelations.copy())
     end_act = graph.ending_activities(successors)
-
-    #Save the prelations in a work table 
-    #Build a work table with immediate predecessors
-    Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc', 'start_node', 'end_node', 'aux'])
-                            # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
-                            #   Blocked = (False or Activity with same precedents) 
 
 
     # Previous condition.  Remove Z Configuration. Update the prelation table stored in the dict
@@ -76,8 +75,6 @@ def mouhoub(prelations):
         if not columns.blocked:
             columns.start_node = node
             node += 1
-
-    for act, columns in work_table.items():
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
 
@@ -111,10 +108,10 @@ def mouhoub(prelations):
 # Apply Mouhoub algorithm rules deleting extra dummy activities
     
     # Rule 01 
-    work_table_G1 = mouhoubRules.rule_1(successors_copy, work_table, Columns)
+    mouhoubRules.rule_1(successors_copy, work_table, Columns)
     
     # Rule 02
-    work_table_G2 = mouhoubRules.rule_2(prelations, work_table, work_table_G1, Columns)
+    work_table_G2 = mouhoubRules.rule_2(prelations, work_table, Columns)
     
     # Rule 03
     work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
@@ -125,10 +122,8 @@ def mouhoub(prelations):
     # Rule 05 and Rule 06
     work_table_G5_6 = mouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
     
-    # Rule 03
+    # Repeat Rule 03 / 04
     work_table_G3a = mouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
-    
-    # Rule 04
     work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
     
     # Rule 07
@@ -153,6 +148,9 @@ def mouhoub(prelations):
 
 
 def main():
+    
+    import fileFormats
+    
     """
     Test Mouhoub algorithm
 
@@ -180,10 +178,9 @@ def main():
     _
     
 # If the program is run directly
-if __name__ == '__main__': 
-    # Imports needed only here
+if __name__ == '__main__':
+    # Imports needed just for main()
     import sys
+    import argparse
     # Run
     sys.exit(main())
-
-
