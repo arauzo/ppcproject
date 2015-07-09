@@ -23,7 +23,7 @@ def __print_work_table(table):
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
 
 
-def SysloOptimal(prelations):
+def sysloOptimal(prelations):
     """
     Build a PERT graph using Syslo algorithm
 
@@ -33,18 +33,19 @@ def SysloOptimal(prelations):
     successors = graph.reversed_prelation_table(prelations)
     end_act = graph.ending_activities(successors)
     
-    Kahn1962.check_cycles(successors)
+    #Kahn1962.check_cycles(successors)
     prela = successors.copy()
 
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
-                            #   Blocked = (False or Activity with same precedents)  
-    
-    # 
-    grafo = {}
-    grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo))
+                           #   Blocked = (False or Activity with same precedents)  
 
-    # 
+    alt = graph.successors2precedents(successors)
+    #Step 0.
+    grafo = {}
+    grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo, alt))
+
+    #Step 1.
     work_table = {}
     for act, pre in grafo.items():
         if not act in prelations:
@@ -54,7 +55,7 @@ def SysloOptimal(prelations):
 
 
 
-    #Step 6. Identify Identical Precedence Constraint of Diferent Activities
+    #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
@@ -63,24 +64,22 @@ def SysloOptimal(prelations):
         else:
             columns.blocked = visited_pred[pred]
 
-    #print "STEP 6
+    #print "STEP 2
     #__print_work_table(work_table)
     
-    #Step 7. Creating nodes
+    #Step 3. Creating nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
         if not columns.blocked:
             columns.start_node = node
             node += 1
-
-    for act, columns in work_table.items():
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
 
-   # print "STEP 7
+   # print "STEP 3
    # __print_work_table(work_table)
     
-    #Step 8. Associate activities with their end nodes
+    #Step 4. Associate activities with their end nodes
     # (a) find one non-dummy successor for each activity
     for act, columns in work_table.items():
         for suc, suc_columns in work_table.items():
@@ -90,7 +89,7 @@ def SysloOptimal(prelations):
                     break
 
     
-    #print "STEP 8"
+    #print "STEP 4"
     #__print_work_table(work_table)
     
     
@@ -110,7 +109,7 @@ def SysloOptimal(prelations):
                 node += 1 
 
 
-    #print "STEP 9"
+    #print "STEP 5"
     #__print_work_table(work_table)
     
     #Step 5 Generate the graph
@@ -138,7 +137,7 @@ def main():
 
     window = graph.Test()
     
-    pert_graph = SysloPolynomial(graph.precedents2successors(successors, window))
+    pert_graph = sysloOptimal(graph.precedents2successors(successors, window))
     window.add_image(graph.pert2image(pert_graph))
     
     graph.gtk.main()
