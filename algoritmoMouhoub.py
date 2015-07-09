@@ -105,7 +105,7 @@ def mouhoub(prelations):
                 node += 1   
 
 
-# Apply Mouhoub algorithm rules deleting extra dummy activities
+    #Step 5. Apply Mouhoub algorithm rules deleting extra dummy activities
     
     # Rule 01 
     mouhoubRules.rule_1(successors_copy, work_table, Columns)
@@ -135,7 +135,7 @@ def mouhoub(prelations):
         work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
 
      
-    #SGenerate the graph
+    #Step 6. Generate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table_final.items():
         _, _, _, dummy, _, start, end, _ = columns
