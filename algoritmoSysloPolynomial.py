@@ -19,18 +19,18 @@ def sysloPolynomial(prelations):
     successors = graph.reversed_prelation_table(prelations)
     end_act = graph.ending_activities(successors)
 
-    #Step 1. Construct work table with Immediate Predecessors
+    #Step 0. Construct work table with Immediate Predecessors
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                             #   Blocked = (False or Activity with same precedents)
 
-    #
+    #Step 1. 
     work_table_pol = {}
     improperCover(successors, work_table_pol)
     improperCover(prelations, work_table_pol)       
   
 
-    #
+    #Step 2. 
     final = successors.copy()
     visited = []
        
@@ -62,7 +62,6 @@ def sysloPolynomial(prelations):
                                     visited.append(l)
 
     
-    
     final = graph.successors2precedents(final)
     work_table = {}
     for k, v in final.items():
@@ -70,7 +69,7 @@ def sysloPolynomial(prelations):
         
  
     
-    #Step 2. Identify Dummy Activities And Identical Precedence Constraint of Diferent Activities
+    #Step 3. Identify Dummy Activities And Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
@@ -83,7 +82,7 @@ def sysloPolynomial(prelations):
 
 
         
-    #Step 5. Creating nodes
+    #Step 4. Creating nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
         if not columns.blocked:
@@ -94,7 +93,7 @@ def sysloPolynomial(prelations):
 
 
 
-    #Step 6. Associate activities with their end nodes
+    #Step 5. Associate activities with their end nodes
     # (a) find one non-dummy successor for each activity
     for act, columns in work_table.items():
         for suc, suc_columns in work_table.items():
@@ -120,7 +119,7 @@ def sysloPolynomial(prelations):
 
 
        
-    #Step 8. Generate the graph
+    #Step 6. Generate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table.items():
         _, _, dummy, _, start, end = columns
@@ -136,7 +135,7 @@ def improperCover(mydict, work_table_pol):
     """
 
     """
-    #SConstruct work table with Immediate Predecessors
+    #Construct work table with Immediate Predecessors
     MinRev = namedlist.namedlist('MinRev', ['u', 'w'])
                             # [0 Identical successors,   1 Identical Predecessors)
     
