@@ -60,7 +60,7 @@ from simAnnealing import simulated_annealing
 from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
-import algoritmoSharma, algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas
+import algoritmoSharma, algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas, algoritmoGentoMunicio
 import graph
 import math
 #import pruebaInterface
@@ -2330,10 +2330,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             svg_text = graph.pert2image(grafo)
             title = 'PERT-CohenSadeh graph'
 
-#        elif menu_item == self._widgets.get_widget('algoritmoGentoMunicio'):
-##            grafo = Cohen_sadeh_Alberto.cohen_sadeh( graph.successors2precedents(successors) )
-#            svg_text = graph.pert2image(grafo)
-#            title = 'PERT-GentoMunicio graph'
+        elif menu_item == self._widgets.get_widget('algoritmoGentoMunicio'):
+            grafo = algoritmoGentoMunicio.gento_municio( graph.successors2precedents(successors) )
+            svg_text = graph.pert2image(grafo)
+            title = 'PERT-GentoMunicio graph'
 
         elif menu_item == self._widgets.get_widget('algoritmoSalas'):
             grafo = algoritmoSalas.salas( graph.successors2precedents(successors) )
