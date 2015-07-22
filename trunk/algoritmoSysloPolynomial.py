@@ -12,7 +12,27 @@ import validation
 
 separator = '-'
 
-            
+ 
+def __print_work_table(table):
+    """
+    For debugging purposes, pretty prints Syslo working table
+    """
+    print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
+    for k, col in sorted(table.items()):
+        print "%-5s %-30s %5s %5s %5s %5s %5s" % tuple(
+                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
+
+def __print_work_pol(table):
+    """
+    For debugging purposes, pretty prints Syslo working table
+    """
+    print "%-5s %-30s %30s" % ('i', 'Ui', 'Wi')
+    for k, col in sorted(table.items()):
+        print "%-5s %-30s %30s" % tuple(
+                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
+
+
+           
 def sysloPolynomial(prelations):
 
     # Adaptation to avoid multiple end nodes
@@ -25,12 +45,12 @@ def sysloPolynomial(prelations):
                             #   Blocked = (False or Activity with same precedents)
 
     #Step 1. 
-    work_table_pol = {}
-    improperCover(successors, work_table_pol)
-    improperCover(prelations, work_table_pol)       
-  
-
-    #Step 2. 
+    work_table_pol = makeCover(prelations, successors)
+          
+    #__print_work_pol(work_table_pol)
+    
+   
+    # Step 3. Syslo Polynomial algorithm
     final = successors.copy()
     visited = []
        
@@ -38,30 +58,35 @@ def sysloPolynomial(prelations):
         for v in pred:
             for u in pred:
                 if u != v and successors[v] != successors[u] and act not in visited:
-                    
                     # Find activity in the improper cover table
                     for key, value in work_table_pol.items():
                         if act in value.w:
-                            w = value.w  
-                            
+                            w = value.w
+                            #print "_________________________________________", act, value.w
+                          
                     # Find each row that belongs to the predecessors of activity
                     for key, value in work_table_pol.items():
                         if set(value.u).issubset(prelations[act]) and len(value.u) > 0:
                             vertex = set(value.u).pop()
-                            
                             # Compare successors of a row with the improper cover of the activity
                             if successors[vertex] != w:
+                                #print ""
                                 for q in value.u: 
                                     if final.has_key(q):
-                                        final[q] = list(set(final[q]) - set(w) | set([str(vertex) + separator + str(act)]))
+                                        #print "IF", q, list(set(final[q]) - set(w) | set([str(vertex) + separator + str(act)]) - set([act])), [act]
+                                        #print "      ----------", final[q], set(w), vertex
+                                        final[q] = list((set(final[q]) - set(w) | set([str(vertex) + separator + str(act)])) - set([act]))
+                                        
+                                        
                                     else:
                                         final[q] = list(set(successors[q]) - set(w) | set([str(vertex) + separator + str(act)]))
-                                final[str(vertex) + separator + str(act)] = set(w) & set(successors[q])
-                                
+                                        #print "ELSE", q, list(set(successors[q]) - set(w) | set([str(vertex) + separator + str(act)]))
+                                final[str(vertex) + separator + str(act)] = [act]
+                                #print "DUM", str(vertex) + separator + str(act), [act], " -> ", final[q], successors[q]
                                 for l in w:
                                     visited.append(l)
-
-    
+ 
+        
     final = graph.successors2precedents(final)
     work_table = {}
     for k, v in final.items():
@@ -117,7 +142,7 @@ def sysloPolynomial(prelations):
                 columns.end_node = node 
                 node += 1
 
-
+    #__print_work_table(work_table)
        
     #Step 6. Generate the graph
     pm_graph = pert.PertMultigraph()
@@ -131,37 +156,60 @@ def sysloPolynomial(prelations):
 
 
 
-def improperCover(mydict, work_table_pol):
+def makeCover(prelations, successors):
     """
+    prelations = {'activity': ['predecesor1', 'predecesor2'...}
+    successors = {'activity': ['successor1', 'successor2'...}
 
+    return a dictionary with the improper covers
+    work_table_imp = {index: u(improper covers successors), w(improper covers predecessors)}
     """
-    #Construct work table with Immediate Predecessors
+    #SConstruct improper cover work table
     MinRev = namedlist.namedlist('MinRev', ['u', 'w'])
                             # [0 Identical successors,   1 Identical Predecessors)
     
-    #Identify Identical Successor Constraints of Diferent Activities
+    #Group by Identical Successors
     visited_pred = {}
+    work_table_imp = {}
     i = 0
-    for act, columns in mydict.items():
+    
+    for act, columns in successors.items():
         u = []
         pred = frozenset(columns)
         if pred not in visited_pred:
             visited_pred[pred] = act
             u.append(act)
-            for act2, columns2 in mydict.items():
+            for act2, columns2 in successors.items():
                 if columns2 == columns:
                     u.append(act2)
                     
         if len(u) > 0:
-            if not work_table_pol.has_key(i):
-                work_table_pol[i] = MinRev(set(u), [])
-            if work_table_pol.has_key(i):
-                    work_table_pol[i] = MinRev(work_table_pol[i].u, list(set(u)))
-            else:
-                    work_table_pol[i] = MinRev([], list(set(u)))
+            work_table_imp[i] = MinRev(set(u), [])
             i+=1
             
-    return
+
+    #Group by Identical Predecessors
+    visited_pred = {}
+    i = 0
+    
+    for act, columns in prelations.items():
+        u = []
+        pred = frozenset(columns)
+        if pred not in visited_pred:
+            visited_pred[pred] = act
+            u.append(act)
+            for act2, columns2 in prelations.items():
+                if pred == columns:
+                    u.append(act2)
+                    
+        if len(u) > 0:
+            if work_table_imp.has_key(i):
+                work_table_imp[i].w = list(set(u))
+            else:
+                work_table_imp[i] = MinRev([], list(set(u)))
+            i+=1
+
+    return work_table_imp
             
             
             
