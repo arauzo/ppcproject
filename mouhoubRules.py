@@ -31,21 +31,24 @@ def rule_1(work_table_suc, work_table, Columns):
                     if pred.start_node == delete:
                         pred.aux = True
                         remove.add(y)
+                        work_table[act2].su = work_table[act].su
+                        work_table[act2].suc = work_table[act].suc
+                        
                             
     # Save the graph after the modification. Input graph G1 results graph G2
     
-   # work_table_G1 = {}
+    work_table_G1 = {}
     for act, columns in work_table.items():
         if columns.aux != True:
             if columns.pre != None:
                 for u in remove:
                     if u in columns.pre:
                         columns.pre = set(columns.pre) - set([u])
-            #work_table_G1[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, columns.aux)
+            work_table_G1[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, columns.aux)
 
-    #return work_table_G1
+    return
     
-    return 
+   
     
     
     
@@ -68,11 +71,15 @@ def rule_2(work_table_pred, work_table, Columns):
                 eliminar = work_table[act].start_node
                 work_table[act].start_node = work_table[act2].start_node 
                 visited.append(act2)
-                 
+                
                 for y in work_table[act].pre:
                     if work_table[y].end_node == eliminar:
                         remove.add(y)
                         work_table[y].aux = True
+                    
+                        
+                        work_table[y].suc = work_table[act].su
+                        #work_table[act2].suc = work_table[act].su
                             
     # Save the graph after the modification. Input graph G results graph G1
     work_table_G2 = {}
@@ -126,9 +133,15 @@ def rule_4(work_table_G3, work_table, Columns):
                 
             # Contract node with only one dummy successor
             if work_table[extra].dummy == True:
+                
                     v = str(extra).partition(separator)
+                    
                     work_table[v[0]].end_node = work_table[v[2]].start_node 
                     work_table[extra].aux = True
+                    
+                    for act2, arcs2 in work_table_G3.items():
+                        if arcs2.su == arcs.su:
+                            work_table[act2].end_node = work_table[v[2]].start_node 
     
     # Save the graph after the modification. Input graph G3 results graph G4                 
     work_table_G4 = {}
