@@ -10,7 +10,7 @@ import zConfiguration
 import mouhoubRules
 
 
-"""
+
 def __print_work_table(table):
 
     #For debugging purposes, pretty prints Mouhoub working table
@@ -19,7 +19,7 @@ def __print_work_table(table):
     for k, col in sorted(table.items()):
         print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % tuple(
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
-"""
+
 
 
 
@@ -105,13 +105,15 @@ def mouhoub(prelations):
                 node += 1   
 
 
-    #Step 5. Apply Mouhoub algorithm rules deleting extra dummy activities
+# Apply Mouhoub algorithm rules deleting extra dummy activities
     
     # Rule 01 
     mouhoubRules.rule_1(successors_copy, work_table, Columns)
     
+    
     # Rule 02
     work_table_G2 = mouhoubRules.rule_2(prelations, work_table, Columns)
+    
     
     # Rule 03
     work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
@@ -134,8 +136,8 @@ def mouhoub(prelations):
     for act, sucesores in work_table_G7.items():
         work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
 
-     
-    #Step 6. Generate the graph
+    
+    #SGenerate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table_final.items():
         _, _, _, dummy, _, start, end, _ = columns
