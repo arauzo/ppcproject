@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 MOUHOUB ALGORITHM RULES 
 Remove dummy arcs to build a graph with minimal dummy activities according to the Mouhoub algorithm rules

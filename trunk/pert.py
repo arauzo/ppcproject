@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
  PERT graph class (module of PPC-PROJECT)
 
