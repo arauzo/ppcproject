@@ -306,7 +306,7 @@ def gento_municio(predecessors):
     # Step 9. Final nodes for type II incomplete
     # (note: final nodes have already been assigned in step 8. We think section 3.9 of paper is unnecessary)
     
-    return nodes.to_pert_graph()#.renumerar()
+    return nodes.to_pert_graph().renumerar()
 
 
 

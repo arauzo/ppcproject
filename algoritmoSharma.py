@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import pert
 import graph
 
@@ -54,5 +56,5 @@ def sharma1998ext(precedents):
                 pert_graph.makePrelation(pre, act)
                 a_origin, a_dest = pert_graph.activityArc(act)
                 
-    return pert_graph
+    return pert_graph.renumerar()
 

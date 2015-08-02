@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Algorithm to build a PERT graph based on Malek Mouhoub et. al algorithm
 """

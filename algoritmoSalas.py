@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
-Algoritmo que sigue la metodologia de como se hace a mano el grafo pert
+Algorithm to draw Graph PERT based on intuition
 """
 
 import math, os, sys

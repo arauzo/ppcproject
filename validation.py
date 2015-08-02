@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 def check_validation(successors, pert):
     """
     Compare a successors table (usually the input used to generate a graph) with the successors table

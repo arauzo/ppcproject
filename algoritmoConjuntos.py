@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
-Algoritmo basado en conjuntos para construir el grafo PERT
+Algorithm to draw Graph PERT based on building with sets of dependencies
 """
 import sys
 import pert
