@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
  Load, Save, Import and Export files with project related data (module of PPC-PROJECT)

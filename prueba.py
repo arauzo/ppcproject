@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Program to check graph generation algorithms with the project file passed as parameter
 

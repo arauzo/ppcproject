@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Yuval Cohen and Arick Sadeh
 """
@@ -156,7 +158,7 @@ def cohen_sadeh(prelations):
         pm_graph.add_arc((start, end), (act, dummy))
 
     p_graph = pm_graph.to_directed_graph()
-    return p_graph#.renumerar()
+    return p_graph.renumerar()
 
 
 
