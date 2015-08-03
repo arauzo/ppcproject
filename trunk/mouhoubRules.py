@@ -13,14 +13,13 @@ separator = '|'
 def rule_1(work_table_suc, work_table, Columns):
     """
     # Rule 1 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
-      return work_table_G1
+
    """      
     visited = []
     remove = set()
-    
     for act, arcs in work_table_suc.items():
         for act2, arcs2 in work_table_suc.items():
-            common = set(list(arcs)) & set(list(arcs2))
+            common = set(arcs) & set(arcs2)
             not_common = set(arcs) ^ set(arcs2)
             
             # Join nodes when two activities have common successors and uncommon successors activities
@@ -32,30 +31,27 @@ def rule_1(work_table_suc, work_table, Columns):
                 for y, pred in work_table.items():
                     if pred.start_node == delete:
                         pred.aux = True
-                        remove.add(y)
                         work_table[act2].su = work_table[act].su
                         work_table[act2].suc = work_table[act].suc
                         
-                            
+                        remove.add(y)
+                                       
     # Save the graph after the modification. Input graph G1 results graph G2
-    
     work_table_G1 = {}
-    for act, columns in work_table.items():
-        if columns.aux != True:
-            if columns.pre != None:
+    for act, sucesores in work_table.items():
+        if sucesores.aux != True:
+            if sucesores.pre != None:
                 for u in remove:
-                    if u in columns.pre:
-                        columns.pre = set(columns.pre) - set([u])
-            work_table_G1[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, columns.aux)
+                    if u in sucesores.pre:
+                        sucesores.pre = set(sucesores.pre) - set([u])
+            work_table_G1[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
 
-    return
+    return work_table_G1
     
    
     
     
-    
-    
-def rule_2(work_table_pred, work_table, Columns):
+def rule_2(work_table_pred, work_table, work_table_G1, Columns):
     """
     # Rule 2 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
      return work_table_G2
@@ -78,19 +74,17 @@ def rule_2(work_table_pred, work_table, Columns):
                     if work_table[y].end_node == eliminar:
                         remove.add(y)
                         work_table[y].aux = True
-                    
-                        
                         work_table[y].suc = work_table[act].su
-                        #work_table[act2].suc = work_table[act].su
                             
     # Save the graph after the modification. Input graph G results graph G1
     work_table_G2 = {}
-    for act, columns in work_table.items():
-        if columns.aux != True:
+    for act, columns in work_table_G1.items():
+        if columns.aux != True and act not in remove:
             if columns.su != None:
                 for u in remove:
                     if u in columns.su:
                         columns.su =  list(set(columns.su) - set([u]))
+                        
             work_table_G2[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, columns.aux)
 
     return work_table_G2
@@ -110,6 +104,7 @@ def rule_3(work_table_G2, work_table, Columns):
             # Contract node with only one dummy predecessor
             if work_table[extra].dummy == True:
                 v = str(extra).partition(separator)
+                #print "- ", v[0],  "- ", v[2]
                 work_table[v[2]].start_node = work_table[v[0]].end_node 
                 work_table[extra].aux = True
                     
