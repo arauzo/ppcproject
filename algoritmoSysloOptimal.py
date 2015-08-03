@@ -10,7 +10,6 @@ import validation
 import namedlist
 import graph
 import pert
-import Kahn1962
 import syslo_table
 
 
