@@ -5,11 +5,11 @@ Algorithm to remove the Z Configuration from a prelation table
 
 def zconf(successors):
     """
-    Delete Z CONFIGURATION adding dummy activities
+     Obtain a new prelation table without Z CONFIGURATION adding dummy activities
     
-    return bipartite_subgraph dictionary without Z CONFIGURATION
+    return subgraph dictionary
     """
-    bipartite_subgraph = {}
+    subgraph = {}
     visited1 = []
     visited2 = []
     visited3 = []
@@ -23,64 +23,64 @@ def zconf(successors):
             # Insert dummy nodes in common activities if the subgraph is a complete bipartite
             if common and not not_common:
                 for act_ in common:
-                    add_node(act2, act_, bipartite_subgraph, successors)
-                    add_node(act, act_, bipartite_subgraph, successors)
+                    dum(act2, act_, subgraph, successors)
+                    dum(act, act_, subgraph, successors)
             
-            # Insert dummy nodes if the activity conections have a Z form 
+            # Insert dummy nodes if prelations have a Z configuartion 
             if common and not_common and act != act2 and act not in visited1:
                 visited1.append(act2)
                 
                 for act_ in common:
                     if len(successors[act]) <= len(successors[act2]):
-                        add_node(act2, act_, bipartite_subgraph, successors)
-                        add_node(act, act_, bipartite_subgraph, successors)
+                        dum(act2, act_, subgraph, successors)
+                        dum(act, act_, subgraph, successors)
                         
                         if act not in visited3:
                             if len(successors[act]) == len(common) or len(successors[act2]) == len(common):
                                 visited3.append(act)
                                 
                                 for _act in common:
-                                    add_node(act2, _act, bipartite_subgraph, successors)
-                                    add_node(act, _act, bipartite_subgraph, successors)
+                                    dum(act2, _act, subgraph, successors)
+                                    dum(act, _act, subgraph, successors)
                                     
                                 for _act in not_common:
-                                    add_node(act2, _act, bipartite_subgraph, successors)
+                                    dum(act2, _act, subgraph, successors)
 
                             else:
-                                add_node(act2, act_, bipartite_subgraph, successors)
+                                dum(act2, act_, subgraph, successors)
                                 
                                 for y in not_common:
                                     if y in successors[act]:
-                                        add_node(act, y, bipartite_subgraph, successors)
+                                        dum(act, y, subgraph, successors)
       
                     elif len(not_common) != 1:
                         if act2 not in successors[act]: 
-                            add_node(act, act_, bipartite_subgraph, successors)
+                            dum(act, act_, subgraph, successors)
                             
                             for _act in not_common:
                                 if _act not in successors[act2]:
-                                    add_node(act2, act_, bipartite_subgraph, successors)
+                                    dum(act2, act_, subgraph, successors)
                     else: 
                         if act2 not in successors[act] and act not in visited2:
                             visited2.append(act)
                                 
                             for _act in common:
-                                add_node(act2, _act, bipartite_subgraph, successors)
-                                add_node(act, _act, bipartite_subgraph, successors)
+                                dum(act2, _act, subgraph, successors)
+                                dum(act, _act, subgraph, successors)
                                     
                             for _act in not_common:
-                                add_node(act, _act, bipartite_subgraph, successors)
+                                dum(act, _act, subgraph, successors)
 
-    return bipartite_subgraph
+    return subgraph
         
 
 
 
-def add_node(act, suc, temp, successors):
+def dum(act, suc, temp, successors):
     """
-    Insert a new node and update the table
+    Insert a new dummy activity and update the table
     """
-    node = act + "-" + suc
+    node = act + "|" + suc
    
     if not temp.has_key(act):
         temp[act] = successors[act]
@@ -92,7 +92,7 @@ def add_node(act, suc, temp, successors):
     if suc in new_suc:
         new_suc.remove(suc)
     temp[act] = list(set(new_suc))
-
+   
     return 0
 
 

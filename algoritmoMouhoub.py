@@ -12,29 +12,29 @@ import zConfiguration
 import mouhoubRules
 
 
-
 def __print_work_table(table):
-
-    #For debugging purposes, pretty prints Mouhoub working table
-    
-    print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Succe', 'Block', 'Dummy', 'Succ', 'start', 'end', 'delet')
+    """
+    For debugging purposes, pretty prints Syslo working table
+    """
+    print " %-5s %5s %-30s %5s %5s %5s %5s %5s %5s" % ('Act', 'Pred',  'Su', 'Block', 'Dummy', 'Succ', 'start', 'end', 'Aux')
     for k, col in sorted(table.items()):
-        print "%-5s %-30s %-30s %5s %5s %5s %5s %5s %5s" % tuple(
+        print "%-5s %5s %-30s %5s %5s %5s %5s %5s %5s" % tuple(
                 [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
 
 
-
-
+#
 def mouhoub(prelations):
     """
-    Build a PERT graph applying Mouhoub algorithm rules
+    Build a PERT graph using Mouhoub algorithm
+    
+    prelations = {'activity': ['predecesor1', 'predecesor2'...}
 
     return p_graph pert.PertMultigraph()
     """
     
     Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc', 'start_node', 'end_node', 'aux'])
-                            # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
-                            #   Blocked = (False or Activity with same precedents) 
+                            # [0 Predecesors, 1 Successors, 2 Blocked, 3 Dummy, 4 Blocked successor, 5 Start node, 6 End node, 7 Auxiliar ]
+                            # Blocked = (False or Activity with same precedents) 
 
 
     # Adaptation to avoid multiple end nodes
@@ -43,7 +43,8 @@ def mouhoub(prelations):
     end_act = graph.ending_activities(successors)
 
 
-    # Previous condition.  Remove Z Configuration. Update the prelation table stored in the dict
+    # Previous condition.  
+    # Remove Z Configuration. Update the prelation table in complete_bipartite dictionary
     complete_bipartite = successors
     complete_bipartite.update(zConfiguration.zconf(successors))  
     
@@ -107,15 +108,15 @@ def mouhoub(prelations):
                 node += 1   
 
 
-# Apply Mouhoub algorithm rules deleting extra dummy activities
+# Mouhoub algorithm rules to remove extra dummy activities
     
     # Rule 01 
-    mouhoubRules.rule_1(successors_copy, work_table, Columns)
-    
+    work_table_G1 = mouhoubRules.rule_1(successors_copy, work_table, Columns)
     
     # Rule 02
-    work_table_G2 = mouhoubRules.rule_2(prelations, work_table, Columns)
+    work_table_G2 = mouhoubRules.rule_2(prelations, work_table, work_table_G1, Columns)
     
+    #__print_work_table(work_table_G2)
     
     # Rule 03
     work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
@@ -133,12 +134,20 @@ def mouhoub(prelations):
     # Rule 07
     work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
     
+    
     #Save the prelations after the rules
     work_table_final = {}
     for act, sucesores in work_table_G7.items():
-        work_table_final[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
-
+        work_table_final[act] = Columns([], [], [], sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, [])
     
+    #Delete Dummy Cycles
+    for act, sucesores in work_table_final.items():
+        for act2, sucesores2 in work_table_final.items():
+            if act != act2:
+                if sucesores.end_node == sucesores2.end_node and sucesores.start_node == sucesores2.start_node:
+                    if act not in successors:
+                        del work_table_final[act]
+                        
     #SGenerate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table_final.items():
@@ -179,7 +188,8 @@ def main():
     print pert_graph
     print validation.check_validation(successors, pert_graph)
     return 0   
-    _
+    
+    
     
 # If the program is run directly
 if __name__ == '__main__':
