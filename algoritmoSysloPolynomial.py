@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo in Polynomial time
 """
