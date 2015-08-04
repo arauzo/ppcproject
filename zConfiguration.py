@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Algorithm to remove the Z Configuration from a prelation table
 """

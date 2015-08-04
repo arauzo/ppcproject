@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo with an Optimal solution
 """
@@ -6,41 +7,53 @@ import argparse
 import fileFormats
 import validation
 import namedlist
-
 import graph
 import pert
 import syslo_table
 
 
-def sysloOptimal(successors):
+def __print_work_table(table):
+    """
+    For debugging purposes, pretty prints Syslo working table
+    """
+    print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
+    for k, col in sorted(table.items()):
+        print "%-5s %-30s %5s %5s %5s %5s %5s" % tuple(
+                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
+
+
+def sysloOptimal(prelations):
     """
     Build a PERT graph using Syslo algorithm
 
     return p_graph pert.PertMultigraph()
     """
     # Adaptation to avoid multiple end nodes
-    successors = graph.reversed_succ_copytion_table(successors)
+    successors = graph.reversed_prelation_table(prelations)
     end_act = graph.ending_activities(successors)
-
-    succ_copy = successors.copy()
+    
+    #Kahn1962.check_cycles(successors)
+    prela = successors.copy()
 
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                            #   Blocked = (False or Activity with same precedents)  
 
+    alt = graph.successors2precedents(successors)
+    #Step 0.
+    grafo = {}
+    grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo, alt))
 
-    #Step 0. Syslo Optimal algorithm
-    grafo = graph.successors2precedents(syslo_table.syslo(succ_copy, successors))
-
-    #Step 1. Save the prelations with dummy activities in a work_table 
+    #Step 1.
     work_table = {}
     for act, pre in grafo.items():
-        work_table[act] = Columns(pre, False, False, None, None, None)
-        if act not in successors:
-            pre.dummy = True
+        if not act in prelations:
+            work_table[act] = Columns(pre, False, True, None, None, None)
+        else:
+            work_table[act] = Columns(pre, False, False, None, None, None)
 
 
-    #Step 2. Identify Identical Precedence Constraint of Diferent Activities
+    #Step 3. Identify Dummy Activities And Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
@@ -49,8 +62,8 @@ def sysloOptimal(successors):
         else:
             columns.blocked = visited_pred[pred]
 
-    
-    #Step 3. Creating nodes
+
+    #Step 4. Creating nodes
     # (a) find start nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
@@ -59,12 +72,14 @@ def sysloOptimal(successors):
             node += 1
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
+            
         # Associate activities with their end nodes
         for suc, suc_columns in work_table.items():
             if not suc_columns.blocked:
                 if act in suc_columns.pre:
                     columns.suc = suc
                     break
+
 
     
     # (b) find end nodes
@@ -82,7 +97,6 @@ def sysloOptimal(successors):
             else:
                 columns.end_node = graph_end_node
                 node += 1 
-                
         # Generate the graph
         _, _, dummy, _, start, end = columns
         pm_graph.add_arc((start, end), (act, dummy))
