@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Algorithm to build a PERT graph based on Malek Mouhoub et. al algorithm
 """
@@ -12,17 +10,6 @@ import zConfiguration
 import mouhoubRules
 
 
-def __print_work_table(table):
-    """
-    For debugging purposes, pretty prints Syslo working table
-    """
-    print " %-5s %5s %-30s %5s %5s %5s %5s %5s %5s" % ('Act', 'Pred',  'Su', 'Block', 'Dummy', 'Succ', 'start', 'end', 'Aux')
-    for k, col in sorted(table.items()):
-        print "%-5s %5s %-30s %5s %5s %5s %5s %5s %5s" % tuple(
-                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
-
-
-#
 def mouhoub(prelations):
     """
     Build a PERT graph using Mouhoub algorithm
@@ -42,26 +29,24 @@ def mouhoub(prelations):
     successors_copy = graph.reversed_prelation_table(prelations.copy())
     end_act = graph.ending_activities(successors)
 
-
-    # Previous condition.  
-    # Remove Z Configuration. Update the prelation table in complete_bipartite dictionary
+  
+    # Step 0. Remove Z Configuration. Update the prelation table in complete_bipartite dictionary
     complete_bipartite = successors
     complete_bipartite.update(zConfiguration.zconf(successors))  
     
     
-# STEPS TO BUILD THE PERT GRAPH
+    # STEPS TO BUILD THE PERT GRAPH
     
     #Step 1. Save the prelations in the work table
     complete_bipartite = graph.successors2precedents(complete_bipartite) 
     
     work_table = {}
     for act, sucesores in complete_bipartite.items():
-        if act in prelations:
-            work_table[act] = Columns(set(sucesores), successors[act], None, False, None, None, None, None)
-        else:
-            work_table[act] = Columns(set(sucesores), successors[act], None, True, None, None, None, None)
-              
-           
+        work_table[act] = Columns(set(sucesores), successors[act], None, False, None, None, None, None)
+        if act not in prelations:
+            work_table[act].dummy = True
+          
+          
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
@@ -73,24 +58,23 @@ def mouhoub(prelations):
                    
             
     #Step 3. Creating nodes
-    node = 1
+    # (a) Find start nodes
+    node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
         if not columns.blocked:
             columns.start_node = node
             node += 1
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
-
-    
-    #Step 4. Associate activities with their end nodes
-    # (a) find one non-dummy successor for each activity
-    for act, columns in work_table.items():
+        
+        # Associate activities with their end nodes
         for suc, suc_columns in work_table.items():
             if not suc_columns.blocked:
                 if act in suc_columns.pre:
                     columns.suc = suc
                     break
 
+    
 
     # (b) Find end nodes
     graph_end_node = node # Reserve one node for graph end 
@@ -108,47 +92,39 @@ def mouhoub(prelations):
                 node += 1   
 
 
-# Mouhoub algorithm rules to remove extra dummy activities
+    #Step 4. MOUHOUB algorithm rules to remove extra dummy activities
     
-    # Rule 01 
     work_table_G1 = mouhoubRules.rule_1(successors_copy, work_table, Columns)
     
-    # Rule 02
     work_table_G2 = mouhoubRules.rule_2(prelations, work_table, work_table_G1, Columns)
     
-    #__print_work_table(work_table_G2)
-    
-    # Rule 03
     work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
     
-    # Rule 04
     work_table_G4 = mouhoubRules.rule_4(work_table_G3, work_table, Columns)
     
-    # Rule 05 and Rule 06
     work_table_G5_6 = mouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
     
-    # Repeat Rule 03 / 04
     work_table_G3a = mouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
+    
     work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
     
-    # Rule 07
     work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
     
-    
-    #Save the prelations after the rules
     work_table_final = {}
     for act, sucesores in work_table_G7.items():
         work_table_final[act] = Columns([], [], [], sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, [])
     
-    #Delete Dummy Cycles
+    
+    #Step 5. Delete Dummy Cycles
     for act, sucesores in work_table_final.items():
         for act2, sucesores2 in work_table_final.items():
             if act != act2:
                 if sucesores.end_node == sucesores2.end_node and sucesores.start_node == sucesores2.start_node:
                     if act not in successors:
                         del work_table_final[act]
-                        
-    #SGenerate the graph
+                   
+                   
+    #Step 6. Generate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table_final.items():
         _, _, _, dummy, _, start, end, _ = columns

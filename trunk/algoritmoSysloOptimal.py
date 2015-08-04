@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo with an Optimal solution
 """
@@ -8,51 +6,38 @@ import argparse
 import fileFormats
 import validation
 import namedlist
+
 import graph
 import pert
 import syslo_table
 
 
-def __print_work_table(table):
-    """
-    For debugging purposes, pretty prints Syslo working table
-    """
-    print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
-    for k, col in sorted(table.items()):
-        print "%-5s %-30s %5s %5s %5s %5s %5s" % tuple(
-                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
-
-
-def sysloOptimal(prelations):
+def sysloOptimal(successors):
     """
     Build a PERT graph using Syslo algorithm
 
     return p_graph pert.PertMultigraph()
     """
     # Adaptation to avoid multiple end nodes
-    successors = graph.reversed_prelation_table(prelations)
+    successors = graph.reversed_succ_copytion_table(successors)
     end_act = graph.ending_activities(successors)
-    
-    #Kahn1962.check_cycles(successors)
-    prela = successors.copy()
+
+    succ_copy = successors.copy()
 
     Columns = namedlist.namedlist('Columns', ['pre', 'blocked', 'dummy', 'suc', 'start_node', 'end_node'])
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                            #   Blocked = (False or Activity with same precedents)  
 
-    alt = graph.successors2precedents(successors)
-    #Step 0.
-    grafo = {}
-    grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo, alt))
 
-    #Step 1.
+    #Step 0. Syslo Optimal algorithm
+    grafo = graph.successors2precedents(syslo_table.syslo(succ_copy, successors))
+
+    #Step 1. Save the prelations with dummy activities in a work_table 
     work_table = {}
     for act, pre in grafo.items():
-        if not act in prelations:
-            work_table[act] = Columns(pre, False, True, None, None, None)
-        else:
-            work_table[act] = Columns(pre, False, False, None, None, None)
-
+        work_table[act] = Columns(pre, False, False, None, None, None)
+        if act not in successors:
+            pre.dummy = True
 
 
     #Step 2. Identify Identical Precedence Constraint of Diferent Activities
@@ -64,10 +49,9 @@ def sysloOptimal(prelations):
         else:
             columns.blocked = visited_pred[pred]
 
-    #print "STEP 2
-    #__print_work_table(work_table)
     
     #Step 3. Creating nodes
+    # (a) find start nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
         if not columns.blocked:
@@ -75,27 +59,18 @@ def sysloOptimal(prelations):
             node += 1
         if columns.blocked:
             columns.start_node = work_table[columns.blocked].start_node
-
-   # print "STEP 3
-   # __print_work_table(work_table)
-    
-    #Step 4. Associate activities with their end nodes
-    # (a) find one non-dummy successor for each activity
-    for act, columns in work_table.items():
+        # Associate activities with their end nodes
         for suc, suc_columns in work_table.items():
-            if  not suc_columns.blocked:
+            if not suc_columns.blocked:
                 if act in suc_columns.pre:
                     columns.suc = suc
                     break
 
     
-    #print "STEP 4"
-    #__print_work_table(work_table)
-    
-    
     # (b) find end nodes
     graph_end_node = node # Reserve one node for graph end 
     node += 1
+    pm_graph = pert.PertMultigraph()
     for act, columns in work_table.items():
         suc = columns.suc
         if suc:
@@ -107,16 +82,11 @@ def sysloOptimal(prelations):
             else:
                 columns.end_node = graph_end_node
                 node += 1 
-
-
-    #print "STEP 5"
-    #__print_work_table(work_table)
-    
-    #Step 5 Generate the graph
-    pm_graph = pert.PertMultigraph()
-    for act, columns in work_table.items():
+                
+        # Generate the graph
         _, _, dummy, _, start, end = columns
         pm_graph.add_arc((start, end), (act, dummy))
+
     p_graph = pm_graph.to_directed_graph()
     
     return p_graph
