@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 MOUHOUB ALGORITHM RULES 
 Remove dummy arcs to build a graph with minimal dummy activities according to the Mouhoub algorithm rules
@@ -104,7 +102,6 @@ def rule_3(work_table_G2, work_table, Columns):
             # Contract node with only one dummy predecessor
             if work_table[extra].dummy == True:
                 v = str(extra).partition(separator)
-                #print "- ", v[0],  "- ", v[2]
                 work_table[v[2]].start_node = work_table[v[0]].end_node 
                 work_table[extra].aux = True
                     
@@ -123,7 +120,7 @@ def rule_4(work_table_G3, work_table, Columns):
     # Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
       return work_table_G4
     """
-    
+    work_table_G4 = work_table
     for act, arcs in work_table_G3.items():
         if arcs.su != None and len(arcs.su) == 1:
             extra = set(arcs.su).pop()
@@ -134,7 +131,8 @@ def rule_4(work_table_G3, work_table, Columns):
                     v = str(extra).partition(separator)
                     
                     work_table[v[0]].end_node = work_table[v[2]].start_node 
-                    work_table[extra].aux = True
+                    work_table_G4[extra].aux = True
+
                     
                     for act2, arcs2 in work_table_G3.items():
                         if arcs2.su == arcs.su:
@@ -206,20 +204,20 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
     # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
       return work_table_G7
     """
-    leftover = set()
+    left = set()
     visited = [] 
     
     #Store start node numbers of ecg predecssor in column aux
     for act, columns in work_table.items():
-        snodes = []
+        snodes = set()
         
         if columns.dummy == False:
             for r in columns.pre:
                 if r in r in work_table:
-                    snodes.append(work_table[r].start_node)
+                    snodes.add(work_table[r].start_node)
 
-        if snodes != []:
-            work_table[act].aux = snodes 
+        if snodes:
+            work_table[act].aux = list(snodes) 
 
     #
     for act, columns in work_table.items():
@@ -234,29 +232,29 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
                     for p in common:
                         com_nodes.append(p)
                             
-        if len(com_nodes) > 0:     
+        if com_nodes != []:     
                 maximal = list(Counter(com_nodes).most_common(1)[0]).pop()
                 
                 if maximal > 1:
-                    final = []
+                    a_set = []
                     diccy = Counter(com_nodes)
                     
                     for j, va in dict(diccy).items():
                         if va == maximal:
-                            final.append(j)
+                            a_set.append(j)
                     
                     #
-                    if len(final) >= 2:
-                        iniciales = []
+                    if len(a_set) >= 2:
+                        b_set = []
                         maxco = False
                         temp_com = set()
                         
                         for act3, columns3 in work_table.items():
-                            if columns3.end_node in final and columns3.dummy != True:
-                                iniciales.append(act3)
+                            if columns3.end_node in a_set and columns3.dummy != True:
+                                b_set.append(act3)
                        
-                        for f in iniciales:
-                            for g in iniciales:
+                        for f in b_set:
+                            for g in b_set:
                                 if f != g:
                                     common = set(successors_copy[f]) & set(successors_copy[g])
                                     
@@ -272,7 +270,7 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
                         
                         #
                         if len(temp_com) + len(common) >= 6:
-                            for q in iniciales:
+                            for q in b_set:
                                 work_table[d_node(q, node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
                                     
                                 for l in temp_com:
@@ -281,10 +279,10 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
                                             re1 = str(y).partition(separator)
                                             
                                             if re1[2] in temp_com:
-                                                leftover.add(y)
+                                                left.add(y)
                                         else:
                                             if y in temp_com:
-                                                leftover.add(y)
+                                                left.add(y)
                             
                             #
                             for t in temp_com:
@@ -295,7 +293,7 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
     # Save the graph after the modification. Input graph G5/G6 results graph G7     
     work_table_G7 = {}
     for act, columns in work_table.items():
-        if act not in leftover:
+        if act not in left:
             work_table_G7[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, None)
     
     return work_table_G7
@@ -304,7 +302,6 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
 
 
 def d_node(x, y):
-    
     node = str(x) + separator + str(y)
     
     return node
