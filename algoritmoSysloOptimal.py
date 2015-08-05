@@ -1,25 +1,16 @@
-# -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo with an Optimal solution
 """
 
 import argparse
 import fileFormats
-import validation
 import namedlist
+
 import graph
 import pert
+import validation
 import syslo_table
 
-
-def __print_work_table(table):
-    """
-    For debugging purposes, pretty prints Syslo working table
-    """
-    print "%-5s %-30s %5s %5s %5s %5s %5s" % ('Act', 'Pred', 'Block', 'Dummy', 'Succ', 'start', 'end')
-    for k, col in sorted(table.items()):
-        print "%-5s %-30s %5s %5s %5s %5s %5s" % tuple(
-                [str(k)] + [list(col[0])] + [str(col[i]) for i in range(1, len(col))])
 
 
 def sysloOptimal(prelations):
@@ -39,9 +30,10 @@ def sysloOptimal(prelations):
                             # [0 Predecesors,   1 Blocked, 2 Dummy, 3 Successors, 4 Start node, 5 End node]
                            #   Blocked = (False or Activity with same precedents)  
 
-    alt = graph.successors2precedents(successors)
+    
     #Step 0.
     grafo = {}
+    alt = graph.successors2precedents(successors)
     grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo, alt))
 
     #Step 1.
@@ -85,7 +77,6 @@ def sysloOptimal(prelations):
     # (b) find end nodes
     graph_end_node = node # Reserve one node for graph end 
     node += 1
-    pm_graph = pert.PertMultigraph()
     for act, columns in work_table.items():
         suc = columns.suc
         if suc:
@@ -93,16 +84,24 @@ def sysloOptimal(prelations):
         else:
             # Create needed end nodes, avoiding multiple graph end nodes (adaptation)
             if act in end_act:
-                columns.end_node = node 
-            else:
                 columns.end_node = graph_end_node
-                node += 1 
-        # Generate the graph
+            else:
+                columns.end_node = node 
+                node += 1
+    
+    
+    
+    #Step 8. Generate the graph
+    pm_graph = pert.PertMultigraph()
+    for act, columns in work_table.items():
         _, _, dummy, _, start, end = columns
         pm_graph.add_arc((start, end), (act, dummy))
 
     p_graph = pm_graph.to_directed_graph()
-    
+    return p_graph#.renumerar()
+
+
+
     return p_graph
 
 
