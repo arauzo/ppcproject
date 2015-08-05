@@ -94,24 +94,24 @@ def mouhoub(prelations):
 
     #Step 4. MOUHOUB algorithm rules to remove extra dummy activities
     
-    work_table_G1 = mouhoubRules.rule_1(successors_copy, work_table, Columns)
+    mouhoubRules.rule_1(successors_copy, work_table)
     
-    work_table_G2 = mouhoubRules.rule_2(prelations, work_table, work_table_G1, Columns)
+    G2 = mouhoubRules.rule_2(prelations, work_table)
     
-    work_table_G3 = mouhoubRules.rule_3(work_table_G2, work_table, Columns)
+    G3 = mouhoubRules.rule_3(G2, work_table)
     
-    work_table_G4 = mouhoubRules.rule_4(work_table_G3, work_table, Columns)
+    G4 = mouhoubRules.rule_4(G3, work_table)
     
-    work_table_G5_6 = mouhoubRules.rule_5_6(successors_copy, work_table, work_table_G4, Columns)
+    G5_6 = mouhoubRules.rule_5_6(successors_copy, work_table, G4)
     
-    work_table_G3a = mouhoubRules.rule_3(work_table_G5_6, work_table, Columns)
+    G3a = mouhoubRules.rule_3(G5_6, work_table)
     
-    work_table_G4a = mouhoubRules.rule_4(work_table_G3a, work_table, Columns)
+    G4a = mouhoubRules.rule_4(G3a, work_table)
     
-    work_table_G7 =  mouhoubRules.rule_7(successors_copy, successors, work_table_G4a, Columns, node)
+    G7 =  mouhoubRules.rule_7(successors_copy, successors, G4a, node)
     
     work_table_final = {}
-    for act, sucesores in work_table_G7.items():
+    for act, sucesores in G7.items():
         work_table_final[act] = Columns([], [], [], sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, [])
     
     
