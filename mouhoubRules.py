@@ -4,11 +4,16 @@ Remove dummy arcs to build a graph with minimal dummy activities according to th
 """
 
 from collections import Counter
+import namedlist
 
 separator = '|'
+Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc', 'start_node', 'end_node', 'aux'])
+                            # [0 Predecesors, 1 Successors, 2 Blocked, 3 Dummy, 4 Blocked successor, 5 Start node, 6 End node, 7 Auxiliar ]
+                            # Blocked = (False or Activity with same precedents) 
 
-    
-def rule_1(work_table_suc, work_table, Columns):
+
+  
+def rule_1(work_table_suc, work_table):
     """
     # Rule 1 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
 
@@ -31,25 +36,22 @@ def rule_1(work_table_suc, work_table, Columns):
                         pred.aux = True
                         work_table[act2].su = work_table[act].su
                         work_table[act2].suc = work_table[act].suc
-                        
                         remove.add(y)
                                        
     # Save the graph after the modification. Input graph G1 results graph G2
-    work_table_G1 = {}
     for act, sucesores in work_table.items():
         if sucesores.aux != True:
             if sucesores.pre != None:
                 for u in remove:
                     if u in sucesores.pre:
                         sucesores.pre = set(sucesores.pre) - set([u])
-            work_table_G1[act] = Columns(sucesores.pre, sucesores.su, sucesores.blocked, sucesores.dummy, sucesores.suc, sucesores.start_node, sucesores.end_node, sucesores.aux)
 
-    return work_table_G1
+    return 0
     
    
     
     
-def rule_2(work_table_pred, work_table, work_table_G1, Columns):
+def rule_2(work_table_pred, work_table):
     """
     # Rule 2 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
      return work_table_G2
@@ -75,21 +77,18 @@ def rule_2(work_table_pred, work_table, work_table_G1, Columns):
                         work_table[y].suc = work_table[act].su
                             
     # Save the graph after the modification. Input graph G results graph G1
-    work_table_G2 = {}
-    for act, columns in work_table_G1.items():
+    for act, columns in work_table.items():
         if columns.aux != True and act not in remove:
             if columns.su != None:
                 for u in remove:
                     if u in columns.su:
                         columns.su =  list(set(columns.su) - set([u]))
-                        
-            work_table_G2[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, columns.aux)
 
-    return work_table_G2
+    return work_table
     
 
 
-def rule_3(work_table_G2, work_table, Columns):
+def rule_3(work_table_G2, work_table):
     """
     # Rule 3 - If a vertex X has one predecessor vertex Y, then contract both vertices in one vertex and delete the resulting loop
       return work_table_G3
@@ -115,7 +114,7 @@ def rule_3(work_table_G2, work_table, Columns):
 
 
 
-def rule_4(work_table_G3, work_table, Columns):
+def rule_4(work_table_G3, work_table):
     """
     # Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
       return work_table_G4
@@ -147,7 +146,7 @@ def rule_4(work_table_G3, work_table, Columns):
     return work_table_G4
 
 
-def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
+def rule_5_6(work_table_suc, work_table, work_table_G4):
     """
     # Rule 5 - If successors of x are a superset of successors of y, then delete common activities and connect with a dummy arc from x to y
     # Rule 6 - If predecessors of x are a superset of predecessors of y, then delete common activities and connect with a dummy arc from x to y
@@ -199,12 +198,12 @@ def rule_5_6(work_table_suc, work_table, work_table_G4, Columns):
 
 
     
-def rule_7(successors_copy, successors, work_table, Columns, node):
+def rule_7(successors_copy, successors, work_table, node):
     """
     # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
       return work_table_G7
     """
-    left = set()
+    remove = set()
     visited = [] 
     
     #Store start node numbers of ecg predecssor in column aux
@@ -279,10 +278,10 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
                                             re1 = str(y).partition(separator)
                                             
                                             if re1[2] in temp_com:
-                                                left.add(y)
+                                                remove.add(y)
                                         else:
                                             if y in temp_com:
-                                                left.add(y)
+                                                remove.add(y)
                             
                             #
                             for t in temp_com:
@@ -293,7 +292,7 @@ def rule_7(successors_copy, successors, work_table, Columns, node):
     # Save the graph after the modification. Input graph G5/G6 results graph G7     
     work_table_G7 = {}
     for act, columns in work_table.items():
-        if act not in left:
+        if act not in remove:
             work_table_G7[act] = Columns(columns.pre, columns.su, columns.blocked, columns.dummy, columns.suc, columns.start_node, columns.end_node, None)
     
     return work_table_G7
