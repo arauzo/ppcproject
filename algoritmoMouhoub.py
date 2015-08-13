@@ -47,7 +47,7 @@ def mouhoub(prelations):
             work_table[act].dummy = True
           
           
-    #Step 2. Identify Identical Precedence Constraint of Diferent Activities
+    #Step 2. Identify Identical Precedence Constraint of Different Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
