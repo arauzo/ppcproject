@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Program to check graph generation algorithms with the project file passed as parameter
 
@@ -12,7 +10,7 @@ Apart from test results, show: run time, number of arcs, number of dummy arcs, n
 
 algorithms: list to include all algorithm to check.
 
-(C) 2014-2015 Antonio Arauzo-Azofra, Alberto Perez Caballero, Universidad de Cordoba
+(C) 2014 Antonio Arauzo-Azofra, Alberto Perez Caballero, Universidad de Cordoba
 """
 
 import os
@@ -31,6 +29,9 @@ import algoritmoSharma
 import algoritmoConjuntos
 import algoritmoGentoMunicio
 import algoritmoSalas
+import algoritmoMouhoub
+import algoritmoSysloPolynomial
+import algoritmoSysloOptimal
 
 def openProject(filename):
     """
@@ -72,6 +73,9 @@ def check_activities(activities):
     print "Check Conexos: ", conexos.check_conexos(successors)
     # Check cycles
     print "Check Cycles: ", Kahn1962.check_cycles(successors)
+    # Check Z configuration
+    #print "Check Z Configuration: ", Zconfiguration.check_zconfiguration(successors)
+    
     print ""
     # XXX Miss checking for non-redundancy
 
@@ -89,8 +93,6 @@ def main():
                         help='Number of repetitions (default: 1)')
     parser.add_argument('--SVG', action='store_true',
                         help='Draw the graph in a SVG file')
-    parser.add_argument('--show', action='store_true',
-                        help='Draw the graph in a window')
     parser.add_argument('--no-stop', action='store_true',
                         help='Do not stop when an algorithm fails')
 
@@ -104,13 +106,14 @@ def main():
                         help='Test Gento Municio algorithm')
     parser.add_argument('-o', '--Optimal', action='store_true',
                         help='Test set based optimal algorithm')
-
+    parser.add_argument('-m', '--Mouhoub', action='store_true',
+                        help='Test Mouhoub algorithm')
+    parser.add_argument('-p', '--Syslo_Polynomial', action='store_true',
+                        help='Test Syslo Polynomial algorithm')
+    parser.add_argument('-y', '--Syslo_Optimal', action='store_true',
+                        help='Test Syslo Optimal algorithm')
     args = parser.parse_args()
 
-    if not args.infiles:
-        print 'No input files. Use --help to see syntax.'
-        return 0
-        
     if args.repeat < 1:
         print 'Number of repetitions must be > 0'
         return 1
@@ -133,9 +136,12 @@ def main():
         algorithms.append( ('GentoMunicio', algoritmoGentoMunicio.gento_municio) )
     if args.Salas:
         algorithms.append( ('Salas', algoritmoSalas.salas) )
-    if len(algorithms) < 1:
-        print 'No algorithm selected. Just testing input files...'
-
+    if args.Mouhoub:
+        algorithms.append( ('Mouhoub', algoritmoMouhoub.mouhoub) )
+    if args.Syslo_Polynomial:
+        algorithms.append( ('Syslo Polinomico', algoritmoSysloPolynomial.sysloPolynomial) )
+    if args.Syslo_Optimal:
+        algorithms.append( ('Syslo Optimo', algoritmoSysloOptimal.sysloOptimal) )
     # Perform tests on each file 
     for filename in args.infiles:
         print "\nFilename: ", filename 
@@ -154,7 +160,8 @@ def main():
                 successors = {}
                 for i in data:
                     successors[i[1]] = i[2]
-                    
+
+        
                 # Count prelations
                 list_of_predecessors = successors.values()
                 num_of_predecessors = 0
@@ -176,7 +183,7 @@ def main():
                         if not args.no_stop:
                             return 1
                         break
-#                print pert_graph
+
                 if pert_graph:
                     ftime = os.times()
                     utime = ftime[0] - itime[0]
@@ -194,12 +201,14 @@ def main():
                         return 1
                     print ""
 
-                    # XXX ??Falta incluir aqui el numero de actividades?? Alberto -> Comprobar str(len(data)) num_actividades
+                    # XXX ??Falta incluir aqui el numero de actividades??
                     result_line = '"' + filename + '",' + '"' + name + '",' + str(len(data)) + ',' + str(num_of_predecessors) + ',' + \
                         str(pert_graph.number_of_nodes()) + ',' + str(pert_graph.number_of_arcs()) + ',' + \
                         str(pert_graph.numArcsReales()) + ',' + str(pert_graph.numArcsFicticios()) + ',' + "%.4f"%(utime)
                     f_csv.write(result_line + "\n")
-                        
+                    
+                if pert_graph == 1:
+                    print "No hay resultados que mostrar"
 
                     # Draw graph and save in a file (*.svg)
                     if args.SVG:
@@ -207,13 +216,6 @@ def main():
                         fsalida = open(os.path.split(filename)[1] + '_' + name + '.svg', 'w')
                         fsalida.write(image_text)
                         fsalida.close()
-
-                    # Interactively show graph on a window
-                    if args.show:
-                        window = graph.Test()
-                        window.add_image(graph.pert2image(pert_graph))
-                        graph.gtk.main()
-
 
     f_csv.close()
     return 0
