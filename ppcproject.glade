@@ -1495,6 +1495,50 @@ Uniform</property>
                         <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
                       </widget>
                     </child>
+
+
+
+
+
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoMouhoub">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="label" translatable="yes">Draw PERT Mouhoub </property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                      </widget>
+                    </child>
+
+
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoSysloOp">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="label" translatable="yes">Draw PERT Syslo Optimal </property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                      </widget>
+                    </child>
+
+
+
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoSysloPo">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="label" translatable="yes">Draw PERT Syslo Polynomial </property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                      </widget>
+                    </child>
+
+
+
+
                     <child>
                       <widget class="GtkMenuItem" id="mnAsignacion">
                         <property name="visible">True</property>
