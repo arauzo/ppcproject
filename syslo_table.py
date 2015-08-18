@@ -6,28 +6,34 @@
 import namedlist
 
 
-
-def syslo(temp, pert_graph, alt):
-
-    Family = namedlist.namedlist('Columns', ['u', 'w', 'est', 'no_est'])
+Family = namedlist.namedlist('Columns', ['u', 'w', 'est', 'no_est'])
                             # [0 Activities,   1 Successors, 2 Estable, 3 Non-estable,
                             #   Activities = (Activities with same successors) 
     
   
+
+def syslo(temp, pert_graph, alt):
+    """
+    
+    
+    """
+
+
     # Step 0.1. Topological Sorting
     setfamily = []
 
-    for k, v in sorted(temp.items()):
+    for k in sorted(temp, key = lambda k: len(temp[k]), reverse = True):
         setfamily.append(k)
 
-    for k, v in sorted(temp.items()):
-        for k2, v2 in sorted(temp.items()):
-            if k != k2 and set(v).issubset(set(v2)):
+    for k, v in temp.items():
+        for k2, v2 in temp.items():
+            if k != k2 and set(v).issubset(set(v2)) and len(v) < len(v2):
                 setfamily.remove(k)
                 setfamily.insert(setfamily.index(k2), k)
                 setfamily.remove(k2)
                 setfamily.insert(setfamily.index(k), k2)
-
+                
+                
     # Step 0.2. Save Prelations In A Work Table Group By Same Successors
     work_sorted_table = {}
     imp_cover = []
@@ -55,12 +61,16 @@ def syslo(temp, pert_graph, alt):
     # Step 0.3. Save Stable And Non Stable Activities
     stables(work_sorted_table, temp, alt)
     
+    
     # Step 3. Cover With Rules 5
     x = minCover(work_sorted_table)
     
-    # Step 0.4. Cover With Rules 7
-    maxCover(work_sorted_table, x, Family, s)
     
+    # Step 0.4. Cover With Rules 7
+    maxCover(work_sorted_table, x, s)
+    
+    
+    #
     for act, suc in work_sorted_table.items():
         for f in suc.u:
             if str(f).find('|'):
@@ -68,6 +78,7 @@ def syslo(temp, pert_graph, alt):
                   for t in suc.w:
                       if t in suc2.w and act != act2:
                           work_sorted_table[act].w = list(set(work_sorted_table[act2].w) | set(work_sorted_table[act].w))
+
 
     # Step 0.5. Save The Prelations In A New Dictionary
     pert_graph = {}
@@ -80,118 +91,184 @@ def syslo(temp, pert_graph, alt):
 
 
 def minCover(work_sorted_table):  
+    """
+    
+    
+    """
     x = 0
                         
     for act, suc in work_sorted_table.items():
         activities = []
         covered = []
-        acu =  [] 
-        not_covo = set()
-        maxim = []
-        temp = ''
-        
+        acc =  [] 
+        not_covored = set()
+       
         for act2, suc2 in work_sorted_table.items():
             common = set(suc.no_est) & set(suc2.w)
-            
-            if act2 > act and len(common) > 0 and set(acu) != set(suc.no_est):
-                acu = list(set(acu) | common)
-                not_covo = (not_covo | (set(suc2.w) - common))
+
+            if act2 > act and len(common) > 0:
+                if set(suc2.w) == set(suc.no_est):
+                    activities = []
+                    activities.append(act2)
+                    covered = suc2.w
+                    break
                 
-                if len(acu) > len(covered):
-                    if set(suc2.w) - common != set():
-                        for act3, suc3 in work_sorted_table.items():
-                            common = common | (set(suc.no_est) & set(suc3.w))
-                            if not_covo.issubset(suc.w) and not_covo and common == set(suc.no_est):
+                elif set(acc) != set(suc.no_est):
+                    acc = list(set(acc) | common)
+                    not_covored = (not_covored | (set(suc2.w) - common))
+                    
+                    if len(acc) > len(covered):
+                        if set(suc2.w) - common != set():
+                            if set(suc2.w).issubset(set(suc.no_est)):
                                 activities.append(act2)
-                                covered = acu
-                                break
+                                covered = suc2.w
+                            #    
+                            for act3, suc3 in work_sorted_table.items():
+                                common = common | (set(suc.no_est) & set(suc3.w))
+                                if not_covored.issubset(suc.w) and not_covored and common == set(suc.no_est) and act3 > act2:
+                                    activities.append(act2)
+                                    acc = set(acc) | set(acc)
+                                    covered = set(covered) | set(acc)
+                                    break
+             
+                        elif set(suc2.w) == common: 
+                            activities.append(act2)
+                            if not not_covored:
+                                covered = acc
+                            else:
+                                acc = suc2.w
+                                covered = suc2.w
                                     
-                    elif set(suc2.w) == common: 
-                        activities.append(act2)
-                        if not not_covo:
-                            covered = acu
-                            
-                            if len(suc2.w) > len(maxim):
-                                if temp in activities:
-                                    activities.remove(temp)
-                                    
-                                temp = act2
-                                activities.append(act2)
-                                maxim = suc2.w
-                                    
-                        else:
-                            acu = suc2.w
+                        elif suc2.w == suc.no_est: 
+                            activities = [act2]
                             covered = suc2.w
-                                
-                    elif suc2.w == suc.no_est:               
-                        activities = [act2]
-                        covered = suc2.w
-                        acu =  suc2.w
-                        break
-                
-        if set(acu).issubset(suc.no_est): 
-            acu = []
-            
+                            acc =  suc2.w
+                            break
+                     
+        #      
+        if set(acc).issubset(suc.no_est): 
+            acc = []
             for r in set(activities):
                 work_sorted_table[r].u  = set(work_sorted_table[r].u) | set(['d|' + str(x)])
                 suc.w  = list((set(suc.w) - set(covered)) | set(['d|' + str(x)]))    
                 suc.no_est = list(set(suc.no_est) - set(covered))
                 x += 1
     return x
- 
    
     
-def maxCover(work_sorted_table, x, Family, s):
-    dum = []
-    acc = set()
+def maxCover(work_sorted_table, x, s):
+    """
+    
+    
+    """
+    
+    
     covered = set()
     end_cover = True
     s = max(work_sorted_table) + 1 
     
     while end_cover == True:
         visited = []
+        visited2 = []
         maximalset = set()
         end_cover = False
         
         for act, suc in work_sorted_table.items():
-            for act2 in work_sorted_table:
+            t = False
+            l = False
+            acc = set()
+            
+            for act2, suc2 in work_sorted_table.items():
                 common = set(work_sorted_table[act].no_est) & set(work_sorted_table[act2].no_est)
-                if suc.no_est != []:
+                
+                if suc.no_est != [] and act not in visited2:
+                    end_cover = True
+                    covered.add(act)
+                    
                     if not common and act in list(covered) and len(suc.no_est) > 0:
                         acc = work_sorted_table[act].no_est
                         maximalset.add(act)
-                    end_cover = True
-                    covered.add(act)
-                    break
-                
+                        
                 if common and act != act2 and act not in visited:
                     if acc == set():
                         acc = common
                         maximalset.add(act)
-                        maximalset.add(act2)
+                        maximalset.add(act2)   
                     else:
-                        if common == set(acc):
-                            maximalset.add(act2)
                         
+                        for act3, suc3 in work_sorted_table.items():
+                            
+                            if act3 != act and act3 != act2:
+                                
+                                if set(suc3.no_est) & set(common):
+                                    acc = set(suc3.no_est) & set(common)
+                                    
+                                elif set(suc2.no_est) & set(common):
+                                    acc = set(suc2.no_est) & set(common)
+                                    maximalset.clear()
+                                    maximalset.discard(act)
+                                    
+                                    if set(suc.no_est) == set(suc2.no_est) & set(common):
+                                        t = True
+                                        break
+                                    
+                                t = False
+                                l = True
+                                break
+          
                     visited.append(act2)
-
+                    visited2.append(act)
+            
+            if maximalset == set([act]):
+                l = False
+                
+                
             for j in maximalset:
-                for n in acc:
-                    work_sorted_table[j].no_est = list((set(work_sorted_table[j].no_est) - set([n])))
-                    work_sorted_table[j].w = list((set(work_sorted_table[j].w) - set([n])) | set(list(['d|' + str(x)])))
-                    work_sorted_table[s] = Family(list(['d|' + str(x)]), list([n]), dum, [])
+                if t == True and l == True:
+                    dummy_act(work_sorted_table, j, s, x, acc)
                     s += 1
                     x += 1
+                else:
+                    if l == True:
+                        dummy_act(work_sorted_table, j, s, x, acc) 
+                        s += 1
+                        x += 1
+                    else:
+                        for n in acc:
+                            dummy_act(work_sorted_table, j, s, x, [n]) 
+                            s += 1
+                            x += 1
                 
-            acc = []
             maximalset.clear()
 
+        for act, suc in work_sorted_table.items():
+            for n in suc.no_est:
+                suc.no_est = list((set(suc.no_est) - set([n])))
+                suc.w = list((set(suc.w) - set([n])) | set(list(['d|' + str(x)])))
+                work_sorted_table[s] = Family(list(['d|' + str(x)]), list([n]), [], [])
+                s += 1
+                x += 1
 
 
-  
+
+
+def dummy_act(work_sorted_table, j, s, x, acc):
+    """
+    
+    """
+    work_sorted_table[j].no_est = list((set(work_sorted_table[j].no_est) - set(acc)))
+    work_sorted_table[j].w = list((set(work_sorted_table[j].w) - set(acc)) | set(list(['d|' + str(x)])))
+    work_sorted_table[s] = Family(list(['d|' + str(x)]), list(acc), [], [])
+
+    
+    
     
 def stables(work_sorted_table, temp, alt):
-
+    """
+    
+    
+    """
+    
     for act, suc in work_sorted_table.items():
         visit = []
         for q in suc.w:
@@ -212,7 +289,7 @@ def stables(work_sorted_table, temp, alt):
                     if set(temp[ind]) == com or set(temp[ind]) - set(list([h]))  == com:          
                         work_sorted_table[act].est = list(set(work_sorted_table[act].est) | set([h])) 
                         work_sorted_table[act].no_est = list(set(suc.w) - set(work_sorted_table[act].est))
-
+        #
         if suc.est == []:
             work_sorted_table[act].no_est = suc.w
    

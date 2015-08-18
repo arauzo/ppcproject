@@ -89,7 +89,19 @@ def sysloOptimal(prelations):
                 columns.end_node = node 
                 node += 1
     
-    
+    vis = []
+    for act, columns in work_table.items():
+        if columns.dummy == False:
+            for q in work_table[act].pre:
+                    for w in work_table[act].pre:
+                #if act != act2 and columns.end_node == columns2.end_node and columns.dummy == True and columns2.dummy == True:
+                        if q in work_table and w in work_table:
+                            if q != w and work_table[q].pre == work_table[w].pre and work_table[q].dummy==True and work_table[w].dummy==True:
+                                if w not in vis:
+                                    #print "DEL: ", q, w
+                                    del work_table[w]
+                                vis.append(q)
+                     
     
     #Step 8. Generate the graph
     pm_graph = pert.PertMultigraph()
