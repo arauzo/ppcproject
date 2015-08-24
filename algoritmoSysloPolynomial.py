@@ -1,5 +1,6 @@
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo in Polynomial time
+
 """
 
 import namedlist
@@ -67,7 +68,7 @@ def sysloPolynomial(prelations):
             work_table[act].dummy = True
 
 
-    #Step 3. Identify Dummy Activities And Identical Precedence Constraint of Different Activities
+    #Step 3. Identify Dummy Activities And Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
@@ -151,7 +152,7 @@ def makeCover(prelations, successors):
                     
         if u:
             work_table_imp[i] = MinRev(list(u), [])
-            i += 1
+            i+=1
             
 
     #Group by Identical Predecessors
@@ -173,7 +174,7 @@ def makeCover(prelations, successors):
                 work_table_imp[i].w = list(u)
             else:
                 work_table_imp[i] = MinRev([], list(u))
-            i += 1
+            i+=1
 
     return work_table_imp
             

@@ -1,7 +1,3 @@
-"""
-
-
-"""
 
 import namedlist
 
@@ -14,10 +10,10 @@ Family = namedlist.namedlist('Columns', ['u', 'w', 'est', 'no_est'])
 
 def syslo(temp, pert_graph, alt):
     """
+    Steps to build a PERT graph with the minimal number of dummy activities through the Syslo improper cover table
     
-    
+    return p_graph dictionary
     """
-
 
     # Step 0.1. Topological Sorting
     setfamily = []
@@ -49,7 +45,7 @@ def syslo(temp, pert_graph, alt):
         s += 1
         work_sorted_table[s] = Family(imp_cover, temp[g], [], [])
 
-    # Eliminar Redundancia
+    # Remove Redundancy
     for act, suc in work_sorted_table.items():
         for act2, suc2 in work_sorted_table.items():
             if suc.u == suc2.u and act != act2 and act2 not in visited:
@@ -62,15 +58,13 @@ def syslo(temp, pert_graph, alt):
     stables(work_sorted_table, temp, alt)
     
     
-    # Step 3. Cover With Rules 5
+    # Step 0.4. Cover With Rules 5
     x = minCover(work_sorted_table)
     
     
-    # Step 0.4. Cover With Rules 7
+    # Step 0.5. Cover With Rules 7
     maxCover(work_sorted_table, x, s, temp)
-    
-    
-    #
+    # Update the successors in set of activities where exist dummy activities
     for act, suc in work_sorted_table.items():
         for f in suc.u:
             if str(f).find('|'):
@@ -80,7 +74,7 @@ def syslo(temp, pert_graph, alt):
                           work_sorted_table[act].w = list(set(work_sorted_table[act2].w) | set(work_sorted_table[act].w))
 
 
-    # Step 0.5. Save The Prelations In A New Dictionary
+    # Step 0.6. Save The Prelations In A New Dictionary
     pert_graph = {}
     for act, suc in work_sorted_table.items():
         for e in suc.u:
@@ -92,8 +86,13 @@ def syslo(temp, pert_graph, alt):
 
 def minCover(work_sorted_table):  
     """
+    Find a minimal number of set in column 'W' which either cover non-estable activities of 'Wi' or cover
+    non-estable activities of 'Wi' and some activities which are inmediate successors of activities in 'Wi'
+    Introduce new dummy activities and update the column 'no_est' without the covered activities in 'Wi'
     
+    work_sorted_table = {'index': ['set of activities', 'set of successors', 'estable activities', 'non-estable activities']...}
     
+    return x (number of dummy activity)
     """
     x = 0
                         
@@ -107,6 +106,7 @@ def minCover(work_sorted_table):
             common = set(suc.no_est) & set(suc2.w)
 
             if act2 > act and len(common) > 0:
+                # If the non-estable activities are completely covered   
                 if set(suc2.w) == set(suc.no_est):
                     activities = []
                     activities.append(act2)
@@ -117,38 +117,34 @@ def minCover(work_sorted_table):
                     acc = list(set(acc) | common)
                     not_covered = (not_covered | (set(suc2.w) - common))
                     
-                    if set(suc2.w) - common != set():
-                        if set(suc2.w).issubset(set(suc.no_est)):
-                            activities.append(act2)
-                            covered = suc2.w
-                                
-                            #    
-                            if not_covered.issubset(suc.w) and not_covered:
-                                for act3, suc3 in work_sorted_table.items():
-                                    if act3 > act2:
-                                        common = common | (set(suc.no_est) & set(suc3.w))
-                                        if common == set(suc.no_est):
-                                            activities.append(act2)
-                                            acc = set(acc) | set(acc)
-                                            covered = set(covered) | set(acc)
-                                            break
+                    if len(acc) > len(covered):
+                        if set(suc2.w) - common != set():
+                            if set(suc2.w).issubset(set(suc.no_est)):
+                                activities.append(act2)
+                                covered = suc2.w
+                                #  Find sets of activities which belongs to the non-estable activities
+                                if not_covered.issubset(suc.w) and not_covered:
+                                    for act3, suc3 in work_sorted_table.items():
+                                        if act3 > act2:
+                                            common = common | (set(suc.no_est) & set(suc3.w))
+                                            if common == set(suc.no_est):
+                                                activities.append(act2)
+                                                acc = set(acc) | set(acc)
+                                                covered = set(covered) | set(acc)
+                                                break
                  
-                    elif set(suc2.w) == common: 
-                        activities.append(act2)
+                        # Set a minimal covered
+                        elif set(suc2.w) == common: 
+                            activities.append(act2)
                             
-                        if not not_covered:
-                            covered = acc
-                        else:
-                            acc = suc2.w
-                            covered = suc2.w
-                                   
-                    elif suc2.w == suc.no_est: 
-                        activities = [act2]
-                        covered = suc2.w
-                        acc = suc2.w
-                        break
+                            if not not_covered:
+                                covered = acc
+                            else:
+                                acc = suc2.w
+                                covered = suc2.w
+
                      
-        #      
+        #  If non-estable activities have a cover, insert new dummy activities and update the table    
         if set(acc).issubset(suc.no_est) and activities != []: 
             acc = []
             for r in activities:
@@ -161,12 +157,13 @@ def minCover(work_sorted_table):
     
 def maxCover(work_sorted_table, x, s, temp):
     """
-    
+    Find a maximal subset of activities which are non-estable in sets 'Wq' and q is maximal
     
     """
     end_cover = True
     s = max(work_sorted_table) + 1 
     
+    # While Non-estable column is not empty
     while end_cover == True:
         visited = []
         visited2 = []
@@ -178,14 +175,16 @@ def maxCover(work_sorted_table, x, s, temp):
             acc = set()
             if act in temp:
                 for act2, suc2 in work_sorted_table.items():
+                    common = set(work_sorted_table[act].no_est) & set(work_sorted_table[act2].no_est)
+                    
                     if suc.no_est != [] and act not in visited2:
                         end_cover = True
-                        common = set(work_sorted_table[act].no_est) & set(work_sorted_table[act2].no_est)
+    
                         if not common  and len(suc.no_est) > 0:
                             acc = work_sorted_table[act].no_est
                             maximalset.add(act)
                             
-                        elif common and act != act2 and act not in visited:
+                        if common and act != act2 and act not in visited:
                             if acc == set():
                                 acc = common
                                 maximalset.add(act)
@@ -227,31 +226,27 @@ def maxCover(work_sorted_table, x, s, temp):
                         x += 1
     
                 maximalset.clear()
-
+    
             for act, suc in work_sorted_table.items():
                 for n in suc.no_est:
                     dummy_act(work_sorted_table, act, s, x, [n])
                     s += 1
                     x += 1
-            
-        else:
-            break
 
-    return
-
+    return 0
 
 
 
 
 def dummy_act(work_sorted_table, j, s, x, acc):
     """
-    
+    Insert new dummy activities and update the table
     """
     work_sorted_table[j].no_est = list((set(work_sorted_table[j].no_est) - set(acc)))
-    work_sorted_table[j].w = list((set(work_sorted_table[j].w) - set(acc)) | set(list(['d|' + str(x)])))
-    work_sorted_table[s] = Family(list(['d|' + str(x)]), list(acc), [], [])
+    work_sorted_table[j].w = list((set(work_sorted_table[j].w) - set(acc)) | set(['d|' + str(x)]))
+    work_sorted_table[s] = Family(['d|' + str(x)], list(acc), [], [])
 
-    return
+    return 0
     
     
    
@@ -259,7 +254,7 @@ def dummy_act(work_sorted_table, j, s, x, acc):
     
 def stables(work_sorted_table, temp, alt):
     """
-    
+    Set the estables and non-estables activities on successors for each set of activities
     
     """
     
@@ -283,7 +278,9 @@ def stables(work_sorted_table, temp, alt):
                     if set(temp[ind]) == com or set(temp[ind]) - set(list([h]))  == com:          
                         work_sorted_table[act].est = list(set(work_sorted_table[act].est) | set([h])) 
                         work_sorted_table[act].no_est = list(set(suc.w) - set(work_sorted_table[act].est))
-        #
+
         if suc.est == []:
             work_sorted_table[act].no_est = suc.w
+    
+    return 0
    
