@@ -50,17 +50,24 @@ def salas(prelations):
             for k in positions:
                 if k not in visited:
                     # If activity 'k' has only one predecesor (only one 1 in the column)
-                    if t[k].count(1) == 1:          
+                    if t[k].count(1) == 1:
+                        # If activity 'k' is not a key in amfD dictionary (It is not activity with same end), 
+                        # cont +1 and set beginning node of activity 'k' the end node of activity X and cont as end node
                         if k not in amfD:
                             cont = cont + 1                
-                            d1[k] = [d1[X][1],cont]                  
+                            d1[k] = [d1[X][1],cont] 
+                        # If activity 'k' is key in amfD dictionary
                         else:
+                            # If end node of the activity 'k' is 0, 
+                            # cont +1 and set beginning node of activity 'k' the end node of activity X and cont as end node
                             if d1[k][1] == 0:
                                 cont = cont + 1                
-                                d1[k] = [d1[X][1],cont]    
+                                d1[k] = [d1[X][1],cont]
+                            # If activity 'k' is not 0
+                            # cont +1 and set beginning node of activity 'k' the end node of the activity X
                             else:
                                 d1[k][0] = d1[X][1]
-                                
+                            # Find activities with same end that activity 'k' and set the same end node to activity 'k' if its node is 0   
                             for l in amfD[k]:
                                 if d1[l][1] == 0:
                                     d1[l][1] = cont
@@ -68,29 +75,30 @@ def salas(prelations):
                         
                     # If activity 'k' has more than one 1 in the column 
                     elif t[k].count(1) > 1:
-                        mi = 0                            
+                        mi = 0    # mi = 0, it is not an activity with same beginning                        
                         base = []
-         
+                        # Find in ami list the activity 'k' and set the activities with same beginning node that 'k' as base
                         for l in ami:
                             if k in l and k not in visited:
                                 mi = 1
                                 base = l
-                       
+                        # if mi = 0, insert the activity 'k'
                         if mi == 0:
                             base.append(k)
                         pospre = []                    
                         cont1 = -1
-                        
+                        # Find in the columns formed by base and if there is some 1 (it is predecessor),
+                        # insert in pospre the position of that predecessor activity
                         for n in t[base[0]]:
                             cont1 = cont1 + 1
                             if n == 1:
                                 pospre.append(cont1)
-                       
+                        # in some predecessor activity there are not in visited, continue to the next activity in positions list
                         insert = 1
                         for n in pospre:
                             if n not in visited:
                                 insert = 0
-
+                        # If insert = 1, insert into visited the activities that belong to base
                         if insert == 1:
                             if mi == 1:
                                 for p in base:
@@ -127,7 +135,7 @@ def salas(prelations):
                                             # Insert dummy activity
                                             d1[a] = [d1[p][1], d1[equal][1]]
                                             a = a + 1
-
+        
                                             if p in amfD:
                                                 for u in amfD[p]:
                                                     amfA.append(u)
