@@ -1,6 +1,6 @@
 """
 MOUHOUB ALGORITHM RULES 
-Remove dummy arcs to build a graph with minimal dummy activities according to the Mouhoub algorithm rules
+Remove dummy arcs to build a graph with minimal number of dummy activities according to the Mouhoub algorithm rules
 """
 
 from collections import Counter
@@ -15,9 +15,9 @@ Columns = namedlist.namedlist('Columns', ['pre', 'su', 'blocked', 'dummy', 'suc'
   
 def rule_1(work_table_suc, work_table):
     """
-    # Rule 1 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
+    Rule 1 - For each subgraph with common and uncommon predecessors activities, contract end vertices in one vertex
 
-   """      
+    """      
     visited = []
     remove = set()
     for act, arcs in work_table_suc.items():
@@ -53,9 +53,10 @@ def rule_1(work_table_suc, work_table):
     
 def rule_2(work_table_pred, work_table):
     """
-    # Rule 2 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
-     return work_table_G2
-   """
+    Rule 2 - For each subgraph with common and uncommon successor activities, contract end vertices in one vertex
+     
+    return work_table_G2
+    """
     visited = []
     remove = set()
     
@@ -90,8 +91,9 @@ def rule_2(work_table_pred, work_table):
 
 def rule_3(work_table_G2, work_table):
     """
-    # Rule 3 - If a vertex X has one predecessor vertex Y, then contract both vertices in one vertex and delete the resulting loop
-      return work_table_G3
+    Rule 3 - If a vertex X has one predecessor vertex Y, then contract both vertices in one vertex and delete the resulting loop
+      
+    return work_table_G3
     """
     
     for act, arcs in work_table_G2.items():
@@ -116,8 +118,9 @@ def rule_3(work_table_G2, work_table):
 
 def rule_4(work_table_G3, work_table):
     """
-    # Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
-      return work_table_G4
+    Rule 4 - If a vertex X has one successor vertex Y, then contract both vertices in one vertex and delete the resulting loop
+      
+    return work_table_G4
     """
     work_table_G4 = work_table
     for act, arcs in work_table_G3.items():
@@ -148,9 +151,10 @@ def rule_4(work_table_G3, work_table):
 
 def rule_5_6(work_table_suc, work_table, work_table_G4):
     """
-    # Rule 5 - If successors of x are a superset of successors of y, then delete common activities and connect with a dummy arc from x to y
-    # Rule 6 - If predecessors of x are a superset of predecessors of y, then delete common activities and connect with a dummy arc from x to y
-      return work_table_G5_G6
+    Rule 5 - If successors of x are a superset of successors of y, then delete common activities and connect with a dummy arc from x to y
+    Rule 6 - If predecessors of x are a superset of predecessors of y, then delete common activities and connect with a dummy arc from x to y
+      
+    return work_table_G5_G6
     """
     visited = []
     new = set()
@@ -200,8 +204,9 @@ def rule_5_6(work_table_suc, work_table, work_table_G4):
     
 def rule_7(successors_copy, successors, work_table, node):
     """
-    # Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs
-      return work_table_G7
+    Rule 7 - If (A,B) is a maximal partial bipartite subgraph, then build a star with their common dummy arcs if A >= 2 and A+B >= 6
+      
+    return work_table_G7
     """
     remove = set()
     visited = [] 
@@ -242,7 +247,7 @@ def rule_7(successors_copy, successors, work_table, node):
                         if va == maximal:
                             a_set.append(j)
                     
-                    #
+                    # if A >= 2
                     if len(a_set) >= 2:
                         b_set = []
                         maxco = False
@@ -267,7 +272,7 @@ def rule_7(successors_copy, successors, work_table, node):
                                     else:
                                         temp_com = temp_com & common
                         
-                        #
+                        # if A + B >= 6
                         if len(temp_com) + len(common) >= 6:
                             for q in b_set:
                                 work_table[d_node(q, node)] = Columns([q], None, None, True, str(node), work_table[q].end_node, node, None)
@@ -283,7 +288,7 @@ def rule_7(successors_copy, successors, work_table, node):
                                             if y in temp_com:
                                                 remove.add(y)
                             
-                            #
+                            # Insert dummy activities in the work table
                             for t in temp_com:
                                 work_table[d_node(node, t)] = Columns(None, None, None, True, t, node, work_table[t].start_node, None)
                             
@@ -301,6 +306,11 @@ def rule_7(successors_copy, successors, work_table, node):
 
 
 def d_node(x, y):
+    """
+    Create the dummy activity
+    
+    return node (name of the dummy activity)
+    """
     node = str(x) + separator + str(y)
     
     return node
