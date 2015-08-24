@@ -2,8 +2,9 @@
 Algorithm to build a PERT graph based on Malek Mouhoub et. al algorithm
 """
 import namedlist
-import validation
 
+import fileFormats
+import validation
 import pert
 import graph
 import zConfiguration
@@ -47,7 +48,7 @@ def mouhoub(prelations):
             work_table[act].dummy = True
           
           
-    #Step 2. Identify Identical Precedence Constraint of Different Activities
+    #Step 2. Identify Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
@@ -137,9 +138,6 @@ def mouhoub(prelations):
 
 
 def main():
-    
-    import fileFormats
-    
     """
     Test Mouhoub algorithm
 

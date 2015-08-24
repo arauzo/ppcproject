@@ -1,5 +1,5 @@
 """
-Algorithm to draw Graph PERT based on algorithm from Syslo with an Optimal solution
+Algorithm to draw Graph PERT based on algorithm from Syslo with Optimal solution
 """
 
 import argparse
@@ -36,7 +36,7 @@ def sysloOptimal(prelations):
     alt = graph.successors2precedents(successors)
     grafo = graph.successors2precedents(syslo_table.syslo(prela, grafo, alt))
 
-    #Step 1.
+    #Step 1. Save the new prelation table in a work table
     work_table = {}
     for act, pre in grafo.items():
         if not act in prelations:
@@ -45,7 +45,7 @@ def sysloOptimal(prelations):
             work_table[act] = Columns(pre, False, False, None, None, None)
 
 
-    #Step 3. Identify Dummy Activities And Identical Precedence Constraint of Diferent Activities
+    #Step 2. Identify Dummy Activities And Identical Precedence Constraint of Diferent Activities
     visited_pred = {}
     for act, columns in work_table.items():
         pred = frozenset(columns.pre)
@@ -55,7 +55,7 @@ def sysloOptimal(prelations):
             columns.blocked = visited_pred[pred]
 
 
-    #Step 4. Creating nodes
+    #Step 3. Creating nodes
     # (a) find start nodes
     node = 0 # instead of 0, can start at 100 to avoid confusion with activities named with numbers when debugging
     for act, columns in work_table.items():
@@ -89,29 +89,27 @@ def sysloOptimal(prelations):
                 columns.end_node = node 
                 node += 1
     
+    # Step 4. Remove redundancy of dummy activities
     vis = []
     for act, columns in work_table.items():
         if columns.dummy == False:
             for q in work_table[act].pre:
                     for w in work_table[act].pre:
-                #if act != act2 and columns.end_node == columns2.end_node and columns.dummy == True and columns2.dummy == True:
                         if q in work_table and w in work_table:
                             if q != w and work_table[q].pre == work_table[w].pre and work_table[q].dummy==True and work_table[w].dummy==True:
                                 if w not in vis:
-                                    #print "DEL: ", q, w
                                     del work_table[w]
                                 vis.append(q)
                      
     
-    #Step 8. Generate the graph
+    #Step 5. Generate the graph
     pm_graph = pert.PertMultigraph()
     for act, columns in work_table.items():
         _, _, dummy, _, start, end = columns
         pm_graph.add_arc((start, end), (act, dummy))
 
     p_graph = pm_graph.to_directed_graph()
-    return p_graph#.renumerar()
-
+    return p_graph
 
 
     return p_graph
