@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Algorithm to build a PERT graph according to the Salas method
 
+Copyright 2007-15 University of Cordoba (Spain)
 """
 
 import pert

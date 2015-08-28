@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on building with sets of dependencies
+
+Copyright 2007-15 University of Cordoba (Spain)
 """
 import sys
 import pert
