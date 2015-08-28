@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Yuval Cohen and Arick Sadeh
+
+Copyright 2007-15 University of Cordoba (Spain)
 """
 import collections
 import namedlist

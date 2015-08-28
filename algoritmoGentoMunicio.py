@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Algorithm to draw Graph PERT based on algorithm from Gento-Municio
+
+Copyright 2007-15 University of Cordoba (Spain)
+"""
+
 import scipy
 import numpy
 import collections

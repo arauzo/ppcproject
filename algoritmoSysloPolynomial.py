@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Algorithm to draw Graph PERT based on algorithm from Syslo in Polynomial time
 
+Copyright 2007-15 University of Cordoba (Spain)
 """
 
 import namedlist

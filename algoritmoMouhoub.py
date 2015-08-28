@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Algorithm to build a PERT graph based on Malek Mouhoub et. al algorithm
+
+Copyright 2007-15 University of Cordoba (Spain)
 """
 import namedlist
 
