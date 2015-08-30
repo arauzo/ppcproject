@@ -1,6 +1,6 @@
 PPC-project is a multiplatform software tool for education and research in project management. 
 
-[![](http://ax5.com/wp-content/uploads/PPCprojectScreenShot_reduced512.png)](http://code.google.com/p/ppcproject/)
+[![](http://ax5.com/wp-content/uploads/PPCprojectScreenShot_reduced512.png)](http://github.com/arauzo/ppcproject)
 
 Authors: 
   * Antonio Araúzo Azofra
