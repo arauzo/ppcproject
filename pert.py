@@ -21,7 +21,6 @@
 import sys
 import graph
 import copy
-
 import algoritmoSharma
 
 class PertMultigraph(graph.DirectedMultigraph):
@@ -40,6 +39,7 @@ class PertMultigraph(graph.DirectedMultigraph):
         """
         Removes all multi arcs and returns a Pert DirectedGraph
         """
+        # XXX We should change this method to avoid changing self
         # Remove parallel activities
         arcs_with_more_than_one = filter(lambda x : len(x[1]) > 1, self.arcs.items())
         for arc, labels in arcs_with_more_than_one:
@@ -65,7 +65,8 @@ class PertMultigraph(graph.DirectedMultigraph):
 
     def nextNodeNumber(self):
         """
-        New node number max(graph)+1 O(n)
+        New node number max(graph)+1 
+        Efficiency: O(n)
         """
         # Could be O(1): len(directed graph)+1 must be an available node number
         # (i.e. graph nodes must be numbered starting in 0 or 1 at most)
@@ -99,6 +100,22 @@ class Pert(graph.DirectedGraph):
             rstr += str(link) + '-' + str(act) + '\n'
         return rstr
 
+    def start_node(self):
+        """
+        PERT Graph start node
+        """
+        for k,v in self.predecessors.iteritems():
+            if not v:
+                return k
+
+    def end_node(self):
+        """
+        PERT Graph end node
+        """
+        for k,v in self.successors.iteritems():
+            if not v:
+                return k
+
     def numArcsReales(self):
         """
         Metodo que devuelve el numero de arcos reales que conforman el grafo
@@ -106,7 +123,7 @@ class Pert(graph.DirectedGraph):
         cont=0
         for (i,j) in self.arcs:
             if self.arcs[(i,j)][1] == False:
-                cont = cont+1
+                cont = cont + 1
         return cont
 
     def numArcsFicticios(self):
@@ -116,12 +133,13 @@ class Pert(graph.DirectedGraph):
         cont=0
         for (i,j) in self.arcs:
             if self.arcs[(i,j)][1]==True:
-                cont = cont+1
+                cont = cont + 1
         return cont
 
     def nextNodeNumber(self):
         """
-        New node number O(n): max(graph) + 1
+        New node number: max(graph) + 1
+        Efficiency: O(n)
         """
         # Could be O(1): len(directed graph)+1 must be an available node number
         # (i.e. graph nodes must be numbered starting in 0 or 1 at most)
