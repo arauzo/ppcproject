@@ -1495,11 +1495,16 @@ Uniform</property>
                         <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
                       </widget>
                     </child>
-
-
-
-
-
+                    <child>
+                      <widget class="GtkMenuItem" id="algoritmoGentoMunicioT">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="label" translatable="yes">Draw PERT GentoMunicio T </property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_mnGrafo_activate" swapped="no"/>
+                      </widget>
+                    </child>
                     <child>
                       <widget class="GtkMenuItem" id="algoritmoMouhoub">
                         <property name="visible">True</property>
