@@ -6,8 +6,8 @@
    project management
 
  Main program, acting as general controller in the Model-View-Controller squema
- 
- NOTE: this module should not contain: 
+
+ NOTE: this module should not contain:
     * data handling, computations... -> must be placed in Model modules
     * graphic interface details... -> must be placed in View modules
 
@@ -61,8 +61,10 @@ from simAnnealing import resources_availability
 from simAnnealing import resources_per_activities
 from simAnnealing import calculate_loading_sheet
 import algoritmoSharma, algoritmoConjuntos, algoritmoCohenSadeh, algoritmoSalas, algoritmoGentoMunicio
+import algoritmoSysloOptimal, algoritmoSysloPolynomial, algoritmoMouhoub
 import graph
-import math
+import timedpert
+
 #import pruebaInterface
 #import assignment
 
@@ -85,16 +87,16 @@ class PPCproject(object):
         self.optimumSchedule = []
         self.schedules = []
         self.schedule_tab_labels = []
-        
+
         self.distributionType = None
-        
+
 
         self.bufer = gtk.TextBuffer()
         self.ganttActLoaded = False
         self.interface = interface.Interface(self, program_dir)
         self._widgets = self.interface._widgets
         self._widgets.signal_autoconnect(self)
-        
+
         self.vBoxProb = self._widgets.get_widget('vbProb')
         self.grafica = gtk.Image()
         self.box = gtk.VBox()
@@ -114,12 +116,12 @@ class PPCproject(object):
         self.vAsignacion = self._widgets.get_widget('wndAsignacion')
         self.vTestKS = self._widgets.get_widget('wndTestKS')
         self.vKSResults = self._widgets.get_widget('wndKSTestResults')
-        
-        self.vAvgDuration = self._widgets.get_widget('wndAvgDuration')        
+
+        self.vAvgDuration = self._widgets.get_widget('wndAvgDuration')
         self.vDistNormal = self._widgets.get_widget('wndDistNormal')
         self.vDistTriBeta = self._widgets.get_widget('wndDistTriBeta')
         self.vDistUnif = self._widgets.get_widget('wndDistUnif')
-        
+
 
         self.dAyuda = self._widgets.get_widget('dAyuda')
         self.bHerramientas = self._widgets.get_widget('bHerramientas1')
@@ -144,7 +146,7 @@ class PPCproject(object):
 
         self.zadViewList = self._widgets.get_widget('vistaZad')
         self.ventanaScroll = self._widgets.get_widget('scrolledwindow10') #YO
-        
+
         self.modelo = self.interface.modelo
         self.gantt = self.interface.gantt
         self.ganttSA = self.interface.ganttSA
@@ -173,13 +175,13 @@ class PPCproject(object):
                                                          self._widgets.get_widget('vistaListaAR'))
 
 
-        
-        # Keeps the name of the open file 
+
+        # Keeps the name of the open file
         # (None = no open file, 'Unnamed' = Project without name yet)
         self.openFilename = None
         self.set_modified_state(False)
         self.set_open_state(False)
-        
+
         # File format loaders and savers
         #  (the order is used to try when loading unknown type files)
         self.fileFormats = [
@@ -207,7 +209,7 @@ class PPCproject(object):
 #            if titer is None:
 #                titer = tmodel.get_iter_first()
 #            path = tmodel.get_path(titer)
-#            
+#
 #            next_column = columns[0]
 #            next_field_name = next_column.get_data('field_name')
 #            gobject.idle_add(treeview.set_cursor, path, next_column, True )
@@ -216,7 +218,7 @@ class PPCproject(object):
     def cbtreeview (self, container, widget):
         """
         Sets Gantt row height according to the activities treeview.
-    
+
         Parameters: container
                     widget
 
@@ -231,7 +233,7 @@ class PPCproject(object):
     def set_open_state(self, value):
         """
         Enable or disable project editing controls (when a project is open or not)
-    
+
         Parameters: value (True or False)
 
         Returns: None.
@@ -250,7 +252,7 @@ class PPCproject(object):
     def set_modified_state(self, value):
         """
         Enable or disable project saving controls (when project is modified or not)
-    
+
         Parameters: value (True or False)
 
         Returns: None.
@@ -264,23 +266,23 @@ class PPCproject(object):
             self._widgets.get_widget('stbStatus').push(0, _("Project modified"))
         else:
             self._widgets.get_widget('stbStatus').push(0, _("Project without changes"))
-       
-    
-    
+
+
+
 ### FUNCIONES DE INTRODUCCIÓN, CARGA Y ACTUALIZACIÓN DATOS
 
     def introduccionDatos(self):
         """
          Creación de un nuevo proyecto, eliminación de la lista actual y
                   adicción de una fila vacía a la lista
-  
+
          Parámetros: -
          Valor de retorno: -
         """
-        self.openFilename = 'Unnamed' 
+        self.openFilename = 'Unnamed'
         self.updateWindowTitle()
         # Se limpian las listas y la interfaz para la introducción de nuevos datos
-        self.modelo.clear()   
+        self.modelo.clear()
         self.modeloComboS.clear()
         self.modeloComboARR.clear()
         self.modeloComboARA.clear()
@@ -301,18 +303,18 @@ class PPCproject(object):
         self.set_open_state(True)
         self.set_modified_state(True)
         self.ntbSchedule.show()
-  
+
     def col_edited_cb(self, renderer, path, new_text, modelo, n):
         """
-         Edicción de filas y adicción de una fila vacía  
+         Edicción de filas y adicción de una fila vacía
                   cuando escribimos sobre la última insertada
-  
+
          Parámetros: renderer (celda)
                      path (fila)
                      new_text (nuevo texto introducido)
                      modelo (interfaz)
                      n (columna)
-  
+
          Valor de retorno: -
         """
         preVal = None  # Previous value
@@ -346,7 +348,7 @@ class PPCproject(object):
                                 self.modeloComboS.set_value(it, 0, new_text)
                                 it=self.modeloComboARA.get_iter(path)
                                 self.modeloComboARA.set_value(it, 0, new_text)
-                                    
+
                             else:  # Se inserta normalmente
                                 modelo[path][1] = new_text
                                 self.modeloComboS.append([modelo[path][1]])
@@ -357,8 +359,8 @@ class PPCproject(object):
                         else:
                             self.dialogoError(_('Repeated activity.'))
                             return
-      
-      
+
+
                 elif modelo[int(path)][1] != "":
                     if n == 2:  # Columna de las siguientes
                         modelo = self.comprobarSig(modelo, path, new_text)
@@ -367,7 +369,7 @@ class PPCproject(object):
                 else:
                     self.dialogoError(_('Activity name must be introduced first.'))
                     return
-                
+
             elif modelo == self.modeloR:  # Resources
                 if n == 0:
                     recursos = self.resources2List()
@@ -391,41 +393,41 @@ class PPCproject(object):
                 elif modelo[int(path)][0] == "" or modelo[int(path)][0] == None:
                     self.dialogoError(_('Resource name must be introduced first.'))
                     return
-                
+
                 else:
                     modelo[path][n] = new_text
-                
-            else:  # Otras interfaces 
+
+            else:  # Otras interfaces
                 modelo[path][n] = new_text
-                    
+
             iterador=modelo.get_iter(path)
             proximo=modelo.iter_next(iterador)
             if proximo == None:  #si estamos en la última fila, insertamos otra vací­a
                 # Actividades
                 if modelo==self.modelo:
                     #siempre debe existir un elemento más en modelo que en actividades
-                    if len(modelo)!=len(self.actividad): 
-                        modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '', 
-                                       'Beta',""])     
-                        fila=['', '', [], '', '', '', '', '', 'Beta', 0]
-                        self.actividad.append(fila) 
-                    else:
-                        modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '', 
+                    if len(modelo)!=len(self.actividad):
+                        modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '',
                                        'Beta',""])
-                        #print self.actividad 
-                     
+                        fila=['', '', [], '', '', '', '', '', 'Beta', 0]
+                        self.actividad.append(fila)
+                    else:
+                        modelo.append([modelo[len(modelo)-1][0] + 1, '', '', '', '', '', '', '',
+                                       'Beta',""])
+                        #print self.actividad
+
                 # Recursos
-                elif modelo==self.modeloR:  
-                    modelo.append()  
+                elif modelo==self.modeloR:
+                    modelo.append()
                     filaR=['', '', '', '']
                     self.recurso.append(filaR)
-                       
+
                 # Recursos necesarios por actividad
                 else:
                     modelo.append()
                     filaAR=['', '', '']
                     self.asignacion.append(filaAR)
-                       
+
             # Actualizamos las listas con los nuevos datos introducidos
 
             self.actualizacion(modelo, path, n, preVal)
@@ -463,17 +465,17 @@ class PPCproject(object):
         self.modeloComboS.reorder(new_order)
         self.modeloComboARA.reorder(new_order)
         self.reorder_activities()
-  
+
     def actualizacion(self, modelo, path, n, preVal):
         """
-         Actualización de las tres listas con los nuevos datos introducidos 
+         Actualización de las tres listas con los nuevos datos introducidos
                   (lista de actividades, de recursos y de asignacion)
-  
+
          modelo (interfaz)
          path (fila)
          n (columna)
          preVal (Valor Anterior)
-         
+
          Valor de retorno: -
         """
         gantt_modified = False
@@ -491,31 +493,31 @@ class PPCproject(object):
                     self.gantt.set_activity_comment(self.modelo[path][1],self.modelo[path][1])
                     self.actividad[int(path)][n] = self.modelo[path][n]
                 # Si se introduce la duración optimista, pesimista o mas probable
-                elif n in range(3, 6):   
+                elif n in range(3, 6):
                     self.actividad[int(path)][n]=float(self.modelo[path][n])
                     if self.modelo[path][3] != '' and self.modelo[path][4] != '' and self.modelo[path][5] != '':
                         a = float(self.modelo[path][3]) #d.optimista
                         b = float(self.modelo[path][5]) #d.pesimista
                         m = float(self.modelo[path][4]) #d.más probable
-                     
+
                         # Se comprueba que las duraciones sean correctas
                         ok = ( (a < b and m <= b and m >= a) or (a == b and b == m))
-   
+
                         if ok:  #se actualizan la media y la desviación tí­pica
                             #distribucion=str(self.modelo[path][8])
                             self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                             self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
                             gantt_modified = True
-                            
+
                         else:  #se emite un mensaje de error
                             self.dialogoError(_('Wrong durations introduced.'))
                             self.modelo[path][n]=self.actividad[int(path)][n] = preVal
- 
+
                             #self.modelo[path][6]=self.actividad[int(path)][6]=''
-                        
-                              
-                # Si se introduce la media, se elimina el resto de duraciones MODIFICADO POR MI    
-                elif n == 6:   
+
+
+                # Si se introduce la media, se elimina el resto de duraciones MODIFICADO POR MI
+                elif n == 6:
                     self.actividad[int(path)][n] = float(self.modelo[path][n])
                     for i in range(3, 6):
                         self.modelo[path][i] = ''
@@ -524,9 +526,9 @@ class PPCproject(object):
                         self.modelo[path][7] = self.actividad[int(path)][7] = 0.2 * float(self.modelo[path][6])
                     self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
                     gantt_modified = True
-  
+
                 # Si se modifica el tipo de distribución, se actualizan la media y la desviación tí­pica
-                elif n == 8:  
+                elif n == 8:
                     self.actividad[int(path)][8] = self.modelo[path][8]
                     if self.modelo[path][3] != '' or self.modelo[path][4] != '' or self.modelo[path][5] != '':
                         a=float(self.modelo[path][3]) #d.optimista
@@ -535,16 +537,16 @@ class PPCproject(object):
                         #distribucion=str(self.modelo[path][8])
                         self.actualizarMediaDTipica(path, self.modelo, self.actividad, a, b, m)
                         self.gantt.set_activity_duration(self.modelo[path][1], float(self.modelo[path][6]))
-                        gantt_modified = True                 
-   
-                # Se controla el valor introducido en las siguientes 
-                elif n == 2:  
+                        gantt_modified = True
+
+                # Se controla el valor introducido en las siguientes
+                elif n == 2:
                     if self.modelo[path][2] == self.actividad[int(path)][1]:
                         self.modelo[path][2] == ''
                         self.actividad[int(path)][2] = []
-                    else: 
+                    else:
                         self.actividad[int(path)][2] = self.actString2actList(self.modelo[path][2])
-                        self.gantt.set_activity_prelations(self.actividad[int(path)][1], 
+                        self.gantt.set_activity_prelations(self.actividad[int(path)][1],
                                                            self.actString2actList(self.modelo[path][2]))
                         gantt_modified = True
                 elif n == 9:
@@ -553,8 +555,8 @@ class PPCproject(object):
                 # Si no es ningún caso de los anteriores, se actualiza normalmente
                 else:
                     self.actividad[int(path)][n]=self.modelo[path][n]
- 
-        # Recursos 
+
+        # Recursos
         elif modelo == self.modeloR:
             if n == 0:
                 for index in range(len(self.asignacion)):
@@ -562,12 +564,12 @@ class PPCproject(object):
                         self.asignacion[index][1] = self.modeloR[path][n]
                         self.modeloAR[index][1] = self.modeloR[path][n]
             self.recurso[int(path)][n] = self.modeloR[path][n]
-            # Si el recurso es Renovable    
+            # Si el recurso es Renovable
             if self.modeloR[path][1] == _('Renewable'):
                 if n == 2:
                     self.dialogoRec(_('Renewable'))
                 self.recurso[int(path)][2] = self.modeloR[path][2] = ''
-            # Si el recurso es No Renovable    
+            # Si el recurso es No Renovable
             elif self.modeloR[path][1] == _('Non renewable'):
                 if n == 3:
                     self.dialogoRec(_('Non renewable'))
@@ -582,7 +584,7 @@ class PPCproject(object):
         # Recursos necesarios por actividad
         else:
             self.asignacion[int(path)][n] = self.modeloAR[path][n]
-   
+
             #print self.asignacion
         if gantt_modified == True:
             act_list = []
@@ -595,35 +597,35 @@ class PPCproject(object):
             if n == 9:
                 self.schedules[self.ntbSchedule.get_current_page()][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, self.ntbSchedule.get_current_page() == 0, self.schedules[self.ntbSchedule.get_current_page()][1], modelo[path][1])
             elif n == 2:
-                self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+                self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True,
                                                                        self.schedules[0][1])
             else:
-                self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+                self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True,
                                                                        self.schedules[0][1], modelo[path][1])
                 for index in range(1, len(self.schedules)):
                     self.schedules[index][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, False,
                                                                              self.schedules[index][1], modelo[path][1])
             self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
-   
-   
+
+
     def actualizarMediaDTipica(self, path, modelo, actividad, a, b, m):
         """
-         Actualización de la media y la desviación típica 
-  
+         Actualización de la media y la desviación típica
+
          Parámetros: path (fila)
                      modelo (interfaz)
                      actividad (lista de actividades)
                      a (duración optimista)
                      b (duración pesimista)
                      m (duración más probable)
-  
+
          Valor de retorno: -
         """
         # Si la distribución es Normal, se dejan las celdas vacías para la introducción manual de los datos
         if modelo[path][8] == _('Normal'):
             modelo[path][3] = actividad[int(path)][3] = ''
             modelo[path][4] = actividad[int(path)][4] = ''
-            modelo[path][5] = actividad[int(path)][5] = ''  
+            modelo[path][5] = actividad[int(path)][5] = ''
             modelo[path][6] = actividad[int(path)][6] = ''
             modelo[path][7] = actividad[int(path)][7] = ''
 
@@ -633,11 +635,11 @@ class PPCproject(object):
             m='%4.3f'%(media)
             actividad[int(path)][6] = modelo[path][6] = m
             dT='%4.3f'%(dTipica)
-            actividad[int(path)][7] = modelo[path][7] = dT 
+            actividad[int(path)][7] = modelo[path][7] = dT
 
     def comprobarSig(self, modelo, path, new_text):
         """
-         Control de la introducción de las siguientes  
+         Control de la introducción de las siguientes
 
          Parámetros: modelo (interfaz)
                      path (fila)
@@ -649,8 +651,8 @@ class PPCproject(object):
         actividades = self.actividades2Lista()
 
         # Se pasa a una lista las actividades que tengo como siguientes antes de la modificación
-        anterior = self.actString2actList(modelo[path][2]) 
-        #print anterior, 'anterior' 
+        anterior = self.actString2actList(modelo[path][2])
+        #print anterior, 'anterior'
 
         # Se pasa el nuevo texto a una lista
         modificacion = self.actString2actList(new_text)
@@ -660,50 +662,50 @@ class PPCproject(object):
             modelo[path][2] = ''
 
         else:  # Se introduce texto
-            # Si se introduce un sólo dato (es seleccionado del selector, 
+            # Si se introduce un sólo dato (es seleccionado del selector,
             # introducido manualmente ó se intentan borran todos las siguientes menos esa)
-            if len(modificacion) == 1:  
+            if len(modificacion) == 1:
                 if modificacion[0] in actividades:  # Si esa etiqueta existe como actividad
-                    if modificacion[0] != modelo[path][1]: # Si no coincide con su etiqueta 
-                        # Si no se encuentra ya introducida como siguiente, la añadimos 
-                        if modificacion[0] not in anterior: 
+                    if modificacion[0] != modelo[path][1]: # Si no coincide con su etiqueta
+                        # Si no se encuentra ya introducida como siguiente, la añadimos
+                        if modificacion[0] not in anterior:
                             self.insertamosSiguiente(modelo, path, modificacion[0])
                         # Si se encontraba anteriormente, lo más probable es que se intenten borrar todas las
                         # siguientes excepto esa
-                        else: 
+                        else:
                             modelo[path][2] = modificacion[0]
                             self.actividad[int(path)][2] = modelo[path][2]
-             
+
             else:  # Al intentar introducir más de un elemento, estoy añadiendo manualmente o intentando borrar
                 c = 0  # Controla condiciones erróneas
                 d = 0  #    "         "           "
                 for n in modificacion:  # Analizamos cada siguiente de la lista de modificacion
-                    if n not in actividades:  # Si esa etiqueta existe como actividad 
+                    if n not in actividades:  # Si esa etiqueta existe como actividad
                         c += 1
                     else:
-                        if n==modelo[path][1]:  # Si coincide con su etiqueta 
+                        if n==modelo[path][1]:  # Si coincide con su etiqueta
                             c += 1
                         else:
                             if n in anterior:  # Si se encuentra ya introducida como siguiente
                                 d += 1
-                 
+
                 if c == 0: # Si no se da ninguno de los dos primeros casos
                     cadena = ', '.join(modificacion) # Pasamos la lista a cadena para mostrarla en la interfaz
                     if d != 0:  # Si se da el último caso, se sobreescribe
                         modelo[path][2] = cadena
                         self.actividad[int(path)][2] = modelo[path][2]
                     else: # Si todo es correcto, se añade normalmente
-                        self.insertamosSiguiente(modelo, path, cadena)    
-       
+                        self.insertamosSiguiente(modelo, path, cadena)
+
         return modelo
 
 
     def modificarSig(self, modelo, original, nuevo):
         """
-        Al modificar la etiqueta de alguna actividad, se modifica  
+        Al modificar la etiqueta de alguna actividad, se modifica
                  también cuando ésta sea siguiente de alguna otra actividad
 
-        Parámetros: modelo (interfaz) 
+        Parámetros: modelo (interfaz)
                     original (etiqueta original)
                     nuevo (etiqueta nueva)
 
@@ -716,22 +718,22 @@ class PPCproject(object):
                     #print '2'
                     modelo[a][2] = nuevo
                     self.actividad[a][2] = self.actString2actList(nuevo)
- 
+
                 else: # Si original no es la única siguiente
                     for m in range(len(self.actividad[a][2])):
                         # La siguiente que coincida con original, se modifica por nuevo
-                        if original == self.actividad[a][2][m]: 
+                        if original == self.actividad[a][2][m]:
                             #print '3'
                             self.actividad[a][2][m] = nuevo
                             modelo[a][2] = ', '.join(self.actividad[a][2])
-  
+
         return modelo
-   
+
 
     def add_schedule(self, name , sch_dic):
         """
         Add new schedule.
-    
+
         Parameters: name: schedule name.
                     sch_dic: schedule.
 
@@ -751,7 +753,7 @@ class PPCproject(object):
     def set_schedule(self, schedule):
         """
         Set current schedule
-    
+
         schedule, the schedule to set
 
         Returns: None.
@@ -767,7 +769,7 @@ class PPCproject(object):
     def on_mnTabsDelete_activate(self, widget):
         """
         Delete tab.
-    
+
         Parameters: widget.
 
         Returns: None.
@@ -782,7 +784,7 @@ class PPCproject(object):
     def on_mnTabsNew_activate(self, widget):
         """
         Action when new schedule tab is requested from context menu
-    
+
         Parameters: widget.
 
         Returns: None.
@@ -793,11 +795,11 @@ class PPCproject(object):
 
     def actualizarColR(self, columnaRec):
         """
-         Actualización de la columna de recursos en la lista de    
+         Actualización de la columna de recursos en la lista de
                   actividades y en la interfaz
 
          Parámetros: columnaRec (lista que almacena una lista por
-                           cada actividad con la relacion 
+                           cada actividad con la relacion
                            actividad-recurso-unidad necesaria)
 
          Valor de retorno: -
@@ -818,12 +820,12 @@ class PPCproject(object):
 
     def actividadesRepetidas(self, actividad):
         """
-        Comprueba si se han introducido actividades repetidas 
+        Comprueba si se han introducido actividades repetidas
 
         Parámetros: actividad (lista de actividades)
 
         Valor de retorno: error (0 si no hay error
-                                 1 si hay error) 
+                                 1 si hay error)
                           repetidas (lista de actividades repetidas)
         """
         error = 0
@@ -847,7 +849,7 @@ class PPCproject(object):
         Parámetros: actividad (lista de actividades)
 
         Valor de retorno: error (0 si no hay error
-                                 1 si hay error) 
+                                 1 si hay error)
         """
         error = 0
         actividades = []
@@ -863,8 +865,8 @@ class PPCproject(object):
 
         # Se imprime un mensaje de error con las actividades erróneas
         if actividadesErroneas != []:
-            self.errorRecNecAct(actividadesErroneas, _('Activity'))  
-  
+            self.errorRecNecAct(actividadesErroneas, _('Activity'))
+
         return error
 
 
@@ -875,7 +877,7 @@ class PPCproject(object):
         Parámetros: recurso (lista de recursos)
 
         Valor de retorno: error (0 si no hay error
-                                 1 si hay error) 
+                                 1 si hay error)
         """
         error = 0
         recursos = []
@@ -895,9 +897,9 @@ class PPCproject(object):
 
         return error
 
-        
+
 # OTRAS FUNCIONES #
- 
+
     def sumarUnidadesRec(self, asignacion):
         """
 Suma de las unidades de recurso disponibles
@@ -906,13 +908,13 @@ Suma de las unidades de recurso disponibles
 Parámetros: asignacion (lista que almacena actividad,
                         recurso y unidades necesarias por actividad)
 
-Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de 
-                              las unidades de dicho recurso disponibles 
+Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
+                              las unidades de dicho recurso disponibles
                               por proyecto usadas por las actividades)
         """
         unidadesRec = []
-        for n in range(len(self.recurso)): 
-            if (self.recurso[n][1] == _('Non renewable') or 
+        for n in range(len(self.recurso)):
+            if (self.recurso[n][1] == _('Non renewable') or
                 self.recurso[n][1] == _('Double constrained')):
                 cont = 0
                 recurso = self.recurso[n][0]
@@ -924,8 +926,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #print unidadesRec
         return unidadesRec
 
-    
-    def mostrarRec(self, asignacion, num): 
+
+    def mostrarRec(self, asignacion, num):
         """
         Almacenamiento en una lista de listas (filas) las relaciones entre  actividades, recursos y unidades de
          recurso necesarias por actividad
@@ -934,29 +936,29 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     num (0: fichero con extensión '.sm'
                          1: fichero con extensión '.prj')
 
-        Valor de retorno: mostrarR (lista que almacena una lista por cada actividad con la relacion 
+        Valor de retorno: mostrarR (lista que almacena una lista por cada actividad con la relacion
         actividad-recurso-unidad necesaria)
         """
         mostrarR = []
         i = asignacion.index(asignacion[0])
         # Si el archivo tiene extensión '.sm' (PSPLIB)
-        if num == 0:  
-            i += 2  
+        if num == 0:
+            i += 2
             for m in range(i, len(self.actividad)+i):
                 mostrarR.append(self.colR(m, asignacion, 0))
 
         # Si el archivo tiene extensión '.prj'
-        else:   
+        else:
             for m in range(i, len(self.actividad)+i):
                 mostrarR.append(self.colR(m, asignacion, 1))
 
         return mostrarR
 
-     
+
     def colR(self, m, asignacion, num):
         """
-         Extracción en una lista las relaciones entre    
-                  actividades, recursos y unidades de recurso 
+         Extracción en una lista las relaciones entre
+                  actividades, recursos y unidades de recurso
                   necesarias por actividad
 
          Parámetros: m (fila)
@@ -966,19 +968,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                           1: fichero con extensión '.prj')
 
          Valor de retorno: mostrar (lista que almacena una lista por
-                           cada actividad con la relacion 
+                           cada actividad con la relacion
                            actividad-recurso-unidad necesaria)
         """
         mostrar=[]
-        for n in range(len(asignacion)): 
-            # Si el archivo tiene extensión '.sm' (PSPLIB)   
-            if num == 0:     
+        for n in range(len(asignacion)):
+            # Si el archivo tiene extensión '.sm' (PSPLIB)
+            if num == 0:
                 if int(asignacion[n][0]) == m:
                     f='%s(%5.2f)'%(asignacion[n][1], float(asignacion[n][2]))
                     mostrar.append(f)
 
             # Si el archivo tiene extensión '.prj'
-            else:        
+            else:
                 if asignacion[n][0] == self.actividad[m][1]:
                     f = '%s(%5.2f)'%(asignacion[n][1], float(asignacion[n][2]))
                     mostrar.append(f)
@@ -989,7 +991,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def insertamosSiguiente(self, modelo, path, texto):
         """
-        Se inserta una o varias actividades siguientes  
+        Se inserta una o varias actividades siguientes
 
         Parámetros: modelo (interfaz)
                     path (fila)
@@ -999,7 +1001,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         if self.actividad[int(path)][2] != []:  # Si hay alguna siguiente colocada
             modelo[path][2] = modelo[path][2] + ', ' + texto
-            self.actividad[int(path)][2] = modelo[path][2] 
+            self.actividad[int(path)][2] = modelo[path][2]
         else:
             modelo[path][2] = texto
             self.actividad[int(path)][2] = modelo[path][2]
@@ -1015,23 +1017,23 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def actividades2Lista(self):
         """
-         Introduce en una lista todas las etiquetas de las actividades  
+         Introduce en una lista todas las etiquetas de las actividades
          Valor de retorno: listaAct (lista de actividades)
         """
         return [n[1] for n in self.actividad]
-    
+
     def resources2List(self):
         """
-         Introduce en una lista todas las etiquetas de los recursos  
+         Introduce en una lista todas las etiquetas de los recursos
          Valor de retorno: listaAct (lista de actividades)
         """
         return [n[0] for n in self.recurso]
 
-     
+
     def calcularMediaYDTipica(self, distribucion, opt, pes, most): #a, b, m):
         """
-         Calculo de la media y la desviación típica a partir de la distribución, 
-                  del tiempo optimista, pesimista y más probable 
+         Calculo de la media y la desviación típica a partir de la distribución,
+                  del tiempo optimista, pesimista y más probable
 
           distribucion (tipo de distribución)
           opt (d.optimista)
@@ -1058,7 +1060,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             media = (opt + most + pes) / 3.0
             dTipica = math.sqrt((opt**2.0 + pes**2.0 + most**2.0 - opt*pes - opt*most - pes*most) / 18.0)
 
-        elif distribucion == 'Uniform':   
+        elif distribucion == 'Uniform':
             media = (opt + pes) / 2.0
             dTipica = math.sqrt(((pes - opt)**2.0) / 12.0)
         else:
@@ -1067,13 +1069,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # NOTA: La media y la desviación típica de la distribución Normal
         #       no se calculan, se deben introducir manualmente
         # XXX Ver en que casos interesa calcularla y en que casos se recalculan otras casillas.
-        
+
         return media, dTipica
 
 
     def mostrarTextView(self, widget, valor):
         """
-        Muestra datos en el Text View correspondiente 
+        Muestra datos en el Text View correspondiente
 
         widget (lugar donde mostrar el dato)
         valor (dato a mostrar)
@@ -1083,8 +1085,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         bufer=gtk.TextBuffer()
         widget.set_buffer(bufer)
         iterator=bufer.get_iter_at_line(0)
-        bufer.set_text(valor) 
-                    
+        bufer.set_text(valor)
+
 
     def updateWindowTitle(self):
         """
@@ -1093,19 +1095,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if self.openFilename:
             basename = os.path.basename(self.openFilename)
             path = self.openFilename[:-(len(basename)+1)]
-            if path=='': 
+            if path=='':
                 self.vPrincipal.set_title(basename + ' - PPC-Project')
             else:
                 self.vPrincipal.set_title(basename + ' (' + path + ')' + ' - PPC-Project')
         else:
             self.vPrincipal.set_title('PPC-Project')
-               
+
 ### FUNCIONES VENTANAS DE ACCIÓN
-    
-#          ZADERENKO                     
+
+#          ZADERENKO
     def ventanaZaderenko(self):
         """
-        Acción usuario para calcular todos los datos relacionados con Zaderenko 
+        Acción usuario para calcular todos los datos relacionados con Zaderenko
         Valor de retorno: -
         """
         informacionCaminos = []
@@ -1117,27 +1119,27 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         nodosN = []
         for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
- 
+
         # Se calcula la matriz de Zaderenko
-        matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, [])
 
         # Se calculan los tiempos early y last
-        tearly = early(nodosN, matrizZad)      
-        tlast = last(nodosN, tearly, matrizZad)  
+        tearly = early(nodosN, matrizZad)
+        tlast = last(nodosN, tearly, matrizZad)
 
         # duración del proyecto
         tam = len(tearly)
         duracionProyecto = tearly[tam-1]
-        #print duracionProyecto, 'duracion proyecto'            
+        #print duracionProyecto, 'duracion proyecto'
 
         # Se buscan las actividades que son crí­ticas, que serán aquellas cuya holgura total sea 0
-        holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
+        holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, [])
         #print holguras, 'holguras'
         actCriticas = self.actCriticas(holguras)
         #print 'actividades criticas: ', actCriticas
-       
+
         # Se crea un grafo sólo con las actividades crí­ticas y se extraen los caminos del grafo (todos serán crí­ticos)
-        caminosCriticos = self.grafoCriticas(actCriticas) 
+        caminosCriticos = self.grafoCriticas(actCriticas)
         #print caminosCriticos, 'caminos criticos'
 
         # Get all paths removing 'begin' y 'end' from each path
@@ -1148,13 +1150,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #print 'caminos', caminos
 
         # Se marca con 1 los caminos crí­ticos en todos los caminos del grafo, el resto se marca con 0
-        criticos = self.caminosCriticos(caminos, caminosCriticos)  
+        criticos = self.caminosCriticos(caminos, caminosCriticos)
         #print criticos, 'vector criticos'
 
         # Se crea una lista con los caminos, sus duraciones y sus desviaciones tí­picas
-        for camino in caminos:   
-            media, dTipica=self.mediaYdTipica(camino) 
-            info=[camino, media, dTipica]      
+        for camino in caminos:
+            media, dTipica=self.mediaYdTipica(camino)
+            info=[camino, media, dTipica]
             informacionCaminos.append(info)
         #print 'caminos, duraciones y dt: ', informacionCaminos
 
@@ -1232,29 +1234,29 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 else:
                     s+=str(c)
             camino.append(s)
- 
-        # Se muestra la información de los caminos en la interfaz 
+
+        # Se muestra la información de los caminos en la interfaz
         modelo.clear()
         for n in range(len(camino)):
             # El camino es crí­tico
-            if criticos[n]==1: 
+            if criticos[n]==1:
                 modelo.append([informacionCaminos[n][1], informacionCaminos[n][2], camino[n], True])
 
-            # El camino no es crí­tico                      
+            # El camino no es crí­tico
             else:
                 modelo.append([informacionCaminos[n][1], informacionCaminos[n][2], camino[n],  False])
 
         #Se pintan de amarillo los caminos crí­ticos para distinguirlos de los no crí­ticos
-        for m in range(3):  
+        for m in range(3):
             #self.vistaListaZ.renderer[m].set_property('cell-background', 'lightGoldenRodYellow')
             self.vistaListaZ.renderer[m].set_property('cell-background', 'LightCoral')
             self.vistaListaZ.columna[m].set_attributes(self.vistaListaZ.renderer[m], text=m, cell_background_set=3)
-        
-           
-   
-    def actCriticas(self, holguras):  
+
+
+
+    def actCriticas(self, holguras):
         """
-        Identify critical activities 
+        Identify critical activities
 
           holguras: [ (nombre_act, total, libre, independiente), ... ]
 
@@ -1267,11 +1269,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 criticas.append(act)
         return criticas
 
-  
+
     def grafoCriticas(self, actCriticas):
         """
          Creación de un grafo sólo con actividades crí­ticas y extracción de
-                  los caminos de dicho grafo, que serán todos crí­ticos 
+                  los caminos de dicho grafo, que serán todos crí­ticos
 
           actCriticas: (lista de actividades crí­ticas)
 
@@ -1293,12 +1295,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def tablaSucesorasCriticas(self, criticas):
         """
-         Obtiene un diccionario que contiene las actividades 
-                  crí­ticas y sus sucesoras  
+         Obtiene un diccionario que contiene las actividades
+                  crí­ticas y sus sucesoras
 
          Parámetros: criticas (lista de actividades crí­ticas)
 
-         Valor de retorno: sucesorasCriticas(diccionario que almacena 
+         Valor de retorno: sucesorasCriticas(diccionario que almacena
                            las actividades críticas y sus sucesoras)
         """
         cr = []
@@ -1317,7 +1319,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                             else:
                                 sucesorasCriticas[n].append(a)
 
-            if n not in sucesorasCriticas:  
+            if n not in sucesorasCriticas:
                 sucesorasCriticas[n] = []
 
         return sucesorasCriticas
@@ -1384,9 +1386,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         return '%5.2f' % (d), '%5.2f' % (t)
 
-    
 
-#              ACTIVIDADES                 
+
+#              ACTIVIDADES
 
     def mostrarActividades(self, modelo, actividadesGrafo, grafo):
         """
@@ -1399,7 +1401,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
          Valor de retorno: -
         """
-        self.vActividades.show()         
+        self.vActividades.show()
 
         # Se muestran las actividades y sus nodos inicio y fin
         modelo.clear()
@@ -1415,7 +1417,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         widget.set_sensitive(False)
 
         # Nº de ficticias
-        ficticias=len(actividadesGrafo)-len(self.actividad) 
+        ficticias=len(actividadesGrafo)-len(self.actividad)
         widget1=self._widgets.get_widget('tvFicticias')
         widget1.set_text(str(ficticias))
         widget1.set_sensitive(False)
@@ -1428,7 +1430,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
 
 
-#               HOLGURAS                      
+#               HOLGURAS
 
     def ventanaHolguras(self):
         """
@@ -1441,26 +1443,26 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Se crea el grafo Pert y se renumera
         grafoRenumerado = pert.pertFinal(self.actividad)
-    
+
         # Nuevos nodos
         nodosN=[]
         for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
- 
+
         # Se calcula la matriz de Zaderenko
-        matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 1, [])
 
         # Se calculan los tiempos early y last
-        tearly = early(nodosN, matrizZad) 
+        tearly = early(nodosN, matrizZad)
         tlast = last(nodosN, tearly, matrizZad)
 
         # Se calculan los tres tipos de holgura y se muestran en la interfaz
-        holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, []) 
-        self.mostrarHolguras(self.modeloH, holguras) 
+        holguras = self.holguras(grafoRenumerado.arcs, tearly, tlast, [])
+        self.mostrarHolguras(self.modeloH, holguras)
 
 
 
-    def holguras(self, grafo, early, last, duraciones):  
+    def holguras(self, grafo, early, last, duraciones):
         """
          Cálculo de los tres tipos de holguras
 
@@ -1483,7 +1485,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 actividades.append(self.actividad[n][1])
             #print actividades, 'actividades'
 
-            #print grafo[inicio+1, fin+1] 
+            #print grafo[inicio+1, fin+1]
             if not grafo[inicio+1, fin+1][1]: #XXX quitar [0] in actividades and self.actividad[n][6]!='':
                 for n in range(len(self.actividad)):
                     if grafo[inicio+1, fin+1][0]==self.actividad[n][1]:
@@ -1495,21 +1497,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                             t = last[fin] - early[inicio] - duraciones[n]
                             l = early[fin] - early[inicio] - duraciones[n]
                             i = early[fin] - last[inicio] - duraciones[n]
- 
+
             else:  # Si son actividades ficticias (duración 0)
-                t = last[fin] - early[inicio]   
-                l = early[fin] - early[inicio] 
-                i = early[fin] - last[inicio] 
-         
-       
-            #holgura = [grafo[inicio+1, fin+1][0], '%5.2f'%(t), '%5.2f'%(l), '%5.2f'%(i)] 
-            holgura = [grafo[inicio+1, fin+1][0], t, l, i] 
+                t = last[fin] - early[inicio]
+                l = early[fin] - early[inicio]
+                i = early[fin] - last[inicio]
+
+
+            #holgura = [grafo[inicio+1, fin+1][0], '%5.2f'%(t), '%5.2f'%(l), '%5.2f'%(i)]
+            holgura = [grafo[inicio+1, fin+1][0], t, l, i]
             #if grafo[inicio+1, fin+1][0] != 'dummy':
                 #print holgura, 'holgura'
             holguras.append(holgura)
 
         return holguras
-      
+
 
     def mostrarHolguras(self, modelo, holguras):
         """
@@ -1520,11 +1522,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
          Valor de retorno: -
         """
-        self.vHolguras.hide()  
-        self.vHolguras.show()  
+        self.vHolguras.hide()
+        self.vHolguras.show()
 
         modelo.clear()
-        for n in range(len(holguras)):  
+        for n in range(len(holguras)):
             modelo.append([holguras[n][0], holguras[n][1], holguras[n][2], holguras[n][3]])
 
 
@@ -1535,35 +1537,35 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Extrae los caminos crí­ticos, calcula su í­ndice de
                     criticidad y muestra el resultado en la interfaz
-  
+
         grafo (grafo Pert)
         duraciones (duraciones simuladas)
                 early (lista con los tiempos early)
                 last (lista con los tiempos last)
         itTotales (iteraciones totales)
-  
-        Valor de retorno: - 
+
+        Valor de retorno: -
         """
         #Se extraen los caminos crí­ticos
         holguras = self.holguras(grafo.arcs, early, last, duraciones)  # Holguras de cada actividad
         actCriticas = self.actCriticas(holguras)  # Se extraen las act. crí­ticas
         criticos = self.grafoCriticas(actCriticas) # Se crea un grafo crí­tico y se extraen los caminos
-        
+
         #print actCriticas, ' actCriticas'
-        
+
         # Get all paths removing 'begin' y 'end' from each path
         successors = dict(((act[1], act[2]) for act in self.actividad))
         g = graph.roy(successors)
         caminos = [c[1:-1]for c in graph.find_all_paths(g, 'Begin', 'End')]
         #print caminos, ' caminos'
-        
+
         # Se crea una lista con los caminos críticos de la simulación que son caminos del grafo original
         caminosCriticos = []
         for c in criticos:
             if c in caminos:
                 caminosCriticos.append(c)
         #print caminosCriticos, 'caminos criticos'
-  
+
         # Se pasan todos los caminos a formato cadena
         nuevosCaminos = []
         for c in caminosCriticos:
@@ -1577,7 +1579,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             nuevo = [s]
             nuevosCaminos.append(nuevo)
             #print nuevosCaminos, 'formato'
-   
+
         # Se establece la criticidad de cada camino
         for c in nuevosCaminos:
             if c[0] not in self.criticidad:
@@ -1591,9 +1593,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         for c in self.criticidad:
             n = self.criticidad[c]
             self.modeloC.append([n, str('%3.2f'%((float(n)/itTotales)*100))+'%', c])
-   
- 
-#            PROBABILIDADES                    
+
+
+#            PROBABILIDADES
 
     def extraerMediaYDTipica(self):
         """
@@ -1618,7 +1620,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def calcularProb(self, dato1, dato2, media, dTipica):
         """
-         Cálculo de probabilidades       
+         Cálculo de probabilidades
 
          Parámetros: dato1 (dato primer Entry)
                      dato2 (dato segundo Entry)
@@ -1650,18 +1652,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         #print p
         return p
-  
+
 
 
     def calcularProbSim(self, dato1, dato2, intervalos, itTotales):
         """
-          Cálculo de probabilidades para la simulación      
-  
+          Cálculo de probabilidades para la simulación
+
           Parámetros: dato1 (dato primer Entry)
                       dato2 (dato segundo Entry)
                       intervalos (lista de intervalos)
                       itTotales (iteraciones totales)
-  
+
           Valor de retorno: x (probabilidad calculada)
         """
         x = 0
@@ -1679,7 +1681,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     #print s, 's'
                     x += s
             #print x, 'suma'
- 
+
         elif dato2 == '':
             for n in range(len(intervalos)):
                 #print intervalos[n][0], intervalos[n][1], dato1
@@ -1693,7 +1695,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     #print s, 's'
                     x += s
             #print x, 'suma'
- 
+
         else:
             if float(dato1) > float(dato2):
                 self.dialogoError(_('The first number must be bigger than the second one.'))
@@ -1706,12 +1708,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                         #print s, 's'
                         x += s
                         #print x, 'suma'
-        return x           
-  
-  
+        return x
+
+
     def escribirProb(self, dato):
         """
-         Escribe en el TextView las probabilidades calculadas        
+         Escribe en el TextView las probabilidades calculadas
 
          Parámetros: dato (probabilidad a escribir)
 
@@ -1725,13 +1727,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #print textoBufer, 'bufer'
         completo = textoBufer + '\n' + dato
         #print completo
-        self.bufer.set_text(completo) 
+        self.bufer.set_text(completo)
 
 
 
     def limpiarVentanaProb(self, c):
         """
-         Limpia los datos de la ventana de probabilidades 
+         Limpia los datos de la ventana de probabilidades
 
          Parámetros: c (0: llamada desde la ventana Zaderenko
                1: llamada desde la ventana Simulación)
@@ -1752,11 +1754,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         valor2.set_text('')
         valor3 = self._widgets.get_widget('valor3Prob')
         valor3.set_text('')
-        resultado1 = self._widgets.get_widget('resultado1Prob')   
+        resultado1 = self._widgets.get_widget('resultado1Prob')
         resultado1.set_text('')
-        resultado2 = self._widgets.get_widget('resultado2Prob')   
+        resultado2 = self._widgets.get_widget('resultado2Prob')
         resultado2.set_text('')
-         
+
         # Se elimina el grafico
         if c == 0 and len(self.vBoxProb) > 1:
             self.vBoxProb.remove(self.grafica)
@@ -1764,7 +1766,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         elif len(self.box) > 0:
             self.vBoxProb.remove(self.box)
             self.box = gtk.VBox()
- 
+
 
     def openProject(self, filename):
         """
@@ -1779,7 +1781,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 for res in self.recurso:
                     self.modeloComboARR.append([res[0]])
                     res[1] = _(res[1])
-                    
+
                 act_list = []
                 dur_dic = {}
                 pre_dic = {}
@@ -1792,7 +1794,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.gantt.set_activity_comment(act[1], act[1])
                 min_sched = pert.get_activities_start_time(act_list, dur_dic, pre_dic)
                 schedules = [[_('Min'), min_sched]] + schedules
-                
+
                 cont = 1
                 for act in self.actividad:
                     act.append(0)
@@ -1801,8 +1803,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
                 for sched in schedules:
                     self.add_schedule(*sched)
-                self.set_schedule(self.schedules[0][1]) 
-                self.ntbSchedule.show()             
+                self.set_schedule(self.schedules[0][1])
+                self.ntbSchedule.show()
                 for row in self.recurso:
                     self.modeloR.append(row)
                 for row in self.asignacion:
@@ -1810,10 +1812,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
                 for act in self.actividad:
                     self.modelo.append(act[0:2] + [', '.join(act[2])] + act[3:6] + [str(act[6])] + act[7:9] + [str(act[9])])
-                    self.modeloComboS.append([act[1]])            
+                    self.modeloComboS.append([act[1]])
                     self.modeloComboARA.append([act[1]])
-    
-                # Update interface 
+
+                # Update interface
                 self.openFilename = filename
                 self.updateWindowTitle()
                 self.set_open_state(True)
@@ -1824,13 +1826,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.modeloAR.append()
                 return True
             else:
-                self.dialogoError(_('Error reading file:') + filename 
+                self.dialogoError(_('Error reading file:') + filename
                       + ' ' + _('Unknown format'))
-                return False 
+                return False
 
         except IOError:
             self.dialogoError(_('Error reading file:') + filename)
-            #traceback.print_exc() 
+            #traceback.print_exc()
             return False
 
 
@@ -1838,7 +1840,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Saves a project in ppcproject format '.ppc'
         """
-        
+
         # Here extension should be checked to choose the save format
         # by now we suppose it is .ppc
         if nombre[-4:] != '.ppc':
@@ -1848,7 +1850,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         resources = deepcopy(self.recurso)
         for res in resources:
-            if res[1] == _('Renewable'): 
+            if res[1] == _('Renewable'):
                 res[1] = 'Renewable'
             elif res[1] == _('Non renewable'):
                 res[1] = 'Non renewable'
@@ -1856,7 +1858,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 res[1] = 'Double constrained'
             else:
                 res[1] = 'Unlimited'
-        
+
         activities = []
         for act in self.actividad:
             if act[6] != '':
@@ -1867,18 +1869,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         try:
             format.save((activities, self.schedules[1:], resources, self.asignacion), nombre)
-            # Update interface 
+            # Update interface
             self.openFilename=nombre
             self.updateWindowTitle()
             self.set_modified_state(False)
         except IOError :
-            self.dialogoError(_('Error saving the file'))    
+            self.dialogoError(_('Error saving the file'))
 
 
 
 
- 
-# --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #            
+
+# --- FUNCIONES DIALOGOS GUARDAR Y ADVERTENCIA/ERRORES #
 
     def closeProject(self):
         """
@@ -1903,7 +1905,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             dialogo.vbox.pack_start(label, True, True, 10)
             label.show()
             respuesta = dialogo.run()
-           
+
             if respuesta == gtk.RESPONSE_OK:
                 self.saveProject(self.openFilename)
                 close = True
@@ -1938,8 +1940,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.ntbSchedule.hide()
 
         return close
-  
-  
+
+
     def dialogoRec(self, tipo):
         """
         Muestra un mensaje de advertencia si no se han introducido bien las unidades de recurso
@@ -1957,9 +1959,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         label.show()
         respuesta = dialogo.run()
 
-        dialogo.destroy()   
+        dialogo.destroy()
 
-     
+
     def dialogoError(self, cadena):
         """
         Muestra un mensaje de error en la apertura del fichero
@@ -1968,7 +1970,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                   message_format = cadena,
                                   buttons = gtk.BUTTONS_OK)
         respuesta=dialogo.run()
-        dialogo.destroy()   
+        dialogo.destroy()
 
 
     def errorActividadesRepetidas(self, repetidas):
@@ -1984,12 +1986,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             label.show()
         respuesta=dialogo.run()
 
-        dialogo.destroy() 
+        dialogo.destroy()
 
 
     def errorRecNecAct(self, datosErroneos, cadena):
         """
-        Muestra un mensaje de error si en la ventana 'recursos necesarios por actividad' hay alguna 
+        Muestra un mensaje de error si en la ventana 'recursos necesarios por actividad' hay alguna
         actividad o algun recurso inexistente
 
         Parámetros: datosErroneos (lista con los datos erróneos) cadena (cadena de texto)
@@ -2001,13 +2003,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             label.show()
         respuesta=dialogo.run()
 
-        dialogo.destroy() 
+        dialogo.destroy()
 
     def treeview_menu_invoked(self, widget, event, treeview):
         """
-        Treeview menu invoked 
+        Treeview menu invoked
         """
-        if (treeview.get_selection().count_selected_rows() != 0 and 
+        if (treeview.get_selection().count_selected_rows() != 0 and
             treeview.get_model()[treeview.get_selection().get_selected_rows()[1][0]][1] != ""):
             if event.button == 3:
                 self._widgets.get_widget("ctxTreeviewMenu").popup(None, None, None, event.button, event.time)
@@ -2036,16 +2038,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 del self.asignacion[index]
             if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                 self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
-                
+
         self.gantt.remove_activity(model[path][1])
         gantt_modified = True
-        
+
         it = self.modeloComboS.get_iter(path)
         self.modeloComboS.remove(it)  # Remove the activity of the comboBox (Next)
         it = self.modeloComboARA.get_iter(path)
         self.modeloComboARA.remove(it)  # Remove the activity of the comboBox (Resources view)
-        
-        model.remove(model.get_iter(path))      
+
+        model.remove(model.get_iter(path))
         self.reorder_activities()
 
         if gantt_modified == True:
@@ -2056,7 +2058,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 act_list.append(self.actividad[i][1])
                 dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                 pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-            self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+            self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True,
                                                                    self.schedules[0][1])
             for index in range(1, len(self.schedules)):
                 self.schedules[index][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, False,
@@ -2085,10 +2087,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     del self.asignacion[index]
                 if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                     self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
-                    
+
             self.gantt.remove_activity(model[path][1])
             gantt_modified = True
-            
+
             it = self.modeloComboS.get_iter(path)
             self.modeloComboS.remove(it)  # Remove the activity of the comboBox (Next)
             it = self.modeloComboARA.get_iter(path)
@@ -2103,13 +2105,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     del self.asignacion[index]
                 if self._widgets.get_widget('vistaListaAR').get_model()[index][1] == model[path][0]:
                     self._widgets.get_widget('vistaListaAR').get_model().remove(self._widgets.get_widget('vistaListaAR').get_model().get_iter(index))
-        
+
         else:
             for index in range(len(self.asignacion)-1,-1, -1):
                 if self.asignacion[index][0] == model[path][0] and self.asignacion[index][1] == model[path][1]:
                     del self.asignacion[index]
-        
-        model.remove(model.get_iter(path))      
+
+        model.remove(model.get_iter(path))
         if self.treemenu_invoker == self.interface.main_table_treeview:
             self.reorder_activities()
         if gantt_modified == True:
@@ -2120,20 +2122,20 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 act_list.append(self.actividad[i][1])
                 dur_dic[self.actividad[i][1]] = float(self.actividad[i][6] if self.actividad[i][6] != "" else 0)
                 pre_dic[self.actividad[i][1]] = self.actividad[i][2]
-            self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True, 
+            self.schedules[0][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, True,
                                                                    self.schedules[0][1])
             for index in range(1, len(self.schedules)):
                 self.schedules[index][1] = pert.get_activities_start_time(act_list, dur_dic, pre_dic, False,
                                                                            self.schedules[index][1])
             self.set_schedule(self.schedules[self.ntbSchedule.get_current_page()][1])
         self.set_modified_state(True)
-    
+
     def reorder_activities(self):
         """
         Reorder numbers of activities.
 
         Returns: None.
-        """ 
+        """
         it = self.modelo.get_iter_first()
         actNumber = 1
         while it != None:
@@ -2141,7 +2143,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             it = self.modelo.iter_next(it)
             actNumber = actNumber + 1
 
-                   
+
 # MANEJADORES #
 # --- Menu actions
 
@@ -2150,11 +2152,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """ User ask for new file (from menu or toolbar) """
         self.closeProject()
         self.introduccionDatos()
-  
+
     def on_Open_activate(self, item):
         """ User ask for open file (from menu or toolbar)
         """
-        
+
         # Dialog asking for file to open
         dialogoFicheros = gtk.FileChooserDialog(_("Open File"),
                                                 None,
@@ -2169,7 +2171,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 pats.append(pat)
                 ffilter.add_pattern(pat)
         ffilter.set_name(''.join([_('All project files') + ' (', ', '.join(pats), ')']))
-        dialogoFicheros.add_filter(ffilter)                 
+        dialogoFicheros.add_filter(ffilter)
 
         # Creates a filter for each supported file format
         for format in self.fileFormats:
@@ -2177,17 +2179,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for pat in format.filenamePatterns():
                 ffilter.add_pattern(pat)
             ffilter.set_name( str(format) )
-            dialogoFicheros.add_filter(ffilter)                 
+            dialogoFicheros.add_filter(ffilter)
 
-        # Creates the filter allowing to see all files            
+        # Creates the filter allowing to see all files
         ffilter = gtk.FileFilter()
         ffilter.add_pattern('*')
         ffilter.set_name(_('All files'))
-        dialogoFicheros.add_filter(ffilter)                 
+        dialogoFicheros.add_filter(ffilter)
 
         opened = False
         resultado = gtk.RESPONSE_OK
-        
+
         # The Dialog window will close after opening a project or click "Cancel"
         while(opened == False and resultado == gtk.RESPONSE_OK):
             dialogoFicheros.set_default_response(gtk.RESPONSE_OK)
@@ -2217,7 +2219,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             else:
                 self.saveProject(self.openFilename)
         else:
-            self.errorActividadesRepetidas(actividadesRepetidas) 
+            self.errorActividadesRepetidas(actividadesRepetidas)
 
     def on_SaveAs_activate(self, menu_item):
         """
@@ -2237,21 +2239,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                                                    gtk.STOCK_SAVE, gtk.RESPONSE_OK))
             destination_dialog.set_default_response(gtk.RESPONSE_OK)
             resultado = destination_dialog.run()
-      
+
             if resultado == gtk.RESPONSE_OK:
                 self.openFilename = destination_dialog.get_filename()
                 self.saveProject(self.openFilename)
-            destination_dialog.destroy() 
+            destination_dialog.destroy()
         else:
-            self.errorActividadesRepetidas(actividadesRepetidas) 
-       
+            self.errorActividadesRepetidas(actividadesRepetidas)
+
 
     def on_Close_activate(self, menu_item):
         """
         Close option invoked
         """
         self.closeProject()
-   
+
     def on_Exit_activate(self, *args):
         """
         Exit option invoked
@@ -2276,7 +2278,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.bHerramientas.show()
         else:
             self.bHerramientas.hide()
-   
+
     def on_mnPantallaComp_activate(self, menu_item):
         """
         Full screen option invoked
@@ -2284,7 +2286,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.vPrincipal.fullscreen()
         self._widgets.get_widget('mnSalirPantComp').show()
         self._widgets.get_widget('mnPantallaComp').hide()
-  
+
     def on_mnSalirPantComp_activate(self, menu_item):
         """
         Exit full screen option invoked
@@ -2292,8 +2294,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.vPrincipal.unfullscreen()
         self._widgets.get_widget('mnSalirPantComp').hide()
         self._widgets.get_widget('mnPantallaComp').show()
-  
-# Menu actions                 
+
+# Menu actions
 
     def on_mnCrearRecursos_activate(self, menu_item):
         """
@@ -2307,6 +2309,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Create graph and its graphic representation in SVG
         successors = dict(((act[1], act[2]) for act in self.actividad))
+        durations = dict(((act[1], act[6]) for act in self.actividad)) # for timedPert
         if menu_item == self._widgets.get_widget('grafoRoy'):
             # Creates ROY graph from successors table and creates SVG
             roy = graph.roy(successors)
@@ -2334,27 +2337,48 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             grafo = algoritmoGentoMunicio.gento_municio( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
             title = 'PERT-GentoMunicio graph'
+        elif menu_item == self._widgets.get_widget('algoritmoGentoMunicioT'):
+            grafo = algoritmoGentoMunicio.gento_municio( graph.successors2precedents(successors) )
+            grafo = timedpert.TimedPert((grafo.successors, grafo.arcs), durations)
+            svg_text = grafo.timedpert2image()
+            title = 'PERT-GentoMunicio graph T'
 
         elif menu_item == self._widgets.get_widget('algoritmoSalas'):
             grafo = algoritmoSalas.salas( graph.successors2precedents(successors) )
             svg_text = graph.pert2image(grafo)
             title = 'PERT-Salas graph'
 
+        elif menu_item == self._widgets.get_widget('algoritmoMouhoub'):
+            grafo = algoritmoMouhoub.mouhoub( graph.successors2precedents(successors) )
+            svg_text = graph.pert2image(grafo)
+            title = 'PERT-Mouhoub'
+
+        elif menu_item == self._widgets.get_widget('algoritmoSysloOp'):
+            grafo = algoritmoSysloOptimal.sysloOptimal( graph.successors2precedents(successors) )
+            svg_text = graph.pert2image(grafo)
+            title = 'PERT-Syslo optimal'
+
+        elif menu_item == self._widgets.get_widget('algoritmoSysloPo'):
+            grafo = algoritmoSysloPolynomial.sysloPolynomial( graph.successors2precedents(successors) )
+            svg_text = graph.pert2image(grafo)
+            title = 'PERT-Syslo optimal'
+
+
         else:
-            raise Exception('Graph menu option not recognized')            
+            raise Exception('Graph menu option not recognized:' + menu_item.get_label() )
 
         # Show in graph window
         graph_window = interface.GraphWindow(svg_text, title)
-        
-  
+
+
     def on_mnActividades_activate(self, menu_item):
         """ User ask for activities in PERT graph """
         # Se crea el grafo Pert y se renumera
         grafoRenumerado = pert.pertFinal(self.actividad)
-  
-        # Se muestran las actividades y su nodo inicio y fí­n  
+
+        # Se muestran las actividades y su nodo inicio y fí­n
         self.mostrarActividades(self.modeloA, grafoRenumerado.arcs, grafoRenumerado.successors)
-       
+
     def on_mnZaderenko_activate(self, menu_item):
         """
         Zaderenko option invoked
@@ -2367,19 +2391,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaZaderenko()
-   
+
     def on_mnHolguras_activate(self, menu_item):
         """ User ask for slacks """
         s = 0
         for a in self.actividad:
             if a[6] == '':
                 s += 1
-                
+
         if s > 0:
             self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaHolguras()
-   
+
     def on_mnSimulacion_activate(self, menu_item):
         """Acción usuario para acceder a la ventana que muestra
         los resultados de la simulación de duraciones (tabla
@@ -2389,9 +2413,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         m = 0
         u = 0
 
-        for a in self.actividad:            
+        for a in self.actividad:
             #name, followers, op, mode, pes, avg, dev, dist = a    #[3:6]
-  
+
             #if (a[8] == 'Uniform' or a[8] == 'Beta' or #XXX ... es a[8] ponia a[9] ???   #Avanzado, mirar: NamedTuple
                 #a[8] == 'Triangular'):
             if a[8] == 'Beta' or a[8] == 'Triangular':
@@ -2399,25 +2423,25 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     s+=1
             elif a[8] == 'Uniform':
                 if a[3]=='' or a[5]=='':
-                    u+=1                
+                    u+=1
             else: #Si no es ninguna de las tres anteriores es la Normal
                 if a[6]=='' or a[7]=='':
                     m=+1
 
         if s > 0 and m == 0:
-            self.dialogoError(_('You must introduce the durations: 1') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: 1') + '\n' + '\t' +
                               _('- Optimistic') + '\n' + '\t' + _('- Most probable') +
                               '\n' + '\t' + _('- Pessimistic'))
         elif u > 0 and m == 0:
-            self.dialogoError(_('You must introduce the durations: unifome') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: unifome') + '\n' + '\t' +
                               _('- Optimistic') + '\n' + '\t' + _('- Pessimistic'))
         elif s == 0 and m > 0:
-            self.dialogoError(_('You must introduce the durations: 2') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: 2') + '\n' + '\t' +
                               _('- Average') + '\n' + '\t' + _('- Typical Dev.'))
         elif s > 0 and m > 0:
-            self.dialogoError(_('You must introduce the durations: 3') + '\n' + '\t' + 
+            self.dialogoError(_('You must introduce the durations: 3') + '\n' + '\t' +
                               _('- Optimistic')+ '\n' + '\t' + _('- Most probable') +
-                              '\n' + '\t' + _('- Pessimistic') + '\n' + '\t' + 
+                              '\n' + '\t' + _('- Pessimistic') + '\n' + '\t' +
                               _('- Average') + '\n' + '\t' + _('- Typical Dev.'))
         else:
             self._widgets.get_widget('btProbSim').set_sensitive(False)
@@ -2437,21 +2461,21 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """ User ask for paths in project """
         # Se comprueba que exista algún grafo
         if self.actividad == []:
-            self.dialogoError(_('A graph is needed to calculate its paths')) 
+            self.dialogoError(_('A graph is needed to calculate its paths'))
         else:
             successors = dict(((act[1], act[2]) for act in self.actividad))
             roy = graph.roy(successors)
- 
+
             # Remove 'begin' and 'end' dummy activities from all paths
             caminosSinBeginEnd=[c[1:-1]for c in graph.find_all_paths(roy, 'Begin', 'End')]
             # Se preparan los caminos para mostrarlos en el interfaz
-            numeroCaminos = len(caminosSinBeginEnd) 
-            camino = _('Number of paths: ') + (str(numeroCaminos)) + '\n' 
+            numeroCaminos = len(caminosSinBeginEnd)
+            camino = _('Number of paths: ') + (str(numeroCaminos)) + '\n'
             for n in range(len(caminosSinBeginEnd)):
                 cadena = ', '.join(caminosSinBeginEnd[n])
                 camino += cadena
                 camino += '\n'
-           
+
             # Se muestran los caminos en la interfaz
             self.vCaminos.show()
             widget=self._widgets.get_widget('tvCaminos')
@@ -2466,7 +2490,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.btResetSA.clicked()
         window.hide()
         return True
-        
+
     def on_btnSaveSA_clicked (self, menu_item):
         """
         Save the schedule calculated
@@ -2479,7 +2503,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for act,startTime,endTime in self.optimumSchedule:
                 optSchDic[act] = startTime
         self.add_schedule(None, optSchDic)
-            
+
     def on_rbAllocation_pressed (self, menu_item):
         """
         Choose allocation
@@ -2515,7 +2539,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self.ganttSA.clear()
         self.loadSheet.clear()
         self.loadTable.clear()
-        self.ganttSA.update()        
+        self.ganttSA.update()
         self.loadSheet.update()
         self.loadTable.update()
         self.entryResultSA.set_text('')
@@ -2547,12 +2571,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             leveling = 1
         else:
             leveling = 0
-            
-        resources = resources_availability(self.recurso)        
+
+        resources = resources_availability(self.recurso)
         if leveling == 1 and resources == {}:
             self.dialogoError(_('There are not renewable or double constrained resources introduced'))
             return False
-            
+
         # Create main dictionaries
         asignation = resources_per_activities(self.asignacion, resources)
         successors = dict(((act[1], act[2]) for act in self.actividad))
@@ -2573,11 +2597,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             noImproveIter = self.sbNoImproveIterSA.get_value()
 
         self.optimumSchedule, optSchEvaluated, optSchDuration, optSchAlpha, optSchTemp, optSchIt = simulated_annealing(asignation,resources,successors,activities,leveling,nu,phi,minTemperature,maxIteration,noImproveIter)
-        
+
         if optSchDuration == 0:
             self.dialogoError(_('Project\'s duration = 0'))
             return False
-            
+
         if self.optimumSchedule != None: # If no error
             # Load gantt diagram
             if not self.ganttActLoaded:
@@ -2635,28 +2659,28 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         # Create graph and number it
         grafoRenumerado = pert.pertFinal(self.actividad)
-  
+
         # New nodes
         nodosN = []
         for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
-   
+
         # Calculate Zaderenko matrix
-        matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 1, []) 
+        matrizZad = mZad(self.actividad,grafoRenumerado.arcs, nodosN, 1, [])
 
         # Calculate early and last times
-        tearly = early(nodosN, matrizZad)      
+        tearly = early(nodosN, matrizZad)
         tlast = last(nodosN, tearly, matrizZad)
 
         slack = self.sbSlackSA.get_value()
         # Calculate altered last time
         for a in grafoRenumerado.arcs:
             if grafoRenumerado.arcs[a][0] != 'dummy':
-                rest[grafoRenumerado.arcs[a][0]] += [tlast[a[1]-1] + slack - 
+                rest[grafoRenumerado.arcs[a][0]] += [tlast[a[1]-1] + slack -
                                                            float(rest[grafoRenumerado.arcs[a][0]][0])]
 
         return rest
-        
+
 
 
 # Help menu actions
@@ -2708,8 +2732,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
     def on_vistaListaZad_cursor_changed(self, vistaListaZ):
         """
          Al seleccionar uno de los caminos del grafo que se muestran
-                  en la ventana de Zaderenko, se activa el botón 
-                  'calcular probabilidad' que aparací­a inactivo inicialmente          
+                  en la ventana de Zaderenko, se activa el botón
+                  'calcular probabilidad' que aparací­a inactivo inicialmente
 
          Parámetros: vistaListaZ (widget donde se muestran los caminos)
         """
@@ -2745,11 +2769,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.grafica = gtk.Image()
 
             # XXX We should generate the picture with the same tool than used for interval distribution
-            self.grafica.set_from_file(os.path.join(os.path.dirname( os.path.realpath( __file__ ) ), 
+            self.grafica.set_from_file(os.path.join(os.path.dirname( os.path.realpath( __file__ ) ),
                                                     'graficaNormal.gif'))
             self.vBoxProb.add(self.grafica)
             self.vBoxProb.show_all()
-        
+
             # Se muestran la media y desviación típica en la ventana de probabilidades
             widgetMedia = self._widgets.get_widget('mediaProb')
             widgetMedia.set_text(media)
@@ -2768,18 +2792,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_btAceptarZad_clicked(self, boton):
         """
-           Acción usuario para aceptar la información 
+           Acción usuario para aceptar la información
                     que aparece en la ventana de Zaderenko: matriz de
                     Zaderenko, tiempos early y last, caminos del grafo, ...
-  
+
            boton (botón clickeado)
         """
         self._widgets.get_widget('btCalcularProb').set_sensitive(False)
         self.vZaderenko.hide()
-  
+
     def on_btHolgZad_clicked(self, boton):
         """
-         Acción usuario para acceder a la ventana que muestra 
+         Acción usuario para acceder a la ventana que muestra
                   las holguras de cada actividad
 
           boton (botón clickeado)
@@ -2788,12 +2812,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         for a in self.actividad:
             if a[6] == '' or a[7] == '':
                 s += 1
-                
+
         if s > 0:
             self.dialogoError(_('There are uncomplete activities'))
         else:
             self.ventanaHolguras()
-    
+
     def on_wndZaderenko_delete_event(self, ventana, evento):
         """
          Acción usuario para cerrar la ventana de Zaderenko
@@ -2807,12 +2831,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_btAceptarHolg_clicked(self, boton):
         """
-           Acción usuario para aceptar la información 
+           Acción usuario para aceptar la información
                     que aparece en la ventana de holguras: los tres
                     tipos de holgura para cada actividad
         """
         self.vHolguras.hide()
-  
+
     def on_btZadHolg_clicked(self, boton):
         """
          Acción usuario para acceder a la ventana de Zaderenko
@@ -2821,7 +2845,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         for a in self.actividad:
             if a[6] == '' or a[7] == '':
                 s += 1
-                
+
         if s > 0:
             self.dialogoError(_('There are uncomplete activities'))
         else:
@@ -2852,8 +2876,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_interval_changed(self, widget):
         """
-        Acción usuario al activar el valor introducido en 
-                 el primer gtk.Entry de la ventana de probabilidades          
+        Acción usuario al activar el valor introducido en
+                 el primer gtk.Entry de la ventana de probabilidades
         """
 
         # Se extraen los valores de las u.d.t. de la interfaz
@@ -2871,7 +2895,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 dTipica = widgetdTipica.get_text()
                 # Se calcula la probabilidad
                 x = self.calcularProb(dato1, dato2, media, dTipica)
- 
+
             else:
 
                 # Extraigo las iteraciones totales
@@ -2883,11 +2907,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 for n in self.intervalos:
                     d = n.split('[')
                     interv = d[1].split(',')
-                    intervalos.append(interv) 
- 
+                    intervalos.append(interv)
+
                 # Se calcula la probabilidad
                 x=self.calcularProbSim(dato1, dato2, intervalos, itTotales)
-         
+
             # Se muestra el resultado en la casilla correspondiente
             prob = str('%3.2f'%(x*100))+' %'
             resultado1 = self._widgets.get_widget('resultado1Prob')
@@ -2898,11 +2922,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             resultado1.set_text(prob)
         return False
 
-           
+
     def on_bntIntervalCalculate_clicked(self, button):
         """
-        Acción usuario al activar el valor introducido en 
-                 el primer gtk.Entry de la ventana de probabilidades          
+        Acción usuario al activar el valor introducido en
+                 el primer gtk.Entry de la ventana de probabilidades
         """
 
         # Se extraen los valores de las u.d.t. de la interfaz
@@ -2918,7 +2942,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             media = widgetMedia.get_text()
             widgetdTipica = self._widgets.get_widget('dTipicaProb')
             dTipica = widgetdTipica.get_text()
-         
+
             # Se calcula la probabilidad
             x = self.calcularProb(dato1, dato2, media, dTipica)
             #print dato1, dato2, media, dTipica, x
@@ -2932,11 +2956,11 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for n in self.intervalos:
                 d = n.split('[')
                 interv = d[1].split(',')
-                intervalos.append(interv) 
+                intervalos.append(interv)
 
             # Se calcula la probabilidad
             x = self.calcularProbSim(dato1, dato2, intervalos, itTotales)
-    
+
         # Se muestra el resultado en la casilla correspondiente
         prob = str('%3.2f'%(x*100))+' %'
         resultado1 = self._widgets.get_widget('resultado1Prob')
@@ -2960,18 +2984,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_probability_changed(self, widget):
         """
-        Acción usuario al activar el valor introducido en 
-                 el tercer gtk.Entry de la ventana de probabilidades          
+        Acción usuario al activar el valor introducido en
+                 el tercer gtk.Entry de la ventana de probabilidades
         """
 
         # Se extrae el valor de probabilidad de la interfaz
-        valor3 = self._widgets.get_widget('valor3Prob')   
+        valor3 = self._widgets.get_widget('valor3Prob')
         dato3 = float(valor3.get_value() / 100)
         #print dato3, 'dato3'
 
         x = 0
         titulo = self.vProbabilidades.get_title()
-        if titulo == _('Probability related to the path'):         
+        if titulo == _('Probability related to the path'):
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia = self._widgets.get_widget('mediaProb')
             media = widgetMedia.get_text()
@@ -2992,7 +3016,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for n in self.intervalos:
                 d = n.split('[')
                 interv = d[1].split(',')
-                intervalos.append(interv) 
+                intervalos.append(interv)
 
             # Se calcula la probabilidad
             suma = 0
@@ -3001,9 +3025,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 if suma > float(dato3) or suma == float(dato3):
                     x = intervalos[n][1]
                     break
-             
+
         if x == 0:
-            return             
+            return
         # Se muestra el resultado en la casilla correspondiente
         tiempo = '%5.2f'%(float(x))+' u.d.t.'
         resultado2 = self._widgets.get_widget('resultado2Prob')
@@ -3011,20 +3035,20 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
     def on_btnProbabilityCalculate_clicked(self, button):
         """
-        Acción usuario al activar el valor introducido en 
-                 el tercer gtk.Entry de la ventana de probabilidades          
+        Acción usuario al activar el valor introducido en
+                 el tercer gtk.Entry de la ventana de probabilidades
 
         Parámetros: entry (entry activado)
         """
 
         # Se extrae el valor de probabilidad de la interfaz
-        valor3 = self._widgets.get_widget('valor3Prob')   
+        valor3 = self._widgets.get_widget('valor3Prob')
         dato3 = float(valor3.get_value() / 100)
         #print dato3, 'dato3'
 
         x = 0
         titulo = self.vProbabilidades.get_title()
-        if titulo == _('Probability related to the path'):         
+        if titulo == _('Probability related to the path'):
             # Se extrae la media y la desviación típica de la interfaz
             widgetMedia = self._widgets.get_widget('mediaProb')
             media = widgetMedia.get_text()
@@ -3045,7 +3069,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             for n in self.intervalos:
                 d = n.split('[')
                 interv = d[1].split(',')
-                intervalos.append(interv) 
+                intervalos.append(interv)
 
             # Se calcula la probabilidad
             suma = 0
@@ -3054,9 +3078,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 if suma > float(dato3) or suma == float(dato3):
                     x = intervalos[n][1]
                     break
-             
+
         if x == 0:
-            return             
+            return
         # Se muestra el resultado en la casilla correspondiente
         tiempo = '%5.2f'%(float(x))+' u.d.t.'
         resultado2 = self._widgets.get_widget('resultado2Prob')
@@ -3065,15 +3089,15 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Se muestra el resultado completo en el textView
         prob='%5.2f'%(float(dato3)*100)
         mostrarDato = _('P ( Project < ')+tiempo+' ) = '+str(prob)+' %'
-        
+
         self.escribirProb(mostrarDato)
-               
+
 
     def on_btAceptarProb_clicked(self, boton):
         """
            Acción usuario para aceptar la información que
                     muestra la ventana de cálculo de probabilidades
-  
+
            Parámetros: boton (botón clickeado)
         """
         titulo = self.vProbabilidades.get_title()
@@ -3083,10 +3107,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.limpiarVentanaProb(1)
 
         self.vProbabilidades.hide()
-  
+
     def on_wndProbabilidades_delete_event(self, ventana, evento):
         """
-         Acción usuario para cerrar la ventana de cálculo 
+         Acción usuario para cerrar la ventana de cálculo
                   de probabilidades
 
          Parámetros: ventana (ventana actual)
@@ -3109,10 +3133,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         Clicked on simulate the project a number of iterations
         """
-        #Se asignan el numero de iteraciones que se van a realizar        
+        #Se asignan el numero de iteraciones que se van a realizar
         iteracion = self._widgets.get_widget('iteracion')
         it = iteracion.get_value_as_int()
-        
+
         # Se almacenan las iteraciones totales en una variable y se muestra en la interfaz
         totales = self._widgets.get_widget('iteracionesTotales')
         interfaz = totales.get_text()
@@ -3122,45 +3146,45 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             itTotales = it
         #print itTotales, 'iteraciones totales'
         totales.set_text(str(itTotales))
-  
+
         # Se realiza la simulación
         simulacion = simulation.simulacion(it, self.actividad)
         self.simTotales += simulacion
-   
+
         # Se crea el grafo Pert y se renumera
         grafoRenumerado = pert.pertFinal(self.actividad)
-  
+
         # Nuevos nodos
         nodosN = []
         for n in range(len(grafoRenumerado.successors)):
             nodosN.append(n+1)
-         
+
         # Zaderenko
         if simulacion == None:
             return
         else:
-            for s in simulacion: 
+            for s in simulacion:
                 matrizZad = mZad(self.actividad, grafoRenumerado.arcs, nodosN, 0, s)
                 tearly = early(nodosN, matrizZad)
-                tlast = last(nodosN, tearly, matrizZad)      
+                tlast = last(nodosN, tearly, matrizZad)
                 tam = len(tearly)
                 # Se calcula la duración del proyecto para cada simulación
                 duracionProyecto = tearly[tam-1]
-                #print duracionProyecto, 'duracion proyecto'  
-                self.duraciones.append(duracionProyecto) 
+                #print duracionProyecto, 'duracion proyecto'
+                self.duraciones.append(duracionProyecto)
                 #print self.duraciones,'duraciones simuladas'
                 # Se extraen los caminos crí­ticos y se calcula su í­ndice de criticidad
                 self.indiceCriticidad(grafoRenumerado, s, tearly, tlast, itTotales)
-    
+
         # Se añaden la media y la desviación típica a la interfaz
-        duracionMedia = numpy.mean(self.duraciones) 
+        duracionMedia = numpy.mean(self.duraciones)
         media = self._widgets.get_widget('mediaSim')
         media.set_text(str(duracionMedia))
 
         desviacionTipica = numpy.std(self.duraciones)
         dTipica = self._widgets.get_widget('dTipicaSim')
         dTipica.set_text(str(desviacionTipica))
-    
+
         try:
             iOpcion = self._widgets.get_widget('iOpcion')
             opcion = iOpcion.get_active_text()
@@ -3175,7 +3199,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 #Draw the histogram
                 fig = Figure(figsize=(5,4), dpi=100)
                 ax = fig.add_subplot(111)
-          
+
                 n, bins, patches = ax.hist(self.duraciones, n, normed=1)
                 canvas = FigureCanvas(fig)  # a gtk.DrawingArea
                 if len(self.boxS)>0: # Si ya hay introducido un box, que lo borre y lo vuelva a añadir
@@ -3185,7 +3209,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.hBoxSim.add(self.boxS)
                 self.boxS.pack_start(canvas)
                 self.boxS.show_all()
-                
+
 
                 # Enable Probability and Save buttons
                 self._widgets.get_widget('btProbSim').set_sensitive(True)
@@ -3197,30 +3221,30 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.dialogoError('El valor del intervalo ha de ser mayor que 0')
         except ValueError:
             self.dialogoError('El valor del intervalo ha de ser numérico')
-  
+
     def on_btProbSim_clicked(self, boton):
         """
-        Acción usuario para acceder a la ventana de 
+        Acción usuario para acceder a la ventana de
                  cálculo de probabilidades
-  
+
          boton (botón clickeado)
         """
-        # Se asigna tí­tulo 
+        # Se asigna tí­tulo
         self.vProbabilidades.set_title(_('Probability related to the simulation'))
-        
+
         # Extraigo los valores de la media y la desviación típica
         media = self._widgets.get_widget('mediaSim')
         m = media.get_text()
         dTipica = self._widgets.get_widget('dTipicaSim')
         dt = dTipica.get_text()
-  
+
         # Se muestran la media y desviación típica en la ventana de probabilidades
         widgetMedia = self._widgets.get_widget('mediaProb')
         widgetMedia.set_text(m)
         widgetdTipica = self._widgets.get_widget('dTipicaProb')
         widgetdTipica.set_text(dt)
-  
-  
+
+
         # Se muestra la gráfica
         fig = Figure(figsize=(5, 4), dpi=100)
         ax = fig.add_subplot(111)
@@ -3229,22 +3253,22 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         if len(self.box) > 0:
             self.vBoxProb.remove(self.box)
             self.box=gtk.VBox()
-            
+
         self.vBoxProb.add(self.box)
         self.box.pack_end(canvas)
         self.box.show_all()
         self.vProbabilidades.show()
         self.on_btnIntervalReset_clicked(None)
         self.on_btnProbabilityReset_clicked(None)
-  
+
     def on_btGuardarSim_clicked(self, boton):
         """
         Acción usuario para salvar la información que
                  muestra la ventana de simulación de duraciones
                  tabla, gráfica, ....
-  
+
          boton (botón clickeado)
-  
+
         """
         # Se extraen los datos de la interfaz
         # Media y desviación tí­pica
@@ -3255,24 +3279,24 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         # Iteraciones
         totales = self._widgets.get_widget('iteracionesTotales')
         iteraciones = totales.get_text()
-  
+
         # Se pasan los datos de la simulación a formato CSV
         simulacionCsv = simulation.datosSimulacion2csv(self.duraciones, iteraciones, m, dt, self.modeloC)
-        
+
         # Se muestra el diálogo para salvar el archivo
         fileFormats.guardarCsv(simulacionCsv, self)
-  
-  
+
+
     def on_wndSimulacion_delete_event(self, ventana, evento):
         """
         User closes simulation window
-  
+
          ventana (ventana actual)
          evento (evento cerrar)
         """
         # Clear data
         self._widgets.get_widget('iteracion').set_text('')
-        self._widgets.get_widget('iteracionesTotales').set_text('')   
+        self._widgets.get_widget('iteracionesTotales').set_text('')
         self._widgets.get_widget('mediaSim').set_text('')
         self._widgets.get_widget('dTipicaSim').set_text('')
         self.interface.modeloF.clear()
@@ -3282,33 +3306,33 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         ventana.hide()
         return True
-        
+
 # ---Set Average Duration
     def on_setAvgDuration_activate (self, menu_item):
         """ Accion usuario para la eleccion de la
             media
-        """      
+        """
         self._widgets.get_widget('btAsignarAvgDuration').set_sensitive(True)
         self._widgets.get_widget('avgDuration').set_text('')
         self._widgets.get_widget('btCancelAvgDuration').set_sensitive(True)
-        self.vAvgDuration.show()        
-        
+        self.vAvgDuration.show()
+
     def on_CloseAvgDuration_delete_event(self, ventana, evento):
         """
-        Acción usuario para cerrar la ventana 
+        Acción usuario para cerrar la ventana
         sin introducir valores
         """
         ventana.hide()
         return True
-        
+
     def on_btAsignarAvgDuration_clicked(self,boton):
-        """ 
+        """
         Accion usuario que rellena la tabla
         con el valor de la duraccion media introducido.
         """
         #Se extrae el valor de la duracion media
         avgDuration = float(self._widgets.get_widget('avgDuration').get_text())
-     
+
         if avgDuration <= 0:
             self.dialogoError(_('los valores deben ser mayor de 0.'))
         else:
@@ -3317,46 +3341,46 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.actividad[m][6] = avgDuration
                 self.modelo[m][6] = self.actividad[m][6]
                 self.actualizacion(self.modelo, m, 6, previous)"""
-                
+
             for m in range(len(self.actividad)):
                 self.col_edited_cb('edited', m, avgDuration, self.modelo, 6)
-                
+
             self.gantt.update()
             self.set_modified_state(True)
             self.vAvgDuration.hide()
             print 'up gant'
-            
+
     def on_btCancelAvgDuration_clicked(self,boton):
         """ Accion usuario para cancelar
             la opcion de asignacion automática
         """
 
         self.vAvgDuration.hide()
-        
-# --- Choose of distribution    
+
+# --- Choose of distribution
 # --- Distribution Normal
     def on_setDistNormal_activate (self, menu_item):
         """ Accion usuario para la eleccion de la
             distribucion normal y poner el mismo valor
             de la media y desviacion tipica a todos
         """
-        self.distributionType = 'Normal'        
+        self.distributionType = 'Normal'
         self._widgets.get_widget('btAsignarDistNormal').set_sensitive(True)
         self._widgets.get_widget('durmed').set_text('')
         self._widgets.get_widget('desTipica').set_text('')
         self._widgets.get_widget('btCancelDistNormal').set_sensitive(True)
-        self.vDistNormal.show()        
-        
+        self.vDistNormal.show()
+
     def on_CloseDistNormal_delete_event(self, ventana, evento):
         """
-        Acción usuario para cerrar la ventana 
+        Acción usuario para cerrar la ventana
         sin introducir valores
         """
         ventana.hide()
         return True
-        
+
     def on_btAsignarDistNormal_clicked(self,boton):
-        """ 
+        """
         Accion usuario que rellena la tabla
         con el valor de la duraccion media y
         desviacion tipica introducido.
@@ -3364,9 +3388,9 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         #Se extrae el valor de la duracion media
         durmed = float(self._widgets.get_widget('durmed').get_text())
         desTipica = float(self._widgets.get_widget('desTipica').get_text())
-       
+
         dist = self.distributionType
-        
+
         if durmed <= 0 or desTipica <= 0:
             self.dialogoError(_('los valores deben ser mayor de 0.'))
         else:
@@ -3375,18 +3399,18 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.actividad[m][6] = durmed
                 self.modelo[m][6] = self.actividad[m][6]
                 self.actualizacion(self.modelo, m, 6, previous)
-                
+
                 self.actividad[m][7] = desTipica
-                self.modelo[m][7] = self.actividad[m][7] 
-                
+                self.modelo[m][7] = self.actividad[m][7]
+
                 self.actividad[m][8] = dist
                 self.modelo[m][8] = self.actividad[m][8]
-        
+
             self.gantt.update()
             self.set_modified_state(True)
             self.vDistNormal.hide()
             print 'up gant'
-            
+
     def on_btCancelDistNormal_clicked(self,boton):
         """ Accion usuario para cancelar
             la opcion de asignacion automática
@@ -3394,12 +3418,12 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
 
         self.vDistNormal.hide()
 
-# --- Distribution Triangular and Beta        
+# --- Distribution Triangular and Beta
     def on_selectDistTriangular_activate(self, boton):
         """ Accion usuario para la eleccion de la
             distribucion triangular y poner el mismo valor
             de la optimista, pesimista y mas probable a todos
-        """                
+        """
         self.distributionType = 'Triangular'
         self._widgets.get_widget('btAsignarTriBeta').set_sensitive(True)
         self._widgets.get_widget('optimista').set_text('')
@@ -3407,13 +3431,13 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self._widgets.get_widget('probable').set_text('')
         self._widgets.get_widget('btCancelTriBeta').set_sensitive(True)
         self.vDistTriBeta.show()
-       
-    
+
+
     def on_selectDistBeta_activate(self, boton):
         """ Accion usuario para la eleccion de la
             distribucion beta y poner el mismo valor
             de la optimista, pesimista y mas probable a todos
-        """          
+        """
         self.distributionType = 'Beta'
         self._widgets.get_widget('btAsignarTriBeta').set_sensitive(True)
         self._widgets.get_widget('optimista').set_text('')
@@ -3421,19 +3445,19 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         self._widgets.get_widget('probable').set_text('')
         self._widgets.get_widget('btCancelTriBeta').set_sensitive(True)
         self.vDistTriBeta.show()
-    
-    
+
+
     def on_CloseTriBeta_delete_event(self, ventana, evento):
         """
-        Acción usuario para cerrar la ventana 
+        Acción usuario para cerrar la ventana
         sin introducir valores
-        """        
+        """
         ventana.hide()
         return True
 
-       
+
     def on_btAsignarTriBeta_clicked(self,boton):
-        """ 
+        """
         Accion usuario que rellena la tabla
         con los valores optimista, pesimista
         y mas probable introducidos.
@@ -3442,83 +3466,83 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         optimista = float(self._widgets.get_widget('optimista').get_text())
         pesimista = float(self._widgets.get_widget('pesimista').get_text())
         probable = float(self._widgets.get_widget('probable').get_text())
-        
+
         if self.distributionType == 'Triangular':
             dist = 'Triangular'
         else:
             dist = 'Beta'
-            
+
         a = optimista
         b = pesimista
         m = probable
-                        
+
         # Se comprueba que las duraciones sean correctas
         ok = ((a < b and m <= b and m >= a) or (a == b and b == m))
-  
+
         if optimista <= 0 or pesimista <= 0 or probable <= 0:
             self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
         else:
-            if ok:            
+            if ok:
                 for m in range(len(self.actividad)):
                     self.col_edited_cb('edited', m, dist, self.modelo, 8)
                     self.col_edited_cb('edited', m, optimista, self.modelo, 3)
                     self.col_edited_cb('edited', m, probable, self.modelo, 4)
                     self.col_edited_cb('edited', m, pesimista, self.modelo, 5)
-                
+
                 """for m in range(len(self.actividad)):
                     self.actividad[m][3] = optimista
                     self.modelo[m][3] = self.actividad[m][3]
-                    
+
                     self.actividad[m][4] = probable
                     self.modelo[m][4] = self.actividad[m][4]
-                    
+
                     self.actividad[m][5] = pesimista
                     self.modelo[m][5] = self.actividad[m][5]
-                    
+
                     self.actividad[m][8] = dist
                     self.modelo[m][8] = self.actividad[m][8]"""
-             
-                
+
+
                 self.set_modified_state(True)
                 self.vDistTriBeta.hide()
             else:  #se emite un mensaje de error
                 self.dialogoError(_('Error al introducir los valores.'))
-        
- 
+
+
     def on_btCancelTriBeta_clicked(self,boton):
         """ Accion usuario para cancelar
             la opcion de asignacion automática
         """
         self.vDistTriBeta.hide()
-           
-       
-# --- Distribution Uniforme       
+
+
+# --- Distribution Uniforme
     def on_selectDistUniforme_activate(self, boton):
-        
+
        self.distributionType = 'Uniform'
        self._widgets.get_widget('btAsignarUniforme').set_sensitive(True)
        self._widgets.get_widget('optimista').set_text('')
        self._widgets.get_widget('pesimista').set_text('')
        self._widgets.get_widget('btCancelUniforme').set_sensitive(True)
        self.vDistUnif.show()
-       
+
     def on_btAsignarUniforme_clicked(self, boton):
-        """ 
+        """
         Accion usuario que rellena la tabla
         con el valor de la optimista y pesimista
         introducido.
         """
         optimistaUnif = float(self._widgets.get_widget('optimistaUnif').get_text())
         pesimistaUnif = float(self._widgets.get_widget('pesimistaUnif').get_text())
-        
+
         ok = optimistaUnif < pesimistaUnif
-        
+
         dist = self.distributionType
-            
+
         print 'distribucion ', dist
-        
+
         if optimistaUnif <= 0 or pesimistaUnif <= 0:
-            self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))          
+            self.dialogoError(_('Las duraciones deben ser todas mayor que 0'))
         else:
             if ok:
                 """for m in range(len(self.actividad)):
@@ -3529,16 +3553,16 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                     self.actividad[m][6] = (optimistaUnif + pesimistaUnif) / 2
                     self.modelo[m][6] = self.actividad[m][6]
                     self.actualizacion(self.modelo, m, 6, self.modelo[m][6])
-                    
+
                     self.actividad[m][7] = ( pesimistaUnif - optimistaUnif) / math.sqrt(12)
                     self.modelo[m][7] = self.actividad[m][7]
-                    
+
                     self.actividad[m][3] = optimistaUnif
                     self.modelo[m][3] = self.actividad[m][3]
 
                     self.actividad[m][5] = pesimistaUnif
                     self.modelo[m][5] = self.actividad[m][5]
-                                                
+
                     self.actividad[m][8] = dist
                     self.modelo[m][8] = self.actividad[m][8]
 
@@ -3547,22 +3571,22 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                 self.vDistUnif.hide()
             else:  #se emite un mensaje de error
                 self.dialogoError(_('Error al introducir los valores para la Uniforme.'))
-                    
-    
+
+
     def on_btCancelUniforme_clicked(self,boton):
         """ Accion usuario para cancelar
             la opcion de asignacion automática
         """
-        self.vDistUnif.hide()       
-    
+        self.vDistUnif.hide()
+
     def on_CloseUnif_delete_event(self, ventana, evento):
         """
-        Acción usuario para cerrar la ventana 
+        Acción usuario para cerrar la ventana
         sin introducir valores
-        """         
+        """
         ventana.hide()
-        return True    
-       
+        return True
+
 # --- Assignment window
     def on_mnAsignacion_activate (self, menu_item):
         """ Accion usuario para activar
@@ -3571,17 +3595,17 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         s = 0
         m = 0
-        
+
         for a in self.actividad:
             if (a[6] == ''):
                 s += 1
             elif (a[6] < 0):
-                m += 1            
+                m += 1
 
         if s > 0:
             self.dialogoError(_('Todas las duraciones medias han de ser introducidas'))
         elif m > 0:
-            self.dialogoError(_('No pueden existir duraciones medias negativas'))        
+            self.dialogoError(_('No pueden existir duraciones medias negativas'))
         else:
             self._widgets.get_widget('btAsignar').set_sensitive(True)
             self._widgets.get_widget('proporcionalidad').set_text('0.2')
@@ -3591,7 +3615,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self.vAsignacion.show()
 
     def on_btAsignar_clicked(self,boton):
-        """ 
+        """
         Accion usuario que rellena la tabla
         con los valores calculados a partir
         de la constante de proporcinalidad k
@@ -3602,7 +3626,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         proporcionalidad = self._widgets.get_widget('proporcionalidad')
         try:
             k = float(proporcionalidad.get_text())
-        
+
             # Se extrae el tipo de distribución
             distribucion = self._widgets.get_widget('distribucion')
             dist = distribucion.get_active_text()
@@ -3610,7 +3634,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             if dist == 'Beta':
                 if (k < 0 or k >= 1):
                     self.dialogoError(_('La constante de proporcionalidad no puede ser negativa, ni mayor que 1'))
-                else:        
+                else:
                     assignment.actualizarInterfaz(self.modelo, k, dist, self.actividad)
                     self.set_modified_state(True)
                     self.vAsignacion.hide()
@@ -3665,7 +3689,7 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
             self._widgets.get_widget('pvalueEV').set_text('Not defined')
             self._widgets.get_widget('statisticEV').set_text('Not defined')
 
-        #Mostrar la ventana de resultados del test        
+        #Mostrar la ventana de resultados del test
         self.vTestKS.show()
 
 
@@ -3683,38 +3707,38 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         ventana.hide()
         return True
 
-  
+
 
 # --- Resources
-  
+
     def on_btAsignarRec_clicked(self, boton):
         """
         Acción usuario para acceder a la ventana de recursos
-                 necesarios por actividad 
+                 necesarios por actividad
         Nota: Antes de introducir los recursos que cada actividad necesita, deben existir tanto recursos como actividades.
         """
         # Se comprueba que se hayan introducido actividades
         if self.actividad == []:
             self.dialogoError(_('No activities introduced'))
- 
+
         # Se comprueba que se hayan introducido recursos
         elif self.recurso == []:
             self.dialogoError(_('No resources introduced'))
-           
+
         # Si todo es correcto, se accede a la ventana con normalidad
         else:
             self.vAsignarRec.show()
 
-        
+
     def on_wndRecursos_delete_event(self, ventana, evento):
         """
         Acción usuario para cerrar la ventana de recursos
         """
         ventana.hide()
         return True
-   
-   
-  
+
+
+
 # --- Necessary resources per activity
 
     def on_btAceptarAR_clicked(self, boton):
@@ -3723,41 +3747,41 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                  muestra la ventana de recursos necesarios por
                  actividad: actividad, recurso, unidad necesaria
         """
-        if self.asignacion==[]: 
+        if self.asignacion==[]:
             self.vAsignarRec.hide()
-   
+
         else:
             # Se comprueba que las actividades y los recursos introducidos existen
             errorAct=self.comprobarActExisten(self.actividad)
             errorRec=self.comprobarRecExisten(self.recurso)
-   
+
             if errorAct==0 and errorRec==0:
                 # Se actualiza la columna de recursos en la introducción de las actividades
                 mostrarColumnaRec=self.mostrarRec(self.asignacion, 1)
                 self.actualizarColR(mostrarColumnaRec)
                 self.vAsignarRec.hide()
- 
-                 
+
+
     def on_btCancelarAR_clicked(self, boton):
         """
         Acción usuario para cancelar la información que
                  muestra la ventana de recursos necesarios por
-                 actividad: actividad, recurso, unidad necesaria. 
+                 actividad: actividad, recurso, unidad necesaria.
                  Si se cancelan los datos, se borran definitivamente
         """
         self.modeloAR.clear()
         self.asignacion=[]
         self.vAsignarRec.hide()
-   
+
     def on_wndAsignarRec_delete_event(self, ventana, evento):
         """
         Acción usuario para cerrar la ventana de recursos
-                 necesarios por actividad 
+                 necesarios por actividad
         """
         ventana.hide()
         return True
-  
-  
+
+
 # --- Calculate paths
 
     def on_btAceptarCaminos_clicked(self, boton):
@@ -3766,20 +3790,20 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                  muestra la ventana de calcular caminos
         """
         self.vCaminos.hide()
-  
-    def on_btExportarCsv_clicked(self, boton): 
+
+    def on_btExportarCsv_clicked(self, boton):
         """
         Export paths to CSV format (for spreadsheet)
         """
-        # Generate all paths 
+        # Generate all paths
         successors = dict(((act[1], act[2]) for act in self.actividad))
         g = graph.roy(successors)
         todosCaminos = graph.find_all_paths(g, 'Begin', 'End')
-  
+
         # Create CSV and show file dialog
         paths_csv = graph.roy_paths2csv([self.actividad[i][1] for i in range(len(self.actividad))], todosCaminos)
-        fileFormats.guardarCsv(paths_csv, self) 
-  
+        fileFormats.guardarCsv(paths_csv, self)
+
     def on_wndCaminos_delete_event(self, ventana, evento):
         """
         Acción usuario para cerrar la ventana de calcular
@@ -3787,8 +3811,8 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
         """
         ventana.hide()
         return True
-  
-  
+
+
 # --- Help ---
 
     def on_dAyuda_response(self, False, boton):
@@ -3797,10 +3821,10 @@ Valor de retorno: unidadesRec (lista que contiene el recurso y la suma de
                  muestra el diálodo de ayuda
         """
         self.dAyuda.hide()
-  
+
     def on_dAyuda_delete_event(self, dialogo, evento):
         """
-        Acción usuario para cerrar el diálogo de ayuda 
+        Acción usuario para cerrar el diálogo de ayuda
         """
         self.dAyuda.hide()
         return True
@@ -3846,7 +3870,7 @@ def main(filename=None):
     app = PPCproject(program_dir)
     if filename:
         app.openProject(filename)
-    gtk.main()   
+    gtk.main()
 
 
 # --- Start running as a program
@@ -3859,5 +3883,3 @@ if __name__ == '__main__':
     else:
         print _('Syntax is:')
         print sys.argv[0], '[project_file]'
-
-
