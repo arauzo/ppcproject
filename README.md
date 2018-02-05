@@ -12,3 +12,7 @@ Authors:
   * Sergio Pérez Delgado
 
 This project has been financed partially by the Vicerrectorado de Planificación y Calidad of the University of Córdoba under Lecture Improving Project 116019.
+
+Please cite as:
+
+  * Salas-Morera, L., Arauzo-Azofra, A., García-Hernández, L., Palomo-Romero, J. M., & Hervás-Martínez, C. (2013). PpcProject: An educational tool for software project management. Computers & Education, 69, 181-188.
