@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone= "yes"?>
+<calendario>
+    <!-- La etiqueta laboral hace referencia a los días laborales de la semana
+         Las posibles opciones son: LUN, MAR, MIE, JUE, VIE, SAB y DOM -->
+    <laboral>LUN</laboral>
+    <laboral>MAR</laboral>
+    <laboral>MIE</laboral>
+    <laboral>JUE</laboral>
+    <laboral>VIE</laboral>
+
+    <!-- La etiqueta noLaboral hace referencia a los días festivos (NO añadir día festivo que coincida con no-laboral)
+         El formato utilizado es: DD-MM-AAAA -->
+    <noLaboral>12-10-2011</noLaboral>
+    <noLaboral>24-10-2011</noLaboral>
+    <noLaboral>1-11-2011</noLaboral>
+    <noLaboral>6-12-2011</noLaboral>
+    <noLaboral>8-12-2011</noLaboral>
+    <noLaboral>26-12-2011</noLaboral>
+    <noLaboral>2-1-2012</noLaboral>
+    <noLaboral>6-1-2012</noLaboral>
+    <noLaboral>27-1-2012</noLaboral>
+    <noLaboral>28-2-2012</noLaboral>
+    <noLaboral>19-3-2012</noLaboral>
+    <noLaboral>5-4-2012</noLaboral>
+    <noLaboral>6-4-2012</noLaboral>
+    <noLaboral>1-5-2012</noLaboral>
+    <noLaboral>15-5-2012</noLaboral>
+    <noLaboral>15-8-2012</noLaboral>
+</calendario>
